@@ -103,7 +103,14 @@ Pokud chceme najít kvalitativní ohodnocení karet pro danou kombinaci dvou sou
 Můžeme kvalitu karty definovat jako rozdíl mezi winrate balíku s kartou (*D1*) proti winratu balíku bez ní (*D2*).
 Což by vedlo dle mého názoru na rovnici typu:
 
-$U(c)$
+$U(c) = \sum_s (\pi_{D1}(s) - \pi_{D2}(s))V(s)$
+
+$Kde \pi_D(s) je distribuce stavů ze stavu s pro balík D$
+
+Problém takového řešení stavový prostor hry. Jedná se o naprosté vyřešení hry.
+Počátečních stavů může být reálně zpracovatelný počet. Nicméně možná bude potřeba nějaká redukce.
+
+Druhý postup, jak získat winrate balíků je simulovat jejich hru a zaznamenávat výsledky.
 
 
  
