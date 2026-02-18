@@ -105,7 +105,7 @@ Což by vedlo dle mého názoru na rovnici typu:
 
 $U(c) = \sum_s (\pi_{D1}(s) - \pi_{D2}(s))V(s)$
 
-$Kde \hspace \pi_D(s) \hspace je \hspace distribuce \hspace stavů \hspace ze \hspace stavu \hspace s \hspace pro \hspace balík \hspace D.$
+$Kde \quad \pi_D(s) \quad je \quad distribuce \quad stavů \quad ze \quad stavu \quad s \quad pro \quad balík \quad D.$
 
 Problém takového řešení stavový prostor hry. Jedná se o naprosté vyřešení hry.
 Počátečních stavů může být reálně zpracovatelný počet. Nicméně možná bude potřeba nějaká redukce.
