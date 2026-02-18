@@ -102,9 +102,9 @@ který nastane po zahrání karty. Čím blíže k nule bude honota funkce *V(t)
 Pokud chceme najít kvalitativní ohodnocení karet pro danou kombinaci dvou soupeřících balíků. 
 Můžeme kvalitu karty definovat jako rozdíl mezi winrate balíku s kartou (*D1*) proti winratu balíku bez ní (*D2*).
 Což by vedlo dle mého názoru na rovnici typu:
-$
-U(c)
-$
+
+$U(c)$
+
 
  
 
