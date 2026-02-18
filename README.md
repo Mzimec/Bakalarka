@@ -103,7 +103,7 @@ Pokud chceme najít kvalitativní ohodnocení karet pro danou kombinaci dvou sou
 Můžeme kvalitu karty definovat jako rozdíl mezi winrate balíku s kartou (*D1*) proti winratu balíku bez ní (*D2*).
 Což by vedlo dle mého názoru na rovnici typu:
 
-$U(c)$
+$U(c) = \sum_s (\pi_{D1})$
 
 
  
