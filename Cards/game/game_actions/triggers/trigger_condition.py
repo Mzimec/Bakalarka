@@ -9,6 +9,10 @@ if TYPE_CHECKING:
 
 @dataclass(frozen=True)
 class TriggerAbility:
+    """!
+    @brief Pairing of a trigger condition with the ability it enables.
+    """
+
     condition: TriggerCondition
     ability: Ability
 

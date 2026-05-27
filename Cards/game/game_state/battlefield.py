@@ -8,10 +8,21 @@ __all__ = [
 ]
 
 class Battlefield:
+    """!
+    @brief Zone that contains permanent cards currently on the battlefield.
+    """
+
     def __init__(self, permanents: list[PermanentCard]) -> None:
+        """!
+        @brief Create a battlefield with the given permanents.
+        @param permanents Permanents that start on the battlefield.
+        """
         self.pemanents = permanents
 
     def untap_all(self) -> None:
+        """!
+        @brief Untap every permanent currently on the battlefield.
+        """
         for permanent in self.pemanents:
             permanent.is_tapped = False
     

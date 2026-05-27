@@ -16,30 +16,37 @@ __all__ = [
 ]
 
 class Player:
+    """!
+    @brief Runtime player state and controller connection.
+    """
+
     def __init__(self, deck: list["Card"], controller: DecisionMaker) -> None:
-        # flag to identify if player is AI-controlled
+        """!
+        @brief Create a player with a shuffled deck and empty zones.
+        @param deck Cards that start in the player's deck.
+        @param controller Decision maker that chooses this player's actions.
+        """
         self.controller = controller
 
-        # health init
         self.health = STARTING_HEALTH
 
-        # deck init
         self.deck = deck[:]
         random.shuffle(self.deck)
 
-        # hand init
         self.hand = []
         #for i in range(HAND_SIZE):
             #self.draw()
         
-        # graveyard init
         self.graveyard = []
 
-        # battlefield init
         self.battlefield = Battlefield([])
 
     
     def draw(self) -> None:
+        """!
+        @brief Move the top card of the deck into the player's hand.
+        @raises ValueError If the deck cannot provide a card.
+        """
         if not self.deck:
             raise ValueError(f"Deck is None for {self}")
         
@@ -50,5 +57,10 @@ class Player:
         self.hand.append(card)
 
     def get_action(self, state: State) -> GameAction | None:
+        """!
+        @brief Ask the player's controller to choose an action.
+        @param state Current game state.
+        @return Chosen action, or None if the player takes no action.
+        """
         return self.controller.get_action(state, self)
     
