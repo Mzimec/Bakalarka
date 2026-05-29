@@ -197,13 +197,14 @@ class PhaseController(ABC):
     def priority_context(self) -> PriorityWindowContext:
         pass
 
-    def run(self, state: State) -> None:
+    def run(self, state: State, processor: ActionProcessor) -> None:
 
         self.execute_turn_based_actions(state)
 
         PriorityWindow(
             state,
-            self.priority_context
+            self.priority_context,
+            processor=processor
         ).run()
 
     @abstractmethod
@@ -261,20 +262,16 @@ class EndStepPhaseController(PhaseController):
 
 class GameLoop:
 
-    def __init__(self, phase_map: dict[TurnPhase, PhaseController] ) -> None:
-
+    def __init__(self, phase_map: dict[TurnPhase, PhaseController], processor: ActionProcessor) -> None:
         self.phase_map = phase_map
+        self.processor = processor
 
     def run(self, state: State) -> None:
 
         while not self._is_game_over(state):
-
             phase = state.turn.phase
-
             controller = self.phase_map[phase]
-
-            controller.run(state)
-
+            controller.run(state, self.processor)
             new_turn = state.turn.advance_phase()
 
             if new_turn:
@@ -284,4 +281,4 @@ class GameLoop:
 
         # TODO
 
-        return False
+        return any(p.health <= 0 for p in state.players)

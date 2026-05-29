@@ -17,12 +17,12 @@ class Battlefield:
         @brief Create a battlefield with the given permanents.
         @param permanents Permanents that start on the battlefield.
         """
-        self.pemanents = permanents
+        self.permanents = permanents
 
     def untap_all(self) -> None:
         """!
         @brief Untap every permanent currently on the battlefield.
         """
-        for permanent in self.pemanents:
+        for permanent in self.permanents:
             permanent.is_tapped = False
     

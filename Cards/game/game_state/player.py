@@ -71,7 +71,7 @@ class DecisionMaker(ABC):
     """
 
     @abstractmethod
-    def get_action(self, state: State) -> GameAction | None:
+    def get_action(self, state: State, player: Player) -> GameAction | None:
         """!
         @brief Choose a game action for the current state.
         @param state Current game state.

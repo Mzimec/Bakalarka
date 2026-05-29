@@ -127,8 +127,8 @@ class ActionExecutor:
         @param creature Creature being destroyed.
         """
         owner = creature.owner
-        if creature in owner.battlefield.pemanents:
-            owner.battlefield.pemanents.remove(creature)
+        if creature in owner.battlefield.permanents:
+            owner.battlefield.permanents.remove(creature)
 
         owner.graveyard.append(creature)
 

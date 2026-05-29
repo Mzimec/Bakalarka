@@ -7,6 +7,7 @@ if TYPE_CHECKING:
     from ..abilities.ability import TriggeredAbility
     from ..game_actions.event_bus import GameEvent
 from ..game_actions.game_stack import GameStack, PrioritySystem
+from ..game_loop.game_loop import Turn
 
 __all__ = [
     "State"
@@ -27,6 +28,7 @@ class State:
         self.active_player = self.players[0] if active_player is None else active_player
         self.stack: GameStack = GameStack()
         self.priority: PrioritySystem = PrioritySystem(self)
+        self.turn = Turn()
 
     def get_next_player(self, player: Player) -> Player:
         """!
@@ -74,7 +76,7 @@ class State:
         for player in self.players:
             if card in player.hand:
                 return ZoneType.HAND
-            if card in player.battlefield.pemanents:
+            if card in player.battlefield.permanents:
                 return ZoneType.BATTLEFIELD
             if card in player.graveyard:
                 return ZoneType.GRAVEYARD
@@ -118,5 +120,5 @@ class State:
         """
         for player in self.players:
             yield from player.hand
-            yield from player.battlefield.pemanents
+            yield from player.battlefield.permanents
             yield from player.graveyard

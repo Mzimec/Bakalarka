@@ -1,315 +1,404 @@
+"""
+human_input.py — Console-driven DecisionMaker.
+
+Pipeline:
+    HumanDecisionMaker.get_action(state, player)
+        → ActionBuilderSession(state, player).run()
+            → postupné kroky: command → source → cost-targets → targets → confirm
+            → Ability.generate_actions() vrátí kandidáty, hráč vybere index
+        → GameAction | PassPriorityAction
+"""
+
 from __future__ import annotations
-from typing import TYPE_CHECKING, Any
-from enum import Enum, auto
+
 from dataclasses import dataclass, field
-from abc import ABC, abstractmethod
+from enum import Enum, auto
+from typing import TYPE_CHECKING, Any
 
 if TYPE_CHECKING:
-    from .game_state.player import DecisionMaker
-    from .game_actions import GameAction
-    from .game_state import State, Player, Card
-    from .game_loop.game_loop import TurnPhase
-    from .abilities import AbilityDefinition
-    from .target import TargetBinding
-
-class HumanDecionMaker(DecisionMaker):
-    pass
+    from game.game_state import State, Player, Card
+    from game.game_state.player import DecisionMaker
+    from game.abilities.ability import Ability, AbilityDefinition
+    from game.game_actions.game_action import GameAction
+    from game.target import TargetBinding
 
 
-class BuildingStepType(Enum):
+# ---------------------------------------------------------------------------
+# Canonical command aliases
+# ---------------------------------------------------------------------------
+
+_COMMAND_ALIASES: dict[str, set[str]] = {
+    "play":     {"play", "p"},
+    "activate": {"activate", "a"},
+    "pass":     {"pass", ""},
+}
+
+
+def _resolve_command(raw: str) -> str | None:
+    """Převede alias na kanonický název příkazu, nebo None."""
+    raw = raw.strip().lower()
+    for canonical, aliases in _COMMAND_ALIASES.items():
+        if raw in aliases:
+            return canonical
+    return None
+
+
+# ---------------------------------------------------------------------------
+# Session state
+# ---------------------------------------------------------------------------
+
+class _Step(int, Enum):
     COMMAND = auto()
-    SOURCE = auto()
-    MODE = auto()
-    COST = auto()
-    TARGET = auto()
-
-class SourceType(Enum):
-    CARD = auto()
-    PLAYER = auto()
-    ABILITY = auto()
-    NONE = auto()
-
-@dataclass(frozen=True)
-class BuildValidationResult:
-    success: bool
-    message: str
-
-    @staticmethod
-    def success() -> BuildValidationResult:
-        return BuildValidationResult(success=True, message="")
-    
-    @staticmethod
-    def fail(message: str) -> BuildValidationResult:
-        return BuildValidationResult(success=False, message=message)
-    
-
-@dataclass(frozen=True)
-class ActionDefinition:
-    name: str
-
-    requires_mode: bool
-    requires_targets: bool
-    requires_cost_payment: bool
-
-    ability_def: AbilityDefinition
+    SOURCE  = auto()
+    COST    = auto()
+    TARGET  = auto()
+    CONFIRM = auto()
+    DONE    = auto()
 
 
 @dataclass
-class ActionBuildContext:
-
-    player: Player
-
-    command: str
-
-    action_def: ActionDefinition | None = None
-
-    source: Any | None = None
-    source_type: SourceType
-
-    mode: int | None = None
-
-    cost_binding: TargetBinding | None = None
-    target_biding: TargetBinding | None = None
+class _SessionData:
+    """Mezistav který se plní krok za krokem."""
+    command:       str | None            = None
+    ability:       "Ability | None"      = None
+    cost_binding:  "TargetBinding | None"= None
+    target_binding:"TargetBinding | None"= None
 
 
-class BuildStep(ABC):
+# ---------------------------------------------------------------------------
+# Helper: výběr z číslovaného seznamu
+# ---------------------------------------------------------------------------
 
-    context: ActionBuildContext
-
-    def build(self) -> ActionBuildContext:
-        while True:
-            obj, res = self._find()
-            if not res.success:
-                print(res.message)
-                continue
-
-            context = self._set(context, obj)
-
-            validation_result = self._validate(context)
-            if not validation_result.success:
-                print(validation_result.message)
-                continue
-            
-            while True:
-                apply_result = self._apply()
-                if not apply_result.success:
-                    if apply_result.message == "":
-                        break
-                    else:
-                        print(apply_result.message)
-                        continue
-                else:
-                    return context
-         
-    def _apply(self, promt: str) -> BuildValidationResult:
-        answer = input(promt)
-        if answer != "y" or answer != "n":
-            return BuildValidationResult.fail(f"Unrecognized answer to apply: {answer}, Correct is y or n")
-        elif answer == "n":
-            return BuildValidationResult.fail("")
-        else:
-            return BuildValidationResult.success()
-
-    @abstractmethod
-    def _find(self, state: State) -> tuple[Any, BuildValidationResult]:
-        pass
-
-    @abstractmethod
-    def _set(self, obj: Any) -> None:
-        pass
+def _pick(prompt: str, options: list[Any], display: list[str]) -> Any | None:
+    """
+    Vypíše očíslovaný seznam a vrátí vybraný prvek.
+    Vrátí None pokud uživatel zadá prázdný vstup (= zpět / zrušit krok).
+    """
+    for i, label in enumerate(display):
+        print(f"  [{i}] {label}")
+    raw = input(f"{prompt} (číslo, nebo Enter = zpět): ").strip()
+    if raw == "":
+        return None
+    try:
+        idx = int(raw)
+        if 0 <= idx < len(options):
+            return options[idx]
+        print(f"  ⚠ Index mimo rozsah 0–{len(options)-1}.")
+    except ValueError:
+        print(f"  ⚠ Zadejte číslo.")
+    return None
 
 
-    def _validate(self) -> BuildValidationResult:
-        return BuildValidationResult.success()
+def _pick_binding(prompt: str, bindings: list["TargetBinding"]) -> "TargetBinding | None":
+    """Vybere TargetBinding ze seznamu kandidátů."""
+    labels = [repr(b) for b in bindings]
+    return _pick(prompt, bindings, labels)
 
 
-POSSIBLE_COMMANDS: set[str] = {
+# ---------------------------------------------------------------------------
+# ActionBuilderSession
+# ---------------------------------------------------------------------------
 
-}
+class ActionBuilderSession:
+    """
+    Interaktivní stavový stroj pro sestavení jedné herní akce z konzole.
 
-VALID_COMMANDS_IN_PHASE: dict[TurnPhase, set[str]]
+    Každý krok lze přeskočit (Enter = zpět), takže hráč může kdykoli
+    začít znovu bez ukončení smyčky.
 
+    Použití:
+        action = ActionBuilderSession(state, player).run()
+        # action je GameAction nebo None (hráč odešel zpět až na začátek)
+    """
 
-class CommandBuildStep(BuildStep): 
+    def __init__(self, state: "State", player: "Player") -> None:
+        self._state  = state
+        self._player = player
+        self._data   = _SessionData()
+        self._step   = _Step.COMMAND
 
-    def _find(self, state: State) -> tuple[Any, BuildValidationResult]:
-        command = input("Enter your command: ") 
-        
-        if command in POSSIBLE_COMMANDS:
-            return (
-                command,
-                BuildValidationResult.success()
-            )
-        
-        else:
-            return (
-                command,
-                BuildValidationResult.fail("You entered unrecognizable command!")
-            )        
-        
-    def _set(self, obj: Any) -> None:
-        if isinstance(obj, str):
-            self.context.command = obj
-        else:
-            raise TypeError(f"{obj} is not of a type str!")
-        
-    def _validate(self, state: State) -> BuildValidationResult:
-        phase_type = state.get_phase_type()
-        if self.context.command in VALID_COMMANDS_IN_PHASE[phase_type]:
-            return BuildValidationResult.success()
-        else:
-            return BuildValidationResult.fail(f"Command: {self.context.command} is not usable in phase: {phase_type}")
+    # ------------------------------------------------------------------
+    # Public entry point
+    # ------------------------------------------------------------------
 
+    def run(self) -> "GameAction | None":
+        """
+        Spustí smyčku kroků a vrátí hotový GameAction, nebo None pokud
+        hráč celý vstup zrušil (šel zpět přes první krok).
+        """
+        while self._step != _Step.DONE:
+            advanced = self._dispatch()
+            if not advanced:
+                # Hráč šel zpět — vrátíme se o jeden krok
+                prev = self._prev_step()
+                if prev is None:
+                    # Jsme na začátku, předáváme None zpět
+                    return None
+                self._step = prev
+                self._reset_from(self._step)
 
-class SourceBuildStep(BuildStep):
+        return self._build_action()
 
-    def _find(self, state: State) -> tuple[Any, BuildValidationResult]:
-        key = input("Enter key for source of your action: ")
-        obj, success = state.find_obj_by_key(key)
+    # ------------------------------------------------------------------
+    # Step dispatch
+    # ------------------------------------------------------------------
 
-        if success:
-            return (
-                obj,
-                BuildValidationResult.success()
-            )
-        
-        else:
-            return (
-                obj,
-                BuildValidationResult.fail(f"Unrecognizable object for your key: {key}")
-            )
-    
-    def _set(self, obj: Any) -> None:
-        self.context.source = obj
-    
-    def _validate(self) -> BuildValidationResult:
-        source = self.context.source
-        match self.context.source_type:
-            case SourceType.CARD:
-                if isinstance(source, Card):
-                    return BuildValidationResult.success()
-                return BuildValidationResult.fail("Entered source is not of the correct type: Card!")
-            
-            case SourceType.PLAYER:
-                if isinstance(source, Player):
-                    return BuildValidationResult.success()
-                return BuildValidationResult.fail("Entered source is not of the correct type: Player!")
-            
-            case SourceType.ABILITY:
-                if isinstance(source, AbilityDefinition):
-                    return BuildValidationResult.success()
-                return BuildValidationResult.fail("Entered source is not of the correct type: AbilityDefintion!")
-            
+    def _dispatch(self) -> bool:
+        """Zavolá správný handler; vrátí True = postup vpřed, False = zpět."""
+        match self._step:
+            case _Step.COMMAND: return self._step_command()
+            case _Step.SOURCE:  return self._step_source()
+            case _Step.COST:    return self._step_cost()
+            case _Step.TARGET:  return self._step_target()
+            case _Step.CONFIRM: return self._step_confirm()
             case _:
-                return BuildValidationResult.success()
-    
+                return True
 
-class ModeBuildStep(BuildStep):
+    # ------------------------------------------------------------------
+    # Individual steps
+    # ------------------------------------------------------------------
 
-    def _find(self, state: State) -> tuple[Any, BuildValidationResult]:
-        valid_modes = self.context.action_def.ability_def.get_modes()
-        obj = input(f"Enter mode number from 0 to {len(valid_modes - 1)}")
-        
-        try:
-            idx = int(obj)
-        except:
-            return (obj, BuildValidationResult.fail(f"Input: {obj} was not a number!"))
-        
-        if idx < 0 or idx >= len(valid_modes):
-            return (obj, BuildValidationResult.fail(f"Mode index: {idx} is out of bounds!"))
-        
-        return (idx, BuildValidationResult.success())
-    
-    def _set(self, obj: Any) -> None:
-        self.context.mode = obj
+    def _step_command(self) -> bool:
+        print("\n── Příkaz ──────────────────────────")
+        print("  play (p)  |  activate (a)  |  pass")
+        raw = input("Příkaz: ").strip()
+        cmd = _resolve_command(raw)
+        if cmd is None:
+            print(f"  ⚠ Neznámý příkaz: '{raw}'")
+            return False  # zůstaneme na stejném kroku (znovu zeptáme)
 
+        if cmd == "pass":
+            self._data.command = "pass"
+            self._step = _Step.DONE
+            return True
 
-class CostBuildStep(BuildStep):
+        if not self._command_is_legal(cmd):
+            return False  # chyba už byla vypsána
 
-    def _find(self, state: State) -> tuple[Any, BuildValidationResult]:
-        binding: TargetBinding = dict()
-        for key in self.context.paid_costs.keys():
-            all_passed = False
-            while not all_passed:
-                line = input(f"Enter targets for cost effects for cost: {key}: ").split()
-
-                objs: list[Any] = []
-
-                all_passed = True
-                for k in line:
-                    obj, success = state.find_obj_by_key(k)
-                    if not success:
-                        all_passed = False
-                        break
-                    objs.append(obj)
-                
-                d: dict[Any, int] = dict()
-                for o in objs:
-                    if d.get(o):
-                        d[o] += 1
-                    else: 
-                        d[o] = 1
-
-                binding[key] = d
-        
-        return (binding, BuildValidationResult.success())
-    
-    def _set(self, obj: Any) -> None:
-        self.context.cost_binding = obj
-    
-    def _validate
-    
-
-
-
-
-    
-
-
-class ActionBuilder:
-
-    def __init__(self):
-
-        self.steps = [
-            CommandBuildStep(),
-            SourceStep(),
-            ModeStep(),
-            CostStep(),
-            TargetStep(),
-            FinalizeStep(),
-        ]
-
-    def build(
-        self,
-        player: Player,
-        state: State
-    ) -> GameAction:
-
-        context = ActionBuildContext(
-            player=player,
-            state=state
-        )
-
-        for step in self.steps:
-
-            if not self._should_run_step(
-                step,
-                context
-            ):
-                continue
-
-            step.run(context)
-
-        return context.final_action
-    
-    def _should_run_step(self, step: BuildingStep, context: ActionBuildContext) -> bool:
-        if isinstance(step, ModeStep):
-            return context.action_definition.requires_mode
-
-        if isinstance(step, TargetStep):
-            return context.action_definition.requires_targets
-
-        if isinstance(step, CostStep):
-            return context.action_definition.requires_cost_payment
-
+        self._data.command = cmd
+        self._step = _Step.SOURCE
         return True
+
+    def _step_source(self) -> bool:
+        print("\n── Zdroj ───────────────────────────")
+        abilities = self._get_available_abilities()
+        if not abilities:
+            print("  ⚠ Žádné dostupné akce pro tento příkaz.")
+            return False
+
+        labels = [self._ability_label(a) for a in abilities]
+        chosen = _pick("Vyber zdroj", abilities, labels)
+        if chosen is None:
+            return False  # zpět
+
+        self._data.ability = chosen
+        self._step = _Step.COST if self._needs_cost() else _Step.TARGET
+        return True
+
+    def _step_cost(self) -> bool:
+        print("\n── Platba (cost targets) ───────────")
+        assert self._data.ability is not None
+
+        cost_action = self._data.ability.data.cost_action
+        if cost_action is None:
+            self._data.cost_binding = {}
+            self._step = _Step.TARGET
+            return True
+
+        from game.game_actions.game_action import AbilityOperationGenerator
+        cost_generators = cost_action.generate_actions(
+            self._data.ability.source, self._state
+        )
+        if not cost_generators:
+            print("  ⚠ Nelze zaplatit cenu — žádné legální targety.")
+            return False
+
+        bindings = [g.binding for g in cost_generators]
+        chosen = _pick_binding("Vyber způsob platby", bindings)
+        if chosen is None:
+            return False
+
+        self._data.cost_binding = chosen
+        self._step = _Step.TARGET
+        return True
+
+    def _step_target(self) -> bool:
+        print("\n── Targety efektu ──────────────────")
+        assert self._data.ability is not None
+
+        action_def = self._data.ability.data.action
+        if action_def is None:
+            self._data.target_binding = {}
+            self._step = _Step.CONFIRM
+            return True
+
+        from game.game_actions.game_action import AbilityOperationGenerator
+        action_generators = action_def.generate_actions(
+            self._data.ability.source, self._state
+        )
+        if not action_generators:
+            print("  ⚠ Žádné legální targety pro efekt.")
+            return False
+
+        bindings = [g.binding for g in action_generators]
+        chosen = _pick_binding("Vyber targety", bindings)
+        if chosen is None:
+            return False
+
+        self._data.target_binding = chosen
+        self._step = _Step.CONFIRM
+        return True
+
+    def _step_confirm(self) -> bool:
+        print("\n── Potvrzení ────────────────────────")
+        self._print_summary()
+        raw = input("Potvrdit? (y/n/reset): ").strip().lower()
+        match raw:
+            case "y" | "yes":
+                self._step = _Step.DONE
+                return True
+            case "n" | "no":
+                return False  # zpět o jeden krok
+            case "reset":
+                self._step = _Step.COMMAND
+                self._data = _SessionData()
+                return True  # True = „pokračuj" (ale jsme na COMMAND)
+            case _:
+                print("  ⚠ Zadejte y, n, nebo reset.")
+                return False
+
+    # ------------------------------------------------------------------
+    # Build final action
+    # ------------------------------------------------------------------
+
+    def _build_action(self) -> "GameAction":
+        from game.game_actions.game_action import PassPriorityAction
+
+        if self._data.command == "pass":
+            return PassPriorityAction(player=self._player)
+
+        assert self._data.ability is not None
+        assert self._data.cost_binding is not None
+        assert self._data.target_binding is not None
+
+        ability = self._data.ability
+        actions = ability.generate_actions(self._state)
+
+        # Najdeme akci jejíž target_binding odpovídá výběru
+        for action in actions:
+            _, action_intent = action.get_intents()
+            gen = action_intent.generator
+            if hasattr(gen, "binding") and gen.binding == self._data.target_binding:
+                return action
+
+        # Fallback: první dostupná akce (nemělo by nastat)
+        return actions[0]
+
+    # ------------------------------------------------------------------
+    # Helpers
+    # ------------------------------------------------------------------
+
+    def _command_is_legal(self, cmd: str) -> bool:
+        """Ověří, zda je příkaz proveditelný v aktuálním stavu."""
+        match cmd:
+            case "play":
+                cards = self._get_playable_cards()
+                if not cards:
+                    print("  ⚠ Nemáš žádné zahratelné karty.")
+                    return False
+            case "activate":
+                abilities = self._get_activatable_abilities()
+                if not abilities:
+                    print("  ⚠ Nemáš žádné aktivovatelné schopnosti.")
+                    return False
+        return True
+
+    def _get_available_abilities(self) -> list["Ability"]:
+        match self._data.command:
+            case "play":
+                return self._get_playable_cards()
+            case "activate":
+                return self._get_activatable_abilities()
+            case _:
+                return []
+
+    def _get_playable_cards(self) -> list["Ability"]:
+        """
+        Vrátí schopnosti karet v ruce, které lze nyní zahrát.
+        Zatím vrací prázdný list — implementace závisí na zbytku enginu.
+        """
+        # TODO: projít player.hand, pro každou kartu zavolat
+        #   card.get_abilities(state) a filtrovat dle zóny / timing
+        return []
+
+    def _get_activatable_abilities(self) -> list["Ability"]:
+        """
+        Vrátí aktivovatelné schopnosti karet na battlefield.
+        Zatím vrací prázdný list.
+        """
+        # TODO: projít player.battlefield.permanents, get_abilities, filtrovat
+        return []
+
+    def _needs_cost(self) -> bool:
+        if self._data.ability is None:
+            return False
+        return self._data.ability.data.cost_action is not None
+
+    def _ability_label(self, ability: "Ability") -> str:
+        name = getattr(ability.source, "card_def", None)
+        card_name = name.name if name else repr(ability.source)
+        key = ability.data.key
+        return f"{card_name} — {key}"
+
+    def _print_summary(self) -> None:
+        d = self._data
+        print(f"  Příkaz  : {d.command}")
+        ability = d.ability
+        if ability:
+            print(f"  Zdroj   : {self._ability_label(ability)}")
+        print(f"  Platba  : {d.cost_binding}")
+        print(f"  Targety : {d.target_binding}")
+
+    def _prev_step(self) -> _Step | None:
+        order = [_Step.COMMAND, _Step.SOURCE, _Step.COST, _Step.TARGET, _Step.CONFIRM]
+        try:
+            idx = order.index(self._step)
+        except ValueError:
+            return None
+        return order[idx - 1] if idx > 0 else None
+
+    def _reset_from(self, step: _Step) -> None:
+        """Vyčistí data od daného kroku dál."""
+        if step <= _Step.COMMAND:
+            self._data = _SessionData()
+        elif step <= _Step.SOURCE:
+            self._data.ability = None
+            self._data.cost_binding = None
+            self._data.target_binding = None
+        elif step <= _Step.COST:
+            self._data.cost_binding = None
+            self._data.target_binding = None
+        elif step <= _Step.TARGET:
+            self._data.target_binding = None
+
+
+# ---------------------------------------------------------------------------
+# HumanDecisionMaker
+# ---------------------------------------------------------------------------
+
+class HumanDecisionMaker:
+    """
+    DecisionMaker řízený konzolí.
+
+    Podpis get_action(state, player) je v souladu s Player.get_action()
+    a základní třídou DecisionMaker.
+    """
+
+    def get_action(self, state: "State", player: "Player") -> "GameAction":
+        while True:
+            session = ActionBuilderSession(state, player)
+            action = session.run()
+            if action is not None:
+                return action
+            # session.run() vrátilo None = hráč šel zpět přes COMMAND
+            # → jednoduše zahájíme novou session
