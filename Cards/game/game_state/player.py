@@ -1,14 +1,14 @@
 from __future__ import annotations
 from dataclasses import dataclass
 from typing import TYPE_CHECKING
+from abc import ABC, abstractmethod
 
 from ..constants import STARTING_HEALTH, HAND_SIZE
 from .battlefield import Battlefield
 if TYPE_CHECKING:
-    from ..abilities.ability import GameAction, ActionBlueprint, Ability
+    from ..abilities.ability import GameAction, Ability
     from .card import Card
     from .state import State
-    from..ai import DecisionMaker
 import random
 
 __all__ = [
@@ -64,3 +64,17 @@ class Player:
         """
         return self.controller.get_action(state, self)
     
+
+class DecisionMaker(ABC):
+    """!
+    @brief Base controller that chooses actions for a player.
+    """
+
+    @abstractmethod
+    def get_action(self, state: State) -> GameAction | None:
+        """!
+        @brief Choose a game action for the current state.
+        @param state Current game state.
+        @return Chosen game action, or None when no action is chosen.
+        """
+        pass
