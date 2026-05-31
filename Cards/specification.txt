@@ -1,0 +1,575 @@
+================================================================================
+  PROJECT SPECIFICATION
+  Simplified MTG Simulation Engine & MCTS AI Agent
+  Version: 0.1 (draft)
+================================================================================
+
+Claude Sonnet 4.6 was used for translation, formatting and drafting description 
+of classes and methods from code comments.
+
+--------------------------------------------------------------------------------
+1. PROJECT OVERVIEW
+--------------------------------------------------------------------------------
+
+This project implements a simplified Magic: The Gathering (MTG) game engine
+in Python, designed as a research platform for developing and evaluating an
+AI agent based on Monte Carlo Tree Search (MCTS).
+
+The engine covers the full MTG gameplay foundation: a mana system, the
+priority/stack model, triggered abilities, state-based actions, and combat.
+The card pool is intentionally small and manually curated — the goal is a
+correct, fast, and extensible simulation environment, not a faithful
+reproduction of the entire MTG card database.
+
+On top of the engine, an MCTS agent will be developed. The agent operates
+under imperfect information (opponent's hand is hidden), uses a heuristic
+evaluation function for non-terminal states, and is designed to be extended
+with reinforcement learning that learns state values from accumulated
+simulation data.
+
+A human console interface is provided for manual testing and debugging.
+All game logic is controller-agnostic: human players and AI agents share
+the same DecisionMaker interface.
+
+--------------------------------------------------------------------------------
+2. GOALS
+--------------------------------------------------------------------------------
+
+ENGINE
+  - Implement a correct, deterministic two-player game loop covering the full
+    MTG turn structure (untap through cleanup).
+  - Model the mana system: land cards, mana pools, cost payment.
+  - Model the priority system and game stack with correct LIFO resolution.
+  - Support activated and triggered abilities with targeting.
+  - Support state-based actions (SBAs) checked after every state change.
+  - Support combat: declare attackers, declare blockers, damage assignment,
+    first strike, and creature death.
+  - Support the mulligan procedure at game start.
+  - Provide a complete legal-action enumeration at any game state.
+  - Support full deep-copy of game state for MCTS tree expansion.
+
+AI AGENT
+  - Implement an MCTS agent that operates under imperfect information.
+  - Support two information modes that can be toggled for comparison:
+      (a) Full information  — agent sees all cards including opponent's hand.
+      (b) Hidden hand       — agent samples plausible opponent hands from the
+                              known deck composition (determinization / IS-MCTS).
+  - Evaluate non-terminal states with a rule-based heuristic function.
+  - Store visit counts and win rates for visited states to enable later
+    replacement of the heuristic with a learned value function (RL extension).
+  - Provide a clean interface so other agent types can be plugged in for
+    comparison (random agent, greedy agent, human).
+
+NON-GOALS
+  - Full compliance with the complete MTG Comprehensive Rules.
+  - Multiplayer (more than two players).
+  - Full MTG card database; only a curated test set is supported.
+  - Graphical or network interface.
+
+--------------------------------------------------------------------------------
+3. SYSTEM ARCHITECTURE
+--------------------------------------------------------------------------------
+
+The project is organized into four layers:
+
+  ┌─────────────────────────────────────────────────┐
+  │                  AI / Agent layer                │
+  │   MCTSAgent, RandomAgent, HumanDecisionMaker    │
+  └────────────────────┬────────────────────────────┘
+                       │ DecisionMaker interface
+  ┌────────────────────▼────────────────────────────┐
+  │               Game Engine layer                  │
+  │   GameLoop, PhaseControllers, PriorityWindow    │
+  │   ActionProcessor, ActionExecutor, GameStack    │
+  └────────────────────┬────────────────────────────┘
+                       │ State read / write
+  ┌────────────────────▼────────────────────────────┐
+  │               Game State layer                   │
+  │   State, Player, Card hierarchy, Zone system    │
+  │   Abilities, Effects, Operations, Events        │
+  └────────────────────┬────────────────────────────┘
+                       │ Card / ability data
+  ┌────────────────────▼────────────────────────────┐
+  │               Card Definition layer              │
+  │   CardDefinition, AbilityDefinition, Effects    │
+  │   Curated card pool and deck configurations     │
+  └─────────────────────────────────────────────────┘
+
+Source layout under Cards/game/:
+
+  abilities/          Ability model: definitions, effect sequences,
+                      action nodes, trigger conditions, runtime objects.
+  game_actions/       Action pipeline: GameAction, ActionIntent,
+                      OperationGenerator, ActionProcessor, ActionExecutor,
+                      GameStack, PrioritySystem, EventBus, SBAResolver.
+  game_loop/          Turn structure: TurnPhase, Turn, PhaseControllers,
+                      PriorityWindow, GameLoop.
+  game_state/         Mutable state: State, Player, Card hierarchy,
+                      CardPack / zone system, LookUpSystem.
+  operations/         Atomic state mutations and OperationExecutor.
+  target/             TargetSpec, TargetSelector, TargetResolver, TargetSlot.
+  ai/                 (planned) MCTSAgent, StateEvaluator, StateEncoder,
+                      ExperienceStore.
+  constants.py        Global constants.
+  human_input.py      Console-driven action builder.
+
+--------------------------------------------------------------------------------
+4. GAME ENGINE — DETAILED DESIGN
+--------------------------------------------------------------------------------
+
+4.1 GAME STATE
+
+  The State object is the single source of truth for a running game.
+
+  Fields:
+    players           list[Player]      Players in turn order.
+    active_player     Player            Player whose turn it is.
+    stack             GameStack         Pending ActionIntents (LIFO).
+    priority          PrioritySystem    Tracks who has passed priority.
+    turn              Turn              Current TurnPhase.
+    lookup_system     LookUpSystem      String key -> game object resolution.
+
+  Required methods:
+    lookup(key)                   Resolve a dot-separated key to a game object.
+    get_phase()                   Return self.turn.phase.
+    get_next_player(player)       Next player in turn order (wrapping).
+    switch_active_player()        Advance active_player.
+    get_card_zone(card)           Find which zone a card currently occupies.
+    get_granted_abilities(card)   Abilities granted by external effects.
+    get_triggered_abilities(evt)  Triggered abilities matching an event.
+    get_playable_cards(player)    Cards in hand that may currently be played.
+    get_activatable_abilities(p)  Abilities that may currently be activated.
+    get_possible_attackers(p)     Untapped, eligible attacking creatures.
+    get_possible_blockers(p)      Untapped, eligible blocking creatures.
+    get_attackers(player)         Currently declared attackers.
+    get_blockers(player)          Currently declared blockers.
+    modify_stat(card, stat, base) Apply continuous effects to a stat value.
+    get_outcome(player) -> float  +1.0 win, -1.0 loss, 0.0 ongoing.
+    clone() -> State              Deep copy for MCTS tree expansion.
+
+4.2 PLAYER
+
+  Fields:
+    _zone_map     dict[ZoneType, CardPack]   BATTLEFIELD, DECK, HAND,
+                                             GRAVEYARD, EXILE.
+    _health       int                        Current life total.
+    _mana_pool    dict[ManaType, int]        Available mana this turn.
+    _controller    DecisionMaker             AI or human controller.
+
+  Key methods:
+    draw()                        Move top card of deck to hand.
+    get_action(state)             Ask controller for one action (PriorityLoop).
+    get_actions(state, context)   Ask controller for all legal actions
+                                  (PriorityWindow, MCTS).
+    try_find_card(key, zone)      Find a card by key in one or all zones.
+    add_mana(mana_type, amount)   Add mana to the pool.
+    spend_mana(cost)              Pay a mana cost from the pool.
+
+4.3 CARD HIERARCHY
+
+  CardDefinition          Static shared data: name, cost, types, subtypes,
+                          ability definitions.
+  CreatureCardDefinition  Adds base power and toughness.
+
+  Card                    Runtime instance: key (short lookup string), owner.
+  PermanentCard           Adds is_tapped flag.
+  CreatureCard            Adds damage_taken; power/toughness go through
+                          state.modify_stat() to support continuous effects.
+
+  Supported card types:   CREATURE, ARTIFACT, ENCHANTMENT, LAND,
+                          INSTANT, SORCERY.
+  Supported mana types:   UNCOLORED, WHITE, BLUE, BLACK, RED, GREEN, VOID.
+
+  Each runtime Card carries a short key string (e.g. "g1", "bolt") assigned
+  at game setup. This key is the primary handle used by the lookup system
+  and the human console interface.
+
+4.4 ZONE SYSTEM
+
+  ZoneType enum:  HAND, BATTLEFIELD, GRAVEYARD, EXILE, DECK.
+
+  CardPack        Ordered dict of Card objects keyed by card.key. Provides
+                  append(), remove(), pop(), get(), __iter__, __len__.
+  Battlefield     CardPack subclass; adds untap_all().
+
+  Zone transitions (card moves between zones) are performed by Operations.
+  Every zone transition emits a GameEvent so that triggered abilities can react.
+
+4.5 MANA SYSTEM
+
+  Each Player holds a mana pool (dict[ManaType, int]) that resets at the end
+  of each phase in which mana abilities were used (following MTG rules).
+
+  Land cards have a tap ability that adds one mana of the appropriate color
+  to the controller's pool.
+
+  Cost payment is modeled as a sequence of Operations executed before the
+  effect of an ability resolves. The cost generator and effect generator are
+  separate OperationGenerators within AbilityAction.
+
+  Timing restriction: non-instant abilities may only be played at sorcery
+  speed (the player's own main phase, empty stack). This is enforced by
+  PriorityWindow via the PriorityWindowContext.allow_sorcery_speed flag.
+
+4.6 ACTION PIPELINE
+
+  The pipeline from player decision to state change has four layers:
+
+  GameAction
+      High-level player decision. Examples: AbilityAction, PassPriorityAction,
+      DeclareAttackerAction. Splits into one or more ActionIntents.
+
+  ActionIntent
+      A single resolvable unit: an OperationGenerator + ResolutionContext.
+      Knows whether it should be placed on the stack or executed immediately.
+
+  OperationGenerator
+      Produces a tuple of Operations given state and context.
+        FixedOperationGenerator     Always returns the same operations.
+        AbilityOperationGenerator   Builds operations from EffectBindings
+                                    and resolved TargetBindings.
+
+  Operation
+      Atomic state mutation. Returns a list of GameEvents.
+      GameEventOperation subclasses emit a single event without mutating state
+      (used for declarative events such as "attacker_declared").
+
+  Routing:
+      ActionProcessor.process() iterates intents from a GameAction.
+      Intents with uses_stack=True are pushed onto GameStack.
+      Other intents are executed immediately by ActionExecutor.
+
+  Execution:
+    ActionExecutor.execute():
+      1. Validate the intent.
+      2. Generate operations via intent.generate_operations(state).
+      3. Apply replacement effects to the operation list.
+      4. Execute operations; collect GameEvents.
+      5. Run SBAResolver; collect SBA events.
+      6. Emit all events through EventBus.
+      7. Collect and resolve triggered abilities via TriggerResolver.
+
+4.7 GAME STACK AND PRIORITY
+
+  GameStack        LIFO stack of ActionIntents.
+
+  PriorityWindow   Used by GameLoop. Manages the active-player-first queue
+                   within one phase. Fetches legal actions from each player,
+                   processes non-pass actions (resetting the pass queue),
+                   resolves the top stack item when all pass, and closes when
+                   all pass on an empty stack.
+
+  StackResolver    Pops and executes the top stack item via ActionExecutor.
+
+4.8 TURN STRUCTURE
+
+  TurnPhase enum (in order):
+    UNTAP, UPKEEP, DRAW,
+    PRECOMBAT_MAIN,
+    BEGIN_COMBAT, DECLARE_ATTACKERS, AFTER_ATTACKERS,
+    DECLARE_BLOCKERS, AFTER_BLOCKERS,
+    FIRST_COMBAT_DAMAGE, SECOND_COMBAT_DAMAGE, END_COMBAT,
+    POSTCOMBAT_MAIN,
+    END_STEP, CLEANUP.
+
+  Turn              Holds current phase and the ordered phase list.
+                    advance_phase() steps to the next phase and returns True
+                    at the start of a new player turn.
+
+  PhaseController   Abstract base. run(state, processor) executes turn-based
+  (PC)              actions then opens a PriorityWindow (where applicable).
+                    Planned concrete subclasses for each TurnPhase, which will
+		    take care of a logic of that phase.
+
+  GameLoop          Iterates phases, runs each PhaseController, advances
+                    the turn, and switches active_player at turn end.
+                    Terminates when any player's health reaches 0 or when
+                    a player cannot draw from an empty library.
+
+4.9 COMBAT
+
+  Combat is spread across four phases:
+
+  DECLARE_ATTACKERS
+    The active player may tap any number of untapped, eligible creatures and
+    mark them as attackers. Creatures with summoning sickness cannot attack.
+    After declaration, both players receive a priority window.
+
+  DECLARE_BLOCKERS
+    The defending player may assign any number of untapped creatures as
+    blockers. Each blocker is assigned to exactly one attacker. Multiple
+    blockers may block one attacker; the active player then orders damage
+    among them. After declaration, both players receive a priority window.
+
+  FIRST_COMBAT_DAMAGE (if any creature has first strike or double strike)
+    Creatures with first strike deal damage before others. State-based actions
+    are checked; creatures that die here do not deal damage in the second step.
+
+  SECOND_COMBAT_DAMAGE
+    All remaining attacking and blocking creatures deal damage simultaneously.
+    Unblocked attackers deal damage to the defending player. State-based
+    actions are checked after damage is applied.
+
+  Combat state (who is attacking/blocking whom) is tracked in State and
+  cleared at END_COMBAT.
+
+4.10 TARGETING
+
+  TargetSpec       Finds legal candidate objects given a source card and state.
+                   Examples: TargetAllyUnitSpec, TargetAnyCreatureSpec,
+                   TargetPlayerSpec.
+
+  TargetSelector   Groups candidates into selectable target choices.
+                   Examples: SingleTargetSelector (one target per choice),
+                   MultiTargetSelector (choose N distinct targets).
+
+  TargetResolver   Combines TargetSpec and TargetSelector.
+
+  TargetSlot       Named slot used by one effect. Carries a TargetResolver and
+                   a distinct_from constraint set. get_bindings() returns all
+                   legal TargetBinding dicts for this slot.
+
+  TargetBinding    dict[str, dict[Any, int]] — slot key -> {object: count}.
+
+4.11 ABILITIES
+
+  AbilityDefinition     Static description: key, optional cost
+                        SubAbilityDefinition, optional effect
+                        SubAbilityDefinition, allowed zones, uses_stack flag.
+
+  SubAbilityDefinition  Describes one half (cost or effect) of an ability.
+                        Contains an ActionNode tree, a slot dict, and an
+                        effect dict. Generates all legal OperationGenerators
+                        for a given state via generate_actions().
+
+  ActionNode tree       Composed of AndActionNode, OrActionNode,
+                        EffectActionNode. Describes which combinations of
+                        effects may be chosen and which target slots each
+                        effect needs. Enables modal abilities (choose one of
+                        several effects) and multi-effect abilities (do all).
+
+  EffectSequence        Ordered tuple of EffectBinding objects. Each binding
+                        pairs a concrete Effect with the TargetSlots it
+                        consumes. One EffectSequence corresponds to one
+                        playable mode of an ability.
+
+  Ability               Runtime object: AbilityDefinition + source Card +
+                        controller Player. generate_actions(state) returns all
+                        legal AbilityActions for the current state.
+
+  TriggeredAbilityDefinition  Like AbilityDefinition but carries a
+                              TriggerCondition evaluated against GameEvents.
+
+  TriggeredAbility      Runtime triggered ability paired with the GameEvent
+                        that caused it. Placed on the stack in APNAP order
+                        when its condition matches.
+
+4.12 STATE-BASED ACTIONS
+
+  Checked by SBAResolver after every operation batch, in a loop until stable.
+
+  Planned rules (minimum viable set):
+    - Creature with toughness <= 0 is destroyed and moved to graveyard.
+    - Creature with damage >= toughness is destroyed.
+    - Player with health <= 0 loses the game.
+    - Player who cannot draw from an empty library loses the game.
+    - Aura without a legal attachment target is moved to graveyard.
+    - Token that leaves the battlefield ceases to exist.
+
+  Each rule is implemented as a StateBasedAction subclass (applies() +
+  execute()) and registered with SBAResolver at engine startup.
+
+4.13 EVENT SYSTEM
+
+  GameEvent        Immutable dataclass: key (string), source, controller,
+                   payload (arbitrary dict).
+
+  EventBus         Stores emitted events. collect_triggered_abilities() finds
+                   TriggeredAbility objects whose condition matches any event.
+
+  TriggerResolver  Orders matched triggers in APNAP order, asks each
+                   controller to choose a concrete action (or defaults to the
+                   only option), and enqueues intents on the stack.
+
+  Planned event keys (non-exhaustive):
+    priority_passed, player_conceded, player_mulliganed,
+    attacker_declared, attacker_removed, blocker_declared, blocker_removed,
+    creature_died, card_drawn, spell_cast, ability_activated,
+    damage_dealt, player_damaged, zone_change, mana_added.
+
+4.14 LOOKUP SYSTEM
+
+  Key format:  PLAYER.ZONE.CARD.ABILITY  (dot-separated, 1–4 parts)
+    PLAYER     integer index into state.players  ("0", "1")
+    ZONE       h=HAND  d=DECK  b=BATTLEFIELD  e=EXILE  g=GRAVEYARD
+    CARD       card.key string
+    ABILITY    ability.data.key string
+
+  Examples:
+    "0.b.g1"          -> Card g1 on player 0's battlefield.
+    "0.b.g1.tap"      -> The tap ability of card g1.
+    "1.h"             -> Player 1's hand zone.
+
+  state.lookup(key) -> LookUpResult  with fields:
+    success, error, final, player, zone, card, ability.
+
+--------------------------------------------------------------------------------
+5. HUMAN CONSOLE INTERFACE
+--------------------------------------------------------------------------------
+
+HumanDecisionMaker wraps ActionBuilderSession, a pipeline of BuildStep objects:
+
+  COMMAND     Player types a command or alias.
+  SOURCE      Player enters a lookup key for the source card/ability.
+  COST_MODE   Player picks which cost EffectSequence to use (if modal).
+  COST        Player fills target slots for the cost sub-ability.
+  MODE        Player picks which effect EffectSequence to use (if modal).
+  TARGET      Player fills target slots for the effect sub-ability.
+  CONFIRM     Player confirms or rejects the assembled action summary.
+
+Meta-commands at any prompt:
+  back        Return to the previous step.
+  reset       Restart the session from COMMAND.
+  options     Print contextual help (available sources, legal targets, etc.).
+
+Supported commands per phase:
+  pass        All phases.
+  play        Main phases (sorcery speed).
+  activate    All phases with a priority window.
+  attack      DECLARE_ATTACKERS.
+  rattack     DECLARE_ATTACKERS (remove a declared attacker).
+  block       DECLARE_BLOCKERS.
+  rblock      DECLARE_BLOCKERS (remove a declared blocker).
+
+--------------------------------------------------------------------------------
+6. MCTS AI AGENT
+--------------------------------------------------------------------------------
+
+6.1 INFORMATION MODEL
+
+  The engine tracks two distinct views of the game state:
+
+  Full state     Complete information including all card identities.
+                 Used internally by the engine and by the full-information
+                 agent variant.
+
+  Observation    The subset of state visible to one player: own hand and
+                 zones, opponent's battlefield and graveyard, opponent's
+                 hand size and deck size (but not card identities).
+
+  IS-MCTS (Information Set MCTS) is used for the hidden-hand variant.
+  Before each MCTS run the agent generates a set of determinizations:
+  plausible full states consistent with the current observation, sampling
+  opponent hand contents from the known remaining deck. The tree search
+  runs across this sample set and averages results.
+
+  The two modes (full vs hidden) are toggled via a flag at agent construction
+  so that their playing strength can be directly compared.
+
+6.2 MCTS ALGORITHM
+
+  Standard UCT (Upper Confidence Bound for Trees):
+
+    UCB1(node) = Q(node) / N(node)  +  C * sqrt( ln(N(parent)) / N(node) )
+
+  where Q is the accumulated value, N is the visit count, and C is an
+  exploration constant tuned empirically.
+
+  Four phases per iteration:
+    Selection      Traverse the tree from root, choosing children by UCB1,
+                   until a node is reached that is not fully expanded.
+    Expansion      Add one new child node for an unexplored legal action.
+    Simulation     Roll out the game from the new node using a fast policy
+                   (random or lightweight heuristic) until terminal or depth
+                   limit.
+    Backpropagation  Update Q and N for every node on the path from the
+                     expanded node back to the root.
+
+  Rollout termination:
+    - Game reaches a terminal state (health <= 0, empty library).
+    - Maximum rollout depth is reached; state is evaluated by the heuristic.
+
+6.3 STATE EVALUATION HEURISTIC
+
+  Non-terminal states are scored from the perspective of the agent's player.
+  The heuristic is a weighted linear combination of features (initial weights
+  to be tuned empirically):
+
+    score = w1 * health_advantage
+          + w2 * board_power_advantage
+          + w3 * board_toughness_advantage
+          + w4 * card_advantage
+          + w5 * mana_advantage
+
+  where each term is (agent_value - opponent_value) normalized to [-1, 1].
+
+  This heuristic is intentionally simple and replaceable. It is encapsulated
+  in a StateEvaluator interface so that a learned value function can be
+  substituted without changing the MCTS core.
+
+6.4 EXPERIENCE STORE AND RL EXTENSION
+
+  During MCTS simulations, each visited state and its final outcome are
+  recorded in an ExperienceStore:
+
+    entry: (state_encoding, player_perspective, visits, wins)
+
+  State encoding (StateEncoder) maps a game state to a fixed-length feature
+  vector suitable for function approximation. The encoding abstracts over
+  concrete card identities where possible (card types, stats, abilities
+  present) so that the value function can generalize across states.
+
+  RL training loop (planned):
+    1. Run N MCTS simulations to collect experience.
+    2. Train a value network (e.g. shallow MLP) on (encoding -> win_rate)
+       pairs from the experience store.
+    3. Replace the rule-based heuristic in StateEvaluator with the trained
+       network.
+    4. Repeat from step 1 using the improved evaluator (AlphaZero-style loop).
+
+  The RL component is a future extension; the rule-based heuristic is the
+  initial target.
+
+6.5 DECISIONMAKER INTERFACE
+
+  All agent types implement DecisionMaker:
+
+    get_action(state, player) -> GameAction
+      Return a single chosen action (used by PriorityLoop).
+
+    get_actions(state, player, context) -> list[GameAction]
+      Return all currently legal actions (used by PriorityWindow and MCTS
+      for action enumeration at tree nodes).
+
+  Planned implementations:
+    HumanDecisionMaker    Console-driven interactive player.
+    RandomAgent           Selects uniformly at random from legal actions.
+    GreedyAgent           Selects the action with the highest immediate
+                          heuristic score (baseline for MCTS comparison).
+    MCTSAgent             Full MCTS with configurable simulation budget,
+                          information mode, and evaluator.
+
+6.6 STATE CLONING
+
+  MCTS requires branching the game tree without mutating the original state.
+  State.clone() performs a deep copy of all mutable game state:
+    - All player zones (CardPack contents).
+    - Health totals and mana pools.
+    - GameStack contents.
+    - PrioritySystem state.
+    - Turn and phase.
+    - Combat state (declared attackers/blockers).
+
+  Card objects in the clone share CardDefinition references (static, immutable)
+  but are otherwise independent instances.
+
+--------------------------------------------------------------------------------
+7. CONSTANTS
+--------------------------------------------------------------------------------
+
+  Constants holds static data for the game such as starting life, starting 
+  number of cards and so on.
+
+================================================================================
+  END OF SPECIFICATION
+================================================================================
