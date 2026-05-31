@@ -1,6 +1,6 @@
 from __future__ import annotations
 from typing import TYPE_CHECKING
-from enum import Enum
+from enum import Enum, auto
 if TYPE_CHECKING:
     from .player import Player
     from .state import State
@@ -22,22 +22,22 @@ class CardType(Enum):
     @brief Main card types supported by the game.
     """
 
-    CREATURE = 1
-    ARTIFACT = 2
-    ENCHANTMENT = 3
-    LAND = 4
-    INSTANT = 5
-    SORCERY = 6
+    CREATURE = auto()
+    ARTIFACT = auto()
+    ENCHANTMENT = auto()
+    LAND = auto()
+    INSTANT = auto()
+    SORCERY = auto()
 
 class CardSubtype(Enum):
     """!
     @brief Creature or card subtypes supported by the game.
     """
 
-    HUMAN = 1
-    ELF = 2
-    WIZARD = 3
-    SOLDIER = 4
+    HUMAN = auto()
+    ELF = auto()
+    WIZARD = auto()
+    SOLDIER = auto()
 
 
 class ManaType(Enum):
@@ -45,13 +45,13 @@ class ManaType(Enum):
     @brief Mana colors and special mana types used by card costs.
     """
 
-    UNCOLORED = 1
-    WHITE = 2
-    BLUE = 3
-    BLACK = 4
-    RED = 5
-    GREEN = 6
-    VOID = 7
+    UNCOLORED = auto()
+    WHITE = auto()
+    BLUE = auto()
+    BLACK = auto()
+    RED = auto()
+    GREEN = auto()
+    VOID = auto()
 
 class CardDefinition:
     """!
@@ -133,6 +133,7 @@ class Card:
         @param card_def Static card definition.
         @param owner Player who owns the card.
         """
+        self.key: str = ""
         self.card_def = card_def
         self.owner = owner
 
@@ -178,6 +179,9 @@ class Card:
         @return Ability that plays the card.
         """
         raise NotImplementedError("Play card ability generation not implemented yet")
+    
+    def to_string(self) -> str:
+        pass
         
 class PermanentCard(Card):
     """!

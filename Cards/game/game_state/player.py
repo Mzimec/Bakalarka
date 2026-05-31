@@ -7,39 +7,50 @@ from ..constants import STARTING_HEALTH, HAND_SIZE
 from .battlefield import Battlefield
 if TYPE_CHECKING:
     from ..abilities.ability import GameAction, Ability
-    from .card import Card
+    from .card import Card, ZoneType
     from .state import State
+    from .battlefield import CardPack
 import random
 
 __all__ = [
     "Player"
 ]
 
+
 class Player:
     """!
     @brief Runtime player state and controller connection.
     """
 
-    def __init__(self, deck: list["Card"], controller: DecisionMaker) -> None:
+    def __init__(self, deck: list[Card], controller: DecisionMaker) -> None:
         """!
         @brief Create a player with a shuffled deck and empty zones.
         @param deck Cards that start in the player's deck.
         @param controller Decision maker that chooses this player's actions.
         """
-        self.controller = controller
+        self._controller = controller
+        self._health = STARTING_HEALTH
 
-        self.health = STARTING_HEALTH
-
-        self.deck = deck[:]
-        random.shuffle(self.deck)
-
-        self.hand = []
-        #for i in range(HAND_SIZE):
-            #self.draw()
+        self._zone_map: dict[ZoneType, CardPack] = {
+            ZoneType.BATTLEFIELD: Battlefield(),
+            ZoneType.DECK: CardPack(deck),
+            ZoneType.EXILE: CardPack(),
+            ZoneType.GRAVEYARD: CardPack(),
+            ZoneType.HAND: CardPack()
+        }
+    
+    def try_find_card(self, card_key: str, zone: ZoneType | None = None) -> Card | None:
+        if zone is None:
+            for z in self._zone_map.values():
+                card = z.get(card_key)
+                if card is not None:
+                    return card
         
-        self.graveyard = []
-
-        self.battlefield = Battlefield([])
+        else:
+            return self._zone_map.get(zone).get(card_key)
+        
+        return None
+        
 
     
     def draw(self) -> None:

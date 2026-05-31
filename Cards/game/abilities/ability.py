@@ -1,10 +1,10 @@
 from __future__ import annotations
 from typing import TYPE_CHECKING
 from dataclasses import dataclass, field
-from enum import Enum
+from enum import Enum, auto
 from abc import ABC, abstractmethod
 if TYPE_CHECKING:
-    from ..game_state import Card, State
+    from ..game_state import Card, State, Player
     from ..game_actions.game_action import OperationGenerator, GameAction
     from ..game_actions import Effect
     from ..game_actions.event_bus import GameEvent
@@ -32,10 +32,11 @@ class ZoneType(Enum):
     @brief Card zones that can restrict where an ability is usable.
     """
 
-    HAND = 1
-    BATTLEFIELD = 2
-    GRAVEYARD = 3
-    EXILE = 4
+    HAND = auto()
+    BATTLEFIELD = auto()
+    GRAVEYARD = auto()
+    EXILE = auto()
+    DECK = auto()
 
 
 @dataclass(frozen=True)
@@ -204,7 +205,10 @@ class SubAbilityDefinition:
     
     def get_effect_sequences(self) -> list[EffectSequence]:
         effects_to_slots = self._get_effect_bindings()
-        return [self._normalize_effect_map(ets) for ets in effects_to_slots]
+        res = [self._normalize_effect_map(ets) for ets in effects_to_slots]
+        if len(res) < 1:
+            raise RuntimeError("There must be atleast one EffectSequence in SubAbilityDefinition.")
+        return res
 
 
 @dataclass(frozen=True)
@@ -227,6 +231,10 @@ class AbilityDefinition:
         """
         return zone in self.allowed_zones
 
+    def to_ability(self, card: Card, player: Player) -> Ability:
+        return Ability(source=card, controller=player, data=self)
+
+
 
 @dataclass(frozen=True)
 class Ability:
@@ -235,6 +243,7 @@ class Ability:
     """
 
     source: Card
+    controller: Player
     data: AbilityDefinition
     
     def _generate_game_action(self, c_generator: OperationGenerator, a_generator: OperationGenerator) -> GameAction:
@@ -312,6 +321,7 @@ class TriggeredAbilityDefinition:
         @return True if the triggered ability is active in the zone.
         """
         return zone in self.allowed_zones
+
 
 
 @dataclass(frozen=True)

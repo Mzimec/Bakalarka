@@ -3,6 +3,7 @@ from typing import TYPE_CHECKING
 if TYPE_CHECKING:
     from .player import Player
     from .card import Card
+    from .look_up import LookUpSystem, LookUpResult
     from ..abilities import Ability
     from ..abilities.ability import TriggeredAbility
     from ..game_actions.event_bus import GameEvent
@@ -29,6 +30,10 @@ class State:
         self.stack: GameStack = GameStack()
         self.priority: PrioritySystem = PrioritySystem(self)
         self.turn = Turn()
+        self.lookup_system = LookUpSystem()
+
+    def lookup(self, key: str) -> LookUpResult:
+        self.lookup_system.lookup(key, self)
 
     def get_next_player(self, player: Player) -> Player:
         """!

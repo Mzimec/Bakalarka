@@ -1,3 +1,14 @@
+"""!
+@file human_input.py
+@brief Console-driven action builder for human players.
+
+Provides BuildStep subclasses that walk a player through choosing a command,
+source, cost, targets, and confirmation.  HumanDecisionMaker wires these steps
+into a looping ActionBuilderSession.
+"""
+
+
+
 from __future__ import annotations
 
 from abc import ABC, abstractmethod
@@ -12,6 +23,8 @@ if TYPE_CHECKING:
     from .game_state import State, Player, Card
     from .game_actions import GameAction
     from .game_actions.game_action import EffectSequence
+
+from .game_actions.game_action import PassPriorityAction, DeclareAttackerAction, DeclareBlockerAction, RemoveAttackerAction, RemoveBlockerAction, AbilityAction, AbilityOperationGenerator
 
 
 _COMMAND_ALIASES: dict[str, set[str]] = {
@@ -98,8 +111,19 @@ class SessionData:
     """!
     @brief Partial action data accumulated across build steps.
 
-    cost_bindings and target_bindings are keyed by slot key so that
-    cross-slot distinct constraints can be evaluated before merging.
+    All fields start as None / empty and are populated incrementally as the
+    player advances through the ActionBuilderSession pipeline.  cost_bindings
+    and target_bindings are keyed by slot key so that cross-slot distinct
+    constraints can be evaluated before merging.
+
+    @var command        Canonical command string chosen in CommandStep.
+    @var source         Card or Player resolved in SourceStep.
+    @var ability        Runtime Ability resolved in SourceStep (None for
+                        combat and pass commands).
+    @var cost_effect_seq  EffectSequence selected in CostModeStep.
+    @var effect_seq       EffectSequence selected in EffectModeStep.
+    @var cost_bindings  Target bindings filled for the cost sub-ability.
+    @var target_bindings Target bindings filled for the effect sub-ability.
     """
 
     command: str | None = None
@@ -132,17 +156,15 @@ class ActionFactory:
     @staticmethod
     def build(data: SessionData) -> GameAction:
         """!
-        @brief Build the GameAction that matches the recorded bindings.
+        @brief Build the GameAction described by the completed session data.
 
-        Searches Ability.generate_actions() for the action whose cost and
-        effect generator bindings equal the ones stored in SessionData.
+        Constructs cost and effect OperationGenerators from the stored bindings
+        and wraps them in the appropriate GameAction subclass.
 
-        @param data  Completed session data.
-        @param state Current game state.
-        @return Matching GameAction.
-        @raises RuntimeError When no generated action matches the bindings.
+        @param data Completed session data.
+        @return GameAction ready to be processed by ActionProcessor.
         """
-        from .game_actions.game_action import PassPriorityAction, DeclareAttackerAction, DeclareBlockerAction, RemoveAttackerAction, RemoveBlockerAction, AbilityAction, AbilityOperationGenerator
+        
 
         match data.command:
             case "pass":
@@ -260,6 +282,10 @@ class BuildStep(ABC):
 
         @param prompt     Prompt string shown to the player.
         @param options_fn Zero-argument callable that prints contextual help.
+
+        @note  The 'options' meta-command is handled internally; it never appears
+        in the return value.
+
         @return Stripped player input or a _MetaResult for back / reset.
         """
         print(_META_HINT)
@@ -342,6 +368,9 @@ class CommandStep(BuildStep):
         @param cmd    Canonical command string.
         @param state  Current game state.
         @param player Acting player.
+
+        @note  Prints a diagnostic message to stdout when the command is not legal.
+
         @return True if the command can currently be carried out.
         """
         match cmd:
@@ -413,21 +442,19 @@ class SourceStep(BuildStep):
             if isinstance(result, _MetaResult):
                 return result
 
-            obj = state.lookup(result)
-            if obj is None:
-                print(f"  Unrecognized key: '{result}'")
+            lookup = state.lookup(result)
+            if not lookup.success:
+                print(lookup.error)
                 continue
 
-            data.source = obj
+            data.source = lookup.final
 
-            # Returning for combat commands -> No need for ability
             if data.command in {"attack", "block", "rattack", "rblock"}:
                 return True
 
-            # Logic for commands that need ability
-            ability = self._resolve_to_ability(obj, data.command)
+            ability = self._resolve_to_ability(data.source, data.command)
             if ability is None:
-                continue  # Error already printed.
+                continue 
 
             data.ability = ability
             return True
@@ -439,15 +466,14 @@ class SourceStep(BuildStep):
         @param command Canonical command string.
         @return Resolved Ability, or None when the object type does not match.
         """
-        from .abilities.ability import AbilityDefinition
         from .game_state.card import Card
 
         match command:
             case "activate":
-                if not isinstance(obj, AbilityDefinition):
+                if not isinstance(obj, Ability):
                     print("  Key did not resolve to an activatable ability.")
                     return None
-                return obj.to_ability()
+                return obj
                 
 
             case "play":
@@ -634,7 +660,7 @@ class SlotFillingStep(BuildStep):
         slot_index = 0
         while slot_index < len(slots):
             slot = slots[slot_index]
-            bindings[slot.key] = bindings.pop(slot.key, None)
+            bindings.pop(slot.key, None)
 
             result = self._fill_slot(slot, state, data.ability, bindings)
 
@@ -664,7 +690,6 @@ class SlotFillingStep(BuildStep):
         legal groups returned by slot.get_bindings(), delegating all grouping
         logic to the TargetSelector defined on the slot.
 
-        @param slot_key        Name of the slot being filled.
         @param slot            TargetSlot that defines legality.
         @param state           Current game state.
         @param ability         Ability whose source is used for candidate lookup.
@@ -698,12 +723,12 @@ class SlotFillingStep(BuildStep):
             objects: list[Any] = []
             valid = True
             for k in result.split():
-                obj = state.lookup(k)
-                if obj is None:
-                    print(f"  Unrecognized key: '{k}'")
+                lookup = state.lookup(k)
+                if not lookup.success:
+                    print(lookup.error)
                     valid = False
                     break
-                objects.append(obj)
+                objects.append(lookup.final)
             if not valid:
                 continue
 
@@ -815,8 +840,8 @@ class ConfirmStep(BuildStep):
     """!
     @brief Show a summary and ask the player to confirm, go back, or reset.
 
-    Returns True on confirmation and False to go back one step.
-    A 'reset' input clears the session and returns _MetaResult.RESET so
+    Returns True on confirmation.
+    A 'reset' input or decline clears the session and returns _MetaResult.RESET so
     ActionBuilderSession can restart from COMMAND.
     """
 
@@ -920,8 +945,8 @@ class ActionBuilderSession:
         """!
         @brief Return True when the given step must run for the current command.
 
-        COST is skipped when the selected ability has no cost_action.
-        TARGET is skipped when the selected ability has no action or no slots.
+        COST_MODE and COST are skipped when the selected ability has no cost_action.
+        MODE and TARGET are skipped when the selected ability has no action.
 
         @param step_type Step to evaluate.
         @return True when the step should be executed.
