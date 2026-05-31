@@ -7,7 +7,7 @@ if TYPE_CHECKING:
     from ..abilities.ability import TriggeredAbility
     from ..game_actions.event_bus import GameEvent
 from ..game_actions.game_stack import GameStack, PrioritySystem
-from ..game_loop.game_loop import Turn
+from ..game_loop.game_loop import Turn, TurnPhase
 
 __all__ = [
     "State"
@@ -122,3 +122,6 @@ class State:
             yield from player.hand
             yield from player.battlefield.permanents
             yield from player.graveyard
+    
+    def get_turn_phase(self) -> TurnPhase:
+        pass

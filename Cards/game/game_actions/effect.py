@@ -36,6 +36,10 @@ class Effect:
         """
         pass
 
+    @abstractmethod
+    def get_info(self) -> str:
+        pass
+
     
 
 

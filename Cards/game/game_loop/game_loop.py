@@ -21,8 +21,11 @@ class TurnPhase(Enum):
 
     BEGIN_COMBAT = auto()
     DECLARE_ATTACKERS = auto()
+    AFTER_ATTACKERS = auto()
     DECLARE_BLOCKERS = auto()
-    COMBAT_DAMAGE = auto()
+    AFTER_BLOCKERS = auto()
+    FIRST_COMBAT_DAMAGE = auto()
+    SECOND_COMBAT_DAMAGE = auto()
     END_COMBAT = auto()
 
     POSTCOMBAT_MAIN = auto()

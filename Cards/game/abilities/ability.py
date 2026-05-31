@@ -46,10 +46,31 @@ class EffectBinding:
 
     key: str
     effect: Effect
-    slots: frozenset[str]
+    slots: list[TargetSlot]
 
 
-EffectSequence = tuple[EffectBinding, ...]
+@dataclass(frozen=True)
+class EffectSequence: 
+    sequence: tuple[EffectBinding, ...]
+
+    def get_used_slots(self) -> list[TargetSlot]:
+        res: list[TargetSlot] = []
+        seen: set[TargetSlot] = set()
+        for eb in self.sequence:
+            for s in eb.slots:
+                if s not in seen:
+                    seen.add(s)
+                    res.append(s)
+        return res
+    
+    def get_used_effects(self) -> list[Effect]:
+        res: list[Effect] = []
+        seen: set[Effect] = set()
+        for eb in self.sequence:
+            if eb.effect not in seen:
+                seen.add(eb.effect)
+                res.append(eb.effect)
+        return res
 
     
 @dataclass(frozen=True)
@@ -80,12 +101,24 @@ class SubAbilityDefinition:
         for k, v in map.items():
             if k not in self.effects:
                 raise KeyError(k)
+            
+            slots = []
+
+            for key in v:
+                slot = self.slots.get(key)
+
+                if slot is None:
+                    raise KeyError(f"  No TargetSlot for '{key}' in self.slots.")
+
+                slots.append(slot)
+
             bindings.append(EffectBinding(
                 key=k,
                 effect=self.effects.get(k),
-                slots=frozenset(v)
+                slots=list(slots)
             ))
-        return tuple(bindings)
+
+        return EffectSequence(sequence=tuple(bindings))
 
     
     def _get_all_used_slots(self, effects_to_slots: EffectToSlotMap) -> set[TargetSlot]:
@@ -168,6 +201,10 @@ class SubAbilityDefinition:
                 ))
         
         return res
+    
+    def get_effect_sequences(self) -> list[EffectSequence]:
+        effects_to_slots = self._get_effect_bindings()
+        return [self._normalize_effect_map(ets) for ets in effects_to_slots]
 
 
 @dataclass(frozen=True)
