@@ -4,7 +4,9 @@ from enum import Enum, auto
 if TYPE_CHECKING:
     from .player import Player
     from .state import State
-    from ..abilities.ability import AbilityDefinition, Ability, ZoneType
+    from ..abilities.ability import AbilityDefinition, Ability, ZoneType, AbilityCollection
+
+from helper.helper import *
 
 __all__ = [
     "CardType",
@@ -80,7 +82,7 @@ class CardDefinition:
         self.cost = cost
         self.types = types
 
-        self.abilities = list(abilities) if abilities else []
+        self.abilities: AbilityCollection = AbilityCollection(abilities) if abilities else AbilityCollection()
         self.local_triggers = {} if local_triggers is None else local_triggers
         self.global_triggers = {} if global_triggers is None else global_triggers
     
@@ -136,6 +138,7 @@ class Card:
         self.key: str = ""
         self.card_def = card_def
         self.owner = owner
+        self._zone = ZoneType.DECK
 
     def __repr__(self) -> str:
         """!
@@ -144,33 +147,32 @@ class Card:
         """
         return self.card_def.__repr__()
     
-    def get_zone(self, state: State) -> ZoneType:
+    def get_zone(self) -> ZoneType:
         """!
         @brief Ask the game state where this card currently is.
         @param state Current game state.
         @return Zone containing this card.
         """
-        return state.get_card_zone(self)
+        return self._zone
     
-    def get_abilities(self, state: State) -> list[Ability]:
+    def get_abilities(self) -> dict[str, Ability]:
+        abilities = {k: v.to_ability() for k, v in self.card_def.abilities.items()}
+        return abilities | self._get_granted_abilities()
+    
+    def get_activatable_abilities(self, state: State) -> dict[str, Ability]:
         """!
         @brief Collect abilities currently available to this card.
         @param state Current game state.
         @return Runtime abilities available from this card's current zone.
         """
-        zone = self.get_zone(state)
-        res: list[Ability] = []
+        zone = self._zone
+        abilities = self.get_abilities()
 
-        for ability_def in self.card_def.abilities:
-            if ability_def.is_usable_in_zone(zone):
-                res.append(Ability(ability_def.costs, ability_def.action_bps))
-        
-        if zone == ZoneType.HAND:
-            res.append(self._create_play_card_ability(self))
-        
-        res.extend(state.get_granted_abilities(self))
+        for k, v in abilities.items():
+            if not v.is_activatable():
+                abilities.pop(k)
 
-        return res
+        return abilities
     
     def _create_play_card_ability(self, card: Card) -> Ability:
         """!
@@ -181,7 +183,11 @@ class Card:
         raise NotImplementedError("Play card ability generation not implemented yet")
     
     def to_string(self) -> str:
-        pass
+        raise NotImplementedError("to_string not implemented yet")
+
+    def try_find_ability(self, key: str) -> Ability | None:
+        abilities = self.get_abilities()
+        return abilities.get(key)
         
 class PermanentCard(Card):
     """!

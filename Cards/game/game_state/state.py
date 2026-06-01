@@ -2,7 +2,7 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 if TYPE_CHECKING:
     from .player import Player
-    from .card import Card
+    from .card import Card, ZoneType
     from .look_up import LookUpSystem, LookUpResult
     from ..abilities import Ability
     from ..abilities.ability import TriggeredAbility
@@ -48,45 +48,12 @@ class State:
         if cur_idx >= len(self.players): cur_idx = 0
         return self.players[cur_idx]
 
-    @property
-    def inactive_player(self) -> Player:
-        """!
-        @brief Convenience accessor for the opponent of the active player.
-        @return Inactive player.
-        """
-        return self.get_opponent(self.active_player)
-
-    def get_opponent(self, player: Player) -> Player:
-        """!
-        @brief Return the next player as this player's opponent.
-        @param player Player whose opponent should be found.
-        @return Opposing player.
-        """
-        return self.get_next_player(player)
-
     def switch_active_player(self) -> None:
         """!
         @brief Advance the active player to the next player in turn order.
         """
         self.active_player = self.get_next_player(self.active_player)
 
-    def get_card_zone(self, card: Card):
-        """!
-        @brief Find the zone that currently contains a card.
-        @param card Card to locate.
-        @return Zone containing the card, or None if it is not found.
-        """
-        from ..abilities import ZoneType
-
-        for player in self.players:
-            if card in player.hand:
-                return ZoneType.HAND
-            if card in player.battlefield.permanents:
-                return ZoneType.BATTLEFIELD
-            if card in player.graveyard:
-                return ZoneType.GRAVEYARD
-
-        return None
 
     def get_granted_abilities(self, card: Card) -> list[Ability]:
         """!
@@ -105,12 +72,10 @@ class State:
         from ..abilities import TriggeredAbility, TriggeredAbilityDefinition
 
         triggers: list[TriggeredAbility] = []
-        for card in self._iter_cards():
-            zone = self.get_card_zone(card)
-            if zone is None:
-                continue
+        for card in self.get_cards():
+            zone = card.get_zone()
 
-            for ability_def in card.card_def.abilities:
+            for ability_def in card.card_def.abilities.values():
                 if not isinstance(ability_def, TriggeredAbilityDefinition):
                     continue
                 if ability_def.is_usable_in_zone(zone):
@@ -118,15 +83,23 @@ class State:
 
         return triggers
 
-    def _iter_cards(self):
+    def get_cards(self, from_players: list[Player] | None = None, from_zones: list[ZoneType] | None = None) -> list[Card]:
         """!
         @brief Iterate through all cards in zones tracked by the state.
         @return Iterator over known cards.
         """
-        for player in self.players:
-            yield from player.hand
-            yield from player.battlefield.permanents
-            yield from player.graveyard
+        if from_players is None:
+            from_players = self.players
+        
+        if from_zones is None:
+            from_zones = [z for z in ZoneType]
+
+        cards: list[Card] = []
+        for player in from_players:
+            cards.extend(player.get_cards(from_zones))
+        
+        return cards
+
     
     def get_turn_phase(self) -> TurnPhase:
         pass

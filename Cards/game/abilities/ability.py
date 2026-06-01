@@ -13,6 +13,7 @@ if TYPE_CHECKING:
 
 from itertools import product
 from ..game_actions.game_action import AbilityAction, AbilityOperationGenerator
+from helper import *
 
 __all__ = [
     "ZoneType",
@@ -37,6 +38,7 @@ class ZoneType(Enum):
     GRAVEYARD = auto()
     EXILE = auto()
     DECK = auto()
+
 
 
 @dataclass(frozen=True)
@@ -284,6 +286,9 @@ class Ability:
                 res.append(self._generate_game_action(cp, ap))
 
         return res
+    
+    def is_activatable(self) -> bool:
+        return self.data.is_usable_in_zone(self.source.get_zone())
 
 
 class TriggerCondition(ABC):
@@ -342,6 +347,11 @@ class TriggeredAbility(Ability):
         if self.event is None:
             return False
         return self.data.condition.matches(state, self.event)
+    
+
+class AbilityCollection(KeyedCollection[AbilityDefinition]):
+    pass
+
 
     
 

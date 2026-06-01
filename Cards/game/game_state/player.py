@@ -9,7 +9,7 @@ if TYPE_CHECKING:
     from ..abilities.ability import GameAction, Ability
     from .card import Card, ZoneType
     from .state import State
-    from .battlefield import CardPack
+    from .battlefield import CardCollection
 import random
 
 __all__ = [
@@ -31,12 +31,12 @@ class Player:
         self._controller = controller
         self._health = STARTING_HEALTH
 
-        self._zone_map: dict[ZoneType, CardPack] = {
+        self._zone_map: dict[ZoneType, CardCollection] = {
             ZoneType.BATTLEFIELD: Battlefield(),
-            ZoneType.DECK: CardPack(deck),
-            ZoneType.EXILE: CardPack(),
-            ZoneType.GRAVEYARD: CardPack(),
-            ZoneType.HAND: CardPack()
+            ZoneType.DECK: CardCollection(deck),
+            ZoneType.EXILE: CardCollection(),
+            ZoneType.GRAVEYARD: CardCollection(),
+            ZoneType.HAND: CardCollection()
         }
     
     def try_find_card(self, card_key: str, zone: ZoneType | None = None) -> Card | None:
@@ -50,6 +50,16 @@ class Player:
             return self._zone_map.get(zone).get(card_key)
         
         return None
+    
+    def get_cards(self, from_zones: list[ZoneType] | None = None) -> list[Card]:
+        if from_zones is None:
+            from_zones = [z for z in ZoneType]
+        
+        cards: list[Card] = []
+        for zone in from_zones:
+            cards.extend(self._zone_map[zone].values())
+        
+        return cards
         
 
     

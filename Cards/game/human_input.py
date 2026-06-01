@@ -473,6 +473,9 @@ class SourceStep(BuildStep):
                 if not isinstance(obj, Ability):
                     print("  Key did not resolve to an activatable ability.")
                     return None
+                if not obj.is_activatable():
+                    print("   Selected Ability cannot be activated from this zone.")
+                    return None
                 return obj
                 
 
