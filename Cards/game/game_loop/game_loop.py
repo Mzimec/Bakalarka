@@ -1,37 +1,15 @@
 from __future__ import annotations
 
 from dataclasses import dataclass, field
-from enum import Enum, auto
 from abc import ABC, abstractmethod
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
     from ..game_state import State, Player
     from ..game_actions import GameAction, PassPriorityAction
-    from ..game_actions.action_processor import ActionProcessor
+    from ..game_actions.resolution.action_processor import ActionProcessor
 
-
-
-class TurnPhase(Enum):
-    UNTAP = auto()
-    UPKEEP = auto()
-    DRAW = auto()
-
-    PRECOMBAT_MAIN = auto()
-
-    BEGIN_COMBAT = auto()
-    DECLARE_ATTACKERS = auto()
-    AFTER_ATTACKERS = auto()
-    DECLARE_BLOCKERS = auto()
-    AFTER_BLOCKERS = auto()
-    FIRST_COMBAT_DAMAGE = auto()
-    SECOND_COMBAT_DAMAGE = auto()
-    END_COMBAT = auto()
-
-    POSTCOMBAT_MAIN = auto()
-
-    END_STEP = auto()
-    CLEANUP = auto()
+from ..enums import *
 
 
 @dataclass

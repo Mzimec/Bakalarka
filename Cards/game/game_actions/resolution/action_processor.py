@@ -3,9 +3,9 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
-    from .action_executor import ActionExecutor, ExecutionResult
-    from .game_action import ActionIntent, GameAction
-    from ..game_state import State
+    from ..data_structs.game_action import GameAction, ScheduledResolution
+    from ...game_state import State
+    from .resolution_engine import ResolutionEngine, ExecutionResult
 
 
 class ActionProcessor:
@@ -13,14 +13,14 @@ class ActionProcessor:
     @brief Routes action intents either to the stack or directly to execution.
     """
 
-    def __init__(self, executor: ActionExecutor) -> None:
+    def __init__(self, executor: ResolutionEngine) -> None:
         """!
         @brief Create a processor using the given action executor.
         @param executor Executor used for intents that do not use the stack.
         """
         self.executor = executor
 
-    def process(self, state: State, action: GameAction) -> list[ExecutionResult]:
+    def process(self, state: State, action: GameAction) -> tuple[ExecutionResult]:
         """!
         @brief Process all intents produced by a game action.
         @param state Current game state.
@@ -28,18 +28,18 @@ class ActionProcessor:
         @return Results for intents that were executed immediately.
         """
         results: list[ExecutionResult] = []
-        intents = action.get_intents()
-        for intent in intents:
-            if intent.context.uses_stack:
-                self._route(state, intent)
+        resolutions = action.get_intents()
+        for resolution in resolutions:
+            if resolution.context.uses_stack:
+                self._route(state, resolution)
             else:
-                results.append(self.executor.execute(state, intent))
-        return results
+                results.append(self.executor.resolve(state, resolution))
+        return tuple(results)
     
-    def _route(self, state: State, action: ActionIntent) -> None:
+    def _route(self, state: State, resolution: ScheduledResolution) -> None:
         """!
         @brief Put a stack-using action intent onto the game stack.
         @param state Current game state.
         @param action Action intent to push.
         """
-        state.stack.push(action)
+        state.stack.push(resolution.to_stack_item())

@@ -1,9 +1,10 @@
 from __future__ import annotations
 from typing import TYPE_CHECKING
 from dataclasses import dataclass
-if TYPE_CHECKING:
-    from .card import PermanentCard, Card
 
+
+from .card import Card
+from ...helper.runtime_object import KeyedCollection
 from helper import *
     
 __all__ = [

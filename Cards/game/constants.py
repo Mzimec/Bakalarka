@@ -4,4 +4,4 @@ __all__ = [
 ]
 
 STARTING_HEALTH: int = 20
-HAND_SIZE: int = 7    
+HAND_SIZE: int = 7  

@@ -1,12 +1,12 @@
 from __future__ import annotations
 
 from typing import TYPE_CHECKING
-from .game_action import PassPriorityAction
+from .data_structs.game_action import PassPriorityAction
 
 if TYPE_CHECKING:
-    from .game_action import ActionIntent
-    from .action_executor import ActionExecutor
-    from .action_processor import ActionProcessor
+    from .data_structs.game_action import ActionIntent
+    from .resolution.action_executor import ActionExecutor
+    from .resolution.action_processor import ActionProcessor
     from ..game_state import State, Player
 
 class GameStack:

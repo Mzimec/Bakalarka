@@ -3,9 +3,9 @@ from __future__ import annotations
 from abc import abstractmethod, ABC
 from typing import TYPE_CHECKING
 if TYPE_CHECKING:
-    from ..game_state import State
-    from ..game_actions.game_action import ResolutionContext
-    from ..game_actions.event_bus import GameEvent
+    from ...game_state import State
+    from .game_action import ResolutionContext
+    from ..resolution.event_bus import GameEvent
 
 
 class Operation(ABC):
@@ -43,7 +43,7 @@ class GameEventOperation(Operation):
         @param state Current game state.
         @return One game event describing the operation.
         """
-        from ..game_actions.event_bus import GameEvent
+        from ..resolution.event_bus import GameEvent
 
         return [
             GameEvent(

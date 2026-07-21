@@ -6,11 +6,13 @@ from abc import ABC, abstractmethod
 from ..constants import STARTING_HEALTH, HAND_SIZE
 from .battlefield import Battlefield
 if TYPE_CHECKING:
-    from ..abilities.ability import GameAction, Ability
-    from .card import Card, ZoneType
+    from ..game_actions.data_structs.ability import GameAction
+    from .card import Card
     from .state import State
     from .battlefield import CardCollection
+
 import random
+from ..enums import *
 
 __all__ = [
     "Player"
@@ -22,7 +24,7 @@ class Player:
     @brief Runtime player state and controller connection.
     """
 
-    def __init__(self, deck: list[Card], controller: DecisionMaker) -> None:
+    def __init__(self, deck: list[Card], controller: DecisionMaker, idx = int) -> None:
         """!
         @brief Create a player with a shuffled deck and empty zones.
         @param deck Cards that start in the player's deck.
@@ -30,6 +32,7 @@ class Player:
         """
         self._controller = controller
         self._health = STARTING_HEALTH
+        self._idx = idx
 
         self._zone_map: dict[ZoneType, CardCollection] = {
             ZoneType.BATTLEFIELD: Battlefield(),
@@ -38,6 +41,10 @@ class Player:
             ZoneType.GRAVEYARD: CardCollection(),
             ZoneType.HAND: CardCollection()
         }
+
+    @property
+    def idx(self) -> int:
+        return self._idx
     
     def try_find_card(self, card_key: str, zone: ZoneType | None = None) -> Card | None:
         if zone is None:

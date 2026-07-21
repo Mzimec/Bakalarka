@@ -9,7 +9,7 @@ if TYPE_CHECKING:
     from card import Card 
     from ..abilities import Ability
 
-from ..abilities import ZoneType
+from ..enums import *
 
 
 class StringParser(ABC):

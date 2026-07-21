@@ -1,6 +1,6 @@
-from .effect import Effect
-from .game_action import *
-from .event_bus import *
+from .data_structs.effect import Effect
+from .data_structs.game_action import *
+from .resolution.event_bus import *
 
 __all__ = [
     "Effect",

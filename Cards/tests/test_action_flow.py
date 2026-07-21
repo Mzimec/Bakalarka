@@ -6,9 +6,9 @@ from dummy_classes import DummyCard, DummyEffect, DummyState
 
 from game.abilities import EffectActionNode, SubAbilityDefinition
 from game.game_actions import AbilityAction, PassPriorityAction
-from game.game_actions.action_executor import ActionExecutor
-from game.game_actions.action_processor import ActionProcessor
-from game.game_actions.event_bus import EventBus
+from game.game_actions.resolution.action_executor import ActionExecutor
+from game.game_actions.resolution.action_processor import ActionProcessor
+from game.game_actions.resolution.event_bus import EventBus
 from game.game_actions.game_stack import GameStack
 from game.operations import OperationExecutor
 

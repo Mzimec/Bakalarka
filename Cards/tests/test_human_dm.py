@@ -304,7 +304,7 @@ class TestPrevStepAndReset:
 class TestRunPass:
 
     def test_run_returns_pass_priority_action(self):
-        from game.game_actions.game_action import PassPriorityAction
+        from game.game_actions.data_structs.game_action import PassPriorityAction
         player = StubPlayer()
         session = ActionBuilderSession(StubState(), player)
         with patch("builtins.input", return_value="pass"), \
@@ -321,7 +321,7 @@ class TestRunPass:
 class TestHumanDecisionMaker:
 
     def test_returns_action_from_session(self):
-        from game.game_actions.game_action import PassPriorityAction
+        from game.game_actions.data_structs.game_action import PassPriorityAction
         player = StubPlayer()
         dm = HumanDecisionMaker()
 
@@ -338,7 +338,7 @@ class TestHumanDecisionMaker:
         HumanDecisionMaker to zkusí znovu. Simulujeme: první vstup je prázdný
         (→ None), druhý vstup je „pass" (→ akce).
         """
-        from game.game_actions.game_action import PassPriorityAction
+        from game.game_actions.data_structs.game_action import PassPriorityAction
         player = StubPlayer()
         dm = HumanDecisionMaker()
 
@@ -358,7 +358,7 @@ class TestHumanDecisionMaker:
             def run(self_):
                 if self_._count == 1:
                     return None
-                from game.game_actions.game_action import PassPriorityAction
+                from game.game_actions.data_structs.game_action import PassPriorityAction
                 return PassPriorityAction(player=player)
 
         with patch("game.human_input.ActionBuilderSession", MockSession):

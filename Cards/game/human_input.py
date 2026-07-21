@@ -19,13 +19,13 @@ from typing import TYPE_CHECKING, Any
 if TYPE_CHECKING:
     from .game_loop.game_loop import TurnPhase
     from .target import TargetBinding, TargetSlot
-    from .abilities.ability import Ability, SubAbilityDefinition
+    from .game_actions.data_structs.ability import Ability, SubAbilityDefinition
     from .game_state import State, Player, Card
     from .game_actions import GameAction
-    from .game_actions.game_action import EffectSequence
+    from .game_actions.data_structs.game_action import EffectSequence
 
-from .game_actions.game_action import PassPriorityAction, DeclareAttackerAction, DeclareBlockerAction, RemoveAttackerAction, RemoveBlockerAction, AbilityAction, AbilityOperationGenerator
-
+from .game_actions.data_structs.game_action import PassPriorityAction, DeclareAttackerAction, DeclareBlockerAction, RemoveAttackerAction, RemoveBlockerAction, AbilityAction, AbilityOperationGenerator
+from .enums import *
 
 _COMMAND_ALIASES: dict[str, set[str]] = {
     "play":     {"play", "p"},
@@ -90,22 +90,6 @@ def _is_meta(raw: str) -> bool:
     return raw.lower() in (_META_BACK, _META_RESET, _META_OPTIONS)
 
 
-
-class StepType(int, Enum):
-    """!
-    @brief Ordered steps of a single action-building session.
-    """
-
-    COMMAND = auto()
-    SOURCE = auto()
-    COST_MODE = auto()
-    COST = auto()
-    MODE = auto()
-    TARGET = auto()
-    CONFIRM = auto()
-    DONE = auto()
-
-
 @dataclass
 class SessionData:
     """!
@@ -136,16 +120,6 @@ class SessionData:
 
     cost_bindings: TargetBinding = field(default_factory=dict)
     target_bindings: TargetBinding = field(default_factory=dict)
-
-
-
-class _MetaResult(Enum):
-    """!
-    @brief Outcome of a meta-command entered by the player.
-    """
-    BACK  = auto()
-    RESET = auto()
-
 
 
 class ActionFactory:

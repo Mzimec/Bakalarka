@@ -14,7 +14,7 @@ from game.abilities import (
     ZoneType,
 )
 from game.game_actions import AbilityAction, GameEvent
-from game.game_actions.event_bus import EventBus, TriggerResolver
+from game.game_actions.resolution.event_bus import EventBus, TriggerResolver
 
 
 class EventKeyCondition(TriggerCondition):

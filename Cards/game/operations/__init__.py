@@ -1,5 +1,5 @@
-from .operation_executor import OperationExecutor
-from .operation import *
+from ..game_actions.resolution.operation_executor import OperationExecutor
+from ..game_actions.data_structs.operation import *
 
 __all__ = [
     "OperationExecutor",

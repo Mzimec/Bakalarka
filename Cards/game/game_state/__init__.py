@@ -5,7 +5,7 @@ from .state import *
 
 __all__ = [
     "Battlefield",
-    "CardType", "CardSubtype", "ManaType", "CardDefinition", "CreatureCardDefinition", "Card", "PermanentCard", "CreatureCard",
+    "CardType", "CardSubtype", "ManaType", "CardDefinition", "Card",
     "Player",
     "State"
 ]
