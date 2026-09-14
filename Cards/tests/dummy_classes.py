@@ -15,9 +15,12 @@ class DummyCard:
 
 class DummyEffect(Effect):
     def __init__(self, key: str):
-        super().__init__(key, key)
+        super().__init__(key)
         self.generated = []
         self.executed = []
+
+    def get_info(self):
+        return self.key
 
     def to_operations(self, state, context):
         self.generated.append({
@@ -32,6 +35,9 @@ class DummyOperation(Operation):
         super().__init__(context)
         self.effect = effect
 
+    def reserve_cost(self, state, resources):
+        return None  # Test recorder; consumes no game resources.
+
     def execute(self, state):
         self.effect.executed.append({
             "state": state,
@@ -43,5 +49,5 @@ class StaticTargetSpec(TargetSpec):
     def __init__(self, candidates):
         self.candidates = candidates
 
-    def get_candidates(self, source, state):
-        return self.candidates
+    def generate_candidates(self, source, controller, state, reserved=None):
+        return (candidate for candidate in self.candidates if not reserved or candidate not in reserved)

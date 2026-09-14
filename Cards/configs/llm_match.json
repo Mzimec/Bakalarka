@@ -1,0 +1,25 @@
+{
+  "seed": 2026,
+  "players": [
+    {
+      "name": "LLM",
+      "deck": "blue",
+      "agent": {
+        "type": "llm",
+        "llm": {
+          "model": "REPLACE_WITH_INSTALLED_MODEL",
+          "endpoint": "http://localhost:11434/api/chat",
+          "timeout": 30,
+          "max_requests": 100
+        }
+      }
+    },
+    {
+      "name": "Heuristic",
+      "deck": "white",
+      "agent": {
+        "type": "modular"
+      }
+    }
+  ]
+}

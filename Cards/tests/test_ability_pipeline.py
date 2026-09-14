@@ -1,431 +1,145 @@
-#----------------------------------------------------------------
-# ActionNode tests
-#----------------------------------------------------------------
+"""Action graph, composition, target binding and lazy execution regressions."""
+import pytest
+from dummy_classes import DummyEffect, DummyCard, DummyState
+from helper_funcs import make_slot
+from game.game_actions.data_structs.action_node import (
+    EffectActionNode, AndActionNode, OrActionNode, ImmutableEffectToSlotMap)
+from game.game_actions.data_structs.ability import (
+    SubAbilityDefinition, SubAbilityComposer, AbilityDefinition, EffectBinding, EffectSequence)
+from game.game_actions.data_structs.game_action import AbilityExecutionPlan, ResolutionContext
+from game.game_actions.generation.command_action_builder import ability_actions
+from game.target.target_resolver import TargetBinding, TargetOption, RepetitionTargetSlotWrapper
+from game.game_state import Card, CardDefinition, Player, State
+from game.enums import CardType, ZoneType, TurnPhase
+from game.game_loop.minimal_game import ScriptedController
 
-from game.abilities import EffectActionNode, AndActionNode, OrActionNode
+
+def node(key, *slots):
+    return EffectActionNode(ImmutableEffectToSlotMap({key: frozenset(slots)}))
+
+
+def maps(graph):
+    return [option.effects for option in graph.generate_options()]
+
 
 def test_effect_action_node():
-    node = EffectActionNode(
-        effect_key="damage",
-        slot_keys={"target"}
-    )
-
-    result = node.get_used_effects()
-
-    assert result == [
-        {"damage": {"target"}}
-    ]
+    assert maps(node("damage", "target")) == [{"damage": frozenset({"target"})}]
 
 
 def test_and_action_node():
-    node = AndActionNode([
-        EffectActionNode("damage", {"a"}),
-        EffectActionNode("heal", {"b"}),
-    ])
+    assert maps(AndActionNode((node("damage", "a"), node("heal", "b")))) == [{"damage": {"a"}, "heal": {"b"}}]
 
-    result = node.get_used_effects()
-
-    assert result == [
-        {
-            "damage": {"a"},
-            "heal": {"b"},
-        }
-    ]
 
 def test_empty_and_node():
-    node = AndActionNode([])
+    assert maps(AndActionNode(())) == [{}]
 
-    result = node.get_used_effects()
-
-    assert result == [{}]
 
 def test_same_effect_merges_slots():
-    node = AndActionNode([
-        EffectActionNode("damage", {"a"}),
-        EffectActionNode("damage", {"b"}),
-    ])
-
-    result = node.get_used_effects()
-
-    assert result == [
-        {
-            "damage": {"a", "b"}
-        }
-    ]
+    assert maps(AndActionNode((node("damage", "a"), node("damage", "b")))) == [{"damage": {"a", "b"}}]
 
 
 def test_or_action_node():
-    node = OrActionNode([
-        EffectActionNode("damage", {"a"}),
-        EffectActionNode("heal", {"b"}),
-    ])
+    assert maps(OrActionNode((node("damage", "a"), node("heal", "b")))) == [{"damage": {"a"}}, {"heal": {"b"}}]
 
-    result = node.get_used_effects()
-
-    assert len(result) == 2
-
-    assert {"damage": {"a"}} in result
-    assert {"heal": {"b"}} in result
 
 def test_empty_or_node():
-    node = OrActionNode([])
+    assert maps(OrActionNode(())) == []
 
-    result = node.get_used_effects()
-
-    assert result == []
 
 def test_nested_and_or_action_node():
-    node = AndActionNode([
-        OrActionNode([
-            EffectActionNode("damage", {"enemy"}),
-            EffectActionNode("burn", {"enemy"}),
-        ]),
-        EffectActionNode("heal", {"ally"})
-    ])
-
-    result = node.get_used_effects()
-
-    assert len(result) == 2
-
-    assert {
-        "damage": {"enemy"},
-        "heal": {"ally"},
-    } in result
-
-    assert {
-        "burn": {"enemy"},
-        "heal": {"ally"},
-    } in result
-
-def test_multiple_target_combinations():
-    source = DummyCard("SOURCE")
-
-    a1 = DummyCard("A1")
-    a2 = DummyCard("A2")
-
-    b1 = DummyCard("B1")
-    b2 = DummyCard("B2")
-
-    node = AndActionNode([
-        EffectActionNode("damage", {"enemy"}),
-        EffectActionNode("heal", {"ally"}),
-    ])
-
-    sub = SubAbilityDefinition(
-        action_node=node,
-        slots={
-            "enemy": make_slot("enemy", [a1, a2]),
-            "ally": make_slot("ally", [b1, b2]),
-        },
-        effects={
-            "damage": DummyEffect("damage"),
-            "heal": DummyEffect("heal"),
-        }
-    )
-
-    actions = sub.generate_actions(source, DummyState())
-
-    assert len(actions) == 4
+    graph = AndActionNode((OrActionNode((node("damage", "enemy"), node("burn", "enemy"))), node("heal", "ally")))
+    assert maps(graph) == [{"damage": {"enemy"}, "heal": {"ally"}}, {"burn": {"enemy"}, "heal": {"ally"}}]
 
 
-#----------------------------------------------------------------
-# Target resolution tests
-#----------------------------------------------------------------
+def test_repeated_modes_are_deduplicated_and_source_is_unchanged():
+    graph = OrActionNode((node("damage", "a"), node("damage", "a")))
+    assert len(maps(graph)) == 1
+    assert maps(graph.create_with_sufix("_3")) == [{"damage": {"a_3"}}]
+    assert maps(graph) == [{"damage": {"a"}}]
 
-from dummy_classes import DummyCard
-from helper_funcs import make_slot
+
+def setup_ability(graph, effects, slots):
+    player = Player([], ScriptedController())
+    state = State([player])
+    state.turn.phase = TurnPhase.PRECOMBAT_MAIN
+    definition = AbilityDefinition(action_subdefs=(SubAbilityDefinition(action_node=graph,
+        effects=frozenset(effects), slots=frozenset(slots)),))
+    source = Card(CardDefinition("Source", types=frozenset({CardType.ARTIFACT}), abilities=frozenset({definition})), player)
+    player.add_card(source, ZoneType.BATTLEFIELD)
+    return state, definition.to_ability(source, player)
+
+
+@pytest.mark.parametrize("a_count,b_count", [(1, 1), (1, 3), (2, 2), (3, 4)])
+def test_multiple_target_combinations(a_count, b_count):
+    a = [DummyCard(f"a{i}") for i in range(a_count)]
+    b = [DummyCard(f"b{i}") for i in range(b_count)]
+    damage, heal = DummyEffect("damage"), DummyEffect("heal")
+    state, ability = setup_ability(AndActionNode((node("damage", "a"), node("heal", "b"))),
+                                   [damage, heal], [make_slot("a", a), make_slot("b", b)])
+    actions = list(ability_actions(ability, state))
+    assert len(actions) == a_count * b_count
+    assert not damage.generated and not heal.generated
+
 
 def test_target_slot_generates_bindings():
-    c1 = DummyCard("A")
-    c2 = DummyCard("B")
-
-    slot = make_slot("target", [c1, c2])
-
-    bindings = slot.get_bindings(None, None)
-
-    assert len(bindings) == 2
-
-    assert bindings[0]["target"] == {c1: 1}
-    assert bindings[1]["target"] == {c2: 1}
+    targets = [DummyCard("a"), DummyCard("b")]
+    slot = make_slot("target", targets)
+    options = list(slot.target_resolver.generate_target_options(None, None, DummyState()))
+    assert options == [{target: 1} for target in targets]
 
 
-def test_missing_slot_key():
-    node = EffectActionNode(
-        "damage",
-        {"missing"}
-    )
+@pytest.mark.parametrize("missing", ["slot", "effect"])
+def test_missing_graph_definitions_fail_explicitly(missing):
+    effect = DummyEffect("damage")
+    state, ability = setup_ability(node("damage", "target"), [] if missing == "effect" else [effect],
+                                  [] if missing == "slot" else [make_slot("target", [DummyCard("a")])])
+    with pytest.raises(KeyError):
+        list(ability_actions(ability, state))
 
-    sub = SubAbilityDefinition(
-        action_node=node,
-        slots={},
-        effects={
-            "damage": DummyEffect("damage")
-        }
-    )
-
-    try:
-        sub.generate_actions(
-            DummyCard("SOURCE"),
-            DummyState()
-        )
-        assert False
-    except KeyError:
-        pass
-
-
-#----------------------------------------------------------------
-# Bindings tests
-#----------------------------------------------------------------
-
-from game.abilities import EffectBinding
-from game.game_actions import AbilityOperationGenerator, ResolutionContext
 
 def test_operation_generator_keeps_binding():
-    target = DummyCard("A")
+    target = DummyCard("a")
+    binding = TargetBinding({"target": {"target_0": TargetOption({target: 1})}}).to_immutable()
+    plan = AbilityExecutionPlan(EffectSequence(()), binding)
+    assert plan.binding.get_targets_in_slot("target_0", "target") == {target}
 
-    binding = {
-        "target": {target: 1}
-    }
-
-    generator = AbilityOperationGenerator(tuple(), binding)
-
-    assert generator.binding["target"][target] == 1
-
-
-#----------------------------------------------------------------
-# Effect operation tests
-#----------------------------------------------------------------
 
 def test_effect_generates_and_executes_operation():
-    source = DummyCard("SOURCE")
-    target = DummyCard("TARGET")
-
-    effect = DummyEffect("damage")
-
-    generator = AbilityOperationGenerator(
-        effects=(EffectBinding("damage", effect, frozenset({"target"})),),
-        binding={"target": {target: 1}},
-    )
-
-    operations = generator.to_operations(DummyState(), ResolutionContext(source=source))
-
+    effect, target = DummyEffect("damage"), DummyCard("target")
+    state, ability = setup_ability(node("damage", "target"), [effect], [make_slot("target", [target])])
+    action = next(ability_actions(ability, state))
+    assert not effect.generated
+    operations = list(action.get_intents()[1].generate_operations(state))
     assert len(operations) == 1
-    assert operations[0].context.source == source
-    assert operations[0].context.targets == {"target": {target: 1}}
-
-    operations[0].execute(DummyState())
-
+    assert operations[0].context.targets.get_targets_in_slot("target_0", "target") == {target}
+    operations[0].execute(state)
     assert len(effect.executed) == 1
 
-def test_effect_scope_isolated():
-    source = DummyCard("SOURCE")
 
-    enemy = DummyCard("ENEMY")
-    ally = DummyCard("ALLY")
-
-    damage = DummyEffect("damage")
-
-    generator = AbilityOperationGenerator(
-        effects=(EffectBinding("damage", damage, frozenset({"enemy"})),),
-        binding={
-            "enemy": {enemy: 1},
-            "ally": {ally: 1},
-        },
-    )
-
-    generator.to_operations(DummyState(), ResolutionContext(source=source))
-
-    generated_targets = damage.generated[0]["context"].targets
-
-    assert "enemy" in generated_targets
-    assert "ally" not in generated_targets
-
-
-
-
-#----------------------------------------------------------------
-# Subability tests
-#----------------------------------------------------------------
-
-from dummy_classes import DummyEffect, DummyState
-from game.abilities import SubAbilityDefinition
-
-def test_sub_ability_generates_action_prototypes():
-    source = DummyCard("SOURCE")
-
-    target_a = DummyCard("A")
-    target_b = DummyCard("B")
-
-    damage_effect = DummyEffect("damage")
-
-    node = EffectActionNode(
-        effect_key="damage",
-        slot_keys={"target"}
-    )
-
-    slot = make_slot("target", [target_a, target_b])
-
-    sub = SubAbilityDefinition(
-        action_node=node,
-        slots={
-            "target": slot
-        },
-        effects={
-            "damage": damage_effect
-        }
-    )
-
-    actions = sub.generate_actions(source, DummyState())
-
-    assert len(actions) == 2
+def test_effect_scope_isolated_and_multiple_effects_execute():
+    damage, heal = DummyEffect("damage"), DummyEffect("heal")
+    enemy, ally = DummyCard("enemy"), DummyCard("ally")
+    state, ability = setup_ability(AndActionNode((node("damage", "enemy"), node("heal", "ally"))),
+        [damage, heal], [make_slot("enemy", [enemy]), make_slot("ally", [ally])])
+    action = next(ability_actions(ability, state))
+    for operation in action.get_intents()[1].generate_operations(state):
+        operation.execute(state)
+    assert set(damage.executed[0]["context"].targets) == {"enemy"}
+    assert set(heal.executed[0]["context"].targets) == {"ally"}
 
 
 def test_distinct_targets_validation():
-    source = DummyCard("SOURCE")
-
-    shared_target = DummyCard("X")
-
-    slot_a = make_slot("a", [shared_target], frozenset({"b"}))
-    slot_b = make_slot("b", [shared_target])
-
-    node = AndActionNode([
-        EffectActionNode("damage", {"a"}),
-        EffectActionNode("heal", {"b"}),
-    ])
-
-    damage = DummyEffect("damage")
-    heal = DummyEffect("heal")
-
-    sub = SubAbilityDefinition(
-        action_node=node,
-        slots={
-            "a": slot_a,
-            "b": slot_b,
-        },
-        effects={
-            "damage": damage,
-            "heal": heal,
-        }
-    )
-
-    actions = sub.generate_actions(source, DummyState())
-
-    # invalid because same target used in distinct slots
-    assert len(actions) == 0
+    target = DummyCard("shared")
+    state, ability = setup_ability(AndActionNode((node("damage", "a"), node("heal", "b"))),
+        [DummyEffect("damage"), DummyEffect("heal")],
+        [make_slot("a", [target], frozenset({"b"})), make_slot("b", [target], frozenset({"a"}))])
+    assert list(ability_actions(ability, state)) == []
 
 
-def test_missing_effect_key():
-    node = EffectActionNode(
-        "damage",
-        {"target"}
-    )
-
-    sub = SubAbilityDefinition(
-        action_node=node,
-        slots={
-            "target": make_slot(
-                "target",
-                [DummyCard("A")]
-            )
-        },
-        effects={}
-    )
-
-    try:
-        sub.generate_actions(
-            DummyCard("SOURCE"),
-            DummyState()
-        )
-        assert False
-    except KeyError:
-        pass
-
-
-#----------------------------------------------------------------
-# Execution tests
-#----------------------------------------------------------------
-
-def test_game_action_prototype_execute():
-    source = DummyCard("SOURCE")
-    target = DummyCard("TARGET")
-
-    damage = DummyEffect("damage")
-
-    node = EffectActionNode(
-        effect_key="damage",
-        slot_keys={"target"}
-    )
-
-    slot = make_slot("target", [target])
-
-    sub = SubAbilityDefinition(
-        action_node=node,
-        slots={
-            "target": slot
-        },
-        effects={
-            "damage": damage
-        }
-    )
-
-    actions = sub.generate_actions(source, DummyState())
-
-    assert len(actions) == 1
-    generator = actions[0]
-
-    operations = generator.to_operations(DummyState(), ResolutionContext(source=source))
-    assert len(operations) == 1
-    operations[0].execute(DummyState())
-
-    assert len(damage.executed) == 1
-
-    executed_targets = damage.executed[0]["context"].targets
-
-    assert "target" in executed_targets
-
-
-#----------------------------------------------------------------
-# Multi effect tests
-#----------------------------------------------------------------
-
-def test_multiple_effects_execute():
-    source = DummyCard("SOURCE")
-
-    t1 = DummyCard("A")
-    t2 = DummyCard("B")
-
-    damage = DummyEffect("damage")
-    heal = DummyEffect("heal")
-
-    node = AndActionNode([
-        EffectActionNode("damage", {"enemy"}),
-        EffectActionNode("heal", {"ally"}),
-    ])
-
-    enemy_slot = make_slot("enemy", [t1])
-    ally_slot = make_slot("ally", [t2])
-
-    sub = SubAbilityDefinition(
-        action_node=node,
-        slots={
-            "enemy": enemy_slot,
-            "ally": ally_slot,
-        },
-        effects={
-            "damage": damage,
-            "heal": heal,
-        }
-    )
-
-    actions = sub.generate_actions(source, DummyState())
-
-    assert len(actions) == 1
-
-    generator = actions[0]
-
-    operations = generator.to_operations(DummyState(), ResolutionContext(source=source))
-    for operation in operations:
-        operation.execute(DummyState())
-
-    assert len(damage.executed) == 1
-    assert len(heal.executed) == 1
+def test_repeated_subability_gets_distinct_runtime_slots():
+    effect = DummyEffect("damage")
+    slot = make_slot("target", [DummyCard("a")])
+    state, ability = setup_ability(node("damage", "target"), [effect], [slot])
+    subdef = ability.definition.action_subdefs[0]
+    compiled = SubAbilityComposer((subdef, subdef)).compile(ability, state)
+    assert set(compiled.slots) == {"target_0", "target_1"}

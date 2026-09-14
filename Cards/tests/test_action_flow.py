@@ -27,27 +27,18 @@ class FlowState(DummyState):
 
 
 def make_no_target_sub_ability(effect):
-    return SubAbilityDefinition(
-        action_node=EffectActionNode(effect.key, set()),
-        slots={},
-        effects={
-            effect.key: effect,
-        }
-    )
+    from game.game_actions.data_structs.ability import EffectSequence, EffectBinding
+    from game.game_actions.data_structs.game_action import AbilityExecutionPlan
+    from game.target.target_resolver import TargetBinding
+    return AbilityExecutionPlan(EffectSequence((EffectBinding(effect, frozenset()),)), TargetBinding().to_immutable())
 
 
 def make_action(source, effect, uses_stack):
     return AbilityAction(
         action_key="test_action",
         source=source,
-        cost_generator=make_no_target_sub_ability(DummyEffect("cost")).generate_actions(
-            source,
-            FlowState(),
-        )[0],
-        action_generator=make_no_target_sub_ability(effect).generate_actions(
-            source,
-            FlowState(),
-        )[0],
+        cost_generator=make_no_target_sub_ability(DummyEffect("cost")),
+        action_generator=make_no_target_sub_ability(effect),
         uses_stack=uses_stack,
     )
 
@@ -142,4 +133,4 @@ def test_action_executor_emits_generated_events():
     assert len(result.generated_events) == 1
     assert result.generated_events[0].key == "priority_passed"
     assert result.generated_events[0].controller == source.owner
-    assert event_bus.emitted_events == result.generated_events
+    assert tuple(event_bus.emitted_events) == result.generated_events

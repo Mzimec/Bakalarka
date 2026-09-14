@@ -1,0 +1,30 @@
+{
+  "seed": 42,
+  "starting_player": 0,
+  "max_turns": 100,
+  "max_decisions": 10000,
+  "players": [
+    {
+      "name": "You",
+      "deck": "blue",
+      "agent": {
+        "type": "human"
+      }
+    },
+    {
+      "name": "AI",
+      "deck": "white",
+      "agent": {
+        "type": "modular",
+        "candidates": {
+          "target_limit": 24,
+          "cost_limit": 4,
+          "keep_per_ability": 4
+        },
+        "combat": {
+          "max_assignments": 512
+        }
+      }
+    }
+  ]
+}

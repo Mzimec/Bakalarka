@@ -1,7 +1,10 @@
+"""Atomic operation contracts and basic player action operations."""
+
 from __future__ import annotations
 
 from abc import abstractmethod, ABC
 from typing import TYPE_CHECKING
+
 if TYPE_CHECKING:
     from ...game_state import State
     from .game_action import ResolutionContext
@@ -19,7 +22,7 @@ class Operation(ABC):
         @param context Context shared with the operation during execution.
         """
         self.context = context
-        
+
     @abstractmethod
     def execute(self, state: State) -> list[GameEvent]:
         """!
@@ -69,45 +72,9 @@ class ConcedeOperation(GameEventOperation):
 
     event_key = "player_conceded"
 
-
-class DeclareAttackerOperation(GameEventOperation):
-    """!
-    @brief Operation emitted when a creature is declared as an attacker.
-    """
-
-    event_key = "attacker_declared"
-
-
-class RemoveAttackerOperation(GameEventOperation):
-    """!
-    @brief Operation emitted when a creature is removed from attacking.
-    """
-
-    event_key = "attacker_removed"
-
-
-class DeclareBlockerOperation(GameEventOperation):
-    """!
-    @brief Operation emitted when a creature is declared as a blocker.
-    """
-
-    event_key = "blocker_declared"
-
-
-class RemoveBlockerOperation(GameEventOperation):
-    """!
-    @brief Operation emitted when a creature is removed from blocking.
-    """
-
-    event_key = "blocker_removed"
-
-
-class MuliganOperation(GameEventOperation):
-    """!
-    @brief Operation emitted when a player takes a mulligan.
-    """
-
-    event_key = "player_mulliganed"
-
-
-
+    def execute(self, state: State) -> list[GameEvent]:
+        """!
+        @brief Apply this executable object to the supplied game state.
+        """
+        self.context.controller.health = 0
+        return super().execute(state)

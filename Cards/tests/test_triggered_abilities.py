@@ -1,422 +1,340 @@
-#----------------------------------------------------------------
-# Test helpers
-#----------------------------------------------------------------
+"""Current trigger API: real zones, event-time capture, priority, and choices."""
+from dataclasses import replace
 
-from dummy_classes import DummyCard, DummyEffect, DummyState
-from helper_funcs import make_slot
+import pytest
 
-from game.abilities import (
-    EffectActionNode,
-    SubAbilityDefinition,
-    TriggerCondition,
-    TriggeredAbility,
-    TriggeredAbilityDefinition,
-    ZoneType,
-)
-from game.game_actions import AbilityAction, GameEvent
-from game.game_actions.resolution.event_bus import EventBus, TriggerResolver
-
-
-class EventKeyCondition(TriggerCondition):
-    def __init__(self, expected_key: str):
-        self.expected_key = expected_key
-        self.checked_events = []
-
-    def matches(self, state, event):
-        self.checked_events.append(event)
-        return event.key == self.expected_key
+from game.enums import CardType, TurnPhase, ZoneType
+from game.game_state import Card, CardDefinition, Player, State
+from game.game_loop.minimal_game import ScriptedController
+from game.game_actions.data_structs.ability import TriggerAbility, TriggerAbilityDefinition, SubAbilityDefinition
+from game.game_actions.data_structs.action_node import EffectActionNode, ImmutableEffectToSlotMap
+from game.game_actions.data_structs.effect import Effect
+from game.game_actions.data_structs.game_action import (
+    AbilityAction, FixedExecutionPlan, ResolutionContext, ScheduledResolution)
+from game.game_actions.data_structs.operation import Operation
+from game.game_actions.resolution.action_processor import ActionProcessor
+from game.game_actions.resolution.event_bus import EventBus, GameEvent, TriggerProcessor
+from game.game_actions.resolution.operation_executor import OperationExecutor
+from game.game_actions.resolution.resolution_engine import ResolutionEngine
+from game.game_actions.triggers.trigger_condition import (
+    DamageDealtCondition, DiesCondition, EntersBattlefieldCondition, EventKeyCondition,
+    LeavesBattlefieldCondition, SpellCastCondition, StepCondition, ZoneChangeCondition)
+from game.operations.card_operations import MoveCardOperation, TapCardOperation
 
 
-class DummyController:
-    def __init__(self):
-        self.trigger_choices = []
-
-    def choose_trigger_action(self, state, trigger, actions):
-        self.trigger_choices.append({
-            "state": state,
-            "trigger": trigger,
-            "actions": actions,
-        })
-        return actions[-1]
+def make_state(player_count=2, active=0, controllers=None):
+    controllers = controllers or [ScriptedController() for _ in range(player_count)]
+    return State([Player([], controller, name=f"Player {i}") for i, controller in enumerate(controllers)], active)
 
 
-class TriggerPlayer:
-    def __init__(self, name: str):
-        self.name = name
-        self.controller = DummyController()
+def add_card(state, key, triggers=(), *, player=None, zone=ZoneType.BATTLEFIELD, creature=True):
+    player = player or state.active_player
+    card = Card(CardDefinition(key, triggers=frozenset(triggers), power=2 if creature else None,
+                               toughness=2 if creature else None,
+                               types=frozenset({CardType.CREATURE if creature else CardType.ARTIFACT})), player, key=key)
+    player.add_card(card, zone)
+    return card
 
 
-class DummyStack:
-    def __init__(self):
-        self.items = []
-
-    def push(self, item):
-        self.items.append(item)
+def trigger_def(condition=None, key="trigger", **kwargs):
+    return TriggerAbilityDefinition(key=key, condition=condition or EventKeyCondition("test_event"), **kwargs)
 
 
-class TriggerState(DummyState):
-    def __init__(self, players=None, active_player=None, triggered_abilities=None):
-        self.players = list(players) if players is not None else []
-        self.active_player = active_player if active_player is not None else (
-            self.players[0] if self.players else None
-        )
-        self.stack = DummyStack()
-        self.triggered_abilities = list(triggered_abilities) if triggered_abilities else []
-        self.requested_events = []
-
-    def get_next_player(self, player):
-        idx = self.players.index(player)
-        return self.players[(idx + 1) % len(self.players)]
-
-    def get_triggered_abilities(self, event=None):
-        self.requested_events.append(event)
-        return [
-            TriggeredAbility(
-                source=ability.source,
-                data=ability.data,
-                event=event,
-            )
-            for ability in self.triggered_abilities
-        ]
+def context(card):
+    return ResolutionContext(source=card, controller=card.get_controller(card.owner.game_state))
 
 
-def make_triggered_ability(
-    source,
-    condition,
-    action=None,
-    key="trigger",
-    allowed_zones=None,
-    uses_stack=True,
-):
-    return TriggeredAbility(
-        source=source,
-        data=TriggeredAbilityDefinition(
-            key=key,
-            cost_action=None,
-            action=action,
-            condition=condition,
-            allowed_zones=allowed_zones or {ZoneType.BATTLEFIELD},
-            uses_stack=uses_stack,
-        )
-    )
-
-
-def make_effect_action(effect, slot_key="target", candidates=None):
-    candidates = [] if candidates is None else candidates
-    return SubAbilityDefinition(
-        action_node=EffectActionNode(effect.key, {slot_key}),
-        slots={
-            slot_key: make_slot(slot_key, candidates),
-        },
-        effects={
-            effect.key: effect,
-        }
-    )
-
-
-def make_no_target_action(effect):
-    return SubAbilityDefinition(
-        action_node=EffectActionNode(effect.key, set()),
-        slots={},
-        effects={
-            effect.key: effect,
-        }
-    )
-
-
-#----------------------------------------------------------------
-# Trigger condition tests
-#----------------------------------------------------------------
-
-def test_triggered_ability_matches_event():
-    event = GameEvent("unit_died")
-    condition = EventKeyCondition("unit_died")
-
-    ability = make_triggered_ability(
-        source=DummyCard("SOURCE"),
-        condition=condition,
-    )
-
-    triggered = TriggeredAbility(
-        source=ability.source,
-        data=ability.data,
-        event=event,
-    )
-
-    assert triggered.matches(DummyState())
-    assert condition.checked_events == [event]
-
-
-def test_triggered_ability_rejects_wrong_event():
-    condition = EventKeyCondition("unit_died")
-
-    ability = make_triggered_ability(
-        source=DummyCard("SOURCE"),
-        condition=condition,
-    )
-
-    triggered = TriggeredAbility(
-        source=ability.source,
-        data=ability.data,
-        event=GameEvent("turn_start"),
-    )
-
-    assert not triggered.matches(DummyState())
-
-
-def test_triggered_ability_without_event_does_not_match():
-    ability = make_triggered_ability(
-        source=DummyCard("SOURCE"),
-        condition=EventKeyCondition("unit_died"),
-    )
-
-    assert not ability.matches(DummyState())
-
-
-def test_triggered_ability_zone_check():
-    ability = make_triggered_ability(
-        source=DummyCard("SOURCE"),
-        condition=EventKeyCondition("unit_died"),
-        allowed_zones={ZoneType.GRAVEYARD},
-    )
-
-    assert ability.data.is_usable_in_zone(ZoneType.GRAVEYARD)
-    assert not ability.data.is_usable_in_zone(ZoneType.BATTLEFIELD)
-
-
-#----------------------------------------------------------------
-# EventBus tests
-#----------------------------------------------------------------
-
-def test_event_bus_collects_matching_triggered_abilities():
-    matching = make_triggered_ability(
-        source=DummyCard("MATCHING"),
-        condition=EventKeyCondition("unit_died"),
-    )
-    non_matching = make_triggered_ability(
-        source=DummyCard("NON_MATCHING"),
-        condition=EventKeyCondition("turn_start"),
-    )
-    event = GameEvent("unit_died")
-    state = TriggerState(triggered_abilities=[matching, non_matching])
+def engine():
     bus = EventBus()
-
-    triggers = bus.collect_triggered_abilities(state, [event])
-
-    assert len(triggers) == 1
-    assert triggers[0].source.id == "MATCHING"
-    assert triggers[0].event == event
-    assert state.requested_events == [event]
+    return ResolutionEngine(OperationExecutor(), bus), bus
 
 
-def test_event_bus_collects_from_multiple_events():
-    first = make_triggered_ability(
-        source=DummyCard("FIRST"),
-        condition=EventKeyCondition("first_event"),
-    )
-    second = make_triggered_ability(
-        source=DummyCard("SECOND"),
-        condition=EventKeyCondition("second_event"),
-    )
-    state = TriggerState(triggered_abilities=[first, second])
+def run_operations(state, operations, resolver=None):
+    resolver = resolver or engine()[0]
+    result = resolver.resolve(state, ScheduledResolution(FixedExecutionPlan(operations), ResolutionContext()))
+    assert result.success
+    return result
+
+
+class RecordOperation(Operation):
+    def __init__(self, context, output):
+        super().__init__(context)
+        self.output = output
+
+    def execute(self, state):
+        self.output.append(self.context.trigger_event)
+        return []
+
+
+class RecordEffect(Effect):
+    def __init__(self, output):
+        super().__init__("record")
+        self.output = output
+
+    def to_operations(self, state, context):
+        yield RecordOperation(context, self.output)
+
+    def get_info(self):
+        return "Record the triggering event."
+
+
+def recording_trigger(output, **kwargs):
+    effect = RecordEffect(output)
+    action = SubAbilityDefinition(
+        action_node=EffectActionNode(ImmutableEffectToSlotMap({effect.key: frozenset()})),
+        effects=frozenset({effect}))
+    return trigger_def(action_subdefs=(action,), **kwargs)
+
+
+def test_event_payload_is_an_immutable_copy():
+    payload = {"amount": 3}
+    event = GameEvent("damage_dealt", payload=payload)
+    payload["amount"] = 99
+    assert event.payload["amount"] == 3
+    with pytest.raises(TypeError):
+        event.payload["amount"] = 4
+
+
+@pytest.mark.parametrize("actual", ["test_event", "different", "card_tapped", "spell_cast"])
+def test_trigger_matches_only_its_event(actual):
+    state = make_state()
+    source = add_card(state, "source")
+    ability = TriggerAbility(trigger_def(), source, state.active_player, GameEvent(actual))
+    assert ability.matches(state) == (actual == "test_event")
+    assert not TriggerAbility(trigger_def(), source, state.active_player).matches(state)
+
+
+def test_bus_collects_multiple_events_and_keeps_compatibility_names():
+    state = make_state()
+    add_card(state, "source", [trigger_def()])
+    events = [GameEvent("test_event"), GameEvent("other"), GameEvent("test_event")]
     bus = EventBus()
-
-    triggers = bus.collect_triggered_abilities(
-        state,
-        [
-            GameEvent("first_event"),
-            GameEvent("second_event"),
-        ]
-    )
-
-    assert len(triggers) == 2
-    assert {trigger.source.id for trigger in triggers} == {"FIRST", "SECOND"}
+    for method in (bus.collect_trigger_abilities, bus.collect_triggered_abilities, bus.collect_trigger_actions):
+        assert len(method(state, events)) == 2
 
 
-def test_event_bus_emit_stores_event():
-    event = GameEvent("unit_died", payload={"unit": "A"})
-    bus = EventBus()
-
-    bus.emit(event, DummyState())
-
-    assert bus.emitted_events == [event]
-
-
-#----------------------------------------------------------------
-# Triggered action generation tests
-#----------------------------------------------------------------
-
-def test_triggered_ability_generates_actions():
-    source = DummyCard("SOURCE")
-    target_a = DummyCard("A")
-    target_b = DummyCard("B")
-    effect = DummyEffect("damage")
-
-    ability = make_triggered_ability(
-        source=source,
-        condition=EventKeyCondition("unit_died"),
-        action=make_effect_action(effect, candidates=[target_a, target_b]),
-    )
-
-    actions = ability.generate_actions(DummyState())
-
-    assert len(actions) == 2
-    assert all(isinstance(action, AbilityAction) for action in actions)
-    assert all(action.source == source for action in actions)
+@pytest.mark.parametrize("origin", list(ZoneType))
+@pytest.mark.parametrize("destination", list(ZoneType))
+def test_zone_change_predicate_matrix(origin, destination):
+    event = GameEvent("card_moved", payload={"from": origin.name, "to": destination.name})
+    changed = origin != destination
+    assert ZoneChangeCondition().matches(None, event) == changed
+    assert DiesCondition().matches(None, event) == (origin == ZoneType.BATTLEFIELD
+                                                     and destination == ZoneType.GRAVEYARD and changed)
+    assert LeavesBattlefieldCondition().matches(None, event) == (origin == ZoneType.BATTLEFIELD and changed)
+    assert EntersBattlefieldCondition().matches(None, event) == (destination == ZoneType.BATTLEFIELD and changed)
 
 
-def test_triggered_ability_action_intent_generates_operations():
-    source = DummyCard("SOURCE")
-    target = DummyCard("TARGET")
-    effect = DummyEffect("damage")
-
-    ability = make_triggered_ability(
-        source=source,
-        condition=EventKeyCondition("unit_died"),
-        action=make_effect_action(effect, candidates=[target]),
-    )
-
-    action = ability.generate_actions(DummyState())[0]
-    cost_intent, action_intent = action.get_intents()
-
-    assert cost_intent.generate_operations(DummyState()) == tuple()
-
-    operations = action_intent.generate_operations(DummyState())
-
-    assert len(operations) == 1
-    assert operations[0].context.source == source
-    assert operations[0].context.targets == {"target": {target: 1}}
-
-    operations[0].execute(DummyState())
-
-    assert len(effect.executed) == 1
+def test_own_enters_battlefield_trigger_uses_new_zone():
+    state = make_state()
+    source = add_card(state, "source", [trigger_def(EntersBattlefieldCondition(source_only=True))], zone=ZoneType.HAND)
+    run_operations(state, [MoveCardOperation(context(source), source, ZoneType.BATTLEFIELD)])
+    assert len(state.stack.items) == 1
+    assert state.stack.items[0].action_resolution.context.source is source
 
 
-def test_triggered_ability_preserves_uses_stack_flag():
-    source = DummyCard("SOURCE")
-    effect = DummyEffect("damage")
-
-    ability = make_triggered_ability(
-        source=source,
-        condition=EventKeyCondition("unit_died"),
-        action=make_no_target_action(effect),
-        uses_stack=False,
-    )
-
-    action = ability.generate_actions(DummyState())[0]
-    cost_intent, action_intent = action.get_intents()
-
-    assert not cost_intent.context.uses_stack
-    assert not action_intent.context.uses_stack
+@pytest.mark.parametrize("destination", [ZoneType.GRAVEYARD, ZoneType.HAND, ZoneType.EXILE])
+def test_own_leave_trigger_survives_source_changing_zone(destination):
+    state = make_state()
+    source = add_card(state, "source", [trigger_def(LeavesBattlefieldCondition(source_only=True))])
+    result = run_operations(state, [MoveCardOperation(context(source), source, destination)])
+    assert len(state.stack.items) == 1
+    trigger = result.generated_events[0].triggered_abilities[0]
+    assert trigger.source_last_known.zone == ZoneType.BATTLEFIELD
+    assert trigger.source_last_known.controller is state.active_player
+    assert trigger.event.payload["last_known"].types == frozenset({CardType.CREATURE})
 
 
-#----------------------------------------------------------------
-# TriggerResolver tests
-#----------------------------------------------------------------
+def test_dies_requires_creature_and_battlefield_to_graveyard():
+    state = make_state()
+    add_card(state, "watcher", [trigger_def(DiesCondition())])
+    artifact = add_card(state, "artifact", creature=False)
+    creature = add_card(state, "creature")
+    run_operations(state, [MoveCardOperation(context(artifact), artifact, ZoneType.GRAVEYARD),
+                           MoveCardOperation(context(creature), creature, ZoneType.EXILE)])
+    assert state.stack.is_empty()
+    state.active_player.move_card(creature, ZoneType.BATTLEFIELD)
+    run_operations(state, [MoveCardOperation(context(creature), creature, ZoneType.GRAVEYARD)])
+    assert len(state.stack.items) == 1
 
-def test_trigger_resolver_pushes_trigger_intents_to_stack():
-    player = TriggerPlayer("P1")
-    source = DummyCard("SOURCE", owner=player)
-    effect = DummyEffect("damage")
-    trigger = make_triggered_ability(
-        source=source,
-        condition=EventKeyCondition("unit_died"),
-        action=make_no_target_action(effect),
-    )
-    state = TriggerState(players=[player], active_player=player)
-    resolver = TriggerResolver()
 
-    resolver.resolve(state, [trigger])
+def test_from_anywhere_graveyard_trigger_uses_after_event_eligibility():
+    state = make_state()
+    ability = trigger_def(ZoneChangeCondition(destination=ZoneType.GRAVEYARD, source_only=True),
+                          allowed_zones=frozenset({ZoneType.GRAVEYARD}))
+    source = add_card(state, "source", [ability])
+    run_operations(state, [MoveCardOperation(context(source), source, ZoneType.GRAVEYARD)])
+    assert len(state.stack.items) == 1
 
+
+def test_event_time_capture_does_not_lose_earlier_trigger_when_source_leaves_later():
+    state = make_state()
+    source = add_card(state, "source", [trigger_def(EventKeyCondition("card_tapped", source_only=True))])
+    run_operations(state, [TapCardOperation(context(source), source),
+                           MoveCardOperation(context(source), source, ZoneType.GRAVEYARD)])
+    assert len(state.stack.items) == 1
+    assert state.stack.items[0].action_resolution.context.trigger_event.key == "card_tapped"
+
+
+def test_new_watcher_cannot_retroactively_see_earlier_event():
+    state = make_state()
+    source = add_card(state, "source")
+    watcher = add_card(state, "watcher", [trigger_def(EventKeyCondition("card_tapped"))], zone=ZoneType.HAND)
+    run_operations(state, [TapCardOperation(context(source), source),
+                           MoveCardOperation(context(watcher), watcher, ZoneType.BATTLEFIELD)])
+    assert state.stack.is_empty()
+
+
+def test_simultaneous_deaths_allow_watcher_to_see_every_dying_creature():
+    state = make_state()
+    watcher = add_card(state, "watcher", [trigger_def(DiesCondition())])
+    other = add_card(state, "other")
+    watcher.state.damage_marked = other.state.damage_marked = 2
+    resolver, _ = engine()
+    resolver.settle(state)
+    assert watcher.get_zone() == other.get_zone() == ZoneType.GRAVEYARD
     assert len(state.stack.items) == 2
-    assert state.stack.items[0].context.source == source
-    assert state.stack.items[1].context.source == source
+    assert {item.action_resolution.context.trigger_event.source for item in state.stack.items} == {watcher, other}
 
 
-def test_trigger_resolver_orders_triggers_apnap():
-    active_player = TriggerPlayer("ACTIVE")
-    inactive_player = TriggerPlayer("INACTIVE")
-
-    active_source = DummyCard("ACTIVE_SOURCE", owner=active_player)
-    inactive_source = DummyCard("INACTIVE_SOURCE", owner=inactive_player)
-
-    active_trigger = make_triggered_ability(
-        source=active_source,
-        condition=EventKeyCondition("unit_died"),
-        action=make_no_target_action(DummyEffect("active_effect")),
-    )
-    inactive_trigger = make_triggered_ability(
-        source=inactive_source,
-        condition=EventKeyCondition("unit_died"),
-        action=make_no_target_action(DummyEffect("inactive_effect")),
-    )
-
-    state = TriggerState(
-        players=[active_player, inactive_player],
-        active_player=active_player,
-    )
-    resolver = TriggerResolver()
-
-    resolver.resolve(state, [inactive_trigger, active_trigger])
-
-    pushed_sources = [intent.context.source for intent in state.stack.items]
-
-    assert pushed_sources == [
-        active_source,
-        active_source,
-        inactive_source,
-        inactive_source,
-    ]
+def test_another_creature_dies_excludes_watcher_itself_in_batch():
+    state = make_state()
+    watcher = add_card(state, "watcher", [trigger_def(DiesCondition(another=True))])
+    other = add_card(state, "other")
+    operations = [MoveCardOperation(context(card), card, ZoneType.GRAVEYARD) for card in (watcher, other)]
+    events = OperationExecutor().execute_batch(state, operations)
+    TriggerProcessor().process(state, EventBus().collect_trigger_abilities(state, events))
+    assert len(state.stack.items) == 1
+    assert state.stack.items[0].action_resolution.context.trigger_event.source is other
 
 
-def test_trigger_resolver_uses_controller_choice_for_multiple_actions():
-    player = TriggerPlayer("P1")
-    source = DummyCard("SOURCE", owner=player)
-    first_target = DummyCard("FIRST")
-    second_target = DummyCard("SECOND")
-    effect = DummyEffect("damage")
-
-    trigger = make_triggered_ability(
-        source=source,
-        condition=EventKeyCondition("unit_died"),
-        action=make_effect_action(effect, candidates=[first_target, second_target]),
-    )
-    state = TriggerState(players=[player], active_player=player)
-    resolver = TriggerResolver()
-
-    resolver.resolve(state, [trigger])
-
-    assert len(player.controller.trigger_choices) == 1
-    assert len(player.controller.trigger_choices[0]["actions"]) == 2
-
-    action_intent = state.stack.items[1]
-    operations = action_intent.generate_operations(state)
-
-    assert operations[0].context.targets == {"target": {second_target: 1}}
+def test_stolen_source_trigger_keeps_controller_from_before_death():
+    state = make_state()
+    source = add_card(state, "source", [trigger_def(DiesCondition(source_only=True))])
+    source.set_controller(state.players[1])
+    run_operations(state, [MoveCardOperation(context(source), source, ZoneType.GRAVEYARD)])
+    assert state.stack.items[0].action_resolution.context.controller is state.players[1]
 
 
-def test_trigger_resolver_raises_when_trigger_generates_no_actions():
-    player = TriggerPlayer("P1")
-    source = DummyCard("SOURCE", owner=player)
-    empty_action = SubAbilityDefinition(
-        action_node=EffectActionNode("damage", {"target"}),
-        slots={
-            "target": make_slot("target", []),
-        },
-        effects={
-            "damage": DummyEffect("damage"),
-        }
-    )
-    trigger = make_triggered_ability(
-        source=source,
-        condition=EventKeyCondition("unit_died"),
-        action=empty_action,
-    )
-    state = TriggerState(players=[player], active_player=player)
-    resolver = TriggerResolver()
+def test_controlled_creature_dies_uses_previous_controller():
+    state = make_state()
+    add_card(state, "watcher", [trigger_def(DiesCondition(controlled_only=True))])
+    stolen = add_card(state, "stolen", player=state.players[1])
+    stolen.set_controller(state.active_player)
+    run_operations(state, [MoveCardOperation(context(stolen), stolen, ZoneType.GRAVEYARD)])
+    assert len(state.stack.items) == 1
 
-    try:
-        resolver.resolve(state, [trigger])
-        assert False
-    except RuntimeError:
-        pass
+
+@pytest.mark.parametrize("active", [0, 1, 2])
+def test_apnap_order_rotates_to_active_player(active):
+    state = make_state(3, active)
+    for index, player in enumerate(state.players):
+        add_card(state, f"source{index}", [trigger_def(key=f"trigger{index}")], player=player)
+    triggers = EventBus().collect_trigger_abilities(state, [GameEvent("test_event")])
+    TriggerProcessor().process(state, list(reversed(triggers)))
+    assert [item.key for item in state.stack.items] == [f"trigger{(active + i) % 3}" for i in range(3)]
+    assert all(not item.action_resolution.context.is_cost for item in state.stack.items)
+
+
+def test_controller_selects_order_and_no_fake_cost_entries_are_pushed():
+    class ReverseController(ScriptedController):
+        def order_triggers(self, state, triggers):
+            return reversed(triggers)
+    state = make_state(controllers=[ReverseController(), ScriptedController()])
+    source = add_card(state, "source")
+    triggers = [TriggerAbility(trigger_def(key=key), source, state.active_player, GameEvent("test_event"))
+                for key in ("one", "two", "three")]
+    TriggerProcessor().process(state, triggers)
+    assert [item.key for item in state.stack.items] == ["three", "two", "one"]
+
+
+def test_invalid_controller_order_is_rejected():
+    class BadController(ScriptedController):
+        def order_triggers(self, state, triggers):
+            return []
+    state = make_state(controllers=[BadController(), ScriptedController()])
+    source = add_card(state, "source", [trigger_def()])
+    with pytest.raises(ValueError, match="every pending trigger"):
+        TriggerProcessor().process(state, state.get_triggered_abilities(GameEvent("test_event")))
+
+
+def test_trigger_event_reaches_resolving_effect_after_source_leaves():
+    output = []
+    state = make_state()
+    source = add_card(state, "source", [recording_trigger(output, condition=DiesCondition(source_only=True))])
+    resolver, _ = engine()
+    run_operations(state, [MoveCardOperation(context(source), source, ZoneType.GRAVEYARD)], resolver)
+    resolver.resolve(state, state.stack.pop())
+    assert len(output) == 1 and output[0].source is source
+
+
+@pytest.mark.parametrize("initial,at_resolution,expected", [(False, False, 0), (False, True, 0),
+                                                            (True, False, 0), (True, True, 1)])
+def test_intervening_if_checked_at_trigger_time_and_resolution(initial, at_resolution, expected):
+    output = []
+    state = make_state()
+    state.trigger_enabled = initial
+    definition = recording_trigger(output, condition=EventKeyCondition("card_tapped"),
+                                    intervening_if=lambda state, event: state.trigger_enabled)
+    source = add_card(state, "source", [definition])
+    resolver, _ = engine()
+    run_operations(state, [TapCardOperation(context(source), source)], resolver)
+    assert len(state.stack.items) == int(initial)
+    state.trigger_enabled = at_resolution
+    if state.stack.items:
+        assert resolver.resolve(state, state.stack.pop()).success
+    assert len(output) == expected
+
+
+def test_cost_triggers_wait_until_ability_is_on_stack():
+    state = make_state()
+    source = add_card(state, "source", [trigger_def(DiesCondition(source_only=True))])
+    action = AbilityAction("activated", source, FixedExecutionPlan([]),
+                           FixedExecutionPlan([MoveCardOperation(context(source), source, ZoneType.GRAVEYARD)]))
+    resolver, _ = engine()
+    assert all(result.success for result in ActionProcessor(resolver).process(state, action))
+    assert [item.key for item in state.stack.items] == ["activated", "trigger"]
+
+
+def test_sba_and_trigger_dispatch_do_not_interrupt_cost_and_immediate_effect():
+    observed = []
+    class HealingOperation(Operation):
+        def execute(self, state):
+            observed.append(self.context.source.get_zone())
+            self.context.source.state.damage_marked = 0
+            return []
+    state = make_state()
+    source = add_card(state, "source")
+    source.state.damage_marked = 2
+    action = AbilityAction("immediate", source, FixedExecutionPlan([HealingOperation(context(source))]),
+                           FixedExecutionPlan([]), uses_stack=False)
+    resolver, _ = engine()
+    ActionProcessor(resolver).process(state, action)
+    assert observed == [ZoneType.BATTLEFIELD]
+    assert source.get_zone() == ZoneType.BATTLEFIELD
+
+
+def test_deferred_turn_event_is_flushed_once_at_priority():
+    state = make_state()
+    add_card(state, "source", [trigger_def(StepCondition(TurnPhase.UPKEEP))])
+    event = GameEvent("phase_started", controller=state.active_player, payload={"phase": "UPKEEP"})
+    state._deferred_events.append(event)
+    resolver, bus = engine()
+    resolver.settle(state)
+    resolver.settle(state)
+    assert len(state.stack.items) == 1
+    assert [emitted.key for emitted in bus.emitted_events] == ["phase_started"]
+
+
+@pytest.mark.parametrize("amount", [0, 1, 3])
+@pytest.mark.parametrize("combat", [False, True])
+def test_combat_damage_condition_excludes_zero_and_noncombat(amount, combat):
+    event = GameEvent("damage_dealt", payload={"amount": amount, "combat": combat})
+    assert DamageDealtCondition(combat_only=True).matches(None, event) == (amount > 0 and combat)
+
+
+def test_spell_cast_condition_does_not_trigger_on_land_or_zone_change():
+    condition = SpellCastCondition()
+    assert condition.matches(None, GameEvent("spell_cast"))
+    assert not condition.matches(None, GameEvent("land_played"))
+    assert not condition.matches(None, GameEvent("card_moved", payload={"to": "STACK"}))

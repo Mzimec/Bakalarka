@@ -1,3 +1,5 @@
+"""Named zones, phases, card characteristics and rule categories."""
+
 from __future__ import annotations
 from enum import Enum, auto
 
@@ -16,8 +18,9 @@ __all__ = [
     "ResourceType",
     "ResolutionSpeed",
     "CounterType",
-    "RuntimeObjectType"
+    "RuntimeObjectType",
 ]
+
 
 class ZoneType(Enum):
     """!
@@ -29,6 +32,7 @@ class ZoneType(Enum):
     GRAVEYARD = auto()
     EXILE = auto()
     DECK = auto()
+    STACK = auto()
 
 
 class SAVariableType(Enum):
@@ -70,9 +74,33 @@ class CardType(Enum):
     LAND = auto()
     INSTANT = auto()
     SORCERY = auto()
+    PLANESWALKER = auto()
 
 
 class CardSubtype(Enum):
+    ARCHER = auto()
+    BIRD = auto()
+    CENTAUR = auto()
+    DEMON = auto()
+    DJINN = auto()
+    DRAKE = auto()
+    DRUID = auto()
+    HORSE = auto()
+    MERFOLK = auto()
+    NIGHTMARE = auto()
+    OCTOPUS = auto()
+    ORC = auto()
+    PLANT = auto()
+    RAT = auto()
+    SCOUT = auto()
+    SERPENT = auto()
+    SHAMAN = auto()
+    SKELETON = auto()
+    SPHINX = auto()
+    SPIDER = auto()
+    UNICORN = auto()
+    VAMPIRE = auto()
+
     """!
     @brief Creature or card subtypes supported by the game.
     """
@@ -81,6 +109,26 @@ class CardSubtype(Enum):
     ELF = auto()
     WIZARD = auto()
     SOLDIER = auto()
+    BEAST = auto()
+    CAT = auto()
+    ANGEL = auto()
+    DINOSAUR = auto()
+    SPIRIT = auto()
+    CLERIC = auto()
+    GOBLIN = auto()
+    WARRIOR = auto()
+    ROGUE = auto()
+    PHOENIX = auto()
+    ELEMENTAL = auto()
+    DRAGON = auto()
+    WALL = auto()
+    PLAINS = auto()
+    ISLAND = auto()
+    SWAMP = auto()
+    MOUNTAIN = auto()
+    FOREST = auto()
+    AURA = auto()
+    EQUIPMENT = auto()
 
 
 class ManaType(Enum):
@@ -97,18 +145,32 @@ class ManaType(Enum):
 
 
 class Layer(Enum):
-    SET = auto()
-    ADD = auto()
-    MULTIPLY = auto()
+    COPY = 1
+    CONTROL = 2
+    TEXT = 3
+    TYPE = 4
+    COLOR = 5
+    ABILITY = 6
+    PT_CDA = 71
+    PT_SET = 72
+    PT_MODIFY = 73
+    PT_SWITCH = 74
+    RULES = 80
+    # Compatibility names; arithmetic is not a separate MTG layer.
+    SET = PT_SET
+    ADD = PT_MODIFY
+    MULTIPLY = PT_MODIFY
 
 
 class ModifierType(Enum):
+    SWITCH = auto()
     SET = auto()
     ADD = auto()
     MULTIPLY = auto()
     REMOVE = auto()
 
-'''
+
+"""
 class StatType(Enum):
     MANA_COST = auto()
     TYPES = auto()
@@ -119,7 +181,8 @@ class StatType(Enum):
     POWER = auto()
     TOUGHNESS = auto()
     ATTACH_MODS = auto()
-'''
+"""
+
 
 class TargetType(Enum):
     PLAYER = auto()
@@ -146,7 +209,8 @@ class _MetaResult(Enum):
     """!
     @brief Outcome of a meta-command entered by the player.
     """
-    BACK  = auto()
+
+    BACK = auto()
     RESET = auto()
 
 
@@ -163,8 +227,10 @@ class ResolutionSpeed(Enum):
 
 class CounterType(Enum):
     PLUS_ONE = auto()
+    MINUS_ONE = auto()
+    LOYALTY = auto()
+
 
 class RuntimeObjectType(Enum):
     CARD = auto()
     PLAYER = auto()
-

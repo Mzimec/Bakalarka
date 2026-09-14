@@ -1,27 +1,25 @@
+"""Player actions, scheduled resolutions and operation-generating plans."""
+
 from __future__ import annotations
 
 from dataclasses import dataclass, replace, field
 from abc import abstractmethod, ABC
 from typing import TYPE_CHECKING
 from collections.abc import Generator
-from ...operations import (
-    ConcedeOperation,
-    DeclareAttackerOperation,
-    DeclareBlockerOperation,
-    MuliganOperation,
-    PassPriorityOperation,
-    RemoveAttackerOperation,
-    RemoveBlockerOperation,
-)
+from helper.runtime_object import RuntimeObject
+from ...operations import ConcedeOperation, PassPriorityOperation
 
 if TYPE_CHECKING:
     from ...game_state import Card, State, Player
     from ...operations import Operation
     from ...target import TargetBinding
-    from ...target.target_resolver import TargetBinding, FrozenTargetBinding
+    from ...target.target_resolver import (
+        TargetBinding,
+        ImmutableTargetBinding,
+        RepetitionTargetSlotWrapper,
+    )
     from .ability import EffectSequence, AbilityDefinition, SubAbilityDefinition
     from ...ai.mana_solver import ManaSolverResult
-    from ....helper.runtime_object import RuntimeObject
 
 from ...abilities.parameter_context import ParameterContext
 
@@ -35,11 +33,6 @@ __all__ = [
     "AbilityAction",
     "PassPriorityAction",
     "ConcedeAction",
-    "DeclareAttackerAction",
-    "RemoveAttackerAction",
-    "DeclareBlockerAction",
-    "RemoveBlockerAction",
-    "MuliganAction",
 ]
 
 
@@ -49,15 +42,58 @@ class ResolutionContext:
     @brief Information shared with operations while a game action is resolving.
     """
 
-    controller: Player
-    source: Card
-    ability: AbilityDefinition
-    subability: SubAbilityDefinition
-    action_key: str
+    controller: Player | None = None
+    source: Card | None = None
+    ability: AbilityDefinition | None = None
+    subability: SubAbilityDefinition | None = None
+    action_key: str = ""
     uses_stack: bool = False
-    targets: FrozenTargetBinding | None = None
+    targets: ImmutableTargetBinding | None = None
     effects: EffectSequence | None = None
     param_ctx: ParameterContext = field(default_factory=ParameterContext)
+    is_cost: bool = False
+    trigger_event: object | None = None
+    trigger_registration: object | None = None
+    # Immutable event-time metadata travels with the stack item, independently
+    # of the mutable card object and its current zone incarnation.
+    source_revision: int | None = None
+    source_last_known: object | None = None
+
+    def source_information(self, state):
+        """!
+        @brief Read current source characteristics or the departed incarnation's LKI.
+        @param state Current game state at resolution time.
+        @return Source snapshot, or None for a source-less effect.
+        """
+        from ..resolution.event_bus import capture_single_card
+
+        if self.source is None:
+            return None
+        revision = self.source_revision
+        if revision is not None and self.ability is not None and self.ability.is_spell and not self.is_cost:
+            # Casting follows the hand-to-stack move. A resolving spell uses
+            # its stack incarnation, including changes made while on the stack.
+            revision += 1
+        if revision is None or self.source.zone_revision == revision:
+            return capture_single_card(state, self.source)
+        return getattr(self.source, "_incarnation_history", {}).get(
+            revision, self.source_last_known
+        )
+
+    def matches_source_incarnation(self, zone_changes: int = 0) -> bool:
+        """!
+        @brief Check that a source-relative effect still refers to its object.
+        @param zone_changes Explicit zone transitions followed by this effect.
+        @return Whether the live card has the expected incarnation revision.
+
+        Most effects use zero. A dies ability returning its source may follow
+        the one transition that triggered it, but not later exile/return moves.
+        Hand-built contexts without a captured revision retain their old API.
+        """
+        return self.source is not None and (
+            self.source_revision is None
+            or self.source.zone_revision == self.source_revision + zone_changes
+        )
 
 
 class ExecutionPlan(ABC):
@@ -66,7 +102,9 @@ class ExecutionPlan(ABC):
     """
 
     @abstractmethod
-    def to_operations(self, state: State, context: ResolutionContext) -> Generator[Operation, None, None]:
+    def to_operations(
+        self, state: State, context: ResolutionContext
+    ) -> Generator[Operation, None, None]:
         """!
         @brief Create operations for the current state and resolution context.
         @param state Current game state.
@@ -84,7 +122,9 @@ class FixedExecutionPlan(ExecutionPlan):
 
     operations: list[Operation]
 
-    def to_operations(self, state: State, context: ResolutionContext) -> Generator[Operation, None, None]:
+    def to_operations(
+        self, state: State, context: ResolutionContext
+    ) -> Generator[Operation, None, None]:
         """!
         @brief Return the fixed operation list as an immutable tuple.
         @param state Current game state.
@@ -93,7 +133,7 @@ class FixedExecutionPlan(ExecutionPlan):
         """
         for o in self.operations:
             yield o
-    
+
 
 @dataclass(frozen=True)
 class AbilityExecutionPlan(ExecutionPlan):
@@ -102,11 +142,13 @@ class AbilityExecutionPlan(ExecutionPlan):
     """
 
     effects: EffectSequence
-    binding: FrozenTargetBinding
+    binding: ImmutableTargetBinding
     param_context: ParameterContext | None = None
     mana_solver_result: ManaSolverResult | None = None
 
-    def to_operations(self, state: State, context: ResolutionContext) -> Generator[Operation, None, None]:
+    def to_operations(
+        self, state: State, context: ResolutionContext
+    ) -> Generator[Operation, None, None]:
         """!
         @brief Generate operations for each effect with only its relevant targets.
         @param state Current game state.
@@ -115,22 +157,47 @@ class AbilityExecutionPlan(ExecutionPlan):
         """
         if self.mana_solver_result:
             for mana_action in self.mana_solver_result.mana_plan:
+                error = mana_action.validation_error(state)
+                if error:
+                    from ..resolution.cost_transaction import CostPaymentError
+
+                    raise CostPaymentError(error)
                 for intent in mana_action.get_intents():
                     yield from intent.generate_operations(state)
+                from ..mana_activation import ManaActivationEventOperation
+
+                yield ManaActivationEventOperation(intent.context)
+            if self.mana_solver_result.payment:
+                from ..mana_effects import SpendManaOperation
+
+                yield SpendManaOperation(context, self.mana_solver_result.payment)
+            if self.mana_solver_result.life_payment:
+                from ..mana_effects import PayLifeOperation
+
+                yield PayLifeOperation(context, self.mana_solver_result.life_payment)
 
         for eb in self.effects.sequence:
             targets = self._scope_binding(eb.slots)
             n_context = replace(context, targets=targets)
-            
+
             yield from eb.effect.to_operations(state, n_context)
 
-    def _scope_binding(self, slots: frozenset[str]) -> TargetBinding:
+    def _scope_binding(
+        self, slots: frozenset[RepetitionTargetSlotWrapper]
+    ) -> ImmutableTargetBinding:
         """!
         @brief Keep only the target slots needed by one effect.
         @param slots Slot keys required by one effect.
         @return Target binding limited to those slots.
         """
-        return {k: self.binding.get(k) for k in slots}
+        from ...target.target_resolver import TargetBinding
+
+        scoped = TargetBinding()
+        for wrapper in slots:
+            chosen = self.binding.get(wrapper.slot.key, {}).get(wrapper.runtime_key)
+            if chosen is not None:
+                scoped.setdefault(wrapper.slot.key, {})[wrapper.runtime_key] = chosen
+        return scoped.to_immutable()
 
 
 @dataclass(frozen=True)
@@ -142,22 +209,46 @@ class ScheduledResolution:
     generator: ExecutionPlan
     context: ResolutionContext
 
+    def __post_init__(self):
+        if isinstance(self.generator, AbilityExecutionPlan):
+            object.__setattr__(
+                self,
+                "context",
+                replace(
+                    self.context,
+                    targets=self.generator.binding,
+                    effects=self.generator.effects,
+                    param_ctx=self.generator.param_context or self.context.param_ctx,
+                ),
+            )
+
     def generate_operations(self, state: State) -> Generator[Operation, None, None]:
         """!
         @brief Ask the generator to materialize the operations for this intent.
         @param state Current game state.
         @return Operations to execute for this intent.
         """
+        if self.context.is_cost and getattr(self.context.ability, "loyalty_cost", None) is not None:
+            from game.rules.permanents import LoyaltyCostOperation
+
+            yield LoyaltyCostOperation(self.context, self.context.ability.loyalty_cost)
         yield from self.generator.to_operations(state, self.context)
 
     def to_stack_item(self) -> StackItem:
-        raise NotImplementedError()
+        return StackItem(self)
 
 
-@dataclass(frozen=True)
+@dataclass(eq=False)
 class StackItem(RuntimeObject):
 
     action_resolution: ScheduledResolution
+
+    def __post_init__(self) -> None:
+        RuntimeObject.__init__(self)
+
+    @property
+    def key(self) -> str:
+        return self.action_resolution.context.action_key
 
 
 class GameAction(ABC):
@@ -185,6 +276,48 @@ class AbilityAction(GameAction):
     action_generator: ExecutionPlan
     cost_generator: ExecutionPlan
     uses_stack: bool = True
+    controller: Player | None = None
+
+    ability: AbilityDefinition | None = None
+    trigger_event: object | None = None
+
+    trigger_registration: object | None = None
+    trigger_source_revision: int | None = None
+    trigger_source_last_known: object | None = None
+
+    source_revision: int | None = field(default=None, init=False)
+    source_had_ability: bool = field(default=False, init=False)
+
+    def __post_init__(self):
+        object.__setattr__(self, "source_revision", getattr(self.source, "zone_revision", None))
+        state = getattr(self.source, "_game_state", None)
+        if self.ability is not None and state is not None:
+            object.__setattr__(
+                self,
+                "source_had_ability",
+                self.source.get_ability_defs(state).get(self.ability.key) == self.ability,
+            )
+
+    def validation_error(self, state):
+        """!
+        @brief Return a validation message when the requested action is not legal.
+        """
+        if self.trigger_event is not None:
+            return None
+        if self.source_revision is not None and self.source.zone_revision != self.source_revision:
+            return "The source changed zones after this action was selected."
+        player = self.controller or self.source.owner
+        if hasattr(state, "priority") and state.priority.current_player is not player:
+            return "You do not have priority."
+        if getattr(state, "is_game_over", False):
+            return "The game has ended."
+        if self.source_had_ability:
+            state.refresh_continuous_effects()
+            if self.source.get_ability_defs(state).get(self.ability.key) != self.ability:
+                return "The source no longer has the selected ability."
+        if self.ability is not None:
+            return self.ability.validation_error(self.source, player, state)
+        return None
 
     def get_intents(self):
         """!
@@ -192,30 +325,33 @@ class AbilityAction(GameAction):
         @return Cost intent followed by ability effect intent.
         """
         cost_context = ResolutionContext(
-            controller=self.source.owner,
+            controller=self.controller if self.controller is not None else self.source.owner,
             source=self.source,
-            ability=None, # TODO
+            ability=self.ability,
             action_key=self.action_key,
+            is_cost=True,
+            trigger_event=self.trigger_event,
+            trigger_registration=self.trigger_registration,
+            source_revision=(
+                self.trigger_source_revision
+                if self.trigger_event is not None
+                else self.source_revision
+            ),
+            source_last_known=self.trigger_source_last_known,
         )
 
-        context = replace(cost_context, uses_stack=self.uses_stack)
+        context = replace(cost_context, uses_stack=self.uses_stack, is_cost=False)
 
         return (
-            ScheduledResolution(
-                generator=self.cost_generator,
-                context=cost_context
-            ),
-            ScheduledResolution(
-                generator=self.action_generator,
-                context=context
-            )
+            ScheduledResolution(generator=self.cost_generator, context=cost_context),
+            ScheduledResolution(generator=self.action_generator, context=context),
         )
 
 
 @dataclass(frozen=True)
 class ManaAbilityAction(AbilityAction):
 
-    uses_stack = False
+    uses_stack: bool = False
 
 
 @dataclass(frozen=True)
@@ -225,24 +361,21 @@ class PassPriorityAction(GameAction):
     """
 
     player: Player
-    
+
     def get_intents(self):
         """!
         @brief Create the intent that records the priority pass.
         @return Intent for the priority pass operation.
         """
-        context=ResolutionContext(
-            controller=self.player
+        context = ResolutionContext(controller=self.player)
+
+        return (
+            ScheduledResolution(
+                generator=FixedExecutionPlan([PassPriorityOperation(context)]), context=context
+            ),
         )
 
-        return tuple(
-            ScheduledResolution(
-                generator=FixedExecutionPlan([PassPriorityOperation(context)]),
-                context=context
-            )
-        )
-        
-    
+
 @dataclass(frozen=True)
 class ConcedeAction(GameAction):
     """!
@@ -251,144 +384,23 @@ class ConcedeAction(GameAction):
 
     player: Player
 
-    def get_intents(self) -> list[ScheduledResolution]:
+    def get_intents(self) -> tuple[ScheduledResolution, ...]:
         """!
         @brief Create the intent that resolves the concession.
         @return Intent for the concession operation.
         """
-        context=ResolutionContext(
-            controller=self.player
-        )
-
-        return tuple(
-            ScheduledResolution(
-                generator=FixedExecutionPlan([ConcedeOperation(context)]),
-                context=context
-            )
-        )
-    
-
-@dataclass(frozen=True)
-class DeclareAttackerAction(GameAction):
-    """!
-    @brief Action used to mark a creature as an attacker.
-    """
-
-    attacker: Card
-    
-    def get_intents(self):
-        """!
-        @brief Create the intent that declares the attacker.
-        @return Intent for the attacker declaration operation.
-        """
-        context=ResolutionContext(
-            controller=self.attacker.owner,
-            source=self.attacker
-        )
-
-        return tuple(
-            ScheduledResolution(
-                generator=FixedExecutionPlan([DeclareAttackerOperation(context)]),
-                context=context
-            )
-        )
-
-
-@dataclass(frozen=True)
-class RemoveAttackerAction(GameAction):
-    """!
-    @brief Action used to remove a creature from attacking.
-    """
-
-    attacker: Card
-
-    def get_intents(self):
-        """!
-        @brief Create the intent that removes the attacker declaration.
-        @return Intent for the attacker removal operation.
-        """
-        context=ResolutionContext(
-            controller=self.attacker.owner,
-            source=self.attacker
-        )
-
-        return tuple(
-            ScheduledResolution(
-                generator=FixedExecutionPlan([RemoveAttackerOperation(context)]),
-                context=context
-            )
-        )
-
-
-@dataclass(frozen=True)
-class DeclareBlockerAction(GameAction):
-    """!
-    @brief Action used to mark a creature as a blocker.
-    """
-
-    blocker: Card
-
-    def get_intents(self):
-        """!
-        @brief Create the intent that declares the blocker.
-        @return Intent for the blocker declaration operation.
-        """
-        context=ResolutionContext(
-            controller=self.blocker.owner,
-            source=self.blocker
-        )
-
-        return tuple(
-            ScheduledResolution(
-                generator=FixedExecutionPlan([DeclareBlockerOperation(context)]),
-                context=context
-            )
-        )
-
-
-@dataclass(frozen=True)
-class RemoveBlockerAction(GameAction):
-    """!
-    @brief Action used to remove a creature from blocking.
-    """
-
-    blocker: Card
-
-    def get_intents(self):
-        """!
-        @brief Create the intent that removes the blocker declaration.
-        @return Intent for the blocker removal operation.
-        """
-        context=ResolutionContext(
-            controller=self.blocker.owner,
-            source=self.blocker
-        )
-
-        return tuple(
-            ScheduledResolution(
-                generator=FixedExecutionPlan([RemoveBlockerOperation(context)]),
-                context=context
-            )
-        )
-
-
-@dataclass(frozen=True)
-class MuliganAction(GameAction):
-    """!
-    @brief Action representing a player taking a mulligan.
-    """
-
-    player: Player
-
-    def get_intents(self):
-        """!
-        @brief Create the intent that resolves the mulligan.
-        @return Intent for the mulligan operation.
-        """
         context = ResolutionContext(controller=self.player)
-        return tuple(
+
+        return (
             ScheduledResolution(
-                generator=FixedExecutionPlan([MuliganOperation(context)]),
-                context=context
-            )
+                generator=FixedExecutionPlan([ConcedeOperation(context)]), context=context
+            ),
         )
+
+
+# Names used by the pre-refactor console interface.  They refer to the same
+# execution-plan objects, so old callers and the new resolution pipeline stay
+# interoperable.
+OperationGenerator = ExecutionPlan
+FixedOperationGenerator = FixedExecutionPlan
+AbilityOperationGenerator = AbilityExecutionPlan
