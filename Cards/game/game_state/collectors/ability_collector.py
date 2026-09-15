@@ -7,16 +7,16 @@ from typing import TYPE_CHECKING
 
 from helper.query_system.query import EqQuery, HasQuery
 
-from ..enums import ActivatableAbilityType
-from .registers.card_register import (
+from ...enums import ActivatableAbilityType
+from ..registers.card_register import (
     IK_ABILITY_KIND,
     IK_CONTROLLER,
 )
 
 if TYPE_CHECKING:
-    from .player import Player
-    from .state import State
-    from ..game_actions.data_structs.ability import Ability
+    from ..player import Player
+    from ..state import State
+    from ...game_actions.data_structs.ability import Ability
 
 
 class AbilityCollector:
