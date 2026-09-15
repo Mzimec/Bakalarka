@@ -6,7 +6,7 @@ from typing import TYPE_CHECKING
 
 from helper.query_system.object_register import IndexKey
 from .indexed_register import IndexedRegister
-from ...enums import CardType, CardSubtype, ZoneType
+from ...enums import CardType, CardSubtype, ZoneType, ActivatableAbilityType
 
 if TYPE_CHECKING:
     from ..card import Card
@@ -22,6 +22,7 @@ IK_SUBTYPE = IndexKey[CardSubtype]("card.subtype")
 IK_POWER = IndexKey[int]("card.power")
 IK_TOUGHNESS = IndexKey[int]("card.toughness")
 IK_TAPPED = IndexKey[bool]("card.tapped")
+IK_ABILITY = IndexKey[ActivatableAbilityType]("card.ability")
 
 CARD_INDEX_KEYS = (
     IK_KEY,
@@ -35,6 +36,7 @@ CARD_INDEX_KEYS = (
     IK_POWER,
     IK_TOUGHNESS,
     IK_TAPPED,
+    IK_ABILITY,
 )
 
 
@@ -157,6 +159,17 @@ class CardRegister(IndexedRegister):
             card.get_toughness(self.state),
         )
 
+        ability_defs = card.get_activatable_ability_defs(self.state)
+
+        ability_type = (False, False)
+
+        ability_types = frozenset(
+            ActivatableAbilityType.MANA
+            if definition.is_mana_ability
+            else ActivatableAbilityType.NON_MANA
+            for definition in ability_defs.values()
+        )
+
         return {
             IK_KEY: frozenset({card.key}),
             IK_NAME: frozenset({card.name.casefold()}),
@@ -169,4 +182,5 @@ class CardRegister(IndexedRegister):
             IK_POWER: frozenset() if power is None else frozenset({power}),
             IK_TOUGHNESS: frozenset() if toughness is None else frozenset({toughness}),
             IK_TAPPED: frozenset({card.is_tapped}),
+            IK_ABILITY: ability_types,
         }
