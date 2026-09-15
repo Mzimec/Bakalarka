@@ -320,54 +320,133 @@ class ConsoleDecisionMaker(DecisionMaker):
 
     def choose_scry(self, state, player, cards):
         """!
-        @brief Choose cards to keep on top in draw order; put the remainder below.
+        @brief Choose exact top and bottom ordering for scry.
         """
-        self.write("Scry: " + ", ".join(f"{card_reference(card)}: {card.name}" for card in cards))
+        self.write(
+            "Scry: "
+            + ", ".join(
+                f"{card_reference(card)}: {card.name}"
+                for card in cards
+            )
+        )
+
         if not cards:
             return (), ()
+
+        by_id = {
+            card_reference(card).lower(): card
+            for card in cards
+        }
+
         while True:
-            answer = (
-                self.read("Top IDs in draw order (Enter keeps all, - bottoms all): ")
-                .strip()
-                .lower()
-            )
+            answer = self.read(
+                "Order cards as 'top <IDs> bot <IDs>' "
+                "(Enter keeps all on top): "
+            ).strip().lower()
+
             if not answer:
                 return cards, ()
-            if answer == "-":
-                return (), cards
-            by_id = {card_reference(card): card for card in cards}
-            ids = answer.split()
-            if len(ids) == len(set(ids)) and all(key in by_id for key in ids):
-                top = tuple(by_id[key] for key in ids)
-                return top, tuple(card for card in cards if card not in top)
-            self.write("Choose distinct IDs from the revealed cards.")
+
+            tokens = answer.split()
+
+            if not tokens or tokens[0] not in {"top", "bot"}:
+                self.write(
+                    "Use: top <IDs> bot <IDs>, e.g. "
+                    "'top c1 bot c2 c3'."
+                )
+                continue
+
+            top_ids = []
+            bottom_ids = []
+            current = None
+            valid = True
+
+            for token in tokens:
+                if token == "top":
+                    current = top_ids
+                    continue
+
+                if token == "bot":
+                    current = bottom_ids
+                    continue
+
+                if current is None or token not in by_id:
+                    valid = False
+                    break
+
+                current.append(token)
+
+            all_ids = top_ids + bottom_ids
+
+            if (
+                not valid
+                or len(all_ids) != len(by_id)
+                or len(set(all_ids)) != len(all_ids)
+                or set(all_ids) != set(by_id)
+            ):
+                self.write(
+                    "List every revealed card exactly once under top or bot."
+                )
+                continue
+
+            return (
+                tuple(by_id[key] for key in top_ids),
+                tuple(by_id[key] for key in bottom_ids),
+            )
 
     def choose_mulligan(self, state, player, mulligans_taken):
         self.write(
             f"{player.name}: "
-            + ", ".join(f"{card.key}: {card.name}" for card in player.hand.values())
+            + ", ".join(
+                f"{card_reference(card)}: {card.name}"
+                for card in player.hand.values()
+            )
         )
+
         while True:
-            answer = self.read(f"Mulligan again (taken {mulligans_taken})? [y/n]: ").strip().lower()
+            answer = self.read(
+                f"Mulligan again (taken {mulligans_taken})? [y/n]: "
+            ).strip().lower()
+
             if answer in {"y", "yes", "n", "no"}:
                 return answer in {"y", "yes"}
+
 
     def choose_mulligan_bottom(self, state, player, count):
         self.write(
             f"{player.name}: "
-            + ", ".join(f"{card.key}: {card.name}" for card in player.hand.values())
+            + ", ".join(
+                f"{card_reference(card)}: {card.name}"
+                for card in player.hand.values()
+            )
         )
+
+        by_id = {
+            card_reference(card).lower(): card
+            for card in player.hand.values()
+        }
+
         while True:
-            keys = self.read(
-                f"Choose {count} card keys for the bottom (first will be drawn first): "
-            ).split()
+            ids = (
+                self.read(
+                    f"Choose {count} card IDs for the bottom "
+                    "(first will be drawn first): "
+                )
+                .strip()
+                .lower()
+                .split()
+            )
+
             if (
-                len(keys) == count
-                and len(set(keys)) == count
-                and all(key in player.hand for key in keys)
+                len(ids) == count
+                and len(set(ids)) == count
+                and all(card_id in by_id for card_id in ids)
             ):
-                return tuple(player.hand[key] for key in keys)
-            self.write("Choose the required number of distinct cards from your hand.")
+                return tuple(by_id[card_id] for card_id in ids)
+
+            self.write(
+                f"Choose {count} distinct card IDs from your hand."
+            )
 
     def show_events(self) -> None:
         if self.event_bus is None:
