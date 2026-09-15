@@ -234,3 +234,7 @@ class CounterType(Enum):
 class RuntimeObjectType(Enum):
     CARD = auto()
     PLAYER = auto()
+
+class ActivatableAbilityType(Enum):
+    MANA = auto()
+    NON_MANA = auto()
