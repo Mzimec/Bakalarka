@@ -22,7 +22,7 @@ IK_SUBTYPE = IndexKey[CardSubtype]("card.subtype")
 IK_POWER = IndexKey[int]("card.power")
 IK_TOUGHNESS = IndexKey[int]("card.toughness")
 IK_TAPPED = IndexKey[bool]("card.tapped")
-IK_ABILITY = IndexKey[ActivatableAbilityType]("card.ability")
+IK_ABILITY_KIND = IndexKey[ActivatableAbilityType]("card.ability")
 
 CARD_INDEX_KEYS = (
     IK_KEY,
@@ -36,7 +36,7 @@ CARD_INDEX_KEYS = (
     IK_POWER,
     IK_TOUGHNESS,
     IK_TAPPED,
-    IK_ABILITY,
+    IK_ABILITY_KIND,
 )
 
 
@@ -152,7 +152,6 @@ class CardRegister(IndexedRegister):
         @param card Runtime card being indexed.
         @return Mapping from card index keys to immutable membership sets.
         """
-        mana = card.get_mana_cost(self.state)
         cmc = card.get_mana_value(self.state)
         power, toughness = (
             card.get_power(self.state),
@@ -160,8 +159,6 @@ class CardRegister(IndexedRegister):
         )
 
         ability_defs = card.get_activatable_ability_defs(self.state)
-
-        ability_type = (False, False)
 
         ability_types = frozenset(
             ActivatableAbilityType.MANA
@@ -182,5 +179,5 @@ class CardRegister(IndexedRegister):
             IK_POWER: frozenset() if power is None else frozenset({power}),
             IK_TOUGHNESS: frozenset() if toughness is None else frozenset({toughness}),
             IK_TAPPED: frozenset({card.is_tapped}),
-            IK_ABILITY: ability_types,
+            IK_ABILITY_KIND: ability_types,
         }
