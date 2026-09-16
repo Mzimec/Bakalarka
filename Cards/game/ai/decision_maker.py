@@ -1,11 +1,40 @@
 from __future__ import annotations
 
 from abc import ABC, abstractmethod
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Any
+from dataclasses import dataclass, replace, field
+from collections.abc import Mapping
+
+from ..enums import RequestType
 
 if TYPE_CHECKING:
     from ..game_state import State, Player
     from ..game_actions import GameAction
+
+
+@dataclass(frozen=True)
+class DecisionResult[T]:
+    """Result of one player decision together with optional diagnostics."""
+
+    value: T
+    info: Mapping[str, Any] = field(default_factory=dict)
+
+    def with_info(self, **info) -> DecisionResult[T]:
+        """Return a copy enriched with additional diagnostic information."""
+        return replace(
+            self,
+            info={
+                **self.info,
+                **info,
+            },
+        )
+
+
+@dataclass(frozen=True)
+class Request:
+    request_type: RequestType
+    info: Mapping[str, Any] = field(default_factory=dict)
+
 
 class DecisionMaker(ABC):
     """!
@@ -13,7 +42,7 @@ class DecisionMaker(ABC):
     """
 
     @abstractmethod
-    def get_action(self, state: State, player: Player) -> GameAction | None:
+    def get_action(self, state: State, player: Player) -> DecisionResult[GameAction | None]:
         """!
         @brief Choose a game action for the supplied player.
 
@@ -72,3 +101,12 @@ class DecisionMaker(ABC):
         Default behavior chooses the first `count` cards in current hand order.
         """
         return tuple(player.hand.values())[:count]
+
+class TimedDecisionMaker:
+
+    def __init__(self, decision_maker: DecisionMaker) -> None:
+        self._total: float = 0
+        self._decision_maker: DecisionMaker = decision_maker
+
+    def get_timed_action(self, state: State, player: Player) -> tuple[GameAction | None, float]:
+        pass
