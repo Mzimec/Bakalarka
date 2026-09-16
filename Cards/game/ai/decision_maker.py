@@ -4,6 +4,7 @@ from abc import ABC, abstractmethod
 from typing import TYPE_CHECKING, Any, ClassVar
 from dataclasses import dataclass, replace, field
 from collections.abc import Mapping
+from time import perf_counter_ns
 
 from ..enums import RequestType
 
@@ -76,5 +77,19 @@ class DecisionMaker(ABC):
     @brief Base contract for human, scripted or AI player controllers.
     """
 
+    def decide(
+        self,
+        request: Request,
+    ) -> DecisionResult:
+        started = perf_counter_ns()
+
+        result = self._decide(request)
+
+        elapsed = perf_counter_ns() - started
+
+        return result.with_info(
+            elapsed_ns=elapsed,
+        )
+
     @abstractmethod
-    def decide(self, request: Request) -> DecisionResult: ...
+    def _decide(self, request: Request) -> DecisionResult: ...
