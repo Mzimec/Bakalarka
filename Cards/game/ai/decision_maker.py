@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from abc import ABC, abstractmethod
-from typing import TYPE_CHECKING, Any, ClassVar
+from typing import TYPE_CHECKING, Any, ClassVar, override
 from dataclasses import dataclass, replace, field
 from collections.abc import Mapping
 from time import perf_counter_ns
@@ -12,23 +12,12 @@ if TYPE_CHECKING:
     from ..game_state import State, Player
     from ..game_actions import GameAction
 
-
-@dataclass(frozen=True)
 class DecisionResult:
     """Result of one player decision together with optional diagnostics."""
 
-    value: GameAction | None
-    info: Mapping[str, Any] = field(default_factory=dict)
-
-    def with_info(self, **info) -> DecisionResult:
-        """Return a copy enriched with additional diagnostic information."""
-        return replace(
-            self,
-            info={
-                **self.info,
-                **info,
-            },
-        )
+    def __init__(self, value: GameAction | None, info: Mapping[str, Any] | None = None) -> None:
+        self.value: GameAction | None = value
+        self.info: dict[str, Any] = dict(info) if info else dict()
 
 
 @dataclass(frozen=True)
@@ -71,7 +60,6 @@ class DiscardRequest(Request):
     request_type = RequestType.DISCARD
 
 
-
 class DecisionMaker(ABC):
     """!
     @brief Base contract for human, scripted or AI player controllers.
@@ -86,10 +74,32 @@ class DecisionMaker(ABC):
         result = self._decide(request)
 
         elapsed = perf_counter_ns() - started
+        result.info["elapsed_time"] = elapsed
 
-        return result.with_info(
-            elapsed_ns=elapsed,
-        )
-
+        return result
+    
     @abstractmethod
     def _decide(self, request: Request) -> DecisionResult: ...
+
+
+class ModularDecisionMaker(DecisionMaker, ABC):
+
+    @override
+    def _decide(self, request):
+        result: DecisionResult
+        
+        match request.request_type:
+            case RequestType.PRIORITY_ACTION:
+                result = _decide_priority_action()
+            case RequestType.ATTACKER_DECLARATION:
+                result = _decide_atacker_declaration()
+            case RequestType.BLOCKER_DECLARATIION:
+                result = _decide_blocker_declaration()
+            case RequestType.MULLIGAN:
+                result = _decide_mulligan()
+            case RequestType.MULLIGAN_BOTTOM:
+                result = _decide_mulligan_bottom()
+            case _:
+                result = _decide_discard()
+
+        return result

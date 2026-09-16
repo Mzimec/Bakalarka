@@ -8,7 +8,12 @@ from typing import TYPE_CHECKING, Callable
 from game.console.command_choices import legal_plans, UnsupportedCommandDefinition
 from ..enums import CardType, TurnPhase, ZoneType
 from ..game_actions.data_structs.game_action import PassPriorityAction
-from ..game_state.player import DecisionMaker
+from .decision_maker import (
+    DecisionMaker,
+    DecisionResult,
+    Request,
+    PriorityActionRequest,
+)
 from game.rules.lands import LandPlayAction, land_play_error
 
 if TYPE_CHECKING:
@@ -86,7 +91,7 @@ class SimpleAgent(DecisionMaker):
             raise DecisionLimitReached("Decision budget exhausted.")
         self.log(state, player, kind, details)
 
-    def get_action(self, state: State, player: Player) -> GameAction:
+    def _priority_action(self, state: State, player: Player) -> GameAction:
         """!
         @brief Play a land, develop the board, or choose a bounded legal action.
 
