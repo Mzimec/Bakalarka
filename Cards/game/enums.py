@@ -248,4 +248,5 @@ class RequestType(Enum):
     ATTACKER_DECLARATION = auto()
     BLOCKER_DECLARATIION = auto()
     MULLIGAN = auto()
+    MULLIGAN_BOTTOM = auto()
     DISCARD = auto()

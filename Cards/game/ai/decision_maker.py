@@ -31,9 +31,44 @@ class DecisionResult[T]:
 
 
 @dataclass(frozen=True)
-class Request:
+class Request(ABC):
+    state: State
+    player: Player
+
     request_type: RequestType
-    info: Mapping[str, Any] = field(default_factory=dict)
+
+
+@dataclass(frozen=True)
+class PriorityActionRequest(Request):
+    request_type = RequestType.PRIORITY_ACTION
+
+
+@dataclass(frozen=True)
+class AttackerDeclarationRequest(Request):
+    request_type = RequestType.ATTACKER_DECLARATION
+
+
+@dataclass(frozen=True)
+class BlockerDeclarationRequest(Request):
+    request_type = RequestType.BLOCKER_DECLARATIION
+
+
+@dataclass(frozen=True)
+class MulliganRequest(Request):
+    mulligans_taken: int
+    request_type = RequestType.MULLIGAN
+
+
+@dataclass(frozen=True)
+class MulliganBottomRequest(Request):
+    count: int
+    request_type = RequestType.MULLIGAN_BOTTOM
+
+@dataclass(frozen=True)
+class DiscardRequest(Request):
+    count: int
+    request_type = RequestType.DISCARD
+
 
 
 class DecisionMaker(ABC):
