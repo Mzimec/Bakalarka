@@ -9,10 +9,8 @@ from game.console.command_choices import legal_plans, UnsupportedCommandDefiniti
 from ..enums import CardType, TurnPhase, ZoneType
 from ..game_actions.data_structs.game_action import PassPriorityAction
 from .decision_maker import (
-    DecisionMaker,
+    ModularDecisionMaker,
     DecisionResult,
-    Request,
-    PriorityActionRequest,
 )
 from game.rules.lands import LandPlayAction, land_play_error
 
@@ -32,7 +30,7 @@ class DecisionLimitReached(RuntimeError):
     """
 
 
-class SimpleAgent(DecisionMaker):
+class SimpleAgent(ModularDecisionMaker):
     """!
     @brief A reproducible baseline player, not a search or learning algorithm.
 
@@ -183,6 +181,11 @@ class SimpleAgent(DecisionMaker):
                 return action
         self._record(state, player, "pass")
         return PassPriorityAction(player)
+
+    def _decide_priority_action(self, state, player):
+        return DecisionResult(
+            self._priority_action(state, player)
+        )
 
     @staticmethod
     def _targets(action):
