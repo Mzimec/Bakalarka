@@ -85,21 +85,45 @@ class DecisionMaker(ABC):
 class ModularDecisionMaker(DecisionMaker, ABC):
 
     @override
-    def _decide(self, request):
-        result: DecisionResult
-        
-        match request.request_type:
-            case RequestType.PRIORITY_ACTION:
-                result = _decide_priority_action()
-            case RequestType.ATTACKER_DECLARATION:
-                result = _decide_atacker_declaration()
-            case RequestType.BLOCKER_DECLARATIION:
-                result = _decide_blocker_declaration()
-            case RequestType.MULLIGAN:
-                result = _decide_mulligan()
-            case RequestType.MULLIGAN_BOTTOM:
-                result = _decide_mulligan_bottom()
-            case _:
-                result = _decide_discard()
+    def _decide(self, request: Request) -> DecisionResult:
+        match request:
+            case PriorityActionRequest():
+                return self._decide_priority_action(request.state, request.player)
 
-        return result
+            case AttackerDeclarationRequest():
+                return self._decide_attacker_declaration(request.state, request.player)
+
+            case BlockerDeclarationRequest():
+                return self._decide_blocker_declaration(request.state, request.player)
+
+            case MulliganRequest():
+                return self._decide_mulligan(request.state, request.player, request.mulligans_taken)
+
+            case MulliganBottomRequest():
+                return self._decide_mulligan_bottom(request.state, request.player, request.count)
+
+            case DiscardRequest():
+                return self._decide_discard(request.state, request.player, request.count)
+
+            case _:
+                raise NotImplementedError(
+                    f"Unsupported request: {type(request).__name__}"
+                )
+
+    @abstractmethod
+    def _decide_priority_action(self, state: State, player: Player) -> DecisionResult: ...
+
+    @abstractmethod
+    def _decide_attacker_declaration(self, state: State, player: Player) -> DecisionResult: ...
+
+    @abstractmethod
+    def _decide_blocker_declaration(self, state: State, player: Player) -> DecisionResult: ...
+
+    @abstractmethod
+    def _decide_mulligan(self, state: State, player: Player, mulligans_taken: int) -> DecisionResult: ...
+
+    @abstractmethod
+    def _decide_mulligan_bottom(self, state: State, player: Player, count: int) -> DecisionResult: ...
+
+    @abstractmethod
+    def _decide_discard(self, state: State, player: Player, count: int) -> DecisionResult: ...
