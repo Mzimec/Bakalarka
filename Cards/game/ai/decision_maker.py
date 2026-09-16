@@ -3,7 +3,7 @@ from __future__ import annotations
 from abc import ABC, abstractmethod
 from typing import TYPE_CHECKING, Any, ClassVar, override
 from dataclasses import dataclass, replace, field
-from collections.abc import Mapping
+from collections.abc import Mapping, Iterator
 from time import perf_counter_ns
 
 from ..enums import RequestType
@@ -15,49 +15,27 @@ if TYPE_CHECKING:
 class DecisionResult:
     """Result of one player decision together with optional diagnostics."""
 
-    def __init__(self, value: GameAction | None, info: Mapping[str, Any] | None = None) -> None:
-        self.value: GameAction | None = value
+    def __init__(self, value: DecisionOption, info: Mapping[str, Any] | None = None) -> None:
+        self.value: DecisionOption
         self.info: dict[str, Any] = dict(info) if info else dict()
 
 
+class DecisionOptionSpace[T: DecisionOption](ABC):
+
+    @abstractmethod
+    def generate(self,) -> Iterator[T]: ...
+
+
+class DecisionOption(ABC):
+    pass
+
+
 @dataclass(frozen=True)
-class Request(ABC):
+class DecisionRequest[T: DecisionOption](ABC):
     state: State
     player: Player
 
-    request_type: ClassVar[RequestType]
-
-
-@dataclass(frozen=True)
-class PriorityActionRequest(Request):
-    request_type = RequestType.PRIORITY_ACTION
-
-
-@dataclass(frozen=True)
-class AttackerDeclarationRequest(Request):
-    request_type = RequestType.ATTACKER_DECLARATION
-
-
-@dataclass(frozen=True)
-class BlockerDeclarationRequest(Request):
-    request_type = RequestType.BLOCKER_DECLARATIION
-
-
-@dataclass(frozen=True)
-class MulliganRequest(Request):
-    mulligans_taken: int
-    request_type = RequestType.MULLIGAN
-
-
-@dataclass(frozen=True)
-class MulliganBottomRequest(Request):
-    count: int
-    request_type = RequestType.MULLIGAN_BOTTOM
-
-@dataclass(frozen=True)
-class DiscardRequest(Request):
-    count: int
-    request_type = RequestType.DISCARD
+    options: DecisionOptionSpace[T]
 
 
 class DecisionMaker(ABC):
@@ -67,7 +45,7 @@ class DecisionMaker(ABC):
 
     def decide(
         self,
-        request: Request,
+        request: DecisionRequest,
     ) -> DecisionResult:
         started = perf_counter_ns()
 
