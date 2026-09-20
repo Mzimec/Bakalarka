@@ -7,6 +7,8 @@ from abc import ABC, abstractmethod
 from uuid import uuid4
 from helper.runtime_object import RuntimeObject
 
+from ..ai.decision_maker import ModularDecisionMaker as DecisionMaker
+
 from ..constants import STARTING_HEALTH, HAND_SIZE
 from .battlefield import Battlefield, CardCollection
 
@@ -332,4 +334,7 @@ class Player(RuntimeObject):
         @param state Current game state.
         @return Chosen action, or `None` if the player takes no action.
         """
+        from ..ai.decision_maker import DecisionMaker as RequestDecisionMaker, PriorityDecisionRequest
+        if isinstance(self.controller, RequestDecisionMaker):
+            return self.controller.decide(PriorityDecisionRequest(state, self)).value
         return self.controller.get_action(state, self)

@@ -126,12 +126,16 @@ class ExecutionPlanPipeline(ExecutionPlanPipelineBase):
                             else frozenset()
                         )
 
-                    candidate = strategy.mana_solver.get_mana_plan(
-                        requirement,
-                        ctx.ability.controller,
-                        state,
-                        **kwargs,
+                    from .decision_abstraction.requests import ManaGenerationRequest
+                    from .decision_abstraction.decision_option import ManaGenerationPolicy
+
+                    request = ManaGenerationRequest(
+                        state, ctx.ability.controller, requirement,
+                        reserved=kwargs.get("reserved", frozenset()),
                     )
+                    candidate = next(iter(request.option_space(
+                        ManaGenerationPolicy(strategy.mana_solver)
+                    )), None)
 
                     if candidate is not None:
                         mana_solver_result = replace(

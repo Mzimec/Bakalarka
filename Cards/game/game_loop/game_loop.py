@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+from ..ai.decision_maker import decision_hook
+
 from dataclasses import dataclass, field
 from abc import ABC, abstractmethod
 from typing import TYPE_CHECKING
@@ -494,11 +496,7 @@ class CleanupPhaseController(PhaseController):
             )
 
             if excess:
-                choose = getattr(
-                    player.controller,
-                    "choose_discards",
-                    None,
-                )
+                choose = decision_hook(player.controller, "choose_discards")
 
                 discards = tuple(
                     choose(state, player, excess)
@@ -588,11 +586,7 @@ class CombatPhaseController(SimplePhaseController):
 
         elif phase == TurnPhase.DECLARE_ATTACKERS:
             player = state.active_player
-            choose = getattr(
-                player.controller,
-                "choose_attackers",
-                None,
-            )
+            choose = decision_hook(player.controller, "choose_attackers")
 
             events = combat.declare_attackers(
                 player,
@@ -610,11 +604,7 @@ class CombatPhaseController(SimplePhaseController):
                 if player is state.active_player:
                     continue
 
-                choose = getattr(
-                    player.controller,
-                    "choose_blockers",
-                    None,
-                )
+                choose = decision_hook(player.controller, "choose_blockers")
 
                 events = combat.declare_blockers(
                     player,

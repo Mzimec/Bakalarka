@@ -106,3 +106,5 @@ class AbilityCollector:
                     card,
                     player,
                 )
+
+ABILITY_COLLECTOR: AbilityCollector = AbilityCollector()

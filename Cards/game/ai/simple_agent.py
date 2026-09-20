@@ -124,45 +124,20 @@ class SimpleAgent(ModularDecisionMaker):
             if card.is_type(state, CardType.LAND) and land_play_error(card, player, state) is None:
                 self._record(state, player, "land", source=card)
                 return LandPlayAction(card, player)
-        # Candidate sources for non-land actions: everything in hand,
-        # plus this player's own permanents on the battlefield and cards
-        # they control in the graveyard (e.g. flashback-style effects).
-        sources = list(player.hand.values())
-        sources.extend(
-            card
-            for card in state.get_cards(from_zones=[ZoneType.BATTLEFIELD, ZoneType.GRAVEYARD])
-            if card.get_controller(state) is player
-        )
+        from ..game_state.collectors.ability_collector import ABILITY_COLLECTOR
+        from ..game_actions.generation.decision_abstraction.requests import AbilityDecisionRequest
+        from ..game_actions.generation.decision_abstraction.decision_option import AbilityGenerationPolicy
+        from ..game_actions.generation.pruning.pruning_strategy import LimitPruning
+
         choices = []
-        for card in sources:
-            for definition in sorted(
-                card.get_ability_defs(state).values(), key=lambda item: item.key
-            ):
-                key = (card.command_id, definition.key)
-                if key in self._attempted or definition.is_mana_ability:
-                    continue  # Mana is planned inside payment, never floated speculatively.
-                if definition.validation_error(card, player, state):
-                    continue
-                ability = definition.to_ability(card, player)
-                try:
-                    # Only sample a handful of cost plans; we don't need
-                    # every possible payment, just proof that at least
-                    # one legal cost plan exists.
-                    costs = list(islice(legal_plans(ability, state, cost=True), 4))
-                    if not costs:
-                        continue
-                    # Similarly bound the number of target/binding plans
-                    # explored per ability, to keep this deterministic
-                    # agent's per-decision cost roughly constant even on
-                    # boards with many legal targets.
-                    for _, plan in islice(legal_plans(ability, state), 24):
-                        action = ability.to_game_action(costs[0][1], plan)
-                        choices.append((self.score(state, player, action), key, action))
-                except UnsupportedCommandDefinition:
-                    # Some ability/cost shapes aren't supported by the
-                    # console's plan generator; just skip those rather
-                    # than failing the whole decision.
-                    continue
+        policy = AbilityGenerationPolicy(pruning=LimitPruning(24))
+        for ability in ABILITY_COLLECTOR.collect_non_mana(state, player):
+            key = (ability.source.command_id, ability.key)
+            if key in self._attempted:
+                continue
+            request = AbilityDecisionRequest(state, player, ability)
+            for action in request.option_space(policy):
+                choices.append((self.score(state, player, action), key, action))
         if choices:
             score, key, action = max(choices, key=lambda item: item[0])
             if score > 0:

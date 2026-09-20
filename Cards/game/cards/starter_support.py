@@ -206,11 +206,19 @@ class ChooseMoveOperation(Operation):
             options = tuple(self.player.hand.values())
             chooser = getattr(self.player.decision_maker, "choose_discards", None)
         count = min(self.amount, len(options))
-        chosen = tuple(
-            chooser(state, self.player, options, count)
-            if chooser and self.sacrifice
-            else chooser(state, self.player, count) if chooser else options[:count]
-        )
+        from game.ai.decision_maker import DecisionMaker, AbilityResolutionRequest
+        if isinstance(self.player.decision_maker, DecisionMaker):
+            request = AbilityResolutionRequest(
+                state, self.player, self.context, options, count,
+                "sacrifice" if self.sacrifice else "discard",
+            )
+            chosen = tuple(self.player.decision_maker.decide(request).value)
+        else:
+            chosen = tuple(
+                chooser(state, self.player, options, count)
+                if chooser and self.sacrifice
+                else chooser(state, self.player, count) if chooser else options[:count]
+            )
         if (
             len(chosen) != count
             or len(set(chosen)) != count

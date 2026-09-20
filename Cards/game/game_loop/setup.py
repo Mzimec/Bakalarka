@@ -4,6 +4,7 @@ Pregame changes deliberately do not emit gameplay draw/zone events. Special
 opening-hand abilities and alternative mulligan formats are outside this API.
 """
 
+from ..ai.decision_maker import decision_hook
 from dataclasses import dataclass
 from random import Random
 
@@ -161,11 +162,7 @@ def _opening_hands(state, config):
         redraw = []
 
         for player in remaining:
-            choose = getattr(
-                player.controller,
-                "choose_mulligan",
-                None,
-            )
+            choose = decision_hook(player.controller, "choose_mulligan")
 
             take = (
                 choose(
@@ -211,11 +208,7 @@ def _opening_hands(state, config):
         choices = []
 
         for player in redraw:
-            choose = getattr(
-                player.controller,
-                "choose_mulligan_bottom",
-                None,
-            )
+            choose = decision_hook(player.controller, "choose_mulligan_bottom")
 
             cards = tuple(
                 choose(

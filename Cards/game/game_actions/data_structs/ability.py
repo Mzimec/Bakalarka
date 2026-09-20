@@ -43,6 +43,10 @@ __all__ = [
     "SubAbilityDefinition",
     "AbilityDefinition",
     "Ability",
+    "PriorityActionAbility",
+    "CastSpellAbility",
+    "ActivatedAbility",
+    "ManaAbility",
     "TriggerCondition",
     "TriggerAbilityDefinition",
     "TriggerAbility",
@@ -665,7 +669,9 @@ class AbilityDefinition:
                instance.
         @return A new runtime `Ability` wrapping this definition.
         """
-        return Ability(self, card, player)
+        ability_type = (CastSpellAbility if self.is_spell else
+                        ManaAbility if self.is_mana_ability else ActivatedAbility)
+        return ability_type(self, card, player)
 
 
 @dataclass(frozen=True)
@@ -848,6 +854,22 @@ class Ability(HasModifiableStats):
                 ability.
         """
         return self.definition.is_usable_in_zone(self._data.source.get_zone())
+
+
+class PriorityActionAbility(Ability):
+    """An ability offered while its controller has priority."""
+
+
+class CastSpellAbility(PriorityActionAbility):
+    """Runtime binding for casting a card as a spell."""
+
+
+class ActivatedAbility(PriorityActionAbility):
+    """Runtime binding for an activated card ability."""
+
+
+class ManaAbility(ActivatedAbility):
+    """An activation also available while planning a mana payment."""
 
 
 class TriggerCondition(ABC):

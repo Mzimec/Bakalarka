@@ -144,6 +144,7 @@ class AbilityActionGenerationPipeline:
         *,
         x_value=0,
         life_payment=None,
+        skip_unpayable_costs=False,
     ) -> Iterator[AbilityAction]:
         """!
         @brief Yield choices supported by this generation strategy.
@@ -165,6 +166,8 @@ class AbilityActionGenerationPipeline:
         @param state Current game state to generate against.
         @param x_value Chosen value for any X/Y-style variable on this
                ability. Must be a nonnegative integer; defaults to 0.
+        @param skip_unpayable_costs When true, omit invalid cost candidates during
+               option-space enumeration; explicit command validation still raises.
         @param life_payment Optional life payment to associate with the
                generated context (e.g. for Phyrexian mana costs).
         @return Iterator of `AbilityAction` instances, one per legal
@@ -202,10 +205,12 @@ class AbilityActionGenerationPipeline:
                     source=ability.source,
                     ability=ability.definition,
                     action_key=ability.key,
+                    is_cost=True,
                 )
                 # Validate every effect used to pay this cost plan (e.g.
                 # "sacrifice a creature" must currently be payable) before
                 # offering it as a legal option.
+                invalid_cost = False
                 for binding in cost_execution_plan.effects.sequence:
                     error = binding.effect.validation_error(
                         state,
@@ -214,10 +219,18 @@ class AbilityActionGenerationPipeline:
                         ),
                     )
                     if error:
-                        raise ValueError(error)
+                        if not skip_unpayable_costs:
+                            raise ValueError(error)
+                        invalid_cost = True
+                        break
+                if invalid_cost:
+                    continue
 
                 for action_execution_plan in strategy.action_pipeline.generate(
                     ctx, subability_result.action_subability, strategy.action_strategy, state
                 ):
 
                     yield ctx.ability.to_game_action(cost_execution_plan, action_execution_plan)
+
+
+ABILITY_GENERATION_PIPELINE: AbilityActionGenerationPipeline = AbilityActionGenerationPipeline()
