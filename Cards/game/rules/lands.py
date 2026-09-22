@@ -88,6 +88,9 @@ class PlayLandOperation(Operation):
             return "The land changed zones after this action was chosen."
         return land_play_error(self.context.source, self.context.controller, state, self.context.ability)
 
+    def lki_cards(self, state):
+        return (self.context.source,)
+
     def execute(self, state):
         """!
         @brief Move the land onto the battlefield and consume one land play.

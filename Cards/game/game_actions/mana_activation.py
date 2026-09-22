@@ -26,6 +26,9 @@ class ManaActivationEventOperation(Operation):
         """
         return None
 
+    def lki_cards(self, state):
+        return self.source_lki_cards()
+
     def execute(self, state):
         """!
         @brief Emit the activation event without modifying game state directly.

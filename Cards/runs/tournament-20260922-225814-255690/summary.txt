@@ -1,0 +1,60 @@
+=== Tournament Summary ===
+
+Games: 20
+Completed: 0
+Decisive: 0
+Draws: 0
+Average turns: 1.00
+Average decisions: 3.00
+Total elapsed: 0.687 s
+
+Starting player:
+  Win rate: -
+  Decisive win rate: -
+
+Participants:
+
+modular (Keep the Peace)
+  Controller: {'type': 'modular', 'candidates': {'target_limit': 24, 'cost_limit': 4, 'keep_per_ability': 4}, 'combat': {'max_assignments': 512}}
+  Games: 20
+  Wins: 0
+  Losses: 0
+  Draws: 0
+  Win rate: 0.00%
+  Decisive win rate: -
+  WR when starting: 0.00%
+  WR when second: 0.00%
+  Average turns: 1.00
+  Average decisions: 3.00
+
+simple (Keep the Peace)
+  Controller: {'type': 'simple'}
+  Games: 20
+  Wins: 0
+  Losses: 0
+  Draws: 0
+  Win rate: 0.00%
+  Decisive win rate: -
+  WR when starting: 0.00%
+  WR when second: 0.00%
+  Average turns: 1.00
+  Average decisions: 3.00
+
+Decision timing (wall time; includes option generation and input/model waits):
+  modular [ModularAgent, agent]: 56 decisions, average 1.499 ms, total 0.084 s, errors 0, auto-passes 20
+    MulliganRequest: n=23, average 0.024 ms; observed options 0.00; space size unknown
+      0 observed options: n=23, average 0.024 ms
+    PriorityDecisionRequest: n=30, average 2.775 ms; observed options 1.33; space size 1.33 (known for 30 decisions)
+      1 observed options: n=20, average 0.794 ms
+      2-10 observed options: n=10, average 6.738 ms
+    MulliganBottomRequest: n=3, average 0.036 ms; observed options 0.00; space size unknown
+      0 observed options: n=3, average 0.036 ms
+  simple [SimpleAgent, agent]: 56 decisions, average 0.490 ms, total 0.027 s, errors 0, auto-passes 20
+    MulliganRequest: n=23, average 0.023 ms; observed options 0.00; space size unknown
+      0 observed options: n=23, average 0.023 ms
+    PriorityDecisionRequest: n=30, average 0.893 ms; observed options 1.33; space size 1.00 (known for 20 decisions)
+      1 observed options: n=20, average 0.730 ms
+      2-10 observed options: n=10, average 1.220 ms
+    MulliganBottomRequest: n=3, average 0.035 ms; observed options 0.00; space size unknown
+      0 observed options: n=3, average 0.035 ms
+  Observed options are consumed yields, not unique actions. Size refers to the policy-filtered space.

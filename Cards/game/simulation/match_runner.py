@@ -381,7 +381,8 @@ def run_match(
                         agent.event_bus = bus
                         agent._event_index = 0
 
-                engine = LoggedResolutionEngine(OperationExecutor(), bus)
+                operation_executor = OperationExecutor()
+                engine = LoggedResolutionEngine(operation_executor, bus)
                 loop = GameLoop(None, LoggedProcessor(engine))
 
                 log.write(
@@ -418,6 +419,7 @@ def run_match(
                     )
 
                 survivors = list(state.active_players)
+                operation_executor.print_lki_stats()
 
                 if not state.is_game_over:
                     status = "turn_limit"

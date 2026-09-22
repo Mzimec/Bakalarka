@@ -58,6 +58,9 @@ class MoveCardOperation(Operation):
         """
         self.card.owner.move_card(self.card, self.destination, state)
 
+    def lki_cards(self, state):
+        return (self.card,)
+
     def execute(self, state: State) -> list[GameEvent]:
         """!
         @brief Execute the zone change and apply prepared entry characteristics.
@@ -169,6 +172,14 @@ class DamagePlayerOperation(Operation):
         self.wither = "wither" in keywords
         self.damage_controller = information.controller if information else context.controller
         self.source_revision = information.zone_revision if information else context.source_revision
+
+    def lki_cards(self, state):
+        source = self.context.source
+
+        if getattr(source, "zone_revision", None) is not None:
+            return (source,)
+
+        return ()
 
     def execute(self, state: State) -> list[GameEvent]:
         """!
@@ -290,6 +301,9 @@ class DrawCardOperation(Operation):
     @brief Draw one card for the resolution controller.
     """
 
+    def lki_cards(self, state):
+        return (next(reversed(self.context.controller.deck.values())),)
+
     def execute(self, state):
         """!
         @brief Move the top card of the controller's deck to hand.
@@ -335,6 +349,9 @@ class TapCardOperation(Operation):
 
         # A written "tap a creature" cost differs from the source's {T} symbol.
         self.tap_symbol = tap_symbol
+
+    def lki_cards(self, state):
+        return (self.card,)
 
     def execute(self, state: State) -> list[GameEvent]:
         """!

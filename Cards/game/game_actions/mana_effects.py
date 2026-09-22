@@ -27,6 +27,9 @@ class AddManaOperation(Operation):
         self.mana = mana
         self.amount = amount
 
+    def lki_cards(self, state):
+        return self.source_lki_cards()
+
     def execute(self, state):
         """!
         @brief Add mana to the controller's pool and emit a production event.
@@ -73,6 +76,9 @@ class SpendManaOperation(Operation):
         # Freeze the solver-selected payment so later mutations of the source
         # mapping cannot change what this operation intends to pay.
         self.payment = ImmutableManaPool(payment)
+
+    def lki_cards(self, state):
+        return self.source_lki_cards()
 
     def validation_error(self, state):
         """!
@@ -201,6 +207,9 @@ class PayLifeOperation(Operation):
             raise ValueError("A life payment must be a nonnegative integer.")
 
         self.amount = amount
+
+    def lki_cards(self, state):
+        return self.source_lki_cards()
 
     def validation_error(self, state):
         """!

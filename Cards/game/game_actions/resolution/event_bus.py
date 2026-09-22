@@ -126,19 +126,25 @@ def capture_trigger_roster(state):
     return tuple(getter(None)) if getter is not None else ()
 
 
-def capture_card_information(state):
+def capture_card_information(state, cards=None):
     """!
     @brief Capture last-known information for every card in the game state.
 
     @param state Current game state.
     @return Mapping from card identity to its current LKI snapshot.
     """
-    getter = getattr(state, "get_cards", None)
+    if cards is None:
+        getter = getattr(state, "get_cards", None)
 
-    if getter is None:
-        return {}
+        if getter is None:
+            return {}
 
-    return {id(card): capture_single_card(state, card) for card in getter()}
+        cards = getter()
+
+    return {
+        id(card): capture_single_card(state, card)
+        for card in cards
+    }
 
 
 def capture_single_card(state, card):

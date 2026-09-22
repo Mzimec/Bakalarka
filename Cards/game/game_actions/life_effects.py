@@ -28,6 +28,9 @@ class GainLifeOperation(Operation):
 
         self.amount = amount
 
+    def lki_cards(self, state):
+        return self.source_lki_cards()
+
     def execute(self, state):
         """!
         @brief Apply the life gain to the context controller.

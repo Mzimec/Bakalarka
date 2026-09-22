@@ -2,11 +2,39 @@
 
 from __future__ import annotations
 
+from collections import Counter
+
 from .event_bus import (
     capture_card_information,
     capture_event,
     capture_trigger_roster,
 )
+
+
+def _lki_cards_for_batch(state, operations, before, stats=None):
+    cards = {}
+
+    for ability in before:
+        source = getattr(ability, "source", None)
+
+        if getattr(source, "zone_revision", None) is not None:
+            cards[id(source)] = source
+
+    for operation in operations:
+        operation_cards = operation.lki_cards(state)
+
+        if operation_cards is None:
+            if stats is not None:
+                stats.lki_fallback_by_operation[
+                    type(operation).__name__
+                ] += 1
+
+            return None
+
+        for card in operation_cards:
+            cards[id(card)] = card
+
+    return tuple(cards.values())
 
 
 class OperationExecutor:
@@ -18,6 +46,13 @@ class OperationExecutor:
     are applied, and all generated events are bound to triggers against the
     same before/after snapshots.
     """
+    def __init__(self):
+        self.lki_batches = 0
+        self.lki_full_batches = 0
+        self.lki_selective_batches = 0
+        self.lki_cards_captured = 0
+        self.lki_zero_card_batches = 0
+        self.lki_fallback_by_operation = Counter()
 
     def execute(self, state, operation):
         """!
@@ -47,8 +82,32 @@ class OperationExecutor:
         """
         # All events in this batch share the same pre-mutation trigger roster
         # and last-known card information.
+        operations = tuple(operations)
+
         before = capture_trigger_roster(state)
-        information = capture_card_information(state)
+
+        self.lki_batches += 1
+
+        lki_cards = _lki_cards_for_batch(
+            state,
+            operations,
+            before,
+            self,
+        )
+
+        if lki_cards is None:
+            self.lki_full_batches += 1
+        else:
+            self.lki_selective_batches += 1
+            self.lki_cards_captured += len(lki_cards)
+
+            if not lki_cards:
+                self.lki_zero_card_batches += 1
+
+        information = capture_card_information(
+            state,
+            lki_cards,
+        )
 
         events = []
         lifelink = {}
@@ -164,3 +223,19 @@ class OperationExecutor:
             )
 
         return captured_events
+
+    def print_lki_stats(self):
+        print("LKI profiling")
+        print(f"  batches:          {self.lki_batches}")
+        print(f"  selective:        {self.lki_selective_batches}")
+        print(f"  full fallback:    {self.lki_full_batches}")
+        print(f"  zero-card:        {self.lki_zero_card_batches}")
+
+        if self.lki_selective_batches:
+            average = self.lki_cards_captured / self.lki_selective_batches
+            print(f"  avg cards/batch:  {average:.2f}")
+
+        print("  fallback by operation:")
+
+        for name, count in self.lki_fallback_by_operation.most_common():
+            print(f"    {name}: {count}")
