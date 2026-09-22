@@ -223,17 +223,46 @@ class CardRuntimeState:
             on_change,
         )
 
-        self.damage_marked: int = (
+        self._damage_marked: int = (
             damage_marked
             if damage_marked is not None
             else 0
         )
 
         self.face_down: bool = face_down
-        self.damage_by_deathtouch = False
+        self._damage_by_deathtouch = False
+        self._skip_untap = None
         self.mana_x = 0
 
         self._anchored_modifiers: list[str] = []
+
+    @property
+    def skip_untap(self):
+        """Optional (zone revision, player) marker, consumed at that player's untap."""
+        return self._skip_untap
+
+    @skip_untap.setter
+    def skip_untap(self, value):
+        self._skip_untap = value
+        self._on_change()
+
+    @property
+    def damage_marked(self):
+        return self._damage_marked
+
+    @damage_marked.setter
+    def damage_marked(self, value):
+        self._damage_marked = value
+        self._on_change()
+
+    @property
+    def damage_by_deathtouch(self):
+        return self._damage_by_deathtouch
+
+    @damage_by_deathtouch.setter
+    def damage_by_deathtouch(self, value):
+        self._damage_by_deathtouch = value
+        self._on_change()
 
     @property
     def tapped(self):
@@ -617,6 +646,15 @@ class Card(HasModifiableStats, Attachable):
 
         self._notify_changed()
 
+    @property
+    def is_token(self):
+        return self._is_token
+
+    @is_token.setter
+    def is_token(self, value):
+        self._is_token = value
+        self._notify_changed()
+
     def _notify_changed(self) -> None:
         """!
         @brief Notify the owning game state that indexed card data may be stale.
@@ -935,6 +973,12 @@ class Card(HasModifiableStats, Attachable):
             else {}
         )
 
+        # Playing a land is represented explicitly, independently of intrinsic mana.
+        if CardType.LAND in self.get_types(state):
+            from game.rules.lands import PLAY_LAND_DEFINITION
+            if PLAY_LAND_DEFINITION.key not in definitions:
+                intrinsic = {PLAY_LAND_DEFINITION.key: PLAY_LAND_DEFINITION, **intrinsic}
+
         if not intrinsic:
             return definitions
 
@@ -955,15 +999,21 @@ class Card(HasModifiableStats, Attachable):
         @param state Current game state.
         @return Ability definitions legal to activate from the current zone.
         """
-        from ..game_actions.data_structs.ability import AbilityCollection
+        from ..game_actions.data_structs.ability import AbilityCollection, PlayLandAbilityDefinition
 
         return AbilityCollection(
             {
                 k: v
                 for k, v in self.get_ability_defs(state).items()
-                if v.is_usable_in_zone(self.zone)
+                if v.is_usable_in_zone(self.zone) and not isinstance(v, PlayLandAbilityDefinition)
             }
         )
+
+    def get_land_play_ability_defs(self, state):
+        """Return intrinsic and effect-granted land-play permissions."""
+        from ..game_actions.data_structs.ability import PlayLandAbilityDefinition
+        return {key: definition for key, definition in self.get_ability_defs(state).items()
+                if isinstance(definition, PlayLandAbilityDefinition)}
 
     def get_ability_def(
         self,
@@ -989,8 +1039,6 @@ class Card(HasModifiableStats, Attachable):
 
         @return Runtime `Ability`, or `None` if absent/unusable.
         """
-        from ..game_actions.data_structs.ability import Ability
-
         definitions = (
             self.get_ability_defs(state)
             if state is not None
@@ -1011,11 +1059,7 @@ class Card(HasModifiableStats, Attachable):
             else self.owner
         )
 
-        return Ability(
-            definition,
-            self,
-            controller,
-        )
+        return definition.to_ability(self, controller)
 
     # Triggers methods
     def get_trigger_defs(

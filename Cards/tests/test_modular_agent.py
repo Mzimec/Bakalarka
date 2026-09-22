@@ -1,4 +1,5 @@
 """Regression contracts for modular decisions, model isolation and configured runs."""
+from game.ai.decision_maker import DeclareAttackersRequest, PriorityDecisionRequest
 
 import json
 from pathlib import Path
@@ -38,7 +39,7 @@ def test_modular_agent_casts_discounted_spell_without_mutating_during_planning()
     add(state, "Cloudkin Seer")
     islands = [add(state, "Island") for _ in range(2)]
     words = add(state, "Winged Words", Z.HAND)
-    action = player.controller.get_action(state, player)
+    action = player.controller.decide(PriorityDecisionRequest(state, player)).value
     assert action.source is words
     assert not any(c.is_tapped for c in islands)
     assert words.get_zone() == Z.HAND
@@ -112,7 +113,54 @@ def test_attack_policy_avoids_obvious_losing_trade():
     attacker.controlled_since = 0
     state.combat.begin()
     state.turn.phase = P.DECLARE_ATTACKERS
-    assert state.players[0].controller.choose_attackers(state, state.players[0]) == {}
+    assert state.players[0].controller.decide(DeclareAttackersRequest(state, state.players[0])).value.declarations == {}
+
+
+def test_injected_combat_strategy_is_validated_before_evaluation():
+    from game.game_actions.generation.decision_abstraction.options import DeclareBlockersOption
+    from game.stat_type import STAT_KEYWORDS
+    state = board()
+    attacker = add(state, "Goblin Gang Leader")
+    attacker.set_base_stat(STAT_KEYWORDS, frozenset({"menace", "haste"}))
+    blocker = add(state, "Impassioned Orator", player=1)
+    state.combat.begin()
+    state.turn.phase = P.DECLARE_ATTACKERS
+    state.combat.declare_attackers(state.players[0], {attacker: state.players[1]})
+    state.turn.phase = P.DECLARE_BLOCKERS
+    evaluated = []
+
+    class Proposals:
+        def generate(self, request):
+            yield DeclareBlockersOption({blocker: attacker})
+            yield DeclareBlockersOption({})
+
+    class Evaluator:
+        def block_score(self, request, option):
+            evaluated.append(option)
+            return 42
+
+    candidates = CombatPolicy(blockers_strategy=Proposals(), evaluator=Evaluator()).blockers(
+        state, state.players[1],
+    )
+    assert evaluated == [DeclareBlockersOption({})]
+    assert len(candidates) == 1 and candidates[0].score == 42
+    assert state.combat.blockers == {}
+
+
+def test_bounded_combat_keeps_mandatory_block_proposal_before_search_budget():
+    from game.stat_type import STAT_KEYWORDS
+    state = board()
+    attacker = add(state, "Goblin Gang Leader")
+    attacker.set_base_stat(STAT_KEYWORDS, frozenset({"must be blocked by all", "haste"}))
+    blockers = [add(state, "Impassioned Orator", player=1) for _ in range(3)]
+    state.combat.begin()
+    state.turn.phase = P.DECLARE_ATTACKERS
+    state.combat.declare_attackers(state.players[0], {attacker: state.players[1]})
+    state.turn.phase = P.DECLARE_BLOCKERS
+    candidates = CombatPolicy(max_assignments=1).blockers(state, state.players[1])
+    assert [c.action for c in candidates] == [dict.fromkeys(blockers, attacker)]
+    assert state.players[1].controller.decisions == 0
+    assert state.combat.blockers == {}
 
 
 @pytest.mark.parametrize("config", [

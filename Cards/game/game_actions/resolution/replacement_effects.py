@@ -245,7 +245,14 @@ def active_effects(state):
 
     desired = {}
 
-    for card in getattr(state, "get_cards", lambda: ())():
+    from helper.query_system.query import EqQuery
+    from ...game_state.registers.card_register import IK_STATIC_REPLACEMENT
+
+    candidates = (
+        state.query_cards(EqQuery(IK_STATIC_REPLACEMENT, True))
+        if hasattr(state, "query_cards") else ()
+    )
+    for card in candidates:
         for index, definition in enumerate(card.definition.replacement_effects):
             if card.get_zone() in definition.active_zones:
                 identity = (
@@ -400,20 +407,11 @@ class ReplacementResolver:
                     if affected_player(state, op) is player
                 )
 
-                choose_order = getattr(
-                    player.decision_maker,
-                    "order_replacement_events",
-                    None,
-                )
-
-                if choose_order and len(group) > 1:
-                    chosen = tuple(
-                        choose_order(
-                            state,
-                            player,
-                            group,
-                        )
-                    )
+                if len(group) > 1:
+                    from ...ai.decision_maker import ReplacementOrderRequest
+                    chosen = player.decision_maker.decide(
+                        ReplacementOrderRequest(state, player, group)
+                    ).value.items
 
                     if sorted(map(id, chosen)) != sorted(map(id, group)):
                         raise ValueError(
@@ -502,21 +500,10 @@ class ReplacementResolver:
                 operation,
             )
 
-            choose = getattr(
-                getattr(player, "decision_maker", None),
-                "choose_replacement",
-                None,
-            )
-
+            from ...ai.decision_maker import ReplacementRequest, ReplacementAcceptanceRequest
             selected = (
-                choose(
-                    state,
-                    player,
-                    operation,
-                    candidates,
-                )
-                if choose and len(candidates) > 1
-                else candidates[0]
+                player.decision_maker.decide(ReplacementRequest(state, player, operation, candidates)).value.selected
+                if player is not None and len(candidates) > 1 else candidates[0]
             )
 
             if not any(
@@ -530,21 +517,12 @@ class ReplacementResolver:
             next_applied = applied | {id(selected)}
 
             if isinstance(selected, ReplacementEffect):
-                accept = getattr(
-                    getattr(player, "decision_maker", None),
-                    "accept_replacement",
-                    None,
-                )
-
                 if (
                     selected.definition.optional
-                    and accept
-                    and not accept(
-                        state,
-                        player,
-                        operation,
-                        selected,
-                    )
+                    and player is not None
+                    and not player.decision_maker.decide(
+                        ReplacementAcceptanceRequest(state, player, operation, selected)
+                    ).value.accept
                 ):
                     # Declining still marks this effect as considered for this
                     # event lineage so it is not offered repeatedly.

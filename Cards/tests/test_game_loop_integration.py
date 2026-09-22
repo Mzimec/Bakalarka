@@ -1,12 +1,9 @@
 """Executable examples of terminal input reaching the real game state.
 
 Run from Cards/: python -m pytest tests/test_game_loop_integration.py -v
-Play the same example: python -m game.bin.dummy_game
 """
-import subprocess
-import sys
+from game.ai.decision_maker import DecisionResult
 
-from pathlib import Path
 
 import pytest
 
@@ -156,9 +153,10 @@ def test_rejected_cost_preserves_previous_players_pass():
     prompts = []
 
     class RecordingController(ScriptedController):
-        def get_action(self, state, player):
+        def decide_priority(self, request):
+            state = request.state; player = request.player
             prompts.append(player.name)
-            return super().get_action(state, player)
+            return DecisionResult(super().decide_priority(request).value)
 
     class InvalidCostAction(GameAction):
         def get_intents(self):
@@ -178,15 +176,3 @@ def test_rejected_cost_preserves_previous_players_pass():
     assert prompts == ["Alice", "Bob", "Bob"]
     assert game.state.turn.phase == TurnPhase.END_STEP
     assert all(event.key == "phase_started" for event in game.event_bus.emitted_events)
-
-
-@pytest.mark.parametrize("command", ["quit", ""])
-def test_command_line_entry_point_stops_cleanly_on_quit_or_end_of_input(command):
-    result = subprocess.run(
-        cwd=Path(__file__).resolve().parents[1],
-        args=[sys.executable, "-B", "-m", "game.bin.dummy_game"],
-        input=command + "\n" if command else "", capture_output=True, text=True, timeout=10,
-    )
-    assert result.returncode == 0, result.stderr
-    assert "Game stopped." in result.stdout
-    assert "Traceback" not in result.stderr

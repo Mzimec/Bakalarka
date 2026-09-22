@@ -143,6 +143,12 @@ class LethalCreaturesRule(StateBasedAction):
         from ...operations.card_operations import MoveCardOperation
         from ..data_structs.game_action import ResolutionContext
 
+        from helper.query_system.query import EqQuery
+        from ...game_state.registers.card_register import IK_ZONE, IK_TYPE
+
+        candidates = state.query_cards(
+            EqQuery(IK_ZONE, ZoneType.BATTLEFIELD) & EqQuery(IK_TYPE, CardType.CREATURE)
+        ) if hasattr(state, "query_cards") else ()
         return [
             SBAViolation(
                 (
@@ -156,10 +162,8 @@ class LethalCreaturesRule(StateBasedAction):
                     ),
                 )
             )
-            for card in getattr(state, "get_cards", lambda: ())()
-            if card.get_zone() == ZoneType.BATTLEFIELD
-            and CardType.CREATURE in card.get_types(state)
-            and card.get_toughness(state) is not None
+            for card in candidates
+            if card.get_toughness(state) is not None
             and (
                 # Zero or negative toughness ignores indestructible.
                 card.get_toughness(state) <= 0
@@ -226,7 +230,15 @@ class PlayerLossRule(StateBasedAction):
 
         violations = []
 
-        for player in getattr(state, "players", ()):
+        from helper.query_system.query import EqQuery, RangeQuery
+        from ...game_state.registers.player_register import IK_HAS_LOST, IK_HEALTH, IK_FAILED_DRAW, IK_POISON
+        candidates = state.query_players(
+            EqQuery(IK_HAS_LOST, False) & (
+                RangeQuery(IK_HEALTH, max_value=0) | EqQuery(IK_FAILED_DRAW, True)
+                | RangeQuery(IK_POISON, min_value=10)
+            )
+        ) if hasattr(state, "query_players") else getattr(state, "players", ())
+        for player in candidates:
             if getattr(player, "has_lost", False):
                 continue
 

@@ -1,4 +1,5 @@
 """Current trigger API: real zones, event-time capture, priority, and choices."""
+from game.ai.decision_maker import DecisionResult, TriggerOrderOption
 from dataclasses import replace
 
 import pytest
@@ -238,8 +239,9 @@ def test_apnap_order_rotates_to_active_player(active):
 
 def test_controller_selects_order_and_no_fake_cost_entries_are_pushed():
     class ReverseController(ScriptedController):
-        def order_triggers(self, state, triggers):
-            return reversed(triggers)
+        def decide_trigger_order(self, request):
+            state = request.state; triggers = request.candidates
+            return DecisionResult(TriggerOrderOption(reversed(triggers)))
     state = make_state(controllers=[ReverseController(), ScriptedController()])
     source = add_card(state, "source")
     triggers = [TriggerAbility(trigger_def(key=key), source, state.active_player, GameEvent("test_event"))
@@ -250,8 +252,9 @@ def test_controller_selects_order_and_no_fake_cost_entries_are_pushed():
 
 def test_invalid_controller_order_is_rejected():
     class BadController(ScriptedController):
-        def order_triggers(self, state, triggers):
-            return []
+        def decide_trigger_order(self, request):
+            state = request.state; triggers = request.candidates
+            return DecisionResult(TriggerOrderOption([]))
     state = make_state(controllers=[BadController(), ScriptedController()])
     source = add_card(state, "source", [trigger_def()])
     with pytest.raises(ValueError, match="every pending trigger"):

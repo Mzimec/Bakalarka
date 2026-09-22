@@ -98,7 +98,10 @@ def refresh_continuous_effects(state):
 
         # Discover all static rules whose source currently occupies an active
         # zone. Runtime keys combine source identity with the rule-local key.
-        for card in state.get_cards():
+        from helper.query_system.query import EqQuery
+        from .registers.card_register import IK_STATIC_CONTINUOUS
+
+        for card in state.query_cards(EqQuery(IK_STATIC_CONTINUOUS, True)):
             for rule in card.definition.continuous_effects:
                 if card.get_zone() in rule.active_zones:
                     desired[f"{card.key}:{rule.key}"] = (rule, card)
@@ -120,14 +123,12 @@ def refresh_continuous_effects(state):
 
         # Non-static/resolved effects may also expire independently of the
         # source-zone synchronization above.
-        for key, effect in tuple(manager._continuous_effects.items()):
+        for effect in manager.register.expiration_candidates(state):
             if effect.is_over(state):
                 effect.detach(state)
-                manager.pop(key)
+                manager.pop(effect.key)
 
-        from .layers import modifier_layer
-
-        effects = tuple(manager._continuous_effects.values())
+        effects = manager.query()
 
         if not effects:
             state._effects_dirty = False
@@ -145,14 +146,13 @@ def refresh_continuous_effects(state):
 
         # One continuous effect can contribute modifiers in several layers, so
         # build a layer -> effects mapping before performing ordered evaluation.
-        layers = {}
-        for effect in effects:
-            for layer in {
-                modifier_layer(stat, mod)
-                for stat, mods in effect.modifiers.items()
-                for mod in mods
-            }:
-                layers.setdefault(layer, []).append(effect)
+        from .registers.effect_register import IK_EFFECT_LAYER
+        from ..enums import Layer
+
+        layers = {
+            layer: matching for layer in Layer
+            if (matching := manager.query(EqQuery(IK_EFFECT_LAYER, layer)))
+        }
 
         started = set()
 
@@ -165,7 +165,7 @@ def refresh_continuous_effects(state):
             # characteristics. Refresh the shared indexes before evaluating
             # target queries and dependencies for this layer.
             for card in cards:
-                state.card_register.mark_changed(card)
+                state.card_register.mark_layer_changed(card)
             state.card_register.synchronise()
 
             from .layer_dependencies import order_layer
@@ -186,7 +186,7 @@ def refresh_continuous_effects(state):
                 # register, which subsequent effects in the same/later layers
                 # may query.
                 for card in effect.state.currently_affected:
-                    state.card_register.mark_changed(card)
+                    state.card_register.mark_layer_changed(card)
                 state.card_register.synchronise()
 
         # Remove the temporary layer ceiling and expose the final fully-layered
@@ -194,7 +194,7 @@ def refresh_continuous_effects(state):
         state._layer_ceiling = None
 
         for card in cards:
-            state.card_register.mark_changed(card)
+            state.card_register.mark_layer_changed(card)
         state.card_register.synchronise()
 
         state._effects_dirty = False

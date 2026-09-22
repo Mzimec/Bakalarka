@@ -5,6 +5,9 @@ from .indexed_register import IndexedRegister
 
 IK_NAME = IndexKey[str]("player.name")
 IK_HEALTH = IndexKey[int]("player.health")
+IK_HAS_LOST = IndexKey[bool]("player.has_lost")
+IK_FAILED_DRAW = IndexKey[bool]("player.failed_draw")
+IK_POISON = IndexKey[int]("player.poison")
 IK_ALIVE = IndexKey[bool]("player.alive")
 
 
@@ -27,8 +30,8 @@ class PlayerRegister(IndexedRegister):
         """
         super().__init__(
             state,
-            (IK_NAME, IK_HEALTH, IK_ALIVE),
-            (IK_HEALTH,),
+            (IK_NAME, IK_HEALTH, IK_ALIVE, IK_HAS_LOST, IK_FAILED_DRAW, IK_POISON),
+            (IK_HEALTH, IK_POISON),
         )
 
     def index_values(self, player):
@@ -39,6 +42,9 @@ class PlayerRegister(IndexedRegister):
         @return Mapping from player index keys to immutable membership sets.
         """
         return {
+            IK_HAS_LOST: frozenset({player.has_lost}),
+            IK_FAILED_DRAW: frozenset({player.failed_draw}),
+            IK_POISON: frozenset({player.poison_counters}),
             IK_NAME: frozenset({player.name.casefold()}),
             IK_HEALTH: frozenset({player.health}),
             IK_ALIVE: frozenset({player.is_alive}),

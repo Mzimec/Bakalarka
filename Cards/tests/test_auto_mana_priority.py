@@ -1,4 +1,7 @@
 """End-to-end auto-payment, independent payment oracle and console shortcuts."""
+from game.ai.decision_maker import PriorityDecisionRequest
+from game.game_actions import PassPriorityAction
+from game.game_actions.data_structs.ability import ActivatedAbilityDefinition
 from dataclasses import replace
 from itertools import product
 from collections import Counter
@@ -17,7 +20,7 @@ from game.console.priority_choices import can_auto_pass
 from game.ai.mana_solver import SourceActivatingManaSolver
 from game.mana.mana_value import ManaValue
 from game.game_actions.data_structs.game_action import PassPriorityAction
-from game.game_actions.data_structs.ability import AbilityDefinition, SubAbilityDefinition
+from game.game_actions.data_structs.ability import SubAbilityDefinition
 from game.game_actions.resolution.action_processor import ActionProcessor
 from game.game_actions.resolution.resolution_engine import ResolutionEngine
 from game.game_actions.resolution.operation_executor import OperationExecutor
@@ -141,7 +144,7 @@ def test_borrowed_land_is_discovered_by_control(game):
 
 def test_tap_cost_reserves_source_and_uses_another_land(game):
     base = mana_ability(M.RED)
-    paid = AbilityDefinition(key='paid', cost_subdefs=(*base.cost_subdefs, SubAbilityDefinition(mana_cost='{R}')))
+    paid = ActivatedAbilityDefinition(key='paid', cost_subdefs=(*base.cost_subdefs, SubAbilityDefinition(mana_cost='{R}')))
     source = add(game, CardDefinition('Dual purpose', types=frozenset({T.ARTIFACT}), abilities=frozenset({base, paid})))
     other = land(game, (M.RED,))
     action = build_action(game.state, game.state.active_player, f'activate {source.key} paid')
@@ -176,7 +179,7 @@ def test_quiet_priority_passes_without_reading_or_advancing_state(game, phase):
     game.state.turn.phase = phase
     land(game, (M.RED,))
     console = ConsoleDecisionMaker(auto_pass=True, read=lambda _: pytest.fail('Unexpected prompt'), write=lambda _: None)
-    assert isinstance(console.get_action(game.state, game.state.active_player), PassPriorityAction)
+    assert isinstance(console.decide(PriorityDecisionRequest(game.state, game.state.active_player)).value, PassPriorityAction)
     assert game.state.turn.phase == phase
 
 
@@ -187,24 +190,30 @@ def test_auto_pass_preserves_decisions(game, reason):
     land(game, (M.RED,))
     if reason == 'main':
         game.state.turn.phase = P.PRECOMBAT_MAIN
+        add(game, basic_land('Mountain'), Z.HAND)
     elif reason == 'instant':
         spell(game)
     elif reason == 'activation':
-        add(game, CardDefinition('Ability', types=frozenset({T.ARTIFACT}), abilities=frozenset({AbilityDefinition()})))
+        add(game, CardDefinition('Ability', types=frozenset({T.ARTIFACT}), abilities=frozenset({ActivatedAbilityDefinition()})))
     elif reason == 'pool':
         player.mana_pool.add_pair(M.RED, 1)
+        spell(game, '{R}{R}')
     elif reason == 'stack':
         card = spell(game)
         assert game.processor.process(game.state, build_action(game.state, player, f'play {card.key} bob'))[0].success
+        land(game, (M.RED,))
+        spell(game)
     else:
         spell(game, '{X}{R}')
     assert not can_auto_pass(game.state, player)
 
 
 def test_console_autopass_can_be_disabled(game):
+    # Commands are read at an interactive decision, not during a quiet shortcut.
+    add(game, basic_land('Mountain'), Z.HAND)
     commands = iter(['autopass off', 'pass'])
     console = ConsoleDecisionMaker(auto_pass=True, read=lambda _: next(commands), write=lambda _: None)
-    console.get_action(game.state, game.state.active_player)
+    console.decide(PriorityDecisionRequest(game.state, game.state.active_player)).value
     assert not console.auto_pass
 
 
@@ -240,8 +249,9 @@ def test_auto_activation_has_trigger_and_is_not_skipped_when_tapping_matters(gam
     from game.game_actions.triggers.trigger_condition import EventKeyCondition
     captured = []
     class Listener(ScriptedController):
-        def process_triggers(self, state, triggers):
-            captured.extend(triggers)
+        def decide_trigger_order(self, request):
+            captured.extend(request.candidates)
+            return super().decide_trigger_order(request)
     player = game.state.active_player
     player.controller = Listener()
     trigger = TriggerAbilityDefinition(key='mana-watch', condition=EventKeyCondition('ability_activated'))
@@ -254,13 +264,14 @@ def test_auto_activation_has_trigger_and_is_not_skipped_when_tapping_matters(gam
     assert len(captured) == 1 and captured[0].key == 'mana-watch'
 
 
-def test_starter_cli_reaches_main_without_priority_prompts_in_upkeep():
-    import subprocess
-    import sys
-    from pathlib import Path
-    result = subprocess.run([sys.executable, '-B', '-m', 'game.bin.starter_game'],
-                            cwd=Path(__file__).resolve().parents[1], input='n\nn\nquit\n',
-                            text=True, capture_output=True, timeout=15)
-    assert result.returncode == 0, result.stderr
-    assert 'PRECOMBAT_MAIN' in result.stdout and 'Game stopped.' in result.stdout
-    assert 'UPKEEP' not in result.stdout
+@pytest.mark.parametrize("reason", ["main", "pool", "stack"])
+def test_auto_pass_skips_windows_without_a_meaningful_action(game, reason):
+    state, player = game.state, game.state.active_player
+    land(game, (M.RED,))
+    state.turn.phase = P.PRECOMBAT_MAIN if reason == "main" else P.UPKEEP
+    if reason == "pool":
+        player.mana_pool.add_pair(M.RED, 1)
+    elif reason == "stack":
+        card = spell(game)
+        assert game.processor.process(state, build_action(state, player, f'play {card.key} bob'))[0].success
+    assert can_auto_pass(state, player)

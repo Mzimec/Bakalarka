@@ -23,17 +23,20 @@ def make_controller(config, *, seed, max_decisions):
     """!
     @brief Compose a player controller and its bounded decision policies.
     """
-    known_keys(config, ("type", "candidates", "combat", "llm", "parameters", "payment", "candidate_limit"), "agent")
+    known_keys(config, ("type", "candidates", "combat", "llm", "parameters", "payment", "candidate_limit", "auto_pass"), "agent")
+    auto_pass = config.get("auto_pass", True)
+    if type(auto_pass) is not bool:
+        raise ValueError("auto_pass must be a boolean.")
     kind = config.get("type", "modular")
-    if kind in ("human", "simple") and set(config) - {"type"}:
+    if kind in ("human", "simple") and set(config) - {"type", "auto_pass"}:
         raise ValueError("Auxiliary policies require a modular or LLM agent.")
     if kind != "llm" and "llm" in config:
         raise ValueError("LLM settings require agent type llm.")
     if kind == "human":
         from game.console.demo_game import ConsoleDecisionMaker
-        return ConsoleDecisionMaker(auto_pass=True)
+        return ConsoleDecisionMaker(auto_pass=auto_pass)
     if kind == "simple":
-        return SimpleAgent(max_decisions=max_decisions)
+        return SimpleAgent(max_decisions=max_decisions, auto_pass=auto_pass)
     if kind not in ("modular", "llm"):
         raise ValueError(f"Unknown agent type: {kind}.")
     proposal = config.get("candidates", {})
@@ -42,7 +45,7 @@ def make_controller(config, *, seed, max_decisions):
     known_keys(combat, ("max_assignments",), "combat")
     parameters = config.get("parameters", {})
     known_keys(parameters, ("max_x",), "parameters")
-    from game.ai.mana_solver import PoolManaSolver, SourceActivatingManaSolver
+    from game.mana.mana_solver import PoolManaSolver, SourceActivatingManaSolver
     payment = config.get("payment", "automatic")
     if payment not in ("automatic", "pool"):
         raise ValueError("Payment must be automatic or pool.")
@@ -59,7 +62,7 @@ def make_controller(config, *, seed, max_decisions):
                                                      parameters=ParameterPolicy(**parameters)),
                         combat=CombatPolicy(**combat), selector=selector,
                         candidate_limit=config.get("candidate_limit", 32),
-                        max_decisions=max_decisions)
+                        max_decisions=max_decisions, auto_pass=auto_pass)
 
 
 def run_config(path, *, output=None, seed=None):

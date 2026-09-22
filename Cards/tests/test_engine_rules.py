@@ -1,13 +1,15 @@
 """Cross-system regressions: complete turns, triggers, targeting and SBA boundaries."""
+from game.ai.decision_maker import DecisionResult, DeclareAttackersOption, DeclareBlockersOption
+from game.game_actions import PassPriorityAction
 from dataclasses import replace
 import pytest
 from game.enums import CardType, TurnPhase as P, ZoneType as Z, ManaType
 from game.game_state import Card, CardDefinition, Player, State
-from game.game_state.player import DecisionMaker
+from game.ai.decision_maker import ModularDecisionMaker as DecisionMaker
 from game.console.demo_game import create_demo_game, build_action
 from game.cards.demo_cards import BEAST, WATCHER
 from game.game_loop.minimal_game import ScriptedController
-from game.game_actions.data_structs.ability import TriggerAbilityDefinition, AbilityDefinition, SubAbilityDefinition
+from game.game_actions.data_structs.ability import TriggerAbilityDefinition
 from game.game_actions.data_structs.action_node import EffectActionNode, ImmutableEffectToSlotMap
 from game.game_actions.triggers.trigger_condition import SpellCastCondition, StepCondition, DiesCondition
 from game.game_actions.resolution.event_bus import EventBus
@@ -23,15 +25,18 @@ class RecordingController(DecisionMaker):
         self.attacks = {}
         self.blocks = {}
 
-    def get_action(self, state, player):
+    def decide_priority(self, request):
+        state = request.state; player = request.player
         self.calls.append((state.turn.number, state.turn.phase, player, len(state.stack.items)))
-        return None
+        return DecisionResult(PassPriorityAction(player))
 
-    def choose_attackers(self, state, player):
-        return self.attacks
+    def decide_attackers(self, request):
+        state = request.state; player = request.player
+        return DecisionResult(DeclareAttackersOption(self.attacks))
 
-    def choose_blockers(self, state, player):
-        return self.blocks
+    def decide_blockers(self, request):
+        state = request.state; player = request.player
+        return DecisionResult(DeclareBlockersOption(self.blocks))
 
 
 def game(expanded=False):

@@ -127,25 +127,24 @@ def test_mana_ability_defaults_to_immediate_resolution():
 def test_trigger_dispatch_starts_with_active_player_and_keeps_controller_pairs():
     dispatched = []
 
-    class Controller:
+    from game.ai.decision_maker import ModularDecisionMaker, DecisionResult, TriggerOrderOption
+    from tests.test_triggered_abilities import make_state, add_card, trigger_def
+    from game.game_actions.resolution.event_bus import GameEvent
+
+    class Controller(ModularDecisionMaker):
         def __init__(self, name):
             self.name = name
 
-        def process_triggers(self, state, triggers):
-            dispatched.append((self.name, list(triggers)))
+        def decide_trigger_order(self, request):
+            dispatched.append((self.name, list(request.candidates)))
+            return DecisionResult(TriggerOrderOption(request.candidates))
 
-    first = SimpleNamespace(idx=3, controller=Controller("first"))
-    active = SimpleNamespace(idx=8, controller=Controller("active"))
-    last = SimpleNamespace(idx=12, controller=Controller("last"))
-    state = SimpleNamespace(active_players=(first, active, last), active_player=active)
-    first_trigger = SimpleNamespace(controller=first)
-    active_trigger = SimpleNamespace(controller=active)
-    last_trigger = SimpleNamespace(controller=last)
+    state = make_state(3, 1, controllers=[Controller(name) for name in ("first", "active", "last")])
+    for player in state.players:
+        add_card(state, player.name.lower().replace(" ", "-"), [trigger_def()], player=player)
+    triggers = state.get_triggered_abilities(GameEvent("test_event"))
+    TriggerProcessor().process(state, triggers)
 
-    TriggerProcessor().process(state, [first_trigger, last_trigger, active_trigger])
-
-    assert dispatched == [
-        ("active", [active_trigger]),
-        ("last", [last_trigger]),
-        ("first", [first_trigger]),
-    ]
+    assert [name for name, _ in dispatched] == ["active", "last", "first"]
+    assert [group[0].controller for _, group in dispatched] == [state.players[i] for i in (1, 2, 0)]
+    assert len(state.stack.items) == 3

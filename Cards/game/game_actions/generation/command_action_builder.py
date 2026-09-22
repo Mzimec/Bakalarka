@@ -22,19 +22,8 @@ Keeping both cases on the same generation pipeline avoids duplicating
 rules for targeting, modal selection, mana payment, and cost execution.
 """
 
-from .ability_action_gen_pipeline import AbilityActionGenerationPipeline
 from .subability_generator import FixedSubAbilityGenerator
-from .exec_plan_gen_pipeline import ExecutionPlanPipeline
-from .generation_strategy import ActionGenerationStrategy, ExecutionPlanStrategy
-from .action_node_option_generator import (
-    FullActionNodeOptionGenerator,
-    SelectedActionNodeOptionGenerator,
-)
-from .target_binding_generator import (
-    ProvidedTargetBindingGenerator,
-    FullTargetBindingGenerator,
-)
-from ...ai.mana_solver import SourceActivatingManaSolver
+from .generation_strategy import action_generation_strategy
 
 
 def ability_actions(
@@ -104,83 +93,15 @@ def ability_actions(
             by the underlying generation pipeline.
     """
 
-    # Build one strategy object describing how every stage of action
-    # generation should behave for this particular call. The underlying
-    # pipeline remains generic; this adapter chooses exhaustive or
-    # caller-restricted generators depending on the supplied arguments.
-    strategy = ActionGenerationStrategy(
-        # The runtime `Ability` already determines which concrete
-        # sub-abilities belong to this activation, so no additional
-        # modal/sub-ability search is required at this level.
+    strategy = action_generation_strategy(
         subability_gen=FixedSubAbilityGenerator(),
-
-        # Cost execution plans are generated independently from the
-        # main effect execution plans. This covers costs such as tapping,
-        # sacrificing, discarding, paying mana, etc.
-        cost_pipeline=ExecutionPlanPipeline(),
-        cost_strategy=ExecutionPlanStrategy(
-            (
-                # No explicit cost mode means the generator should
-                # enumerate every legal ActionNodeOption produced by
-                # the cost's action-node structure.
-                FullActionNodeOptionGenerator()
-                if cost_mode is None
-
-                # When the caller already selected a cost mode, restrict
-                # generation to that one option and use the pipeline as
-                # a legality check for the supplied choice.
-                else SelectedActionNodeOptionGenerator(cost_mode)
-            ),
-
-            # Cost targets are considered caller-provided rather than
-            # exhaustively searched here. The default empty tuple is the
-            # explicit binding for costs that require no target/resource
-            # choice.
-            ProvidedTargetBindingGenerator(cost_targets),
-
-            # Mana payment may require activating mana-producing sources
-            # (e.g. tapping lands). The solver incorporates those source
-            # activations into the concrete cost execution plan.
-            SourceActivatingManaSolver(),
-        ),
-
-        # The actual effect of the ability is compiled through the same
-        # generic execution-plan machinery, but with different target
-        # and option generation policies.
-        action_pipeline=ExecutionPlanPipeline(),
-        action_strategy=ExecutionPlanStrategy(
-            (
-                # AI/exhaustive usage: enumerate all legal effect modes.
-                FullActionNodeOptionGenerator()
-                if mode is None
-
-                # Player-selected usage: validate only the chosen mode.
-                else SelectedActionNodeOptionGenerator(mode)
-            ),
-            (
-                # `None` intentionally means "search all legal targets".
-                # This distinction is important because an empty tuple
-                # instead represents an explicit choice of no targets.
-                FullTargetBindingGenerator()
-                if targets is None
-
-                # A supplied target tuple is treated as the exact player
-                # selection that should be validated by the pipeline.
-                else ProvidedTargetBindingGenerator(targets)
-            ),
-
-            # Effect execution itself does not pay mana; mana belongs to
-            # the cost side of the ability and is therefore solved by the
-            # cost strategy above.
-            None,
-        ),
+        targets=targets, cost_targets=cost_targets, mode=mode, cost_mode=cost_mode,
     )
 
     # Delegate all legality checks and cartesian composition of
     # sub-abilities, cost plans, and effect plans to the canonical
     # generation pipeline.
-    yield from AbilityActionGenerationPipeline().generate(
-        ability,
+    yield from ability.generate_actions(
         strategy,
         state,
         x_value=x_value,

@@ -1,4 +1,7 @@
 """CR 111, 301, 303, 306, 606, 704: regressions through the real pipeline."""
+from game.ai.decision_maker import DecisionResult, LegendOption
+from game.game_actions import PassPriorityAction
+from game.game_actions.data_structs.ability import ActivatedAbilityDefinition
 from dataclasses import replace
 from itertools import product
 
@@ -7,10 +10,10 @@ from immutabledict import immutabledict
 
 from game.enums import CardType as T, CardSubtype as S, CounterType as C, ZoneType as Z, TurnPhase as P
 from game.game_state import Card, CardDefinition, Player, State
-from game.game_state.player import DecisionMaker
+from game.ai.decision_maker import ModularDecisionMaker as DecisionMaker
 from game.game_state.modifier import AddIntModifier
 from game.stat_type import STAT_POWER, STAT_TOUGHNESS, STAT_TYPES
-from game.game_actions.data_structs.ability import AbilityDefinition, SubAbilityDefinition, TriggerAbilityDefinition
+from game.game_actions.data_structs.ability import SubAbilityDefinition, TriggerAbilityDefinition
 from game.game_actions.data_structs.action_node import EffectActionNode, ImmutableEffectToSlotMap
 from game.game_actions.data_structs.game_action import ResolutionContext, ScheduledResolution, FixedExecutionPlan, AbilityAction
 from game.game_actions.resolution.action_processor import ActionProcessor
@@ -27,11 +30,13 @@ from game.console.console_commands import CommandError
 
 
 class Controller(DecisionMaker):
-    def get_action(self, state, player):
-        return None
+    def decide_priority(self, request):
+        state = request.state; player = request.player
+        return DecisionResult(PassPriorityAction(player))
 
-    def choose_legend(self, state, player, cards):
-        return cards[-1]
+    def decide_legend(self, request):
+        state = request.state; player = request.player; cards = request.candidates
+        return DecisionResult(LegendOption(cards[-1]))
 
 
 @pytest.fixture
@@ -65,7 +70,7 @@ def resolve(game, *operations):
 
 
 def activate(game, card, cost, *, effects=(), costs=()):
-    definition = AbilityDefinition(key="loyalty", loyalty_cost=cost)
+    definition = ActivatedAbilityDefinition(key="loyalty", loyalty_cost=cost)
     action = AbilityAction("loyalty", card, FixedExecutionPlan(list(effects)), FixedExecutionPlan(list(costs)),
                            controller=card.get_controller(game[0]), ability=definition)
     return game[2].process(game[0], action)
@@ -192,7 +197,7 @@ def test_loyalty_reset_after_blink_but_not_control_change(game):
 
 def test_loyalty_ability_works_via_command_builder(game):
     effect = CreateTokenEffect("soldier", UNIT)
-    ability = AbilityDefinition(key="recruit", loyalty_cost=-1, action_subdefs=(SubAbilityDefinition(
+    ability = ActivatedAbilityDefinition(key="recruit", loyalty_cost=-1, action_subdefs=(SubAbilityDefinition(
         action_node=EffectActionNode(ImmutableEffectToSlotMap({effect.key: frozenset()})), effects=frozenset({effect})),))
     walker = add(game, replace(WALKER, abilities=frozenset({ability})), key="walker")
     action = build_action(game[0], walker.owner, "activate walker recruit")
@@ -356,7 +361,7 @@ def test_loyalty_on_nonwalker_and_new_turn(game):
 def test_loyalty_rejected_during_opponents_turn_even_with_priority(game):
     walker = add(game, WALKER, player=1)
     game[0].priority.current_player = walker.owner
-    assert AbilityDefinition(loyalty_cost=1).validation_error(walker, walker.owner, game[0])
+    assert ActivatedAbilityDefinition(loyalty_cost=1).validation_error(walker, walker.owner, game[0])
     assert walker.state.counters[C.LOYALTY] == 4
 
 

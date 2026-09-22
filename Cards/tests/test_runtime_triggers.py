@@ -111,11 +111,10 @@ def mana_trigger_definition():
         ),
         effects=frozenset({effect}),
     )
-    return trigger_def(
-        EventKeyCondition("ability_activated"),
+    from game.game_actions.data_structs.ability import TriggeredManaAbilityDefinition
+    return TriggeredManaAbilityDefinition(
+        condition=EventKeyCondition("ability_activated"),
         key="bonus-red",
-        uses_stack=False,
-        is_mana_ability=True,
         action_subdefs=(action,),
     )
 

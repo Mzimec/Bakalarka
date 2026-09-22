@@ -1,3 +1,5 @@
+from game.ai.decision_maker import PriorityDecisionRequest
+from game.game_actions import PassPriorityAction
 from game.game_loop.minimal_game import DealDamageAction, MinimalPlayer, MinimalState, ScriptedController, create_minimal_game
 
 
@@ -8,8 +10,8 @@ def test_scripted_controller_returns_actions_then_passes():
     controller = ScriptedController([action])
     state = MinimalState((player, opponent))
 
-    assert controller.get_action(state, player) is action
-    assert controller.get_action(state, player) is None
+    assert controller.decide(PriorityDecisionRequest(state, player)).value is action
+    assert isinstance(controller.decide(PriorityDecisionRequest(state, player)).value, PassPriorityAction)
 
 
 def test_minimal_game_connects_action_resolution_events_and_game_loop():

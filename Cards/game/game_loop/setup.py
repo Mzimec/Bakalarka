@@ -4,7 +4,7 @@ Pregame changes deliberately do not emit gameplay draw/zone events. Special
 opening-hand abilities and alternative mulligan formats are outside this API.
 """
 
-from ..ai.decision_maker import decision_hook
+from ..ai.decision_maker import MulliganRequest, MulliganBottomRequest, StartingPlayerRequest
 from dataclasses import dataclass
 from random import Random
 
@@ -162,17 +162,9 @@ def _opening_hands(state, config):
         redraw = []
 
         for player in remaining:
-            choose = decision_hook(player.controller, "choose_mulligan")
-
             take = (
-                choose(
-                    state,
-                    player,
-                    counts[player],
-                )
-                if choose
-                and counts[player] < config.opening_hand_size
-                else False
+                player.controller.decide(MulliganRequest(state, player, counts[player])).value.take_mulligan
+                if counts[player] < config.opening_hand_size else False
             )
 
             if type(take) is not bool:
@@ -208,17 +200,9 @@ def _opening_hands(state, config):
         choices = []
 
         for player in redraw:
-            choose = decision_hook(player.controller, "choose_mulligan_bottom")
-
-            cards = tuple(
-                choose(
-                    state,
-                    player,
-                    counts[player],
-                )
-                if choose
-                else tuple(player.hand.values())[: counts[player]]
-            )
+            cards = player.controller.decide(
+                MulliganBottomRequest(state, player, counts[player])
+            ).value.cards
 
             if (
                 len(cards) != counts[player]
@@ -269,7 +253,7 @@ def create_game(
 
     Decks are validated and resolved first. If no starting player is supplied,
     a seeded coin flip chooses a winner who may select the starting player
-    through `choose_starting_player(players)`. The choice is made before runtime
+    through `decide(StartingPlayerRequest(...))`. The choice is made before runtime
     cards are created or opening hands are drawn.
 
     Pregame shuffling, drawing and mulligan movement intentionally bypass normal
@@ -324,17 +308,9 @@ def create_game(
     if starting_player_idx is None:
         winner = rng.randrange(2)
 
-        choose = getattr(
-            controllers[winner],
-            "choose_starting_player",
-            None,
-        )
-
-        starter = (
-            choose(players)
-            if choose
-            else players[winner]
-        )
+        starter = controllers[winner].decide(
+            StartingPlayerRequest(None, players[winner], players)
+        ).value.selected
 
         if not any(
             starter is player

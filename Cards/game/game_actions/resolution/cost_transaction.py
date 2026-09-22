@@ -183,10 +183,10 @@ class CostTransaction:
 
         # Remember pre-existing card identities so cards created during a
         # failed custom cost can be detached after rollback.
-        self.original_cards = {
-            id(card)
-            for card in getattr(state, "get_cards", lambda: ())()
-        }
+        register = getattr(state, "card_register", None)
+        self.registration_cursor = register.registration_cursor if register is not None else None
+        self.original_cards = ({id(card) for card in getattr(state, "get_cards", lambda: ())()}
+                               if register is None else None)
 
         self.checkpoint = RuntimeCheckpoint(state)
         self.events = []
@@ -211,11 +211,13 @@ class CostTransaction:
         """
         # Find cards created after the checkpoint before restoring the state's
         # original containers.
-        created = [
-            card
-            for card in getattr(self.state, "get_cards", lambda: ())()
-            if id(card) not in self.original_cards
-        ]
+        created = (
+            self.state.card_register.introduced_after(self.registration_cursor)
+            if self.registration_cursor is not None else [
+                card for card in getattr(self.state, "get_cards", lambda: ())()
+                if id(card) not in self.original_cards
+            ]
+        )
 
         self.checkpoint.rollback()
 

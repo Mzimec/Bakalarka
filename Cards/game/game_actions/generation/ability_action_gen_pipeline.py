@@ -185,52 +185,26 @@ class AbilityActionGenerationPipeline:
         if not isinstance(x_value, int) or isinstance(x_value, bool) or x_value < 0:
             raise ValueError("X must be a nonnegative integer.")
         ctx = ActionGenerationContext(_ability=ability, x_value=x_value, life_payment=life_payment)
-        if ability.definition.is_spell:
-            # Spells' mana cost comes from the card itself (accounting for
-            # any continuous cost-modifying effects), rather than from a
-            # sub-ability's cost definition.
-            ctx.mana_cost = ability.source.get_casting_cost(state)
+        ctx.mana_cost = ability.casting_mana_cost(state)
 
         for subability_result in strategy.subability_gen.generate(ctx, state):
             ctx.subability_gen_res = subability_result
 
-            for cost_execution_plan in strategy.cost_pipeline.generate(
-                ctx, subability_result.cost_subability, strategy.cost_strategy, state
-            ):
-                from ..data_structs.game_action import ResolutionContext
-                from dataclasses import replace
+            from .plan_validation import EXECUTION_PLAN_VALIDATOR
+            from .pruning.pruning_strategy import apply_pruning
 
-                cost_context = ResolutionContext(
-                    controller=ability.controller,
-                    source=ability.source,
-                    ability=ability.definition,
-                    action_key=ability.key,
-                    is_cost=True,
+            costs = EXECUTION_PLAN_VALIDATOR.legal_plans(
+                strategy.cost_pipeline.generate(ctx, subability_result.cost_subability, strategy.cost_strategy, state),
+                ability, state, is_cost=True, strict=not skip_unpayable_costs,
+            )
+            for cost_execution_plan in apply_pruning(costs, strategy.cost_plan_pruning):
+                actions = EXECUTION_PLAN_VALIDATOR.legal_plans(
+                    strategy.action_pipeline.generate(ctx, subability_result.action_subability, strategy.action_strategy, state),
+                    ability, state, is_cost=False,
                 )
-                # Validate every effect used to pay this cost plan (e.g.
-                # "sacrifice a creature" must currently be payable) before
-                # offering it as a legal option.
-                invalid_cost = False
-                for binding in cost_execution_plan.effects.sequence:
-                    error = binding.effect.validation_error(
-                        state,
-                        replace(
-                            cost_context, targets=cost_execution_plan._scope_binding(binding.slots)
-                        ),
-                    )
-                    if error:
-                        if not skip_unpayable_costs:
-                            raise ValueError(error)
-                        invalid_cost = True
-                        break
-                if invalid_cost:
-                    continue
-
-                for action_execution_plan in strategy.action_pipeline.generate(
-                    ctx, subability_result.action_subability, strategy.action_strategy, state
-                ):
-
+                for action_execution_plan in apply_pruning(actions, strategy.action_plan_pruning):
                     yield ctx.ability.to_game_action(cost_execution_plan, action_execution_plan)
+
 
 
 ABILITY_GENERATION_PIPELINE: AbilityActionGenerationPipeline = AbilityActionGenerationPipeline()

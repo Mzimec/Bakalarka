@@ -1,0 +1,94 @@
+=== Tournament Summary ===
+
+Games: 20
+Completed: 20
+Decisive: 20
+Draws: 0
+Average turns: 23.20
+Average decisions: 601.15
+Total elapsed: 68.107 s
+
+Starting player:
+  Win rate: 65.00%
+  Decisive win rate: 65.00%
+
+Participants:
+
+modular (Keep the Peace)
+  Controller: {'type': 'modular', 'candidates': {'target_limit': 24, 'cost_limit': 4, 'keep_per_ability': 4}, 'combat': {'max_assignments': 512}}
+  Games: 20
+  Wins: 11
+  Losses: 9
+  Draws: 0
+  Win rate: 55.00%
+  Decisive win rate: 55.00%
+  WR when starting: 70.00%
+  WR when second: 40.00%
+  Average turns: 23.20
+  Average decisions: 601.15
+
+simple (Keep the Peace)
+  Controller: {'type': 'simple'}
+  Games: 20
+  Wins: 9
+  Losses: 11
+  Draws: 0
+  Win rate: 45.00%
+  Decisive win rate: 45.00%
+  WR when starting: 60.00%
+  WR when second: 30.00%
+  Average turns: 23.20
+  Average decisions: 601.15
+
+Decision timing (wall time; includes option generation and input/model waits):
+  modular [ModularAgent, agent]: 6362 decisions, average 1.530 ms, total 9.731 s, errors 0, auto-passes 5037
+    MulliganRequest: n=23, average 0.023 ms; observed options 0.00; space size unknown
+      0 observed options: n=23, average 0.023 ms
+    PriorityDecisionRequest: n=5479, average 1.491 ms; observed options 1.18; space size 1.18 (known for 5479 decisions)
+      1 observed options: n=5037, average 1.097 ms
+      2-10 observed options: n=434, average 5.762 ms
+      11-100 observed options: n=8, average 18.009 ms
+    DeclareAttackersRequest: n=232, average 1.137 ms; observed options 3.00; space size 3.00 (known for 232 decisions)
+      2-10 observed options: n=232, average 1.137 ms
+    DeclareBlockersRequest: n=132, average 8.044 ms; observed options 25.63; space size 25.63 (known for 132 decisions)
+      11-100 observed options: n=6, average 10.415 ms
+      2-10 observed options: n=119, average 1.711 ms
+      101-1000 observed options: n=7, average 113.666 ms
+    ReplacementOrderRequest: n=73, average 0.030 ms; observed options 1.00; space size unknown
+      1 observed options: n=73, average 0.030 ms
+    TriggerOrderRequest: n=154, average 0.043 ms; observed options 1.00; space size unknown
+      1 observed options: n=154, average 0.043 ms
+    AbilityDecisionRequest: n=253, average 0.892 ms; observed options 1.00; space size 1.00 (known for 253 decisions)
+      1 observed options: n=253, average 0.892 ms
+    DiscardRequest: n=5, average 0.061 ms; observed options 0.00; space size unknown
+      0 observed options: n=5, average 0.061 ms
+    MulliganBottomRequest: n=3, average 0.041 ms; observed options 0.00; space size unknown
+      0 observed options: n=3, average 0.041 ms
+    ReplacementRequest: n=8, average 0.031 ms; observed options 1.00; space size unknown
+      1 observed options: n=8, average 0.031 ms
+  simple [SimpleAgent, agent]: 6162 decisions, average 1.121 ms, total 6.909 s, errors 0, auto-passes 5048
+    MulliganRequest: n=23, average 0.021 ms; observed options 0.00; space size unknown
+      0 observed options: n=23, average 0.021 ms
+    PriorityDecisionRequest: n=5466, average 1.243 ms; observed options 1.12; space size 1.09 (known for 5314 decisions)
+      1 observed options: n=5048, average 1.057 ms
+      2-10 observed options: n=414, average 3.390 ms
+      11-100 observed options: n=4, average 12.881 ms
+    DeclareAttackersRequest: n=231, average 0.275 ms; observed options 1.00; space size unknown
+      1 observed options: n=231, average 0.275 ms
+    DeclareBlockersRequest: n=84, average 0.449 ms; observed options 1.00; space size unknown
+      1 observed options: n=84, average 0.449 ms
+    TriggerOrderRequest: n=112, average 0.041 ms; observed options 1.00; space size unknown
+      1 observed options: n=112, average 0.041 ms
+    AbilityDecisionRequest: n=146, average 0.036 ms; observed options 1.00; space size 1.00 (known for 146 decisions)
+      1 observed options: n=146, average 0.036 ms
+    ReplacementOrderRequest: n=77, average 0.037 ms; observed options 1.00; space size unknown
+      1 observed options: n=77, average 0.037 ms
+    ReplacementRequest: n=12, average 0.029 ms; observed options 1.00; space size unknown
+      1 observed options: n=12, average 0.029 ms
+    CombatDamageRequest: n=6, average 0.158 ms; observed options 1.00; space size unknown
+      1 observed options: n=6, average 0.158 ms
+    MulliganBottomRequest: n=3, average 0.034 ms; observed options 0.00; space size unknown
+      0 observed options: n=3, average 0.034 ms
+    DiscardRequest: n=2, average 0.052 ms; observed options 0.00; space size unknown
+      0 observed options: n=2, average 0.052 ms
+  Observed options are consumed yields, not unique actions. Size refers to the policy-filtered space.

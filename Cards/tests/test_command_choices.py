@@ -1,4 +1,5 @@
 """Forced choices, early feasibility checks and canonical global references."""
+from game.ai.decision_maker import PriorityDecisionRequest
 from dataclasses import replace
 import pytest
 
@@ -118,7 +119,7 @@ def test_card_ids_are_global_and_inspect_resolves_opponents_cards():
         build_action(game.state, alice, "play bob-bolt1 alice")
     output = []
     commands = iter([f"inspect {card_reference(enemy)}", "pass"])
-    ConsoleDecisionMaker(read=lambda _: next(commands), write=output.append).get_action(game.state, alice)
+    ConsoleDecisionMaker(read=lambda _: next(commands), write=output.append).decide(PriorityDecisionRequest(game.state, alice)).value
     assert any(f"{card_reference(enemy)}: Lightning Bolt" in line for line in output)
 
 

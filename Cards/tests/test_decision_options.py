@@ -1,17 +1,20 @@
 """Request generation stays lazy, legal and independent of state mutation."""
+from game.ai.decision_maker import DecisionResult
+from game.game_actions import PassPriorityAction
+from game.game_actions.data_structs.ability import ActivatedAbilityDefinition, CastSpellAbilityDefinition, ManaAbilityDefinition
 import pytest
 from itertools import islice
-from game.ai.decision_maker import DecisionMaker, DecisionResult, decision_hook
+from game.ai.decision_maker import DecisionMaker
 from game.game_actions.generation.decision_abstraction.requests import *
 from game.game_actions.generation.decision_abstraction.decision_option import (
     AbilityGenerationPolicy, PriorityGenerationPolicy, SelectionGenerationPolicy,
     ManaGenerationPolicy, DecisionOptionSpace,
+    DeclareAttackersOption, DeclareBlockersOption, MulliganOption,
+    MulliganBottomOption, DiscardOption, AbilityResolutionOption, DecisionOption,
+    DeclareAttackersPolicy, DeclareBlockersPolicy, MulliganPolicy, DiscardPolicy,
 )
 from game.game_actions.generation.pruning.pruning_strategy import LimitPruning
-from game.game_actions.data_structs.ability import (
-    AbilityDefinition, CastSpellAbility, ActivatedAbility, ManaAbility, TriggerAbilityDefinition,
-    TriggerAbility,
-)
+from game.game_actions.data_structs.ability import CastSpellAbility, ActivatedAbility, ManaAbility, TriggerAbilityDefinition, TriggerAbility
 from game.game_actions.data_structs.game_action import PassPriorityAction, ConcedeAction
 from game.game_state import Player, State, Card, CardDefinition
 from game.game_loop.minimal_game import ScriptedController
@@ -54,20 +57,20 @@ def test_spaces_are_lazy_reiterable_live_views(state):
     request = MulliganBottomRequest(state, state.active_player, 1)
     space = request.options
     a, b = card(state), card(state)
-    assert list(space) == [(a,), (b,)]
+    assert [option.cards for option in space] == [(a,), (b,)]
     assert list(space) == list(space)
     state.active_player.move_card(a, ZoneType.GRAVEYARD, state)
-    assert list(space) == [(b,)]
+    assert [option.cards for option in space] == [(b,)]
 
 
 def test_bottom_order_matters_but_discard_order_does_not(state):
     a, b, c = card(state), card(state), card(state)
     player = state.active_player
     assert len(list(MulliganBottomRequest(state, player, 2).options)) == 6
-    assert list(DiscardRequest(state, player, 2).options) == [(a,b), (a,c), (b,c)]
-    assert list(DiscardRequest(state, player, 0).options) == [()]
-    assert list(MulliganRequest(state, player).options) == [False, True]
-    assert list(MulliganRequest(state, player, can_mulligan=False).options) == [False]
+    assert [o.cards for o in DiscardRequest(state, player, 2).options] == [(a,b), (a,c), (b,c)]
+    assert list(DiscardRequest(state, player, 0).options) == [DiscardOption(())]
+    assert list(MulliganRequest(state, player).options) == [MulliganOption(False), MulliganOption(True)]
+    assert list(MulliganRequest(state, player, can_mulligan=False).options) == [MulliganOption(False)]
 
 
 @pytest.mark.parametrize("count", [-1, True, 1])
@@ -87,13 +90,13 @@ def test_pruning_consumes_only_requested_witnesses():
 
 
 def test_ability_subclasses_and_single_ability_options(state):
-    definition = AbilityDefinition()
+    definition = ActivatedAbilityDefinition()
     source = card(state, zone=ZoneType.BATTLEFIELD, types=frozenset({CardType.ARTIFACT}),
                   abilities=frozenset({definition}))
     ability = definition.to_ability(source, state.active_player)
     assert isinstance(ability, ActivatedAbility)
-    assert isinstance(AbilityDefinition(is_spell=True).to_ability(source, state.active_player), CastSpellAbility)
-    assert isinstance(AbilityDefinition(is_mana_ability=True).to_ability(source, state.active_player), ManaAbility)
+    assert isinstance(CastSpellAbilityDefinition().to_ability(source, state.active_player), CastSpellAbility)
+    assert isinstance(ManaAbilityDefinition().to_ability(source, state.active_player), ManaAbility)
     assert isinstance(TriggerAbilityDefinition().to_ability(source, state.active_player), TriggerAbility)
     choices = list(AbilityDecisionRequest(state, state.active_player, ability).options)
     assert len(choices) == 1 and choices[0].source is source
@@ -130,12 +133,12 @@ def test_combat_spaces_validate_whole_declarations_and_do_not_tap(state):
     state.combat.begin()
     state.turn.phase = TurnPhase.DECLARE_ATTACKERS
     choices = list(DeclareAttackersRequest(state, state.active_player).options)
-    assert choices == [{}, {attacker: state.players[1]}]
+    assert [o.declarations for o in choices] == [{}, {attacker: state.players[1]}]
     assert not attacker.is_tapped and not state.combat.attackers
-    state.combat.declare_attackers(state.active_player, choices[1])
+    state.combat.declare_attackers(state.active_player, choices[1].declarations)
     state.turn.phase = TurnPhase.DECLARE_BLOCKERS
     blocks = list(DeclareBlockersRequest(state, state.players[1]).options)
-    assert blocks == [{}, {b1: attacker, b2: attacker}]
+    assert [o.declarations for o in blocks] == [{}, {b1: attacker, b2: attacker}]
     assert not state.combat.blockers
 
 
@@ -143,7 +146,7 @@ def test_resolution_choice_belongs_to_affected_player_without_priority(state):
     victim = state.players[1]
     a, b = card(state, 1), card(state, 1)
     request = AbilityResolutionRequest(state, victim, object(), (a, b), 1, "discard")
-    assert list(request.options) == [(a,), (b,)]
+    assert [o.cards for o in request.options] == [(a,), (b,)]
     assert len(victim.hand) == 2
 
 
@@ -157,10 +160,10 @@ def test_new_controller_uses_same_request_entrypoint_from_legacy_hooks(state):
     player.controller = controller
     assert isinstance(player.get_action(state), PassPriorityAction)
     assert isinstance(controller.last, PriorityDecisionRequest)
-    assert decision_hook(controller, "choose_mulligan")(state, player, 0) is False
+    assert controller.decide(MulliganRequest(state, player, 0)).value.take_mulligan is False
     assert isinstance(controller.last, MulliganRequest)
     result = controller.decide(MulliganRequest(state, player))
-    assert result.value is False and result.info["selected"] and result.info["elapsed_time"] >= 0
+    assert result.value == MulliganOption(False) and result.info["selected"] and result.info["elapsed_time"] >= 0
 
 
 def test_resolution_operation_calls_new_decision_maker(state):
@@ -193,3 +196,73 @@ def test_unpayable_mana_activation_is_omitted_from_priority(state):
     choices = list(PriorityDecisionRequest(state, state.active_player).options)
     assert [type(c) for c in choices] == [PassPriorityAction, ConcedeAction]
     assert land.is_tapped
+
+
+def test_selection_values_and_engine_values_share_nominal_base(state):
+    from game.ai.mana_solver import ManaSolverResult
+    from game.game_actions.data_structs.game_action import GameAction
+    for cls in (GameAction, ManaSolverResult, DeclareAttackersOption, DeclareBlockersOption,
+                MulliganOption, MulliganBottomOption, DiscardOption, AbilityResolutionOption):
+        assert issubclass(cls, DecisionOption)
+    with pytest.raises(TypeError, match="DecisionOption"):
+        DecisionResult(False)
+    class Wrong(DecisionMaker):
+        def _decide(self, request):
+            return DecisionResult(DiscardOption(()))
+    with pytest.raises(TypeError, match="MulliganOption"):
+        Wrong().decide(MulliganRequest(state, state.active_player))
+
+
+def test_specific_policy_and_strategy_types_are_enforced(state):
+    with pytest.raises(TypeError, match="MulliganPolicy"):
+        list(MulliganRequest(state, state.active_player).option_space(DiscardPolicy()))
+    class WrongStrategy:
+        def generate(self, request):
+            yield False
+    with pytest.raises(TypeError, match="MulliganOption"):
+        list(MulliganRequest(state, state.active_player).option_space(MulliganPolicy(strategy=WrongStrategy())))
+
+
+def test_custom_attack_strategy_is_used_and_illegal_proposals_are_filtered(state):
+    attacker, opponent_creature = creature(state), creature(state, 1)
+    state.combat.begin()
+    state.turn.phase = TurnPhase.DECLARE_ATTACKERS
+    class AttackOne:
+        def generate(self, request):
+            yield DeclareAttackersOption({opponent_creature: state.active_player})
+            yield DeclareAttackersOption({attacker: state.players[1]})
+    options = list(DeclareAttackersRequest(state, state.active_player).option_space(
+        DeclareAttackersPolicy(strategy=AttackOne())))
+    assert options == [DeclareAttackersOption({attacker: state.players[1]})]
+    assert not attacker.is_tapped
+    with pytest.raises(TypeError, match="DeclareAttackersPolicy"):
+        list(DeclareAttackersRequest(state, state.active_player).option_space(DeclareBlockersPolicy()))
+
+
+def test_custom_block_strategy_still_obeys_menace(state):
+    attacker = creature(state, keywords=frozenset({"menace"}))
+    blocker = creature(state, 1)
+    state.combat.begin()
+    state.turn.phase = TurnPhase.DECLARE_ATTACKERS
+    state.combat.declare_attackers(state.active_player, {attacker: state.players[1]})
+    state.turn.phase = TurnPhase.DECLARE_BLOCKERS
+    class BlockOne:
+        def generate(self, request):
+            yield DeclareBlockersOption({blocker: attacker})
+            yield DeclareBlockersOption({})
+    assert list(DeclareBlockersRequest(state, state.players[1]).option_space(
+        DeclareBlockersPolicy(strategy=BlockOne()))) == [DeclareBlockersOption({})]
+    assert state.combat.blockers == {}
+
+
+def test_modular_dispatch_calls_typed_override(state):
+    from game.ai.decision_maker import ModularDecisionMaker
+    class MulliganAgain(ModularDecisionMaker):
+        def decide_mulligan(self, request):
+            self.seen = request
+            return DecisionResult(MulliganOption(True))
+    controller = MulliganAgain()
+    request = MulliganRequest(state, state.active_player)
+    assert controller.decide(request).value == MulliganOption(True)
+    assert controller.seen is request
+    assert isinstance(controller.decide(PriorityDecisionRequest(state, state.active_player)).value, PassPriorityAction)

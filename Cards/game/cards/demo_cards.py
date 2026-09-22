@@ -1,11 +1,12 @@
 """All demo card rules are defined here once, before a game starts."""
+from game.game_actions.data_structs.ability import ActivatedAbilityDefinition, CastSpellAbilityDefinition, ManaAbilityDefinition
 
 from helper.query_system.query import EqQuery, DifferenceQuery
 from game.enums import CardType, ZoneType
 from game.game_state import CardDefinition
 from game.game_state.registers.card_register import IK_ZONE, IK_TYPE, IK_TAPPED
 from game.game_state.registers.player_register import IK_ALIVE
-from game.game_actions.data_structs.ability import AbilityDefinition, SubAbilityDefinition
+from game.game_actions.data_structs.ability import SubAbilityDefinition
 from game.game_actions.data_structs.action_node import EffectActionNode, ImmutableEffectToSlotMap
 from game.game_actions.card_effects import DamagePlayerEffect, MoveSourceEffect, TapSourceEffect
 from game.game_actions.query_effects import MoveMatchingCardsEffect
@@ -36,9 +37,9 @@ RECALL_EFFECT = MoveMatchingCardsEffect(
 )
 
 
-LIGHTNING_BOLT_CAST = AbilityDefinition(
+LIGHTNING_BOLT_CAST = CastSpellAbilityDefinition(
     key="cast:Lightning Bolt",
-    is_spell=True,
+
     allowed_zones=frozenset({ZoneType.HAND}),
     cost_subdefs=(
         SubAbilityDefinition(
@@ -62,9 +63,9 @@ LIGHTNING_BOLT_CAST = AbilityDefinition(
     ),
 )
 
-EMBER_ADEPT_CAST = AbilityDefinition(
+EMBER_ADEPT_CAST = CastSpellAbilityDefinition(
     key="cast:Ember Adept",
-    is_spell=True,
+
     sorcery_speed=True,
     allowed_zones=frozenset({ZoneType.HAND}),
     cost_subdefs=LIGHTNING_BOLT_CAST.cost_subdefs,
@@ -78,7 +79,7 @@ EMBER_ADEPT_CAST = AbilityDefinition(
     ),
 )
 
-EMBER_ADEPT_TAP = AbilityDefinition(
+EMBER_ADEPT_TAP = ActivatedAbilityDefinition(
     key="tap_damage",
     allowed_zones=frozenset({ZoneType.BATTLEFIELD}),
     cost_subdefs=(
@@ -98,9 +99,9 @@ EMBER_ADEPT_TAP = AbilityDefinition(
     ),
 )
 
-TIDAL_RECALL_CAST = AbilityDefinition(
+TIDAL_RECALL_CAST = CastSpellAbilityDefinition(
     key="cast:Tidal Recall",
-    is_spell=True,
+
     allowed_zones=frozenset({ZoneType.HAND}),
     cost_subdefs=LIGHTNING_BOLT_CAST.cost_subdefs,
     action_subdefs=(
@@ -307,10 +308,9 @@ from game.game_actions.data_structs.action_node import AndActionNode, ManaAction
 from game.mana.mana_value import ImmutableManaRequirement
 
 ADD_RED = AddManaEffect("add_red", ManaType.RED, 2)
-STONE_MANA = replace(
-    EMBER_ADEPT_TAP,
+STONE_MANA = ManaAbilityDefinition(
     key="add_red",
-    uses_stack=False,
+    cost_subdefs=EMBER_ADEPT_TAP.cost_subdefs,
     action_subdefs=(
         SubAbilityDefinition(
             action_node=EffectActionNode(ImmutableEffectToSlotMap({ADD_RED.key: frozenset()})),
@@ -429,7 +429,7 @@ SOLDIER_TOKEN = CardDefinition(
     toughness=1,
 )
 RECRUIT = CreateTokenEffect("recruit", SOLDIER_TOKEN)
-MARSHAL_RECRUIT = AbilityDefinition(
+MARSHAL_RECRUIT = ActivatedAbilityDefinition(
     key="recruit",
     loyalty_cost=-1,
     action_subdefs=(

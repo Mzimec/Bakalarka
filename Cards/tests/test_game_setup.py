@@ -1,4 +1,5 @@
 """Full pregame setup, ownership, London rounds, library order and first turn."""
+from game.ai.decision_maker import DecisionResult, MulliganBottomOption, MulliganBottomRequest, MulliganOption, MulliganRequest, StartingPlayerOption
 from pathlib import Path
 import pytest
 
@@ -22,14 +23,16 @@ class Controller(ScriptedController):
         self.log = log if log is not None else []
         self.bottoms = []
 
-    def choose_mulligan(self, state, player, count):
+    def decide_mulligan(self, request):
+        state = request.state; player = request.player; count = request.mulligans_taken
         self.log.append((player.idx, count, len(player.hand), tuple(len(p.hand) for p in state.players)))
-        return count < self.mulligans
+        return DecisionResult(MulliganOption(count < self.mulligans))
 
-    def choose_mulligan_bottom(self, state, player, count):
+    def decide_mulligan_bottom(self, request):
+        state = request.state; player = request.player; count = request.count
         selected = tuple(player.hand.values())[:count]
         self.bottoms.append(selected)
-        return selected
+        return DecisionResult(MulliganBottomOption(selected))
 
 
 def make_game(controllers=None, **kwargs):
@@ -95,9 +98,10 @@ def test_invalid_bottom_choice_does_not_move_any_selected_card():
 
 def test_start_choice_precedes_any_card_creation():
     class ChooseSecond(Controller):
-        def choose_starting_player(self, players):
+        def decide_starting_player(self, request):
+            players = request.candidates
             assert all(not p.get_cards() and p.game_state is None for p in players)
-            return players[1]
+            return DecisionResult(StartingPlayerOption(players[1]))
     assert make_game((ChooseSecond(), ChooseSecond()), seed=4).active_player_idx == 1
 
 
@@ -154,7 +158,7 @@ def test_console_setup_hooks_retry_invalid_selections():
     state = make_game()
     player = state.players[0]
     card = next(iter(player.hand.values()))
-    controller = ConsoleDecisionMaker(read=lambda _: next(answers).replace("{card}", card.key), write=lambda _: None)
-    assert controller.choose_mulligan(state, player, 0)
-    assert not controller.choose_mulligan(state, player, 1)
-    assert controller.choose_mulligan_bottom(state, player, 1) == (card,)
+    controller = ConsoleDecisionMaker(read=lambda _: next(answers).replace("{card}", card.command_id), write=lambda _: None)
+    assert controller.decide(MulliganRequest(state, player, 0)).value.take_mulligan
+    assert not controller.decide(MulliganRequest(state, player, 1)).value.take_mulligan
+    assert controller.decide(MulliganBottomRequest(state, player, 1)).value.cards == (card,)

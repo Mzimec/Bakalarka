@@ -1,4 +1,5 @@
 import argparse
+from datetime import datetime
 from pathlib import Path
 
 from game.cards.decks import ARENA_STARTERS, load_arena_starter
@@ -23,7 +24,7 @@ AGENT_CONFIGS = {
 }
 
 
-def main() -> None:
+def main() -> int:
     parser = argparse.ArgumentParser()
 
     parser.add_argument(
@@ -50,15 +51,16 @@ def main() -> None:
         default="white"
     )
 
-    parser.add_argument("--rounds", type=int, default=2)
-    parser.add_argument("--seed", type=int, default=None)
+    parser.add_argument("--rounds", type=int, default=10)
+    parser.add_argument("--seed", type=int, default=1)
     parser.add_argument("--max-turns", type=int, default=100)
     parser.add_argument("--max-decisions", type=int, default=10000)
 
     parser.add_argument(
         "--output",
         type=Path,
-        default=Path("runs/tournament"),
+        default=Path("runs"),
+        help="Parent directory for a new tournament-<timestamp> folder.",
     )
 
     parser.add_argument(
@@ -81,8 +83,9 @@ def main() -> None:
         ),
     )
 
+    output = args.output / f"tournament-{datetime.now():%Y%m%d-%H%M%S-%f}"
     results = run_tournament(
-        args.output,
+        output,
         players,
         games=args.rounds,
         seed=args.seed,
@@ -91,6 +94,7 @@ def main() -> None:
         log_matches=args.log_matches,
         log_batch=True,
     )
+    print(f"Tournament results: {output.resolve()}")
 
     return int(
         any(

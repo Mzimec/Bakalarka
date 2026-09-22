@@ -80,6 +80,11 @@ class ManaGenerator:
     ordering cannot invalidate an otherwise legal payment.
     """
 
+    def __init__(self, *, deduplicate_equivalent=True):
+        from .symmetry import ManaSearchStatistics
+        self.deduplicate_equivalent = deduplicate_equivalent
+        self.statistics = ManaSearchStatistics()
+
     def generate(
         self, requirement: ManaRequirement, state, controller, reserved=frozenset(), mana_pool=None
     ) -> ManaPlan | None:
@@ -101,6 +106,8 @@ class ManaGenerator:
         @param mana_pool Optional mana already floating in the player's pool.
         @return A legal `ManaPlan`, or `None` if no payment can be found.
         """
+        from .symmetry import ManaSearchStatistics, ManaSymmetry
+        self.statistics = ManaSearchStatistics()
         # Expand aggregate requirements into unit fragments so the ordinary
         # planner can assign one source usage to each required mana unit.
         fragments = [
@@ -127,7 +134,9 @@ class ManaGenerator:
         ):
             from .bundle_planner import plan_bundles
 
-            return plan_bundles(requirement, battlefield_sources, mana_pool or {})
+            return plan_bundles(requirement, battlefield_sources, mana_pool or {},
+                                state=state, deduplicate_equivalent=self.deduplicate_equivalent,
+                                statistics=self.statistics)
 
         pool_sources = []
 
@@ -192,6 +201,7 @@ class ManaGenerator:
 
             return sorted(result, key=lambda value: value.name)
 
+        symmetry = ManaSymmetry(state, sources, groups) if self.deduplicate_equivalent else None
         failed = set()
 
         def search(index: int, remaining: dict[int, int], steps: list[ManaPlanStep]):
@@ -203,13 +213,14 @@ class ManaGenerator:
             @param steps Source usages selected so far.
             @return Complete tuple of plan steps, or `None` if this branch fails.
             """
+            self.statistics.states_visited += 1
             if index == len(fragments):
                 return tuple(steps)
 
             fingerprint = (
                 index,
-                tuple(remaining.values()),
-                tuple(group_remaining.values()),
+                symmetry.state_key(remaining, group_remaining) if symmetry is not None
+                else (tuple(remaining.values()), tuple(group_remaining.values())),
             )
 
             if fingerprint in failed:
@@ -244,9 +255,17 @@ class ManaGenerator:
                         )
                     )
 
+            seen = set()
             for _, _, _, source_index, produced in sorted(
                 candidates, key=lambda item: (*item[:-1], item[-1].name)
             ):
+                if symmetry is not None:
+                    key = (symmetry.resource_state(groups[source_index], remaining, group_remaining),
+                           symmetry.options[source_index], produced)
+                    if key in seen:
+                        self.statistics.equivalent_branches_skipped += 1
+                        continue
+                    seen.add(key)
                 remaining[source_index] -= 1
                 group_remaining[groups[source_index]] -= 1
 

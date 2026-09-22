@@ -69,9 +69,15 @@ def mana_sources(state, player):
     result = []
 
     # Ownership determines zone storage; control determines who may activate.
-    for card in state.get_cards(from_zones=[ZoneType.BATTLEFIELD]):
-        if card.get_controller(state) is not player:
-            continue
+    from helper.query_system.query import EqQuery
+    from ..game_state.registers.card_register import IK_ZONE, IK_CONTROLLER, IK_ABILITY_KIND
+    from ..enums import ActivatableAbilityType
+
+    for card in state.query_cards(
+        EqQuery(IK_ZONE, ZoneType.BATTLEFIELD)
+        & EqQuery(IK_CONTROLLER, player)
+        & EqQuery(IK_ABILITY_KIND, ActivatableAbilityType.MANA)
+    ):
 
         for key, definition in card.get_ability_defs(state).items():
             # Variable subabilities and stack-using abilities cannot be treated

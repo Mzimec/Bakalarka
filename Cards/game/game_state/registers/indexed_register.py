@@ -31,6 +31,7 @@ class IndexedRegister(InMemoryObjectRegister):
         self._by_key = {}
         self._snapshots = {}
         self._dirty = {}
+        self._synchronising = False
 
     def index_values(self, obj):
         """!
@@ -127,35 +128,44 @@ class IndexedRegister(InMemoryObjectRegister):
         its previous immutable snapshot and only changed memberships are sent to
         the underlying index provider.
         """
+        # Formula modifiers may query other cards while their own snapshot is
+        # being computed. Read committed memberships in that nested query;
+        # the layer pipeline synchronizes again after applying each layer.
+        if self._synchronising:
+            return
         self.state.refresh_continuous_effects()
+        self._synchronising = True
+        try:
 
-        # Snapshots preserve the previous memberships independently of the
-        # mutable runtime object, so obsolete index values can still be removed
-        # after that object has already changed.
-        while self._dirty:
-            key = next(iter(self._dirty))
-            obj = self._dirty[key]
+            # Snapshots preserve the previous memberships independently of the
+            # mutable runtime object, so obsolete index values can still be removed
+            # after that object has already changed.
+            while self._dirty:
+                key = next(iter(self._dirty))
+                obj = self._dirty[key]
 
-            current = self.index_values(obj)
-            previous = self._snapshots[key]
+                current = self.index_values(obj)
+                previous = self._snapshots[key]
 
-            changes = {
-                index: IndexUpdate(
-                    previous[index] - value,
-                    value - previous[index],
-                )
-                for index, value in current.items()
-                if value != previous[index]
-            }
+                changes = {
+                    index: IndexUpdate(
+                        previous[index] - value,
+                        value - previous[index],
+                    )
+                    for index, value in current.items()
+                    if value != previous[index]
+                }
 
-            if changes:
-                self.update(
-                    obj,
-                    RegisterUpdateContext(changes),
-                )
+                if changes:
+                    self.update(
+                        obj,
+                        RegisterUpdateContext(changes),
+                    )
 
-            self._snapshots[key] = current
-            self._dirty.pop(key)
+                self._snapshots[key] = current
+                self._dirty.pop(key)
+        finally:
+            self._synchronising = False
 
     def unregister(self, obj):
         """!

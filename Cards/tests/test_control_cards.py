@@ -1,4 +1,5 @@
 """Control spells through real casting, targeting, payment and resolution."""
+from game.ai.decision_maker import ScryOption, DecisionResult, PriorityDecisionRequest
 
 from pathlib import Path
 from dataclasses import replace
@@ -129,7 +130,7 @@ def test_opt_scries_before_drawing(game):
     bottom = add(game, "Island", Z.DECK)
     top = add(game, "Plains", Z.DECK)
     player = game[0].players[0]
-    player.controller.choose_scry = lambda state, who, cards: ((), cards)
+    player.controller.decide_scry = lambda request: DecisionResult(ScryOption((), request.candidates))
     spell = add(game, "Opt")
     cast(game, spell)
     assert resolve(game).success
@@ -211,6 +212,6 @@ def test_ai_counter_targets_enemy_spell(game):
     for _ in range(2):
         add(game, "Island", Z.BATTLEFIELD, 1)
     game[0].priority.current_player = counter.owner
-    action = counter.owner.controller.get_action(game[0], counter.owner)
+    action = counter.owner.controller.decide(PriorityDecisionRequest(game[0], counter.owner)).value
     assert action.source is counter
     assert counter.owner.controller._targets(action) == (spell,)

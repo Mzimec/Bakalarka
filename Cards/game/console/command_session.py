@@ -68,7 +68,7 @@ class CommandSession:
     def definitions(self, card=None):
         card = card or self.values["card"]
         result = {}
-        for key, definition in card.get_ability_defs(self.state).items():
+        for key, definition in card.get_activatable_ability_defs(self.state).items():
             if definition.is_spell != (self.command == "play"):
                 continue
             if definition.validation_error(card, self.player, self.state):
@@ -82,7 +82,12 @@ class CommandSession:
 
     def choices(self, stage):
         if stage == "card":
-            for card in self.state.get_cards():
+            from helper.query_system.query import EqQuery, HasQuery
+            from game.game_state.registers.card_register import IK_TYPE, IK_ABILITY_KIND
+            from game.enums import CardType
+            for card in self.state.query_cards(
+                HasQuery(IK_ABILITY_KIND) | EqQuery(IK_TYPE, CardType.LAND)
+            ):
                 if self.playable(card):
                     yield card
         elif stage == "ability":

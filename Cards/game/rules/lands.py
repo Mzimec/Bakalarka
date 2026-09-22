@@ -1,7 +1,11 @@
 """Playing lands is a special action; intrinsic basic-land mana abilities (CR 305)."""
+from game.game_actions.data_structs.ability import ManaAbilityDefinition
 
 from dataclasses import dataclass
 from functools import lru_cache
+from game.game_actions.data_structs.ability import PlayLandAbilityDefinition
+
+PLAY_LAND_DEFINITION = PlayLandAbilityDefinition()
 
 from game.enums import CardType, CardSubtype, ManaType, TurnPhase, ZoneType
 from game.game_actions.data_structs.game_action import (
@@ -22,36 +26,49 @@ BASIC_LAND_MANA = {
 }
 
 
-def land_play_error(card, player, state):
-    """!
-    @brief Return the first rule violation preventing a land play.
-
-    Playing a land is a special action: it requires priority, the active
-    player's main phase, an empty stack, an available land play, and a land
-    card owned by that player in hand.
-
-    @param card Card proposed for the land play.
-    @param player Player attempting to play the land.
-    @param state Current game state.
-    @return Validation error message, or `None` when the land play is legal.
-    """
+def land_play_window_error(player, state):
+    """Player/timing rules shared by discovery and concrete land validation."""
     if player not in state.players or getattr(player, "has_lost", False):
         return "The player cannot play lands in this game."
-    if card.owner is not player or card.get_zone() != ZoneType.HAND:
-        return "You may play only a land from your hand."
-    if CardType.LAND not in card.get_types(state):
-        return "This card is not a land."
     if state.priority.current_player is not player:
         return "You do not have priority."
-    if (
-        state.active_player is not player
-        or state.turn.phase not in {TurnPhase.PRECOMBAT_MAIN, TurnPhase.POSTCOMBAT_MAIN}
-        or not state.stack.is_empty()
-    ):
+    if (state.active_player is not player
+            or state.turn.phase not in {TurnPhase.PRECOMBAT_MAIN, TurnPhase.POSTCOMBAT_MAIN}
+            or not state.stack.is_empty()):
         return "Play a land during your main phase with an empty stack."
     if player.lands_played_this_turn >= player.land_plays_per_turn:
         return "You have used all land plays for this turn."
     return None
+
+
+def land_play_timing_error(card, player, state):
+    """Shared rules independent of which effect grants permission to play a land."""
+    error = land_play_window_error(player, state)
+    if error:
+        return error
+    if getattr(card, "_game_state", None) is not state:
+        return "The land must belong to this game."
+    if CardType.LAND not in card.get_types(state):
+        return "This card is not a land."
+    if card.get_zone() in {ZoneType.BATTLEFIELD, ZoneType.STACK}:
+        return "A land cannot be played from the battlefield or stack."
+    return None
+
+
+def land_play_error(card, player, state, permission=None):
+    """Recheck live permissions as well as timing, type and remaining land plays."""
+    error = land_play_timing_error(card, player, state)
+    if error:
+        return error
+    permissions = card.get_land_play_ability_defs(state)
+    if permission is not None:
+        if permissions.get(permission.key) != permission:
+            return "The permission to play this land is no longer available."
+        return permission.validation_error(card, player, state)
+    for definition in permissions.values():
+        if definition.validation_error(card, player, state) is None:
+            return None
+    return "You have no permission to play this land from its current zone."
 
 
 class PlayLandOperation(Operation):
@@ -66,7 +83,10 @@ class PlayLandOperation(Operation):
         @param state Current game state.
         @return Validation error message, or `None`.
         """
-        return land_play_error(self.context.source, self.context.controller, state)
+        if (self.context.source_revision is not None
+                and self.context.source.zone_revision != self.context.source_revision):
+            return "The land changed zones after this action was chosen."
+        return land_play_error(self.context.source, self.context.controller, state, self.context.ability)
 
     def execute(self, state):
         """!
@@ -86,7 +106,11 @@ class PlayLandOperation(Operation):
         from game.operations.card_operations import MoveCardOperation
 
         player, card = self.context.controller, self.context.source
-        events = MoveCardOperation(self.context, card, ZoneType.BATTLEFIELD).execute(state)
+        from game.game_actions.resolution.replacement_effects import ReplacementResolver
+        from game.game_actions.resolution.operation_executor import OperationExecutor
+        move = MoveCardOperation(self.context, card, ZoneType.BATTLEFIELD)
+        move.entry_controller = player
+        events = OperationExecutor().execute_batch(state, ReplacementResolver().replace(state, (move,)))
 
         player.lands_played_this_turn += 1
         events.append(
@@ -108,6 +132,8 @@ class LandPlayAction(GameAction):
 
     card: object
     player: object
+    permission: PlayLandAbilityDefinition | None = None
+    source_revision: int | None = None
 
     def validation_error(self, state):
         """!
@@ -116,7 +142,9 @@ class LandPlayAction(GameAction):
         @param state Current game state.
         @return Validation error message, or `None`.
         """
-        return land_play_error(self.card, self.player, state)
+        if self.source_revision is not None and self.card.zone_revision != self.source_revision:
+            return "The land changed zones after this action was chosen."
+        return land_play_error(self.card, self.player, state, self.permission)
 
     def get_intents(self):
         """!
@@ -128,7 +156,8 @@ class LandPlayAction(GameAction):
         @return Tuple containing the land-play resolution.
         """
         context = ResolutionContext(
-            controller=self.player, source=self.card, action_key="play_land"
+            controller=self.player, source=self.card, action_key="play_land",
+            ability=self.permission, source_revision=self.source_revision,
         )
         return (ScheduledResolution(FixedExecutionPlan([PlayLandOperation(context)]), context),)
 
@@ -155,10 +184,10 @@ def mana_ability(mana):
     tap = TapSourceEffect("tap_for_mana")
     add = AddManaEffect("add_" + mana.name.lower(), mana)
 
-    return AbilityDefinition(
+    return ManaAbilityDefinition(
         key="mana_" + mana.name.lower(),
-        uses_stack=False,
-        is_mana_ability=True,
+
+
         cost_subdefs=(
             SubAbilityDefinition(
                 action_node=EffectActionNode(ImmutableEffectToSlotMap({tap.key: frozenset()})),

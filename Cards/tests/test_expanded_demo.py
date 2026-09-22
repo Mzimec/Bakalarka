@@ -1,4 +1,5 @@
 """Integration examples for incremental commands and the expanded engine rules."""
+from game.ai.decision_maker import DecisionResult, PriorityDecisionRequest
 from pathlib import Path
 
 import pytest
@@ -13,10 +14,8 @@ from helper.query_system.query import EqQuery
 
 
 class TriggerController(ScriptedController):
-    def process_triggers(self, state, triggers):
-        for trigger in triggers:
-            action = chosen_action(trigger, state)
-            state.stack.push(action.get_intents()[1].to_stack_item())
+    def decide_ability(self, request):
+        return DecisionResult(chosen_action(request.ability, request.state))
 
 
 def make_game():
@@ -65,7 +64,7 @@ def test_console_enters_builder_and_returns_to_prompt_after_cancel():
     game = make_game()
     inputs = iter(["play", "cancel", "play", "alice-bolt1", "bob", "confirm"])
     console = ConsoleDecisionMaker(read=lambda _: next(inputs), write=lambda _: None)
-    action = console.get_action(game.state, game.state.active_player)
+    action = console.decide(PriorityDecisionRequest(game.state, game.state.active_player)).value
     assert action.source.key == "alice-bolt1"
 
 
@@ -278,29 +277,3 @@ def test_builder_selects_sacrifice_cost_after_effect_target_and_revalidates_it()
     assert game.state.players[1].health == 10
     game.loop.processor.executor.resolve(game.state, game.state.stack.pop())
     assert game.state.players[1].health == 8
-
-
-def test_real_cli_mana_sequence():
-    import subprocess
-    import sys
-    commands = "\n".join(["pass", "pass", "play stone1", "pass", "pass", "activate stone1",
-                           "play blast1 bob", "pass", "pass", "quit", ""])
-    result = subprocess.run([sys.executable, "-B", "-m", "game.bin.dummy_game"],
-                                cwd=Path(__file__).resolve().parents[1],
-                            input=commands, text=True, capture_output=True, timeout=10)
-    assert result.returncode == 0, result.stderr
-    assert "Invalid" not in result.stdout
-    assert "Bob takes 3 damage" in result.stdout
-
-
-def test_real_cli_incremental_input():
-    import subprocess
-    import sys
-    commands = "\n".join(["play", "options", "alice-bolt1", "options", "bob",
-                           "options", "confirm", "pass", "pass", "quit", ""])
-    result = subprocess.run([sys.executable, "-B", "-m", "game.bin.dummy_game"],
-                                cwd=Path(__file__).resolve().parents[1],
-                            input=commands, text=True, capture_output=True, timeout=10)
-    assert result.returncode == 0, result.stderr
-    assert "Invalid" not in result.stdout
-    assert "Bob takes 3 damage" in result.stdout

@@ -8,6 +8,7 @@ Magic card or every Comprehensive Rule.
 """
 
 from __future__ import annotations
+from game.game_actions.data_structs.ability import ActivatedAbilityDefinition, CastSpellAbilityDefinition
 
 from collections.abc import Iterable
 from dataclasses import dataclass
@@ -29,12 +30,7 @@ from game.game_state.modifier import (
 )
 from game.game_state.continuous_rules import StaticContinuousRule
 from game.stat_type import STAT_KEYWORDS, STAT_POWER, STAT_TOUGHNESS
-from game.game_actions.data_structs.ability import (
-    AbilityDefinition,
-    SubAbilityDefinition,
-    TriggerAbilityDefinition,
-    TriggerCondition,
-)
+from game.game_actions.data_structs.ability import SubAbilityDefinition, TriggerAbilityDefinition, TriggerCondition
 from game.game_actions.data_structs.action_node import EffectActionNode, ImmutableEffectToSlotMap
 from game.game_actions.data_structs.effect import Effect
 from game.game_actions.data_structs.game_action import ResolutionContext
@@ -51,6 +47,8 @@ from game.operations.card_operations import (
     TapCardOperation,
 )
 from game.target.target_spec import TargetSpec
+from helper.query_system.query import EqQuery, InQuery, DifferenceQuery
+from game.game_state.registers.card_register import IK_ZONE, IK_TYPE, IK_CONTROLLER, IK_SUBTYPE, IK_NAME, IK_KEY, IK_OWNER
 from game.target.target_resolver import TargetResolver, TargetSlot
 from game.target.target_selector import SingleTargetSelector
 from game.rules.lands import basic_land
@@ -61,18 +59,32 @@ class PredicateTargetSpec(TargetSpec):
     @brief Target candidates selected by a state-aware predicate.
     """
 
-    def __init__(self, predicate):
+    def __init__(self, predicate, *, query=None):
         self.predicate = predicate
+        self.query = query
+
+    def candidate_query(self, source, controller, state):
+        query = EqQuery(IK_ZONE, ZoneType.BATTLEFIELD)
+        if self.query is not None:
+            query &= self.query(source, controller, state) if callable(self.query) else self.query
+        return query
 
     def generate_candidates(self, source, controller, state, reserved=None):
         """!
         @brief Yield candidate objects permitted by this target specification.
         """
-        for candidate in state.get_cards(from_zones=[ZoneType.BATTLEFIELD]):
+        for candidate in state.query_cards(self.candidate_query(source, controller, state)):
             if reserved and candidate in reserved:
                 continue
             if self.predicate(candidate, source, controller, state):
                 yield candidate
+
+    def is_valid_target(self, target, source, controller, state, reserved=None):
+        return (
+            (not reserved or target not in reserved)
+            and state.card_register.contains(self.candidate_query(source, controller, state), target)
+            and self.predicate(target, source, controller, state)
+        )
 
 
 class AnyTargetSpec(TargetSpec):
@@ -87,10 +99,9 @@ class AnyTargetSpec(TargetSpec):
         for player in state.active_players:
             if not reserved or player not in reserved:
                 yield player
-        for card in state.get_cards(from_zones=[ZoneType.BATTLEFIELD]):
-            if reserved and card in reserved:
-                continue
-            if card.get_types(state).intersection({CardType.CREATURE, CardType.PLANESWALKER}):
+        for card in state.query_cards(EqQuery(IK_ZONE, ZoneType.BATTLEFIELD)
+            & InQuery(IK_TYPE, frozenset({CardType.CREATURE, CardType.PLANESWALKER}))):
+            if not reserved or card not in reserved:
                 yield card
 
 
@@ -125,9 +136,9 @@ def _cast_ability(name, mana_cost, *, permanent=False, effects=(), slots=(), sor
     put_on_stack = MoveSourceEffect(f"{name}:put_on_stack", ZoneType.STACK)
     destination = ZoneType.BATTLEFIELD if permanent else ZoneType.GRAVEYARD
     leave_stack = MoveSourceEffect(f"{name}:to_{destination.name.lower()}", destination)
-    return AbilityDefinition(
+    return CastSpellAbilityDefinition(
         key=f"cast:{name}",
-        is_spell=True,
+
         sorcery_speed=sorcery_speed,
         allowed_zones=frozenset({ZoneType.HAND}),
         cost_subdefs=(_effect_subdef((put_on_stack,)),),
@@ -140,7 +151,7 @@ def _activated_ability(
 ):
     cost = _effect_subdef(tuple(cost_effects), mana_cost=mana_cost)
     action = _effect_subdef(tuple(action_effects), slots=slots)
-    return AbilityDefinition(
+    return ActivatedAbilityDefinition(
         key=name,
         allowed_zones=frozenset({ZoneType.BATTLEFIELD}),
         sorcery_speed=sorcery_speed,
@@ -276,7 +287,8 @@ class TemporaryModifierOperation(Operation):
                     lambda card, _source, _controller, _state: any(
                         card is target and card.zone_revision == revision
                         for target, revision in incarnations
-                    )
+                    ),
+                    query=InQuery(IK_KEY, frozenset(target.key for target, _ in incarnations)),
                 )
             ),
             modifiers=self.modifiers,
@@ -398,18 +410,12 @@ class DamageDefendingCreaturesEffect(Effect):
             defending = defender.get_controller(state)
         else:
             return
-        if any(
-            card.get_controller(state) is defending
-            and getattr(CardSubtype, "WALL", None) in card.get_subtypes(state)
-            for card in state.get_cards(from_zones=[ZoneType.BATTLEFIELD])
-        ):
+        if state.query_cards(EqQuery(IK_ZONE, ZoneType.BATTLEFIELD)
+            & EqQuery(IK_CONTROLLER, defending) & EqQuery(IK_SUBTYPE, CardSubtype.WALL)):
             return
-        for card in state.get_cards(from_zones=[ZoneType.BATTLEFIELD]):
-            if (
-                card.get_controller(state) is defending
-                and CardType.CREATURE in card.get_types(state)
-                and not card.has_keyword(state, "flying")
-            ):
+        for card in state.query_cards(EqQuery(IK_ZONE, ZoneType.BATTLEFIELD)
+            & EqQuery(IK_CONTROLLER, defending) & EqQuery(IK_TYPE, CardType.CREATURE)):
+            if not card.has_keyword(state, "flying"):
                 yield DamageCreatureOperation(context, card, self.amount)
 
     def get_info(self):
@@ -427,11 +433,10 @@ class DestroyOpponentWallsEffect(Effect):
         """!
         @brief Generate the operations for this effect and its bound context.
         """
-        for card in state.get_cards(from_zones=[ZoneType.BATTLEFIELD]):
-            if card.get_controller(state) is not context.controller and getattr(
-                CardSubtype, "WALL", None
-            ) in card.get_subtypes(state):
-                yield MoveCardOperation(context, card, ZoneType.GRAVEYARD)
+        for card in state.query_cards(DifferenceQuery(
+            EqQuery(IK_ZONE, ZoneType.BATTLEFIELD) & EqQuery(IK_SUBTYPE, CardSubtype.WALL),
+            (EqQuery(IK_CONTROLLER, context.controller),))):
+            yield MoveCardOperation(context, card, ZoneType.GRAVEYARD)
 
     def get_info(self):
         """!
@@ -491,11 +496,10 @@ class TapOpponentsEffect(Effect):
         @brief Generate the operations for this effect and its bound context.
         """
         controller = context.controller
-        for card in state.get_cards(from_zones=[ZoneType.BATTLEFIELD]):
-            if card.get_controller(state) is not controller and CardType.CREATURE in card.get_types(
-                state
-            ):
-                yield TapCardOperation(context, card, tap_symbol=False)
+        for card in state.query_cards(DifferenceQuery(
+            EqQuery(IK_ZONE, ZoneType.BATTLEFIELD) & EqQuery(IK_TYPE, CardType.CREATURE),
+            (EqQuery(IK_CONTROLLER, controller),))):
+            yield TapCardOperation(context, card, tap_symbol=False)
 
     def get_info(self):
         """!
@@ -576,12 +580,8 @@ class SacrificeOneGoblinEffect(Effect):
         """!
         @brief Return a validation message when the requested action is not legal.
         """
-        if not any(
-            card.get_zone() == ZoneType.BATTLEFIELD
-            and card.get_controller(state) is context.controller
-            and CardSubtype.GOBLIN in card.get_subtypes(state)
-            for card in state.get_cards(from_zones=[ZoneType.BATTLEFIELD])
-        ):
+        if not state.query_cards(EqQuery(IK_ZONE, ZoneType.BATTLEFIELD)
+            & EqQuery(IK_CONTROLLER, context.controller) & EqQuery(IK_SUBTYPE, CardSubtype.GOBLIN)):
             return "You need a Goblin to sacrifice."
         return None
 
@@ -589,12 +589,8 @@ class SacrificeOneGoblinEffect(Effect):
         """!
         @brief Generate the operations for this effect and its bound context.
         """
-        goblin = next(
-            card
-            for card in state.get_cards(from_zones=[ZoneType.BATTLEFIELD])
-            if card.get_controller(state) is context.controller
-            and CardSubtype.GOBLIN in card.get_subtypes(state)
-        )
+        goblin = next(iter(state.query_cards(EqQuery(IK_ZONE, ZoneType.BATTLEFIELD)
+            & EqQuery(IK_CONTROLLER, context.controller) & EqQuery(IK_SUBTYPE, CardSubtype.GOBLIN))))
         yield MoveCardOperation(context, goblin, ZoneType.GRAVEYARD)
 
     def get_info(self):
@@ -714,7 +710,7 @@ class BlockedCondition(TriggerCondition):
         return self.matches(state, trigger.event) and trigger.event.source is trigger.source
 
 
-class ConfrontAssaultAbility(AbilityDefinition):
+class ConfrontAssaultAbility(CastSpellAbilityDefinition):
     def validation_error(self, source, controller, state):
         """!
         @brief Return a validation message when the requested action is not legal.
@@ -780,13 +776,13 @@ def _spell(
     *,
     slots=(),
     sorcery_speed=False,
-    ability_cls=AbilityDefinition,
+    ability_cls=CastSpellAbilityDefinition,
     keywords=(),
     oracle_text="",
     color=ManaType.WHITE,
 ):
     ability = _cast_ability(name, cost, effects=effects, slots=slots, sorcery_speed=sorcery_speed)
-    if ability_cls is not AbilityDefinition:
+    if ability_cls is not CastSpellAbilityDefinition:
         ability = ability_cls(**{**ability.__dict__})
     return CardDefinition(
         name=name,
@@ -835,12 +831,8 @@ RED_GOBLIN = CardDefinition(
 
 
 def _all_own_creatures(state, context):
-    return tuple(
-        card
-        for card in state.get_cards(from_zones=[ZoneType.BATTLEFIELD])
-        if card.get_controller(state) is context.controller
-        and CardType.CREATURE in card.get_types(state)
-    )
+    return state.query_cards(EqQuery(IK_ZONE, ZoneType.BATTLEFIELD)
+        & EqQuery(IK_CONTROLLER, context.controller) & EqQuery(IK_TYPE, CardType.CREATURE))
 
 
 def _event_attacker(state, context):
@@ -869,14 +861,9 @@ def _event_object_is_current(event, card):
 
 
 def _charmed_stray_targets(state, context):
-    source = context.source
-    return tuple(
-        card
-        for card in state.get_cards(from_zones=[ZoneType.BATTLEFIELD])
-        if card is not source
-        and card.name == "Charmed Stray"
-        and card.get_controller(state) is context.controller
-    )
+    return tuple(card for card in state.query_cards(
+        EqQuery(IK_ZONE, ZoneType.BATTLEFIELD) & EqQuery(IK_NAME, "charmed stray")
+        & EqQuery(IK_CONTROLLER, context.controller)) if card is not context.source)
 
 
 def _other_attackers_targets(state, context):
@@ -886,9 +873,8 @@ def _other_attackers_targets(state, context):
 
 
 def _graveyard_gathering_count(state, context):
-    return 2 + sum(
-        1 for card in context.controller.graveyard.values() if card.name == "Goblin Gathering"
-    )
+    return 2 + len(state.query_cards(EqQuery(IK_ZONE, ZoneType.GRAVEYARD)
+        & EqQuery(IK_OWNER, context.controller) & EqQuery(IK_NAME, "goblin gathering")))
 
 
 class _PowerAtMostSpec(PredicateTargetSpec):
@@ -896,7 +882,8 @@ class _PowerAtMostSpec(PredicateTargetSpec):
         super().__init__(
             lambda card, source, active, state: CardType.CREATURE in card.get_types(state)
             and (controller is None or card.get_controller(state) is active)
-            and (card.get_power(state) or 0) <= maximum
+            and (card.get_power(state) or 0) <= maximum,
+            query=EqQuery(IK_TYPE, CardType.CREATURE)
         )
 
 
@@ -909,14 +896,16 @@ class _CombatCreatureSpec(PredicateTargetSpec):
                 card in state.combat.attackers
                 or card in state.combat.blockers
                 or card in state.combat.blocked
-            )
+            ),
+            query=lambda source, controller, state: EqQuery(IK_TYPE, CardType.CREATURE) & EqQuery(IK_CONTROLLER, controller)
         )
 
 
 class _ArtifactSpec(PredicateTargetSpec):
     def __init__(self):
         super().__init__(
-            lambda card, source, controller, state: CardType.ARTIFACT in card.get_types(state)
+            lambda card, source, controller, state: CardType.ARTIFACT in card.get_types(state),
+            query=EqQuery(IK_TYPE, CardType.ARTIFACT)
         )
 
 
@@ -925,14 +914,16 @@ class _GoblinStaticSpec(PredicateTargetSpec):
         super().__init__(
             lambda card, source, controller, state: card is not source
             and card.get_controller(state) is source.get_controller(state)
-            and CardSubtype.GOBLIN in card.get_subtypes(state)
+            and CardSubtype.GOBLIN in card.get_subtypes(state),
+            query=lambda source, controller, state: EqQuery(IK_SUBTYPE, CardSubtype.GOBLIN) & EqQuery(IK_CONTROLLER, source.get_controller(state))
         )
 
 
 class _VitalitySpec(PredicateTargetSpec):
     def __init__(self):
         super().__init__(
-            lambda card, source, controller, state: card is source and controller.health >= 25
+            lambda card, source, controller, state: card is source and controller.health >= 25,
+            query=lambda source, controller, state: EqQuery(IK_KEY, source.key)
         )
 
 
@@ -940,7 +931,8 @@ class _OwnCreatureTargetSpec(PredicateTargetSpec):
     def __init__(self):
         super().__init__(
             lambda card, source, controller, state: card.get_controller(state) is controller
-            and CardType.CREATURE in card.get_types(state)
+            and CardType.CREATURE in card.get_types(state),
+            query=lambda source, controller, state: EqQuery(IK_TYPE, CardType.CREATURE) & EqQuery(IK_CONTROLLER, controller)
         )
 
 
@@ -949,14 +941,16 @@ class _NonFlyingOpponentCreatureSpec(PredicateTargetSpec):
         super().__init__(
             lambda card, source, controller, state: card.get_controller(state) is not controller
             and CardType.CREATURE in card.get_types(state)
-            and not card.has_keyword(state, "flying")
+            and not card.has_keyword(state, "flying"),
+            query=lambda source, controller, state: DifferenceQuery(EqQuery(IK_TYPE, CardType.CREATURE), (EqQuery(IK_CONTROLLER, controller),))
         )
 
 
 WHITE_CREATURE_TARGET = _slot(
     "target",
     PredicateTargetSpec(
-        lambda card, source, controller, state: CardType.CREATURE in card.get_types(state)
+        lambda card, source, controller, state: CardType.CREATURE in card.get_types(state),
+        query=EqQuery(IK_TYPE, CardType.CREATURE),
     ),
 )
 ANY_TARGET = _slot("target", AnyTargetSpec())

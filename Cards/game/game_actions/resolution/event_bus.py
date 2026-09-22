@@ -148,9 +148,15 @@ def capture_single_card(state, card):
     @param card Object to capture before its incarnation changes.
     @return Immutable last-known information for this incarnation.
     """
-    from ...stat_type import STAT_COLORS, STAT_KEYWORDS
-
     state.refresh_continuous_effects()
+    cache = getattr(state, "_card_snapshots", None)
+    if cache is not None:
+        return cache.capture(state, card, _capture_single_card)
+    return _capture_single_card(state, card)
+
+
+def _capture_single_card(state, card):
+    from ...stat_type import STAT_COLORS, STAT_KEYWORDS
     return CardLastKnownInformation(
         card, card.get_controller(state), card.get_zone(),
         frozenset(card.get_types(state)), card.zone_revision,
@@ -246,12 +252,11 @@ def capture_event(state, event, before=None, information=None, after=None):
             if use_before != is_before:
                 continue
 
-            trigger = TriggerAbility(
-                definition,
+            trigger = definition.to_ability(
                 ability.source,
                 ability.controller,
-                event,
-                (information or {}).get(id(ability.source)),
+                event=event,
+                source_last_known=(information or {}).get(id(ability.source)),
             )
 
             # A look-back roster describes the old incarnation even if its
@@ -441,104 +446,24 @@ class TriggerProcessor:
         @param state Current game state.
         @param triggers Trigger abilities controlled by the player.
         """
-        from ..generation.command_action_builder import ability_actions
-        from ...game_state.player import DecisionMaker
+        from ...ai.decision_maker import TriggerOrderRequest, AbilityDecisionRequest
 
         decision_maker = controller.controller
-        callback = getattr(
-            decision_maker,
-            "process_triggers",
-            None,
-        )
-
         triggers = tuple(triggers)
-        if (
-            not any(
-                getattr(
-                    getattr(trigger, "definition", None),
-                    "is_mana_ability",
-                    False,
-                )
-                for trigger in triggers
-            )
-            and callback is not None
-            and getattr(callback, "__func__", None)
-            is not DecisionMaker.process_triggers
-        ):
-            # Existing controllers may own both trigger ordering and target
-            # selection themselves. Remove triggers for which no legal action
-            # can currently be generated.
-            legal = [
-                trigger
-                for trigger in triggers
-                if not hasattr(trigger, "definition")
-                or next(
-                    ability_actions(trigger, state),
-                    None,
-                )
-                is not None
-            ]
-
-            if legal:
-                callback(state, legal)
-
-            return
-
-        ordered = list(triggers)
-        choose_order = getattr(
-            decision_maker,
-            "order_triggers",
-            None,
-        )
-
-        if choose_order is not None:
-            chosen = list(
-                choose_order(
-                    state,
-                    tuple(ordered),
-                )
-            )
-
-            # Ordering may change, but the controller must return exactly
-            # the same pending trigger objects.
-            if sorted(map(id, chosen)) != sorted(map(id, ordered)):
-                raise ValueError(
-                    "Trigger order must contain every pending trigger exactly once."
-                )
-
-            ordered = chosen
+        ordered = decision_maker.decide(TriggerOrderRequest(state, controller, triggers)).value.items
+        if sorted(map(id, ordered)) != sorted(map(id, triggers)):
+            raise ValueError("Trigger order must contain every pending trigger exactly once.")
 
         for trigger in ordered:
-            options = ability_actions(trigger, state)
-
-            choose_action = getattr(
-                decision_maker,
-                "choose_trigger_action",
-                None,
-            )
-
-            if choose_action is None:
-                action = next(options, None)
-            else:
-                choices = list(options)
-
-                # A mandatory trigger requiring impossible choices is removed.
-                if not choices:
-                    continue
-
-                action = choose_action(
-                    state,
-                    trigger,
-                    choices,
-                )
-
-                if not any(action is choice for choice in choices):
-                    raise ValueError(
-                        "Choose one of the legal actions for the mandatory trigger."
-                    )
-
-            if action is None:
+            request = AbilityDecisionRequest(state, controller, trigger)
+            choices = tuple(request.options)
+            if not choices:
                 continue
+            action = decision_maker.decide(
+                AbilityDecisionRequest(state, controller, trigger, choices)
+            ).value
+            if not any(action == choice for choice in choices):
+                raise ValueError("Choose one of the legal actions for the mandatory trigger.")
 
             for intent in action.get_intents():
                 # Trigger execution should not separately process cost intents.

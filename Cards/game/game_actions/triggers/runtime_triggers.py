@@ -30,8 +30,8 @@ class RuntimeTrigger:
 
     def bind(self, event):
         """! @brief Bind a trigger without replacing its captured source identity. """
-        trigger = TriggerAbility(
-            self.definition, self.source, self.controller, event, self.information
+        trigger = self.definition.to_ability(
+            self.source, self.controller, event=event, source_last_known=self.information
         )
         trigger.source_revision = self.information.zone_revision
         trigger.registration = self

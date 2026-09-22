@@ -1,106 +1,168 @@
-"""Controllers choose values; request option spaces own their generation."""
+"""Typed decisions with one explicit handler per request kind."""
 from __future__ import annotations
 from abc import ABC, abstractmethod
 from collections.abc import Mapping
-from time import perf_counter_ns
-from typing import Any
-from ..game_actions.generation.decision_abstraction.requests import *
-from ..game_actions.generation.decision_abstraction.decision_option import DecisionOptionSpace
+from typing import Any, TYPE_CHECKING
+from ..game_actions.data_structs.decision_option import DecisionOption
+from ..game_actions.generation.decision_abstraction.requests import (
+    DecisionRequest, PriorityDecisionRequest, AbilityDecisionRequest, DeclareAttackersRequest,
+    DeclareBlockersRequest, MulliganRequest, MulliganBottomRequest, DiscardRequest,
+    AbilityResolutionRequest, ManaGenerationRequest,
+    PriorityActionRequest, AbilityRequest, AttackerDeclarationRequest, BlockerDeclarationRequest,
+)
+from ..game_actions.generation.decision_abstraction.options import (
+    DeclareAttackersOption, DeclareBlockersOption, MulliganOption, MulliganBottomOption,
+    DiscardOption, AbilityResolutionOption,
+)
+from ..game_actions.generation.decision_abstraction.option_space import DecisionOptionSpace
+from ..game_actions.generation.decision_abstraction.measurement import DecisionMeasurement
 
-class DecisionResult[T]:
+from ..game_actions.generation.decision_abstraction.auxiliary import (
+    StartingPlayerRequest, StartingPlayerOption,
+    TriggerOrderRequest, TriggerOrderOption,
+    LegendRequest, LegendOption,
+    ReplacementRequest, ReplacementOption,
+    ReplacementOrderRequest, ReplacementOrderOption,
+    OptionalEffectRequest, OptionalEffectOption,
+    ReplacementAcceptanceRequest, ReplacementAcceptanceOption,
+    ScryRequest, ScryOption,
+    CombatDamageRequest, CombatDamageOption
+)
+
+if TYPE_CHECKING:
+    from ..game_actions.data_structs.game_action import GameAction
+    from ..mana.mana_solver import ManaSolverResult
+
+
+class DecisionResult[T: DecisionOption]:
     def __init__(self, value: T, info: Mapping[str, Any] | None = None):
+        if not isinstance(value, DecisionOption):
+            raise TypeError("DecisionResult requires a DecisionOption.")
         self.value: T = value
         self.info = dict(info or {})
 
+
 class DecisionMaker(ABC):
-    def decide[T](self, request: DecisionRequest[T]) -> DecisionResult[T]:
-        started = perf_counter_ns()
-        result = self._decide(request)
-        if not isinstance(result, DecisionResult):
-            raise TypeError("A decision maker must return DecisionResult.")
-        result.info["elapsed_time"] = perf_counter_ns() - started
-        return result
+    decision_mode = "agent"
+
+    def decide[T: DecisionOption](self, request: DecisionRequest[T]) -> DecisionResult[T]:
+        measurement = DecisionMeasurement(request)
+        try:
+            with measurement:
+                result = self._decide(request)
+                if not isinstance(result, DecisionResult) or not isinstance(result.value, request.option_type):
+                    raise TypeError(f"{type(request).__name__} requires DecisionResult[{request.option_type.__name__}].")
+            measurement.metrics["auto_pass"] = result.info.get("auto_pass", False)
+            measurement.metrics["auto_pass_reason"] = result.info.get("auto_pass_reason")
+            result.info["elapsed_time"] = measurement.metrics["elapsed_ns"]
+            result.info["decision_metrics"] = measurement.metrics
+            return result
+        finally:
+            measurement.publish(self)
 
     @abstractmethod
-    def _decide[T](self, request: DecisionRequest[T]) -> DecisionResult[T]: ...
+    def _decide[T: DecisionOption](self, request: DecisionRequest[T]) -> DecisionResult[T]: ...
 
-    def get_action(self, state, player):
-        return self.decide(PriorityDecisionRequest(state, player)).value
 
-    def choose_attackers(self, state, player):
-        return self.decide(DeclareAttackersRequest(state, player)).value
+def _first[T: DecisionOption](request: DecisionRequest[T]) -> DecisionResult[T]:
+    option = next(iter(request.options), None)
+    if option is None:
+        raise ValueError(f"No options available for {type(request).__name__}.")
+    return DecisionResult(option)
 
-    def choose_blockers(self, state, player):
-        return self.decide(DeclareBlockersRequest(state, player)).value
-
-    def choose_mulligan(self, state, player, mulligans_taken):
-        return self.decide(MulliganRequest(state, player, mulligans_taken)).value
-
-    def choose_mulligan_bottom(self, state, player, count):
-        return self.decide(MulliganBottomRequest(state, player, count)).value
-
-    def choose_discards(self, state, player, count):
-        return self.decide(DiscardRequest(state, player, count)).value
 
 class ModularDecisionMaker(DecisionMaker):
-    """Compatibility bridge for controllers implementing the earlier hooks.
+    """Override typed decide_* hooks independently; dispatch has no legacy logic."""
 
-    New controllers should implement DecisionMaker._decide and consume
-    request.option_space(policy). Existing hooks can migrate independently.
-    """
     def _decide(self, request):
         if isinstance(request, PriorityDecisionRequest):
-            # Some existing controllers customize get_action directly.
-            if type(self).get_action is not DecisionMaker.get_action:
-                return DecisionResult(self.get_action(request.state, request.player))
-            return self._decide_priority_action(request.state, request.player)
-        if isinstance(request, AbilityResolutionRequest):
-            if request.kind == "sacrifice":
-                chooser = getattr(self, "choose_sacrifices", None)
-                if chooser is not None:
-                    return DecisionResult(chooser(request.state, request.player, request.candidates, request.count))
-            elif request.kind == "discard":
-                return self.decide(DiscardRequest(request.state, request.player, request.count))
-            return DecisionResult(next(iter(request.options)))
-        hooks = {
-            DeclareAttackersRequest: ("choose_attackers", ()),
-            DeclareBlockersRequest: ("choose_blockers", ()),
-            MulliganRequest: ("choose_mulligan", (getattr(request, "mulligans_taken", 0),)),
-            MulliganBottomRequest: ("choose_mulligan_bottom", (getattr(request, "count", 0),)),
-            DiscardRequest: ("choose_discards", (getattr(request, "count", 0),)),
-        }
-        hook = hooks.get(type(request))
-        if hook is not None:
-            name, args = hook
-            if getattr(type(self), name) is not getattr(DecisionMaker, name):
-                return DecisionResult(getattr(self, name)(request.state, request.player, *args))
-        if isinstance(request, (DeclareAttackersRequest, DeclareBlockersRequest)):
-            return DecisionResult({})
+            return self.decide_priority(request)
+        if isinstance(request, AbilityDecisionRequest):
+            return self.decide_ability(request)
+        if isinstance(request, DeclareAttackersRequest):
+            return self.decide_attackers(request)
+        if isinstance(request, DeclareBlockersRequest):
+            return self.decide_blockers(request)
         if isinstance(request, MulliganRequest):
-            return DecisionResult(False)
-        if isinstance(request, (MulliganBottomRequest, DiscardRequest)):
-            return DecisionResult(tuple(request.player.hand.values())[:request.count])
-        if isinstance(request, (AbilityDecisionRequest, ManaGenerationRequest)):
-            return DecisionResult(next(iter(request.options), None))
+            return self.decide_mulligan(request)
+        if isinstance(request, MulliganBottomRequest):
+            return self.decide_mulligan_bottom(request)
+        if isinstance(request, DiscardRequest):
+            return self.decide_discard(request)
+        if isinstance(request, AbilityResolutionRequest):
+            return self.decide_ability_resolution(request)
+        if isinstance(request, ManaGenerationRequest):
+            return self.decide_mana(request)
+        if isinstance(request, StartingPlayerRequest):
+            return self.decide_starting_player(request)
+        if isinstance(request, TriggerOrderRequest):
+            return self.decide_trigger_order(request)
+        if isinstance(request, LegendRequest):
+            return self.decide_legend(request)
+        if isinstance(request, ReplacementRequest):
+            return self.decide_replacement(request)
+        if isinstance(request, ReplacementOrderRequest):
+            return self.decide_replacement_order(request)
+        if isinstance(request, OptionalEffectRequest):
+            return self.decide_optional_effect(request)
+        if isinstance(request, ReplacementAcceptanceRequest):
+            return self.decide_replacement_acceptance(request)
+        if isinstance(request, ScryRequest):
+            return self.decide_scry(request)
+        if isinstance(request, CombatDamageRequest):
+            return self.decide_combat_damage(request)
         raise NotImplementedError(f"Unsupported request: {type(request).__name__}")
 
-    def process_triggers(self, state, triggers):
-        """Legacy hook sentinel; trigger processing belongs to TriggerProcessor."""
-        raise NotImplementedError
+    def decide_priority(self, request: PriorityDecisionRequest) -> DecisionResult[GameAction]:
+        return _first(request)
 
-    def _decide_priority_action(self, state, player):
-        raise NotImplementedError("Implement priority selection or _decide.")
+    def decide_ability(self, request: AbilityDecisionRequest) -> DecisionResult[GameAction]:
+        return _first(request)
 
+    def decide_attackers(self, request: DeclareAttackersRequest) -> DecisionResult[DeclareAttackersOption]:
+        return _first(request)
 
-def decision_hook(controller, name):
-    """Resolve an engine callback through decide, or a legacy controller hook."""
-    requests = {
-        "choose_attackers": DeclareAttackersRequest,
-        "choose_blockers": DeclareBlockersRequest,
-        "choose_mulligan": MulliganRequest,
-        "choose_mulligan_bottom": MulliganBottomRequest,
-        "choose_discards": DiscardRequest,
-    }
-    if isinstance(controller, DecisionMaker) and name in requests:
-        return lambda state, player, *args: controller.decide(requests[name](state, player, *args)).value
-    return getattr(controller, name, None)
+    def decide_blockers(self, request: DeclareBlockersRequest) -> DecisionResult[DeclareBlockersOption]:
+        return _first(request)
+
+    def decide_mulligan(self, request: MulliganRequest) -> DecisionResult[MulliganOption]:
+        return _first(request)
+
+    def decide_mulligan_bottom(self, request: MulliganBottomRequest) -> DecisionResult[MulliganBottomOption]:
+        return _first(request)
+
+    def decide_discard(self, request: DiscardRequest) -> DecisionResult[DiscardOption]:
+        return _first(request)
+
+    def decide_ability_resolution(self, request: AbilityResolutionRequest) -> DecisionResult[AbilityResolutionOption]:
+        return _first(request)
+
+    def decide_mana(self, request: ManaGenerationRequest) -> DecisionResult[ManaSolverResult]:
+        return _first(request)
+
+    def decide_starting_player(self, request: StartingPlayerRequest) -> DecisionResult[StartingPlayerOption]:
+        return DecisionResult(StartingPlayerOption(request.player))
+
+    def decide_trigger_order(self, request: TriggerOrderRequest) -> DecisionResult[TriggerOrderOption]:
+        return _first(request)
+
+    def decide_legend(self, request: LegendRequest) -> DecisionResult[LegendOption]:
+        return _first(request)
+
+    def decide_replacement(self, request: ReplacementRequest) -> DecisionResult[ReplacementOption]:
+        return _first(request)
+
+    def decide_replacement_order(self, request: ReplacementOrderRequest) -> DecisionResult[ReplacementOrderOption]:
+        return _first(request)
+
+    def decide_optional_effect(self, request: OptionalEffectRequest) -> DecisionResult[OptionalEffectOption]:
+        return _first(request)
+
+    def decide_replacement_acceptance(self, request: ReplacementAcceptanceRequest) -> DecisionResult[ReplacementAcceptanceOption]:
+        return _first(request)
+
+    def decide_scry(self, request: ScryRequest) -> DecisionResult[ScryOption]:
+        return _first(request)
+
+    def decide_combat_damage(self, request: CombatDamageRequest) -> DecisionResult[CombatDamageOption]:
+        return _first(request)

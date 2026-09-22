@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from ..ai.decision_maker import decision_hook
+from ..ai.decision_maker import DiscardRequest, DeclareAttackersRequest, DeclareBlockersRequest
 
 from dataclasses import dataclass, field
 from abc import ABC, abstractmethod
@@ -345,14 +345,17 @@ class UntapPhaseController(PhaseController):
 
         # Skip markers are tied to a card incarnation. If the card changed zones
         # in the meantime, the marker no longer applies to the new incarnation.
-        for card in state.get_cards() if hasattr(state, "get_cards") else ():
-            marker = getattr(card, "_skip_untap", None)
+        from helper.query_system.query import EqQuery
+        from ..game_state.registers.card_register import IK_SKIP_UNTAP_PLAYER
+        marked = state.query_cards(EqQuery(IK_SKIP_UNTAP_PLAYER, state.active_player)) if hasattr(state, "query_cards") else ()
+        for card in marked:
+            marker = card.state.skip_untap
 
             if marker is not None and marker[1] is state.active_player:
                 if marker[0] == card.zone_revision:
                     skipped.add(card)
 
-                del card._skip_untap
+                card.state.skip_untap = None
 
         for permanent in permanents:
             if hasattr(permanent, "is_tapped"):
@@ -477,7 +480,16 @@ class CleanupPhaseController(PhaseController):
         """!
         @brief Remove marked damage and deathtouch damage markers.
         """
-        for card in state.get_cards():
+        from helper.query_system.query import EqQuery
+        from ..game_state.registers.card_register import IK_ZONE, IK_HAS_DAMAGE
+
+        # A damaged creature may have stopped being a creature this turn.
+        # Clear every permanent; zone changes already reset damage elsewhere.
+        cards = (
+            state.query_cards(EqQuery(IK_ZONE, ZoneType.BATTLEFIELD) & EqQuery(IK_HAS_DAMAGE, True))
+            if hasattr(state, "query_cards") else state.get_cards()
+        )
+        for card in cards:
             card.state.damage_marked = 0
             card.state.damage_by_deathtouch = False
 
@@ -496,13 +508,7 @@ class CleanupPhaseController(PhaseController):
             )
 
             if excess:
-                choose = decision_hook(player.controller, "choose_discards")
-
-                discards = tuple(
-                    choose(state, player, excess)
-                    if choose
-                    else tuple(player.hand.values())[-excess:]
-                )
+                discards = player.controller.decide(DiscardRequest(state, player, excess)).value.cards
 
                 if (
                     len(discards) != excess
@@ -586,11 +592,10 @@ class CombatPhaseController(SimplePhaseController):
 
         elif phase == TurnPhase.DECLARE_ATTACKERS:
             player = state.active_player
-            choose = decision_hook(player.controller, "choose_attackers")
 
             events = combat.declare_attackers(
                 player,
-                choose(state, player) if choose else {},
+                player.controller.decide(DeclareAttackersRequest(state, player)).value.declarations,
             )
 
             _publish_events(
@@ -604,11 +609,10 @@ class CombatPhaseController(SimplePhaseController):
                 if player is state.active_player:
                     continue
 
-                choose = decision_hook(player.controller, "choose_blockers")
 
                 events = combat.declare_blockers(
                     player,
-                    choose(state, player) if choose else {},
+                    player.controller.decide(DeclareBlockersRequest(state, player)).value.declarations,
                 )
 
                 _publish_events(

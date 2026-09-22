@@ -2,6 +2,35 @@
 
 from __future__ import annotations
 
+from game.ai.decision_maker import (
+    AbilityDecisionRequest,
+    AbilityResolutionRequest,
+    DeclareAttackersRequest,
+    DeclareBlockersRequest,
+    DiscardRequest,
+    LegendRequest,
+    MulliganBottomRequest,
+    MulliganRequest,
+    OptionalEffectRequest,
+    PriorityDecisionRequest,
+    ReplacementAcceptanceRequest,
+    ReplacementOrderRequest,
+    ReplacementRequest,
+    ScryRequest,
+    StartingPlayerRequest,
+    TriggerOrderRequest,
+)
+
+from game.ai.decision_maker import DecisionResult
+from game.game_actions.generation.decision_abstraction.options import (
+    DeclareAttackersOption, DeclareBlockersOption, MulliganOption, MulliganBottomOption,
+    DiscardOption, AbilityResolutionOption,
+)
+from game.game_actions.generation.decision_abstraction.auxiliary import (
+    StartingPlayerOption, OptionalEffectOption, ScryOption, LegendOption,
+    ReplacementOption, ReplacementOrderOption, ReplacementAcceptanceOption, TriggerOrderOption,
+)
+
 from dataclasses import dataclass
 from typing import Callable
 from game.console.console_commands import (
@@ -22,7 +51,7 @@ from game.game_actions.resolution.operation_executor import OperationExecutor
 from game.game_actions.resolution.resolution_engine import ResolutionEngine
 from game.game_loop.game_loop import GameLoop
 from game.game_state import Card, Player, State
-from game.game_state.player import DecisionMaker
+from game.ai.decision_maker import ModularDecisionMaker
 from helper.query_system.query import EqQuery
 from game.game_state.registers.card_register import IK_ZONE, IK_CONTROLLER
 from game.cards.demo_cards import (
@@ -143,43 +172,34 @@ def available_actions(state: State, player: Player) -> list[ActionOption]:
         or state.priority.current_player is not player
     ):
         return []
-    sources = [(card, True) for card in player.hand.values()]
-    sources.extend(
-        (card, False)
-        for card in state.query_cards(
-            EqQuery(IK_ZONE, ZoneType.BATTLEFIELD) & EqQuery(IK_CONTROLLER, player)
-        )
-    )
-    options = []
-    for card, is_spell in sources:
-        if is_spell and CardType.LAND in card.get_types(state):
-            from game.rules.lands import LandPlayAction, land_play_error
+    from game.game_state.collectors.priority_ability_collector import PriorityAbilityCollector
+    from game.rules.lands import LandPlayAction
 
-            if land_play_error(card, player, state) is None:
-                options.append(ActionOption(f"Play land {card}", LandPlayAction(card, player)))
+    collector = PriorityAbilityCollector()
+    options = [
+        ActionOption(f"Play land {ability.source}", LandPlayAction(ability.source, player))
+        for ability in collector.collect_lands(state, player)
+    ]
+    for ability in collector.collect_abilities(state, player, include_mana=True):
+        card, definition = ability.source, ability.definition
+        try:
+            for action in ability_actions(ability, state):
+                verb = (
+                    ("Summon" if CardType.CREATURE in card.get_types(state) else "Cast")
+                    if definition.is_spell else "Activate"
+                )
+                targets = [
+                    str(target)
+                    for inner in action.action_generator.binding.values()
+                    for group in inner.values()
+                    for target in group
+                ]
+                label = f"{verb} {card}: {definition.key}"
+                if targets:
+                    label += " -> " + ", ".join(targets)
+                options.append(ActionOption(label, action))
+        except ValueError:
             continue
-        for definition in card.get_ability_defs(state).values():
-            if definition.is_spell != is_spell:
-                continue
-            try:
-                for action in ability_actions(definition.to_ability(card, player), state):
-                    verb = (
-                        ("Summon" if CardType.CREATURE in card.get_types(state) else "Cast")
-                        if is_spell
-                        else "Activate"
-                    )
-                    targets = [
-                        str(target)
-                        for inner in action.action_generator.binding.values()
-                        for group in inner.values()
-                        for target in group
-                    ]
-                    label = f"{verb} {card}: {definition.key}"
-                    if targets:
-                        label += " -> " + ", ".join(targets)
-                    options.append(ActionOption(label, action))
-            except ValueError:
-                continue
     return options
 
 
@@ -280,10 +300,12 @@ def format_state(state: State) -> str:
     return "\n".join(lines)
 
 
-class ConsoleDecisionMaker(DecisionMaker):
+class ConsoleDecisionMaker(ModularDecisionMaker):
     """!
     @brief Read explicit player commands and return real engine actions.
     """
+
+    decision_mode = "human"
 
     def __init__(
         self,
@@ -299,7 +321,8 @@ class ConsoleDecisionMaker(DecisionMaker):
         self._event_index = 0
         self.auto_pass = auto_pass
 
-    def choose_starting_player(self, players):
+    def decide_starting_player(self, request: StartingPlayerRequest) -> DecisionResult[StartingPlayerOption]:
+        players = request.candidates
         while True:
             self.write(
                 "Choose who starts: "
@@ -307,21 +330,24 @@ class ConsoleDecisionMaker(DecisionMaker):
             )
             answer = self.read("Starting player [1/2]: ").strip()
             if answer in {"1", "2"}:
-                return players[int(answer) - 1]
+                return DecisionResult(StartingPlayerOption(players[int(answer) - 1]))
 
-    def choose_optional_effect(self, state, context, description):
+    def decide_optional_effect(self, request: OptionalEffectRequest) -> DecisionResult[OptionalEffectOption]:
         """!
         @brief Ask the controller whether to perform a resolving optional effect.
         """
+        description = request.description
         while True:
             answer = self.read(f"{description} [y/n]: ").strip().lower()
             if answer in {"y", "yes", "n", "no"}:
-                return answer in {"y", "yes"}
+                return DecisionResult(OptionalEffectOption(answer in {"y", "yes"}))
 
-    def choose_scry(self, state, player, cards):
+    def decide_scry(self, request: ScryRequest) -> DecisionResult[ScryOption]:
         """!
         @brief Choose exact top and bottom ordering for scry.
         """
+        state, player = request.state, request.player
+        cards = request.candidates
         self.write(
             "Scry: "
             + ", ".join(
@@ -331,7 +357,7 @@ class ConsoleDecisionMaker(DecisionMaker):
         )
 
         if not cards:
-            return (), ()
+            return DecisionResult(ScryOption(*((), ())))
 
         by_id = {
             card_reference(card).lower(): card
@@ -345,7 +371,7 @@ class ConsoleDecisionMaker(DecisionMaker):
             ).strip().lower()
 
             if not answer:
-                return cards, ()
+                return DecisionResult(ScryOption(*(cards, ())))
 
             tokens = answer.split()
 
@@ -389,12 +415,16 @@ class ConsoleDecisionMaker(DecisionMaker):
                 )
                 continue
 
-            return (
+            return DecisionResult(ScryOption(*((
                 tuple(by_id[key] for key in top_ids),
                 tuple(by_id[key] for key in bottom_ids),
-            )
+            ))))
 
-    def choose_mulligan(self, state, player, mulligans_taken):
+    def decide_mulligan(self, request: MulliganRequest) -> DecisionResult[MulliganOption]:
+        state, player = request.state, request.player
+        mulligans_taken = request.mulligans_taken
+        if not request.can_mulligan:
+            return DecisionResult(MulliganOption(False))
         self.write(
             f"{player.name}: "
             + ", ".join(
@@ -409,10 +439,12 @@ class ConsoleDecisionMaker(DecisionMaker):
             ).strip().lower()
 
             if answer in {"y", "yes", "n", "no"}:
-                return answer in {"y", "yes"}
+                return DecisionResult(MulliganOption(answer in {"y", "yes"}))
 
 
-    def choose_mulligan_bottom(self, state, player, count):
+    def decide_mulligan_bottom(self, request: MulliganBottomRequest) -> DecisionResult[MulliganBottomOption]:
+        state, player = request.state, request.player
+        count = request.count
         self.write(
             f"{player.name}: "
             + ", ".join(
@@ -442,7 +474,7 @@ class ConsoleDecisionMaker(DecisionMaker):
                 and len(set(ids)) == count
                 and all(card_id in by_id for card_id in ids)
             ):
-                return tuple(by_id[card_id] for card_id in ids)
+                return DecisionResult(MulliganBottomOption(tuple(by_id[card_id] for card_id in ids)))
 
             self.write(
                 f"Choose {count} distinct card IDs from your hand."
@@ -492,25 +524,27 @@ class ConsoleDecisionMaker(DecisionMaker):
                 )
         self._event_index = len(self.event_bus.emitted_events)
 
-    def choose_attackers(self, state, player):
+    def decide_attackers(self, request: DeclareAttackersRequest) -> DecisionResult[DeclareAttackersOption]:
+        state, player = request.state, request.player
         from game.console.combat_commands import parse_attackers
 
         if not state.combat.legal_attackers(player):
-            return {}
-        return self._combat_choice(
+            return DecisionResult(DeclareAttackersOption({}))
+        return DecisionResult(DeclareAttackersOption(self._combat_choice(
             state, player, parse_attackers, "attack <card>... [defender] | pass"
-        )
+        )))
 
-    def choose_blockers(self, state, player):
+    def decide_blockers(self, request: DeclareBlockersRequest) -> DecisionResult[DeclareBlockersOption]:
+        state, player = request.state, request.player
         from game.console.combat_commands import parse_blockers
 
         if not any(
             state.combat.legal_blockers(player, attacker) for attacker in state.combat.attackers
         ):
-            return {}
-        return self._combat_choice(
+            return DecisionResult(DeclareBlockersOption({}))
+        return DecisionResult(DeclareBlockersOption(self._combat_choice(
             state, player, parse_blockers, "block <blocker>:<attacker>... | pass"
-        )
+        )))
 
     def _combat_choice(self, state, player, parser, usage):
         self.show_events()
@@ -529,7 +563,9 @@ class ConsoleDecisionMaker(DecisionMaker):
             except CommandError as error:
                 self.write(f"Invalid input: {error}")
 
-    def choose_legend(self, state, player, cards):
+    def decide_legend(self, request: LegendRequest) -> DecisionResult[LegendOption]:
+        state, player = request.state, request.player
+        cards = request.candidates
         self.write(
             "Legend rule: choose one permanent to keep: "
             + ", ".join(card_reference(c) for c in cards)
@@ -539,12 +575,14 @@ class ConsoleDecisionMaker(DecisionMaker):
             try:
                 card = resolve_card(raw, player, global_scope=True)
                 if card in cards:
-                    return card
+                    return DecisionResult(LegendOption(card))
                 self.write("Choose one of the listed permanents.")
             except CommandError as error:
                 self.write(str(error))
 
-    def choose_replacement(self, state, player, operation, effects):
+    def decide_replacement(self, request: ReplacementRequest) -> DecisionResult[ReplacementOption]:
+        state, player = request.state, request.player
+        operation, effects = request.operation, request.candidates
         for index, effect in enumerate(effects, 1):
             self.write(f"{index}: {getattr(effect, 'key', type(effect).__name__)}")
         while True:
@@ -554,12 +592,14 @@ class ConsoleDecisionMaker(DecisionMaker):
             try:
                 index = int(raw) - 1
                 if 0 <= index < len(effects):
-                    return effects[index]
+                    return DecisionResult(ReplacementOption(effects[index]))
             except ValueError:
                 pass
             self.write("Choose a listed replacement number.")
 
-    def order_replacement_events(self, state, player, operations):
+    def decide_replacement_order(self, request: ReplacementOrderRequest) -> DecisionResult[ReplacementOrderOption]:
+        state, player = request.state, request.player
+        operations = request.candidates
         from game.game_actions.resolution.replacement_effects import (
             active_effects,
             ReplacementEffect,
@@ -572,7 +612,7 @@ class ConsoleDecisionMaker(DecisionMaker):
             for effect in active_effects(state)
         )
         if not competing:
-            return operations
+            return DecisionResult(ReplacementOrderOption(operations))
         for index, op in enumerate(operations, 1):
             if hasattr(op, "amount") and hasattr(op, "target"):
                 description = f"{op.amount} damage to {op.target}"
@@ -588,20 +628,24 @@ class ConsoleDecisionMaker(DecisionMaker):
             try:
                 order = tuple(int(number) - 1 for number in raw.split())
                 if sorted(order) == list(range(len(operations))):
-                    return tuple(operations[index] for index in order)
+                    return DecisionResult(ReplacementOrderOption(tuple(operations[index] for index in order)))
             except ValueError:
                 pass
             self.write("List every event number exactly once.")
 
-    def accept_replacement(self, state, player, operation, effect):
+    def decide_replacement_acceptance(self, request: ReplacementAcceptanceRequest) -> DecisionResult[ReplacementAcceptanceOption]:
+        state, player = request.state, request.player
+        operation, effect = request.operation, request.effect
         while True:
             raw = self.read(f"{player.name}/apply {effect.key}? yes/no> ").strip().lower()
             if raw == "quit":
                 raise EOFError
             if raw in {"yes", "y", "no", "n"}:
-                return raw in {"yes", "y"}
+                return DecisionResult(ReplacementAcceptanceOption(raw in {"yes", "y"}))
 
-    def choose_discards(self, state, player, count):
+    def decide_discard(self, request: DiscardRequest) -> DecisionResult[DiscardOption]:
+        state, player = request.state, request.player
+        count = request.count
         self.write(self._hand(player))
         while True:
             raw = self.read(f"{player.name}/discard {count} card IDs> ")
@@ -611,56 +655,68 @@ class ConsoleDecisionMaker(DecisionMaker):
                 cards = tuple(resolve_card(ref, player, ZoneType.HAND) for ref in raw.split())
                 if len(cards) != count or len(set(cards)) != count:
                     raise CommandError(f"Choose {count} distinct cards from your hand.")
-                return cards
+                return DecisionResult(DiscardOption(cards))
             except CommandError as error:
                 self.write(f"Invalid input: {error}")
 
-    def process_triggers(self, state, triggers):
-        from game.console.command_session import CommandSession
-
-        pending = list(triggers)
+    def decide_trigger_order(self, request: TriggerOrderRequest) -> DecisionResult[TriggerOrderOption]:
+        pending = list(request.candidates)
+        ordered = []
         while pending:
-            if len(pending) > 1:
-                self.write("Choose trigger to put on stack next (last resolves first):")
-                for index, trigger in enumerate(pending, 1):
-                    self.write(f"{index}: {card_reference(trigger.source)} {trigger.key}")
-                raw = self.read("trigger/order> ").strip()
-                if raw in {"?", "options"}:
-                    continue
-                try:
-                    index = int(raw) - 1
-                    if not 0 <= index < len(pending):
-                        raise ValueError()
-                except ValueError:
-                    self.write("Enter a listed trigger number.")
-                    continue
-            else:
-                index = 0
-            trigger = pending[index]
-            self.write(f"Triggered: {card_reference(trigger.source)} {trigger.key}")
-            action = CommandSession(
-                state, trigger.controller, "trigger", self.read, self.write, ability=trigger
-            ).run()
-            if action is None:
-                self.write(
-                    "This trigger is mandatory; choose its action or quit the game with EOF/Ctrl+C."
-                )
-                continue
-            for intent in action.get_intents():
-                if not intent.context.is_cost:
-                    state.stack.push(intent.to_stack_item())
-            pending.pop(index)
+            if len(pending) == 1:
+                ordered.append(pending.pop())
+                break
+            self.write("Choose trigger to put on stack next (last resolves first):")
+            for index, trigger in enumerate(pending, 1):
+                self.write(f"{index}: {card_reference(trigger.source)} {trigger.key}")
+            raw = self.read("trigger/order> ").strip()
+            if raw == "quit":
+                raise EOFError
+            try:
+                index = int(raw) - 1
+                if not 0 <= index < len(pending):
+                    raise ValueError()
+                ordered.append(pending.pop(index))
+            except ValueError:
+                self.write("Enter a listed trigger number.")
+        return DecisionResult(TriggerOrderOption(ordered))
 
-    def get_action(self, state: State, player: Player) -> GameAction:
+    def decide_ability(self, request: AbilityDecisionRequest) -> DecisionResult[GameAction]:
+        from game.console.command_session import CommandSession
+        ability = request.ability
+        self.write(f"Ability: {card_reference(ability.source)} {ability.key}")
+        while True:
+            action = CommandSession(
+                request.state, request.player, "trigger", self.read, self.write, ability=ability,
+            ).run()
+            if action is not None:
+                return DecisionResult(action)
+            self.write("This ability is mandatory; choose its action or quit the game with EOF/Ctrl+C.")
+
+    def decide_ability_resolution(self, request: AbilityResolutionRequest) -> DecisionResult[AbilityResolutionOption]:
+        by_id = {card_reference(c).lower(): c for c in request.candidates}
+        self.write(", ".join(f"{key}: {card.name}" for key, card in by_id.items()))
+        while True:
+            raw = self.read(f"{request.player.name}/{request.kind} {request.count} card IDs> ").strip().lower()
+            if raw == "quit":
+                raise EOFError
+            ids = raw.split()
+            if len(ids) == request.count and len(set(ids)) == len(ids) and all(i in by_id for i in ids):
+                return DecisionResult(AbilityResolutionOption(tuple(by_id[i] for i in ids)))
+            self.write(f"Choose {request.count} distinct listed card IDs.")
+
+    def decide_priority(self, request: PriorityDecisionRequest) -> DecisionResult[GameAction]:
         """!
         @brief Choose the next action for the player with priority.
         """
+        state, player = request.state, request.player
         self.show_events()
         if self.auto_pass:
             from game.console.priority_choices import can_auto_pass
 
             if can_auto_pass(state, player):
-                return PassPriorityAction(player)
+                return DecisionResult(PassPriorityAction(player),
+                                      {"auto_pass": True, "auto_pass_reason": "quiet_window"})
         self.write("\n" + format_state(state))
         self.write(f"Priority: {player.name}. " + self._hand(player))
         self.write("Commands: play, activate, pass, hand, inspect, status, help, concede, quit")
@@ -681,7 +737,7 @@ class ConsoleDecisionMaker(DecisionMaker):
                         state, player, command.name, self.read, self.write
                     ).run()
                     if action is not None:
-                        return action
+                        return DecisionResult(action)
                     continue
                 if command.name in {"quit", "status", "hand", "help", "options", "?"}:
                     if command.arguments:
@@ -752,9 +808,9 @@ class ConsoleDecisionMaker(DecisionMaker):
                             self.write(
                                 f"Loyalty cost: {definition.loyalty_cost:+d}; once per permanent per turn"
                             )
-                        self.write(
-                            f"{definition.key} ({'play' if definition.is_spell else 'activate'}, {timing})"
-                        )
+                        from game.game_actions.data_structs.ability import PlayLandAbilityDefinition
+                        command = "play" if definition.is_spell or isinstance(definition, PlayLandAbilityDefinition) else "activate"
+                        self.write(f"{definition.key} ({command}, {timing})")
                         if rules_text:
                             continue
                         for kind, subdefs in (
@@ -765,7 +821,7 @@ class ConsoleDecisionMaker(DecisionMaker):
                                 for effect in sorted(subdef.effects, key=lambda effect: effect.key):
                                     self.write(f"  {kind}: {effect.get_info()}")
                     continue
-                return build_action(state, player, raw)
+                return DecisionResult(build_action(state, player, raw))
             except CommandError as error:
                 self.write(f"Invalid input: {error}")
 
@@ -788,7 +844,7 @@ class DemoGame:
         @brief Run to a loss and return the surviving player, or None for a draw.
         """
         self.loop.run(self.state)
-        survivors = [player for player in self.state.players if player.is_alive]
+        survivors = list(self.state.active_players)
         return survivors[0] if len(survivors) == 1 else None
 
 

@@ -1,4 +1,6 @@
 """Ordering and interactions, using real registries, resolution and SBA."""
+from game.ai.decision_maker import ReplacementOrderOption, DecisionResult, ReplacementAcceptanceOption, ReplacementAcceptanceRequest, ReplacementOption, ReplacementOrderRequest, ReplacementRequest
+from game.game_actions import PassPriorityAction
 from dataclasses import replace
 from copy import copy
 from itertools import permutations
@@ -8,7 +10,7 @@ from helper.query_system.query import EqQuery
 from game.enums import CardType as T, ZoneType as Z, Layer as L, CounterType as C, TurnPhase as P
 from game.stat_type import STAT_POWER as POWER, STAT_TOUGHNESS as TOUGHNESS, STAT_TYPES as TYPES, STAT_KEYWORDS as KEYWORDS
 from game.game_state import Card, CardDefinition, Player, State
-from game.game_state.player import DecisionMaker
+from game.ai.decision_maker import ModularDecisionMaker as DecisionMaker
 from game.game_state.modifier import (ContinuousEffect, ContinuousEffectDefinition, ContinuousEffectState,
     PermanentDuration, TimeStampDuration, TimeStamp, DynamicTargetingStrategy, SetModifier,
     AddIntModifier, MultiplyIntModifier, AddSetModifier, RemoveSetModifier)
@@ -32,15 +34,18 @@ class Controller(DecisionMaker):
     def __init__(self):
         self.choices = []
 
-    def get_action(self, state, player):
-        return None
+    def decide_priority(self, request):
+        state = request.state; player = request.player
+        return DecisionResult(PassPriorityAction(player))
 
-    def choose_replacement(self, state, player, operation, effects):
+    def decide_replacement(self, request):
+        state = request.state; player = request.player; operation = request.operation; effects = request.candidates
         self.choices.append((player, tuple(effect.key for effect in effects)))
-        return next((e for e in effects if e.key == self.preferred), effects[0])
+        return DecisionResult(ReplacementOption(next((e for e in effects if e.key == self.preferred), effects[0])))
 
-    def accept_replacement(self, state, player, operation, effect):
-        return self.accept
+    def decide_replacement_acceptance(self, request):
+        state = request.state; player = request.player; operation = request.operation; effect = request.effect
+        return DecisionResult(ReplacementAcceptanceOption(self.accept))
 
 
 @pytest.fixture
@@ -338,7 +343,9 @@ def test_simultaneous_replacement_choices_use_apnap(game):
         calls.append(player)
         return effects[0]
     for player in state.players:
-        player.decision_maker.choose_replacement = choose
+        player.decision_maker.decide_replacement = lambda request: DecisionResult(ReplacementOption(
+            choose(request.state, request.player, request.operation, request.candidates)
+        ))
     state.replacement_rules.extend([prevent_damage("first", 1).bind(), prevent_damage("second", 1).bind()])
     game[1].resolve_simultaneous(state, [DamagePlayerOperation(context(game), state.players[1], 3),
                                        DamagePlayerOperation(context(game), state.players[0], 3)])
@@ -348,7 +355,9 @@ def test_simultaneous_replacement_choices_use_apnap(game):
 def test_player_orders_simultaneous_damage_competing_for_shield(game):
     target = card(game)
     player = target.owner
-    player.decision_maker.order_replacement_events = lambda state, player, operations: tuple(reversed(operations))
+    player.decision_maker.decide_replacement_order = lambda request: DecisionResult(ReplacementOrderOption(
+        tuple(reversed(request.candidates))
+    ))
     game[0].replacement_rules.append(prevent_damage("shared", 3, total=True).bind())
     before = player.health
     game[1].resolve_simultaneous(game[0], [DamagePlayerOperation(context(game), player, 3),
@@ -380,9 +389,9 @@ def test_console_replacement_choices_reject_invalid_input(game):
     operations = (DamagePlayerOperation(context(game), player, 2), DamagePlayerOperation(context(game), player, 3))
     effects = (prevent_damage("first", 3, total=True).bind(), damage_multiplier("second", 2).bind())
     game[0].replacement_rules.extend(effects)
-    assert console.choose_replacement(game[0], player, operations[0], effects) is effects[1]
-    assert not console.accept_replacement(game[0], player, operations[0], effects[0])
-    assert console.order_replacement_events(game[0], player, operations) == operations[::-1]
+    assert console.decide(ReplacementRequest(game[0], player, operations[0], effects)).value.selected is effects[1]
+    assert not console.decide(ReplacementAcceptanceRequest(game[0], player, operations[0], effects[0])).value.accept
+    assert console.decide(ReplacementOrderRequest(game[0], player, operations)).value.items == operations[::-1]
 
 
 def test_install_replacement_effect_factory_runs_at_resolution(game):

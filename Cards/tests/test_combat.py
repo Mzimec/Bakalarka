@@ -1,4 +1,6 @@
 """Combat rules exercised against real state, operations, replacements, and SBA."""
+from game.ai.decision_maker import CombatDamageOption, DecisionResult, PriorityDecisionRequest
+from game.game_actions import PassPriorityAction
 from itertools import product
 
 import pytest
@@ -7,19 +9,19 @@ from game.rules.combat import CombatError, CombatState
 from game.console.combat_commands import parse_attackers, parse_blockers
 from game.console.console_commands import CommandError
 from game.enums import CardType, TurnPhase, ZoneType
-from game.game_actions import FixedExecutionPlan, ResolutionContext, ScheduledResolution
 from game.game_actions.resolution.event_bus import EventBus
 from game.game_actions.resolution.operation_executor import OperationExecutor
 from game.game_actions.resolution.resolution_engine import ResolutionEngine
 from game.game_actions.resolution.sba_resolver import LethalCreaturesRule
 from game.game_state import Card, CardDefinition, Player, State
-from game.game_state.player import DecisionMaker
+from game.ai.decision_maker import ModularDecisionMaker as DecisionMaker
 from game.stat_type import STAT_TYPES
 
 
 class PassiveController(DecisionMaker):
-    def get_action(self, state, player):
-        return None
+    def decide_priority(self, request):
+        state = request.state; player = request.player
+        return DecisionResult(PassPriorityAction(player))
 
 
 @pytest.fixture
@@ -427,7 +429,9 @@ def test_damage_assignment_controller_hook_is_used(game):
         calls.append((creature, recipients, amount))
         return {second: 4}
 
-    state.players[0].controller.assign_combat_damage = choose
+    state.players[0].controller.decide_combat_damage = lambda request: DecisionResult(CombatDamageOption(
+        choose(request.state, request.player, request.creature, request.recipients, request.amount)
+    ))
     declare(game, [attacker], {first: attacker, second: attacker})
     damage(game)
     assert calls == [(attacker, (first, second), 4)]
@@ -552,7 +556,7 @@ def test_priority_prompt_shows_current_combat_before_reading_spell_command(game)
             assert f"Blocked by: {card_reference(blocker)}" in text
         return "pass"
 
-    ConsoleDecisionMaker(read=read, write=output.append).get_action(state, state.players[0])
+    ConsoleDecisionMaker(read=read, write=output.append).decide(PriorityDecisionRequest(state, state.players[0])).value
 
 
 def test_combat_view_distinguishes_pending_unblocked_and_removed_blockers(game):

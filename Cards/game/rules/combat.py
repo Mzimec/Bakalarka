@@ -13,6 +13,8 @@ from collections.abc import Iterable, Mapping
 from typing import TYPE_CHECKING
 
 from game.enums import CardType, TurnPhase, ZoneType
+from helper.query_system.query import EqQuery
+from game.game_state.registers.card_register import IK_ZONE, IK_TYPE, IK_CONTROLLER, IK_TAPPED
 from game.game_actions.resolution.event_bus import GameEvent
 
 if TYPE_CHECKING:
@@ -141,7 +143,9 @@ class CombatState:
 
         return tuple(
             card
-            for card in self.state.get_cards(from_zones=[ZoneType.BATTLEFIELD])
+            for card in self.state.query_cards(EqQuery(IK_ZONE, ZoneType.BATTLEFIELD)
+                & EqQuery(IK_TYPE, CardType.CREATURE) & EqQuery(IK_CONTROLLER, player)
+                & EqQuery(IK_TAPPED, False))
             if self._creature(card, player) and self.attacker_error(card, player) is None
         )
 
@@ -317,7 +321,9 @@ class CombatState:
 
         return tuple(
             card
-            for card in self.state.get_cards(from_zones=[ZoneType.BATTLEFIELD])
+            for card in self.state.query_cards(EqQuery(IK_ZONE, ZoneType.BATTLEFIELD)
+                & EqQuery(IK_TYPE, CardType.CREATURE) & EqQuery(IK_CONTROLLER, player)
+                & EqQuery(IK_TAPPED, False))
             if self.blocker_error(card, attacker, player) is None
         )
 
@@ -596,7 +602,7 @@ class CombatState:
 
         `assignments` maps each dealing creature to `{recipient: damage}`.
         Missing assignments are delegated to the controller's optional
-        `assign_combat_damage` hook when a choice exists, otherwise a
+        `CombatDamageRequest` when a choice exists, otherwise a
         deterministic legal assignment is used.
 
         Every assignment is validated before any damage operation is returned
@@ -667,12 +673,12 @@ class CombatState:
 
             if assigned is None:
                 controller = creature.get_controller(self.state)
-                choose = getattr(controller.decision_maker, "assign_combat_damage", None)
-
-                if choose is not None and len(recipients) > 1 and amount:
-                    assigned = choose(self.state, controller, creature, recipients, amount)
-
-                if assigned is None:
+                if len(recipients) > 1 and amount:
+                    from ..ai.decision_maker import CombatDamageRequest
+                    assigned = controller.decision_maker.decide(CombatDamageRequest(
+                        self.state, controller, creature, tuple(recipients), amount,
+                    )).value.assignments
+                else:
                     assigned = self.default_assignment(creature, recipients, amount)
 
             self._validate_assignment(creature, recipients, amount, assigned)

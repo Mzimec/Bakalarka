@@ -1,14 +1,25 @@
 """Composable candidate generation and decision policies for bounded game search."""
+from __future__ import annotations
+
+from game.ai.decision_maker import (
+    AbilityDecisionRequest,
+    DeclareAttackersRequest,
+    DeclareBlockersRequest,
+    PriorityDecisionRequest,
+)
+
+from game.ai.decision_maker import DecisionResult
+from game.game_actions.generation.decision_abstraction.options import (
+    DeclareAttackersOption,
+    DeclareBlockersOption,
+)
 
 from dataclasses import dataclass
-from itertools import islice, product
 
 from game.ai.simple_agent import SimpleAgent
-from game.ai.mana_solver import SourceActivatingManaSolver
-from game.console.command_choices import legal_plans, UnsupportedCommandDefinition
-from game.enums import CardType, ZoneType
-from game.game_actions.data_structs.game_action import PassPriorityAction
-from game.rules.lands import LandPlayAction, land_play_error
+from game.mana.mana_solver import SourceActivatingManaSolver
+from game.enums import ZoneType
+from game.game_actions.data_structs.game_action import PassPriorityAction, GameAction
 
 
 @dataclass
@@ -108,6 +119,11 @@ class ParameterPolicy:
         cost = str(ability.source.get_mana_cost(state))
         return range(self.max_x, -1, -1) if "X" in cost else (0,)
 
+    def generate(self, ability, state):
+        from game.game_actions.generation.decision_abstraction.parameters import AbilityParameters
+        for value in self.values(ability, state):
+            yield AbilityParameters(x_value=value)
+
 
 class CandidateGenerator:
     """!
@@ -132,141 +148,92 @@ class CandidateGenerator:
         """!
         @brief Return ranked legal witnesses plus the always-available priority pass.
         """
-        result = [Candidate(PassPriorityAction(player), 0, {"kind": "pass"})]
-        sources = list(player.hand.values()) + [
-            c for c in state.get_cards(from_zones=[ZoneType.BATTLEFIELD, ZoneType.GRAVEYARD])
-            if c.get_controller(state) is player
-        ]
-        for card in sources:
-            if card.is_type(state, CardType.LAND) and land_play_error(card, player, state) is None:
-                result.append(Candidate(LandPlayAction(card, player), 100,
-                                        {"kind": "land", "source": card.command_id}))
-            for definition in sorted(card.get_ability_defs(state).values(), key=lambda d: d.key):
-                key = (card.command_id, definition.key)
-                if key in attempted or definition.is_mana_ability:
-                    continue
-                if definition.validation_error(card, player, state):
-                    continue
-                ability = definition.to_ability(card, player)
-                options = []
-                for x_value in self.parameters.values(ability, state):
-                    try:
-                        costs = list(islice(legal_plans(
-                            ability, state, cost=True, mana_solver=self.mana_solver, x_value=x_value
-                        ), self.cost_limit))
-                        if not costs:
-                            continue
-                        for _, plan in islice(legal_plans(ability, state, x_value=x_value), self.target_limit):
-                            for _, cost in costs:
-                                action = ability.to_game_action(cost, plan)
-                                options.append(Candidate(
-                                    action, self.evaluator.score(state, player, action),
-                                    {"kind": "action", "source": card.command_id,
-                                     "ability": definition.key, "x": x_value,
-                                     "payment": {
-                                         "mana": {m.name: n for m, n in
-                                                  (cost.mana_solver_result.payment or {}).items()},
-                                         "life": cost.mana_solver_result.life_payment,
-                                         "activate": [a.source.command_id for a in
-                                                      cost.mana_solver_result.mana_plan],
-                                     } if cost.mana_solver_result else {},
-                                     "cost_targets": [
-                                         getattr(t, "command_id", None) or t.name
-                                         for groups in cost.binding.values()
-                                         for group in groups.values() for t in group
-                                     ],
-                                     "targets": [
-                                         getattr(t, "command_id", None) or t.name
-                                         for t in SimpleAgent._targets(action)
-                                     ]}, key,
-                                ))
-                    except UnsupportedCommandDefinition:
-                        continue
-                result.extend(sorted(options, key=lambda c: -c.score)[:self.keep_per_ability])
+        from game.game_actions.generation.decision_abstraction.requests import PriorityDecisionRequest
+        from game.game_actions.generation.decision_abstraction.policies import AbilityGenerationPolicy, PriorityGenerationPolicy
+        from game.game_actions.generation.generation_strategy import action_generation_strategy
+        from game.game_actions.generation.pruning.pruning_strategy import LimitPruning, FilterPruning
+        from game.rules.lands import LandPlayAction
+
+        strategy = action_generation_strategy(
+            mana_solver=self.mana_solver,
+            cost_plan_pruning=LimitPruning(self.cost_limit),
+            action_plan_pruning=LimitPruning(self.target_limit),
+        )
+        policy = PriorityGenerationPolicy(
+            ability_gp=AbilityGenerationPolicy(strategy=strategy, parameter_strategy=self.parameters),
+            ability_space_ps=FilterPruning(lambda ability: (ability.source.command_id, ability.key) not in attempted),
+            include_mana=False, include_concede=False,
+        )
+        result, by_ability = [], {}
+        for action in PriorityDecisionRequest(state, player).option_space(policy):
+            if isinstance(action, PassPriorityAction):
+                result.append(Candidate(action, 0, {"kind": "pass"}))
+            elif isinstance(action, LandPlayAction):
+                result.append(Candidate(action, 100, {"kind": "land", "source": action.card.command_id}))
+            else:
+                candidate = self._ability_candidate(state, player, action)
+                ranked = by_ability.setdefault(candidate.key, [])
+                ranked.append(candidate)
+                ranked.sort(key=lambda item: -item.score)
+                del ranked[self.keep_per_ability:]
+        for ranked in by_ability.values():
+            result.extend(ranked)
         return result
+
+    def _ability_candidate(self, state, player, action):
+        """Agent-owned ranking and presentation of an already generated action."""
+        from game.enums import SAVariableType
+        cost = action.cost_generator
+        payment = cost.mana_solver_result
+        return Candidate(
+            action, self.evaluator.score(state, player, action),
+            {"kind": "action", "source": action.source.command_id,
+             "ability": action.action_key,
+             "x": cost.param_context.x_variables.get(SAVariableType.X, 0),
+             "payment": {
+                 "mana": {m.name: n for m, n in (payment.payment or {}).items()},
+                 "life": payment.life_payment,
+                 "activate": [a.source.command_id for a in payment.mana_plan],
+             } if payment else {},
+             "cost_targets": [getattr(t, "command_id", None) or t.name
+                              for groups in cost.binding.values()
+                              for group in groups.values() for t in group],
+             "targets": [getattr(t, "command_id", None) or t.name for t in SimpleAgent._targets(action)]},
+            (action.source.command_id, action.action_key),
+        )
 
 
 class CombatPolicy:
-    """!
-    @brief Search bounded blocker assignments and conservative attack alternatives.
+    """Compose proposals, shared legality pipelines and agent-owned evaluation."""
 
-    Complete declarations are validated by the engine. The value model estimates
-    trades from power/toughness; it does not replace combat damage resolution.
-    """
-    def __init__(self, *, max_assignments=512):
+    def __init__(self, *, max_assignments=512, attackers_strategy=None,
+                 blockers_strategy=None, evaluator=None):
+        from game.ai.combat_strategies import (
+            BoundedBlockersStrategy, ConservativeAttackersStrategy, CombatEvaluator,
+        )
         if type(max_assignments) is not int or max_assignments < 1:
             raise ValueError("Combat search budget must be positive.")
         self.max_assignments = max_assignments
+        self.evaluator = evaluator or CombatEvaluator()
+        self.attackers_strategy = attackers_strategy or ConservativeAttackersStrategy(self.evaluator)
+        self.blockers_strategy = blockers_strategy or BoundedBlockersStrategy(max_assignments)
 
     def attackers(self, state, player):
-        opponent = next(p for p in state.active_players if p is not player)
-        available = [c for c in state.combat.legal_attackers(player) if (c.get_power(state) or 0) > 0]
-        defenders = [
-            c for c in state.get_cards(from_zones=[ZoneType.BATTLEFIELD])
-            if c.get_controller(state) is opponent and c.is_type(state, CardType.CREATURE)
-            and not c.is_tapped
-        ]
-        safe = {
-            c: opponent for c in available
-            if not any(
-                (not c.has_keyword(state, "flying")
-                 or b.has_keyword(state, "flying") or b.has_keyword(state, "reach"))
-                and (b.get_power(state) or 0) >= (c.get_toughness(state) or 0)
-                for b in defenders
-            )
-        }
-        candidates = []
-        for declaration in ({}, safe, dict.fromkeys(available, opponent)):
-            try:
-                state.combat.validate_attackers(player, declaration)
-            except ValueError:
-                continue
-            power = sum(c.get_power(state) or 0 for c in declaration)
-            losses = sum((c.get_power(state) or 0) + (c.get_toughness(state) or 0)
-                         for c in declaration if c not in safe)
-            value = power - losses
-            if not defenders and power >= opponent.health:
-                value += 1000
-            candidates.append(Candidate(declaration, value, {
-                "kind": "attack", "attackers": [c.command_id for c in declaration]
-            }))
-        return candidates
+        from game.game_actions.generation.decision_abstraction.requests import DeclareAttackersRequest
+        from game.game_actions.generation.decision_abstraction.policies import DeclareAttackersPolicy
+        request = DeclareAttackersRequest(state, player)
+        return [Candidate(dict(option.declarations), self.evaluator.attack_score(request, option), {
+            "kind": "attack", "attackers": [c.command_id for c in option.declarations],
+        }) for option in request.option_space(DeclareAttackersPolicy(strategy=self.attackers_strategy))]
 
     def blockers(self, state, player):
-        attackers = list(state.combat.attackers)
-        legal = {a: state.combat.legal_blockers(player, a) for a in attackers}
-        blockers = list(dict.fromkeys(b for group in legal.values() for b in group))
-        choices = [[None] + [a for a in attackers if b in legal[a]] for b in blockers]
-        # A baseline declaration supplies a legal witness even when the bounded
-        # search cannot reach an assignment satisfying mandatory blocks.
-        baseline = SimpleAgent().choose_blockers(state, player)
-        declarations = [baseline]
-        declarations.extend(
-            {b: a for b, a in zip(blockers, assignment) if a is not None}
-            for assignment in islice(product(*choices), self.max_assignments)
-        )
-        result = []
-        for declaration in declarations:
-            try:
-                state.combat.validate_blockers(player, declaration)
-            except ValueError:
-                continue
-            damage = sum(max(0, a.get_power(state) or 0)
-                         for a in attackers if a not in declaration.values())
-            value = -damage * (8 if damage >= player.health else 1)
-            for a in attackers:
-                group = [b for b, target in declaration.items() if target is a]
-                if not group:
-                    continue
-                if sum(b.get_power(state) or 0 for b in group) >= (a.get_toughness(state) or 0):
-                    value += (a.get_power(state) or 0) + (a.get_toughness(state) or 0)
-                for b in group:
-                    if (a.get_power(state) or 0) >= (b.get_toughness(state) or 0):
-                        value -= (b.get_power(state) or 0) + (b.get_toughness(state) or 0)
-            result.append(Candidate(declaration, value, {
-                "kind": "block", "blockers": {b.command_id: a.command_id for b, a in declaration.items()}
-            }))
-        return result
+        from game.game_actions.generation.decision_abstraction.requests import DeclareBlockersRequest
+        from game.game_actions.generation.decision_abstraction.policies import DeclareBlockersPolicy
+        request = DeclareBlockersRequest(state, player)
+        return [Candidate(dict(option.declarations), self.evaluator.block_score(request, option), {
+            "kind": "block", "blockers": {b.command_id: a.command_id
+                                            for b, a in option.declarations.items()},
+        }) for option in request.option_space(DeclareBlockersPolicy(strategy=self.blockers_strategy))]
 
 
 class ModularAgent(SimpleAgent):
@@ -300,31 +267,39 @@ class ModularAgent(SimpleAgent):
                      fallback=getattr(self.selector, "last_error", None))
         return selected
 
-    def get_action(self, state, player):
+    def decide_priority(self, request: PriorityDecisionRequest) -> DecisionResult[GameAction]:
         """!
         @brief Choose among bounded engine actions without modifying game state.
         """
+        state, player = request.state, request.player
         window = (state.turn.number, state.turn.phase)
         if window != self._window:
             self._window = window
             self._attempted.clear()
-        selected = self._choose(
-            state, player, self.candidates.generate(state, player, self._attempted)
-        )
+        candidates = self.candidates.generate(state, player, self._attempted)
+        # This is the configured policy's space, not a claim about all legal
+        # actions. Do not build an observation or call a model for its sole pass.
+        if (self.auto_pass and len(candidates) == 1
+                and isinstance(candidates[0].action, PassPriorityAction)):
+            return self._auto_pass_result(request, reason="only_pass_candidate")
+        selected = self._choose(state, player, candidates)
         if selected.key is not None:
             self._attempted.add(selected.key)
-        return selected.action
+        return DecisionResult(selected.action)
 
-    def choose_attackers(self, state, player):
-        return self._choose(state, player, self.combat_policy.attackers(state, player)).action
+    def decide_attackers(self, request: DeclareAttackersRequest) -> DecisionResult[DeclareAttackersOption]:
+        state, player = request.state, request.player
+        return DecisionResult(DeclareAttackersOption(self._choose(state, player, self.combat_policy.attackers(state, player)).action))
 
-    def choose_blockers(self, state, player):
-        return self._choose(state, player, self.combat_policy.blockers(state, player)).action
+    def decide_blockers(self, request: DeclareBlockersRequest) -> DecisionResult[DeclareBlockersOption]:
+        state, player = request.state, request.player
+        return DecisionResult(DeclareBlockersOption(self._choose(state, player, self.combat_policy.blockers(state, player)).action))
 
-    def choose_trigger_action(self, state, trigger, choices):
+    def decide_ability(self, request: AbilityDecisionRequest) -> DecisionResult[GameAction]:
         """!
         @brief Rank required trigger targets through the same main policy.
         """
+        state, trigger, choices = request.state, request.ability, request.options
         candidates = [
             Candidate(action, self.candidates.evaluator.score(state, trigger.controller, action),
                       {"kind": "trigger", "ability": trigger.key,
@@ -332,4 +307,4 @@ class ModularAgent(SimpleAgent):
                                    for t in self._targets(action)]})
             for action in choices
         ]
-        return self._choose(state, trigger.controller, candidates).action
+        return DecisionResult(self._choose(state, trigger.controller, candidates).action)

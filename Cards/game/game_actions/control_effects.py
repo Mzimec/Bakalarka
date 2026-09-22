@@ -78,11 +78,13 @@ class DestroyAllCreaturesOperation(Operation):
     def execute(self, state):
         from game.game_actions.resolution.replacement_effects import ReplacementResolver
 
+        from helper.query_system.query import EqQuery
+        from game.game_state.registers.card_register import IK_ZONE, IK_TYPE
         moves = [
             MoveCardOperation(self.context, card, ZoneType.GRAVEYARD)
-            for card in state.get_cards(from_zones=[ZoneType.BATTLEFIELD])
-            if card.is_type(state, CardType.CREATURE)
-            and not card.has_keyword(state, "indestructible")
+            for card in state.query_cards(EqQuery(IK_ZONE, ZoneType.BATTLEFIELD)
+                & EqQuery(IK_TYPE, CardType.CREATURE))
+            if not card.has_keyword(state, "indestructible")
         ]
         # Determine replacements before any creature leaves. The enclosing executor
         # captures one before/after trigger roster for the complete destruction.

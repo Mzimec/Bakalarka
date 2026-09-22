@@ -619,6 +619,9 @@ class ContinuousEffectsManager:
     """
 
     def __init__(self) -> None:
+        from .registers.effect_register import EffectRegister
+
+        self.register = EffectRegister()
         self._continuous_effects: dict[str, ContinuousEffect] = dict()
         self._sequence = 0
 
@@ -627,6 +630,10 @@ class ContinuousEffectsManager:
 
         self._moment_heap_map: dict[int, Heap[PlayerMoment]] = dict()
         self._moment_buckets: dict[int, dict[PlayerMoment, list[str]]] = dict()
+
+    def query(self, query=None):
+        """Return a stable snapshot selected through the effect bitset indexes."""
+        return self.register.query(query)
 
     def next_order(self):
         """!
@@ -650,6 +657,7 @@ class ContinuousEffectsManager:
         if ce.key in self._continuous_effects:
             raise ValueError(f"  Duplicate key '{ce.key}' in _continuous_effects.")
 
+        self.register.add(ce)
         ce.state.timestamp_order = self.next_order()
         self._continuous_effects[ce.key] = ce
 
@@ -683,6 +691,7 @@ class ContinuousEffectsManager:
         @return Removed effect.
         """
         ce = self._continuous_effects.pop(key)
+        self.register.remove(key)
 
         if isinstance(ce.duration, TimeStampDuration):
             time_stamp = ce.duration.end_time_stamp
@@ -720,7 +729,8 @@ class ContinuousEffectsManager:
             keys = self._time_stamp_bucket.pop(time_stamp)
 
             for key in keys:
-                self._continuous_effects.pop(key, None)
+                if self._continuous_effects.pop(key, None) is not None:
+                    self.register.remove(key)
 
         active_player_idx = state.active_player_idx
         active_heap = self._moment_heap_map.get(active_player_idx)
@@ -735,7 +745,8 @@ class ContinuousEffectsManager:
                 keys = player_dict.pop(player_moment, [])
 
                 for key in keys:
-                    self._continuous_effects.pop(key, None)
+                    if self._continuous_effects.pop(key, None) is not None:
+                        self.register.remove(key)
 
 
 class Counter(ABC):
@@ -1014,3 +1025,17 @@ class AttachedModifierSource(ModifierSource):
                 )
 
         return modifiers
+
+def only_empty_builtin_sources(sources):
+    """Prove the standard sources are empty using their live containers.
+
+    Exact types deliberately exclude extensions overriding get_modifiers.
+    No state-dependent result survives a call.
+    """
+    return (len(sources) == 3
+            and type(sources[0]) is ContinuouosEffectModifierSource
+            and type(sources[1]) is CounterModifierSource
+            and type(sources[2]) is AttachedModifierSource
+            and not sources[0].active_cont_effects
+            and not sources[1].counters
+            and not sources[2].attached)

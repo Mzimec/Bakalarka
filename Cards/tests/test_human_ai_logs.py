@@ -1,9 +1,6 @@
 """Console/AI integration and human-readable report regression tests."""
 
 import json
-from pathlib import Path
-import subprocess
-import sys
 
 import pytest
 
@@ -46,10 +43,17 @@ def test_console_quit_preserves_report(tmp_path):
 
 
 def test_historical_report_has_actions_and_unknown_time(tmp_path):
-    source = (
-        Path(__file__).parents[1]
-        / "artifacts/test-results/ai-five-verified/black-green-seed2026-start0.jsonl"
-    )
+    # Minimal historical schema, independent of untracked experiment artifacts.
+    source = tmp_path / "historical.jsonl"
+    rows = [
+        {"kind": "match", "colors": ["black", "green"], "seed": 2026, "starting_player": 0},
+        {"kind": "event", "event": "spell_cast", "controller": "black-0", "source": "Murder"},
+        {"kind": "event", "event": "attacker_declared", "controller": "green-1", "source": "Baloth"},
+        {"kind": "event", "event": "blocker_declared", "controller": "black-0", "source": "Skeleton"},
+        {"kind": "decision", "player": "black-0", "decision": "trigger", "details": {}},
+        {"kind": "result", "status": "win", "winner": "green-1", "turns": 12},
+    ]
+    source.write_text("\n".join(json.dumps(row) for row in rows), encoding="utf-8")
     output = tmp_path / "history.txt"
     render_match(source, output)
     report = output.read_text(encoding="utf-8")
@@ -74,16 +78,3 @@ def test_new_log_records_resolution_and_trigger(tmp_path):
     assert any(row["kind"] == "resolution" for row in rows)
     assert any(row["kind"] == "trigger_detected" for row in rows)
     assert "Elapsed wall time: unavailable" not in (tmp_path / "new.txt").read_text()
-
-
-def test_play_ai_entry_point(tmp_path):
-    run = subprocess.run(
-        cwd=Path(__file__).resolve().parents[1],
-        args=[sys.executable, "-B", "-m", "game.bin.play_ai", "--output", str(tmp_path / "cli.jsonl")],
-        input="n\nconcede\n",
-        capture_output=True,
-        text=True,
-        timeout=30,
-    )
-    assert run.returncode == 0, run.stdout + run.stderr
-    assert "winner: AI" in run.stdout

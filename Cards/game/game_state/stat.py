@@ -12,6 +12,7 @@ if TYPE_CHECKING:
     from .modifier import Modifier, ModifierSource, TimeStampedModifier
     from .state import State
 
+from .modifier import only_empty_builtin_sources
 from ..stat_type import *
 from helper.mutability_objs import ToImmutableConvertible, ToMutableConvertible
 from ..enums import *
@@ -191,11 +192,16 @@ class HasModifiers(ABC):
         @param state Current game state.
         @return Ordered tuple of raw modifiers.
         """
+        sources = self.modifier_sources
+        if only_empty_builtin_sources(sources):
+            return ()
         modifiers: list[TimeStampedModifier] = []
 
-        for source in self.modifier_sources:
+        for source in sources:
             modifiers.extend(source.get_modifiers(stat_t, state))
 
+        if not modifiers:
+            return ()
         from .layers import modifier_layer, dependency_order
 
         ceiling = getattr(state, "_layer_ceiling", None)

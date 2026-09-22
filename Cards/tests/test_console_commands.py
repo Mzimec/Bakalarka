@@ -1,4 +1,5 @@
 """Commands construct one action without enumerating card/target combinations."""
+from game.ai.decision_maker import PriorityDecisionRequest
 import pytest
 
 from game.console.console_commands import CommandError, card_reference
@@ -20,7 +21,7 @@ def test_direct_command_builds_only_requested_action_without_mutating_state(monk
         pytest.fail("Console must not enumerate action combinations")
     monkeypatch.setattr("game.console.demo_game.available_actions", no_enumeration)
     controller = ConsoleDecisionMaker(read=lambda _: "play bolt1 bob", write=lambda _: None)
-    action = controller.get_action(game.state, player)
+    action = controller.decide(PriorityDecisionRequest(game.state, player)).value
     assert action.source.key == "alice-bolt1"
     assert action.action_generator.binding.get_targets_in_slot("target_0", "target") == frozenset({game.state.players[1]})
     assert action.source.get_zone() == ZoneType.HAND
@@ -88,7 +89,7 @@ def test_inspection_and_errors_keep_prompt_without_consuming_priority():
     commands = iter(["hand", "inspect alice-bolt1", "inspect alice-adept1", "help", "status", "quit now", "pass"])
     output = []
     console = ConsoleDecisionMaker(read=lambda _: next(commands), write=output.append)
-    action = console.get_action(game.state, game.state.active_player)
+    action = console.decide(PriorityDecisionRequest(game.state, game.state.active_player)).value
     assert action.player is game.state.active_player
     assert any("c7: Lightning Bolt" in line for line in output)
     assert any("tap_damage" in line for line in output)

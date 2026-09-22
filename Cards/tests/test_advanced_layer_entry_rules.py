@@ -1,4 +1,7 @@
 """CR 613.6, 613.8 and 614.12: interaction tests through live resolution."""
+from game.ai.decision_maker import DecisionResult
+from game.game_actions import PassPriorityAction
+from game.game_actions.data_structs.ability import ActivatedAbilityDefinition
 from dataclasses import replace
 from copy import copy
 
@@ -8,7 +11,7 @@ from game.enums import CardType as T, ZoneType as Z, CounterType as C, Layer as 
 from game.stat_type import (STAT_POWER as POWER, STAT_TOUGHNESS as TOUGHNESS, STAT_TYPES as TYPES,
                             STAT_KEYWORDS as KEYWORDS, STAT_STATIC_ABILITIES as STATIC)
 from game.game_state import State, Player, Card, CardDefinition
-from game.game_state.player import DecisionMaker
+from game.ai.decision_maker import ModularDecisionMaker as DecisionMaker
 from game.game_state.continuous_rules import StaticContinuousRule
 from game.game_state.layers import lose_all_abilities_modifiers
 from game.game_state.modifier import (AddIntModifier, AddSetModifier, RemoveSetModifier, SetModifier,
@@ -26,8 +29,9 @@ from game.operations.card_operations import MoveCardOperation, DamagePlayerOpera
 
 
 class Controller(DecisionMaker):
-    def get_action(self, state, player):
-        return None
+    def decide_priority(self, request):
+        state = request.state; player = request.player
+        return DecisionResult(PassPriorityAction(player))
 
 
 @pytest.fixture
@@ -190,9 +194,10 @@ def test_losing_all_abilities_removes_intrinsic_basic_land_mana(game):
     spec = QueryTargetSpec(EqQuery(IK_TYPE, T.LAND))
     blank = rule_source(game, "blank", spec, lose_all_abilities_modifiers())
     game[0].synchronise_registers()
-    assert not land.get_ability_defs(game[0])
+    # PlayLand is an engine permission, not a removable printed mana ability.
+    assert not land.get_activatable_ability_defs(game[0])
     move(game, blank, Z.GRAVEYARD)
-    assert land.get_ability_defs(game[0])
+    assert any(d.is_mana_ability for d in land.get_activatable_ability_defs(game[0]).values())
 
 
 @pytest.mark.parametrize("origin", [Z.HAND, Z.DECK, Z.GRAVEYARD, Z.EXILE, Z.STACK])
@@ -383,7 +388,7 @@ def test_stored_activation_is_rejected_after_ability_loss_but_stack_ability_surv
     from game.console.demo_game import build_action
     from game.enums import TurnPhase
     token = CreateTokenEffect("token", UNIT)
-    ability = AbilityDefinition(key="make", action_subdefs=(SubAbilityDefinition(
+    ability = ActivatedAbilityDefinition(key="make", action_subdefs=(SubAbilityDefinition(
         action_node=EffectActionNode(ImmutableEffectToSlotMap({token.key: frozenset()})), effects=frozenset({token})),))
     source = add(game, replace(UNIT, abilities=frozenset({ability})))
     game[0].turn.phase = TurnPhase.PRECOMBAT_MAIN

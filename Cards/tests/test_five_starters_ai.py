@@ -1,4 +1,5 @@
 """Mechanic regressions and experiment contracts for all five starter decks."""
+from game.ai.decision_maker import ScryOption, DecisionResult, DeclareBlockersRequest, PriorityDecisionRequest
 from dataclasses import replace
 from types import SimpleNamespace
 import json
@@ -86,7 +87,7 @@ def test_reference_characteristics_match_catalog(record):
 def test_scry_changes_draw_order_without_changing_zones(game):
     a, b, c = [add(game, 'Island', Z.DECK) for _ in range(3)]
     player = game.state.active_player
-    player.controller.choose_scry = lambda s, p, cards: ((b,), (c,))
+    player.controller.decide_scry = lambda request: DecisionResult(ScryOption((b,), (c,)))
     assert resolve(game, ScryOperation(context(game), 2)).success
     assert tuple(player.deck.values()) == (c, a, b)
     assert player.draw(game.state) is b
@@ -110,7 +111,6 @@ def test_casting_reductions_do_not_change_printed_mana_cost(game):
     assert seer.get_casting_cost(game.state).cmc() == 2
     assert words.get_mana_cost(game.state).cmc() == 3
     assert words.get_casting_cost(game.state).cmc() == 2
-
 
 
 @pytest.mark.parametrize('flying_name', [
@@ -259,7 +259,7 @@ def test_unicorn_requires_all_able_blockers(game):
     game.state.turn.phase = P.DECLARE_BLOCKERS
     with pytest.raises(ValueError):
         game.state.combat.validate_blockers(game.state.players[1], {blockers[0]: unicorn})
-    choices = game.state.players[1].controller.choose_blockers(game.state, game.state.players[1])
+    choices = game.state.players[1].controller.decide(DeclareBlockersRequest(game.state, game.state.players[1])).value.declarations
     assert len(game.state.combat.validate_blockers(game.state.players[1], choices)) == 2
 
 
@@ -276,7 +276,7 @@ def test_inspect_shows_types_and_cost(game):
     card = add(game, 'Cloudkin Seer', Z.HAND)
     commands = iter([f'inspect {card.key}', 'pass'])
     output = []
-    ConsoleDecisionMaker(read=lambda _: next(commands), write=output.append).get_action(game.state, game.state.active_player)
+    ConsoleDecisionMaker(read=lambda _: next(commands), write=output.append).decide(PriorityDecisionRequest(game.state, game.state.active_player)).value
     assert any('Types: CREATURE' in line for line in output)
     assert 'Mana cost: {2}{U}' in output
 
@@ -291,12 +291,25 @@ def test_ai_logs_limits_as_unfinished_and_never_overwrites(tmp_path):
         run_match(('white', 'red'), tmp_path / 'match.jsonl')
 
 
-def test_tournament_schedules_both_starters_and_records_all_pairings(tmp_path):
-    results = run_tournament(tmp_path / 'league', max_turns=1)
-    assert len(results) == 20
+def test_tournament_schedules_both_starters_and_records_repeated_seeds(tmp_path):
+    from game.simulation.match_runner import TournamentPlayer
+    from game.cards.decks import load_arena_starter
+    players = tuple(TournamentPlayer(color, load_arena_starter(color), {"type": "simple"})
+                    for color in ("white", "red"))
+    results = run_tournament(tmp_path / 'league', players, games=2, seed=2026, max_turns=1)
+    assert len(results) == 4
     assert all(result.status == 'turn_limit' for result in results)
-    assert len({(result.colors, result.starting_player) for result in results}) == 20
+    assert {(result.seed, result.starting_player) for result in results} == {
+        (2026, 0), (2026, 1), (2027, 0), (2027, 1),
+    }
     assert (tmp_path / 'league/summary.txt').exists()
+    summary = json.loads((tmp_path / 'league/summary.json').read_text())
+    for participant in summary["participants"]:
+        total = sum(entry["overall"]["count"] for result in results for entry in result.decision_timing
+                    if entry["player_index"] == participant["index"])
+        assert sum(entry["overall"]["count"] for entry in participant["decision_timing"]) == total
+    assert "Decision timing" in (tmp_path / 'league/summary.txt').read_text()
+
 
 
 def test_simultaneous_lifelink_is_one_gain_per_source_and_triggers_priest(game):
@@ -333,6 +346,10 @@ def test_seed_repeats_decisions_and_events(tmp_path):
         records = [json.loads(line) for line in (tmp_path / f'{name}.jsonl').read_text().splitlines()]
         records[-1].pop('log')
         records[-1].pop('elapsed_seconds')
+        records[-1].pop('decision_timing')
+        for record in records:
+            if record['kind'] == 'decision_timing':
+                record.pop('elapsed_ns')
         return records
     assert rows('first') == rows('second')
 

@@ -6,7 +6,7 @@ from .mana_value import ImmutableManaPool, generate_mana_options_from_req_pool
 from ..enums import ManaType
 
 
-def plan_bundles(requirement, sources, pool):
+def plan_bundles(requirement, sources, pool, *, state=None, deduplicate_equivalent=True, statistics=None):
     """!
     @brief Find a minimum-size activation plan for deterministic mana bundles.
 
@@ -56,6 +56,9 @@ def plan_bundles(requirement, sources, pool):
         )
     )
 
+    from .symmetry import ManaSymmetry, ManaSearchStatistics
+    statistics = statistics if statistics is not None else ManaSearchStatistics()
+    symmetry = ManaSymmetry(state, sources, [s.source for s in sources]) if deduplicate_equivalent else None
     colors = tuple(ManaType)
     total = requirement.cmc()
     failed = set()
@@ -70,6 +73,7 @@ def plan_bundles(requirement, sources, pool):
         @param remaining Number of additional activations still allowed.
         @return A complete `ManaPlan`, or `None` if this branch cannot succeed.
         """
+        statistics.states_visited += 1
         payment = next(
             generate_mana_options_from_req_pool(
                 requirement,
@@ -117,10 +121,23 @@ def plan_bundles(requirement, sources, pool):
             failed.add(fingerprint)
             return None
 
+        seen_groups = set()
         for next_index in range(index, len(groups)):
+            if symmetry is not None:
+                key = symmetry.resources[groups[next_index][0][0].source]
+                if key in seen_groups:
+                    statistics.equivalent_branches_skipped += 1
+                    continue
+                seen_groups.add(key)
+            seen_outputs = set()
             # Only one alternative from this group can be selected. Recursive
             # search resumes after the group, preventing reuse of its permanent.
             for source, output in groups[next_index]:
+                output_key = (source.ability_key, frozenset(output.items()))
+                if symmetry is not None and output_key in seen_outputs:
+                    statistics.equivalent_branches_skipped += 1
+                    continue
+                seen_outputs.add(output_key)
                 result = search(
                     next_index + 1,
                     Counter(available) + output,

@@ -8,10 +8,19 @@ result, and GameLoop advances phases until a player loses.
 
 from __future__ import annotations
 
+from game.ai.decision_maker import PriorityDecisionRequest
+
 from dataclasses import dataclass, field
 from collections.abc import Iterable
 
-from game.game_actions import GameAction, ResolutionContext, ScheduledResolution, FixedExecutionPlan
+from game.ai.decision_maker import ModularDecisionMaker, DecisionResult
+from game.game_actions import (
+    PassPriorityAction,
+    GameAction,
+    ResolutionContext,
+    ScheduledResolution,
+    FixedExecutionPlan,
+)
 from game.game_actions.game_stack import GameStack
 from game.game_actions.data_structs.operation import Operation
 from game.game_actions.resolution.action_executor import ActionExecutor
@@ -47,22 +56,22 @@ class MinimalPlayer:
     # room for a real card collection to replace it later.
     battlefield: dict[str, object] = field(default_factory=dict)
 
-    def get_action(self, state: "MinimalState") -> GameAction | None:
+    def get_action(self, state: "MinimalState") -> GameAction:
         """!
         @brief Delegate priority action selection to this player's controller.
 
         @param state Current minimal game state.
-        @return Selected action, or `None` to pass priority.
+        @return Selected action, including an explicit PassPriorityAction.
         """
-        return self.controller.get_action(state, self)
+        return self.controller.decide(PriorityDecisionRequest(state, self)).value
 
 
-class ScriptedController:
+class ScriptedController(ModularDecisionMaker):
     """!
     @brief Deterministic FIFO action source for examples and integration tests.
 
     Once all injected actions have been consumed, the controller returns
-    `None`, which the priority system interprets as passing priority.
+    a typed PassPriorityAction through the priority request.
     """
 
     def __init__(self, actions: Iterable[GameAction] = ()) -> None:
@@ -73,19 +82,9 @@ class ScriptedController:
         """
         self._actions = list(actions)
 
-    def get_action(
-        self,
-        state: "MinimalState",
-        player: MinimalPlayer,
-    ) -> GameAction | None:
-        """!
-        @brief Return the next scripted action for the player.
-
-        @param state Current game state.
-        @param player Player currently requesting an action.
-        @return Next queued action, or `None` when the script is exhausted.
-        """
-        return self._actions.pop(0) if self._actions else None
+    def decide_priority(self, request: PriorityDecisionRequest) -> DecisionResult[GameAction]:
+        action = self._actions.pop(0) if self._actions else None
+        return DecisionResult(action if action is not None else PassPriorityAction(request.player))
 
 
 class MinimalState:

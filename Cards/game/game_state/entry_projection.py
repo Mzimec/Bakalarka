@@ -58,6 +58,8 @@ def entry_projection(state, operation):
     projected._layer_ceiling = None
     projected._static_effect_keys = set()
     projected._cont_effect_manager = ContinuousEffectsManager()
+    from .card_snapshot_cache import CardSnapshotCache
+    projected._card_snapshots = CardSnapshotCache()
     projected.card_register = CardRegister(projected)
 
     originals = tuple(state.get_cards())
@@ -130,14 +132,6 @@ def entry_projection(state, operation):
         incoming.last_attach_at = state.time_stamp
         host.state.attached[incoming.key] = incoming
 
-    # Replace normal zone traversal with the cloned card universe.
-    projected.get_cards = lambda from_players=None, from_zones=None: [
-        card
-        for card in clones.values()
-        if (from_players is None or card.owner in from_players)
-        and (from_zones is None or card.get_zone() in from_zones)
-    ]
-
     # Registration evaluates base/indexed characteristics. Suppress recursive
     # continuous-effect refresh until every clone is present in the register.
     projected._refreshing_effects = True
@@ -160,7 +154,7 @@ def entry_projection(state, operation):
 
     # Recreate currently live effects so their source references point into the
     # projected card graph. Effect membership itself is recomputed below.
-    for effect in state._cont_effect_manager._continuous_effects.values():
+    for effect in state._cont_effect_manager.query():
         # The entering permanent is a new incarnation. Static abilities from its
         # old incarnation must not be carried across; its new printed/copy
         # definition will create the appropriate static rules during refresh.

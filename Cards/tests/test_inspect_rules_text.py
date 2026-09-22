@@ -1,4 +1,5 @@
 """Inspect should explain printed abilities, including static rules and triggers."""
+from game.ai.decision_maker import PriorityDecisionRequest
 
 import pytest
 
@@ -25,9 +26,7 @@ def test_inspect_prints_complete_rules(name, expected):
     player.add_card(card, ZoneType.HAND, game.state)
     commands = iter(["inspect inspected", "pass"])
     output = []
-    ConsoleDecisionMaker(read=lambda _: next(commands), write=output.append).get_action(
-        game.state, player
-    )
+    ConsoleDecisionMaker(read=lambda _: next(commands), write=output.append).decide(PriorityDecisionRequest(game.state, player)).value
     text = "\n".join(output)
     assert expected in text
     assert "Rules text (printed abilities):" in text

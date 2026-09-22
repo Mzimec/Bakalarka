@@ -78,19 +78,22 @@ from game.cards.starter_cards import (
 
 
 def own_creatures(state, player):
-    return tuple(
-        card
-        for card in state.get_cards(from_zones=[Z.BATTLEFIELD])
-        if card.get_controller(state) is player and card.is_type(state, T.CREATURE)
-    )
+    from helper.query_system.query import EqQuery
+    from game.game_state.registers.card_register import IK_ZONE, IK_TYPE, IK_CONTROLLER
+
+    return state.query_cards(EqQuery(IK_ZONE, Z.BATTLEFIELD)
+        & EqQuery(IK_TYPE, T.CREATURE) & EqQuery(IK_CONTROLLER, player))
 
 
 def count_lands(state, player, subtype=None):
-    return sum(
-        card.is_type(state, T.LAND) and (subtype is None or subtype in card.get_subtypes(state))
-        for card in state.get_cards(from_zones=[Z.BATTLEFIELD])
-        if card.get_controller(state) is player
-    )
+    from helper.query_system.query import EqQuery
+    from game.game_state.registers.card_register import IK_ZONE, IK_TYPE, IK_CONTROLLER, IK_SUBTYPE
+
+    query = (EqQuery(IK_ZONE, Z.BATTLEFIELD) & EqQuery(IK_TYPE, T.LAND)
+             & EqQuery(IK_CONTROLLER, player))
+    if subtype is not None:
+        query &= EqQuery(IK_SUBTYPE, subtype)
+    return len(state.query_cards(query))
 
 
 class PlayerSpec(TargetSpec):
@@ -139,19 +142,26 @@ class FlyingSpellSpec(TargetSpec):
         """
         yield from (
             card
-            for card in controller.hand.values()
-            if card.is_type(state, T.CREATURE) and card.has_keyword(state, "flying")
+            for card in state.query_cards(EqQuery(IK_ZONE, Z.HAND)
+                & EqQuery(IK_OWNER, controller) & EqQuery(IK_TYPE, T.CREATURE))
+            if card.has_keyword(state, "flying")
         )
 
 
-CREATURE = PredicateTargetSpec(lambda card, source, player, state: card.is_type(state, T.CREATURE))
+from helper.query_system.query import EqQuery, DifferenceQuery, RangeQuery
+from game.game_state.registers.card_register import IK_TYPE, IK_CONTROLLER, IK_POWER, IK_ZONE, IK_OWNER, IK_NAME
+
+CREATURE = PredicateTargetSpec(lambda card, source, player, state: card.is_type(state, T.CREATURE),
+                             query=EqQuery(IK_TYPE, T.CREATURE))
 OWN = PredicateTargetSpec(
     lambda card, source, player, state: card.is_type(state, T.CREATURE)
-    and card.get_controller(state) is player
+    and card.get_controller(state) is player,
+    query=lambda source, player, state: EqQuery(IK_TYPE, T.CREATURE) & EqQuery(IK_CONTROLLER, player),
 )
 OTHER = PredicateTargetSpec(
     lambda card, source, player, state: card.is_type(state, T.CREATURE)
-    and card.get_controller(state) is not player
+    and card.get_controller(state) is not player,
+    query=lambda source, player, state: DifferenceQuery(EqQuery(IK_TYPE, T.CREATURE), (EqQuery(IK_CONTROLLER, player),)),
 )
 
 
@@ -171,8 +181,9 @@ def optional(effect):
         """!
         @brief Yield choices supported by this generation strategy.
         """
-        choose = getattr(context.controller.decision_maker, "choose_optional_effect", None)
-        if choose is None or choose(state, context, effect.get_info()):
+        from game.ai.decision_maker import OptionalEffectRequest
+        request = OptionalEffectRequest(state, context.controller, context, effect.get_info())
+        if context.controller.decision_maker.decide(request).value.accept:
             yield from effect.to_operations(state, context)
 
     return RuleEffect(
@@ -203,11 +214,11 @@ def mill(state, context):
 
 
 def world_return(state, context):
-    for card in tuple(context.controller.graveyard.values()):
-        if card.is_type(state, T.LAND):
-            operation = MoveCardOperation(context, card, Z.BATTLEFIELD)
-            operation.entry_tapped = True
-            yield operation
+    for card in state.query_cards(EqQuery(IK_ZONE, Z.GRAVEYARD)
+        & EqQuery(IK_OWNER, context.controller) & EqQuery(IK_TYPE, T.LAND)):
+        operation = MoveCardOperation(context, card, Z.BATTLEFIELD)
+        operation.entry_tapped = True
+        yield operation
 
 
 def sleep(state, context):
@@ -235,9 +246,8 @@ def opportunist(state, context):
 
 
 def fracture(state, context):
-    count = 1 + sum(
-        card.name == "Compound Fracture" for card in context.controller.graveyard.values()
-    )
+    count = 1 + len(state.query_cards(EqQuery(IK_ZONE, Z.GRAVEYARD)
+        & EqQuery(IK_OWNER, context.controller) & EqQuery(IK_NAME, "compound fracture")))
     yield from temporary("fracture", -count, -count).to_operations(state, context)
 
 
@@ -414,7 +424,8 @@ def extension_catalog():
                     lambda c, source, p, s: c is not source
                     and c.get_controller(s) is p
                     and c.is_type(s, T.CREATURE)
-                    and c.has_keyword(s, "flying")
+                    and c.has_keyword(s, "flying"),
+                    query=lambda source, player, state: EqQuery(IK_TYPE, T.CREATURE) & EqQuery(IK_CONTROLLER, player),
                 ),
                 {POWER: (AddIntModifier(1),)},
             ),
@@ -613,7 +624,8 @@ def extension_catalog():
         (
             _slot(
                 spec=PredicateTargetSpec(
-                    lambda c, src, p, s: c.is_type(s, T.CREATURE) and c.get_power(s) <= 2
+                    lambda c, src, p, s: c.is_type(s, T.CREATURE) and c.get_power(s) <= 2,
+                    query=EqQuery(IK_TYPE, T.CREATURE) & RangeQuery(IK_POWER, max_value=2),
                 )
             ),
         ),

@@ -7,7 +7,7 @@ from abc import ABC, abstractmethod
 from uuid import uuid4
 from helper.runtime_object import RuntimeObject
 
-from ..ai.decision_maker import ModularDecisionMaker as DecisionMaker
+from ..ai.decision_maker import DecisionMaker
 
 from ..constants import STARTING_HEALTH, HAND_SIZE
 from .battlefield import Battlefield, CardCollection
@@ -117,6 +117,36 @@ class Player(RuntimeObject):
         """
         self._health = value
 
+        if self._game_state is not None:
+            self._game_state.player_register.mark_changed(self)
+
+    @property
+    def failed_draw(self):
+        return self._failed_draw
+
+    @failed_draw.setter
+    def failed_draw(self, value):
+        self._failed_draw = value
+        if self._game_state is not None:
+            self._game_state.player_register.mark_changed(self)
+
+    @property
+    def poison_counters(self):
+        return self._poison_counters
+
+    @poison_counters.setter
+    def poison_counters(self, value):
+        self._poison_counters = value
+        if self._game_state is not None:
+            self._game_state.player_register.mark_changed(self)
+
+    @property
+    def has_lost(self):
+        return self._has_lost
+
+    @has_lost.setter
+    def has_lost(self, value):
+        self._has_lost = value
         if self._game_state is not None:
             self._game_state.player_register.mark_changed(self)
 
@@ -327,14 +357,12 @@ class Player(RuntimeObject):
         self.move_card(card, ZoneType.HAND, state)
         return card
 
-    def get_action(self, state: State) -> GameAction | None:
+    def get_action(self, state: State) -> GameAction:
         """!
         @brief Ask the player's controller to choose an action.
 
         @param state Current game state.
-        @return Chosen action, or `None` if the player takes no action.
+        @return Chosen action, including an explicit PassPriorityAction.
         """
-        from ..ai.decision_maker import DecisionMaker as RequestDecisionMaker, PriorityDecisionRequest
-        if isinstance(self.controller, RequestDecisionMaker):
-            return self.controller.decide(PriorityDecisionRequest(state, self)).value
-        return self.controller.get_action(state, self)
+        from ..ai.decision_maker import PriorityDecisionRequest
+        return self.controller.decide(PriorityDecisionRequest(state, self)).value

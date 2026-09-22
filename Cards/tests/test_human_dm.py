@@ -1,10 +1,11 @@
 """Human input regressions against the public, maintained console API."""
+from game.ai.decision_maker import PriorityDecisionRequest
+from game.game_actions import PassPriorityAction
 import pytest
 from game.console.human_input import ActionBuilderSession, HumanDecisionMaker, _resolve_command
 from game.console.demo_game import create_demo_game
 from game.game_loop.minimal_game import ScriptedController
 from game.enums import TurnPhase, ZoneType
-from game.game_actions import PassPriorityAction
 
 
 @pytest.mark.parametrize("raw,expected", [("play", "play"), ("p", "play"), ("a", "activate"),
@@ -58,7 +59,7 @@ def test_human_controller_uses_same_public_input_path():
     game, _, _ = session([])
     inputs = iter(["play bolt1 bob"])
     human = HumanDecisionMaker(read=lambda _: next(inputs), write=lambda _: None)
-    action = human.get_action(game.state, game.state.active_player)
+    action = human.decide(PriorityDecisionRequest(game.state, game.state.active_player)).value
     assert action.source.key == "alice-bolt1"
 
 

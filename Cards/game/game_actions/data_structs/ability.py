@@ -1,11 +1,11 @@
 """Ability definitions, runtime bindings and subability composition."""
 
 from __future__ import annotations
-from typing import TYPE_CHECKING, override, overload, Any
+from typing import TYPE_CHECKING, override, overload, Any, ClassVar
 from functools import cached_property
 from dataclasses import dataclass, field, replace
 from abc import ABC, abstractmethod
-from collections.abc import Iterable, Mapping, Sequence
+from collections.abc import Callable, Iterable, Mapping, Sequence
 from immutabledict import immutabledict
 from types import MappingProxyType
 import copy
@@ -21,7 +21,7 @@ if TYPE_CHECKING:
     from ...target import TargetSlot
     from ...target.target_resolver import ImmutableTargetBinding
     from ...mana.mana_value import ImmutableManaValue, ManaValue, ManaValueBase
-    from ...ai.mana_solver import ManaSolver
+    from ...mana.mana_solver import ManaSolver
 
 from ...game_state.modifier import ModifierSource, ContinuouosEffectModifierSource
 from .game_action import AbilityAction, ExecutionPlan, GameAction
@@ -42,11 +42,19 @@ __all__ = [
     "EffectSequence",
     "SubAbilityDefinition",
     "AbilityDefinition",
+    "PriorityActionAbilityDefinition",
+    "ActivatedAbilityDefinition",
+    "CastSpellAbilityDefinition",
+    "ManaAbilityDefinition",
+    "TriggeredManaAbilityDefinition",
+    "TriggeredManaAbility",
     "Ability",
     "PriorityActionAbility",
     "CastSpellAbility",
     "ActivatedAbility",
     "ManaAbility",
+    "PlayLandAbility",
+    "PlayLandAbilityDefinition",
     "TriggerCondition",
     "TriggerAbilityDefinition",
     "TriggerAbility",
@@ -539,7 +547,7 @@ class RuntimeSubAbility:
 
 
 @dataclass(frozen=True)
-class AbilityDefinition:
+class AbilityDefinition(ABC):
     """!
     @brief Static data that describes how a card ability can be used.
 
@@ -549,8 +557,7 @@ class AbilityDefinition:
 
     @var uses_stack
         Whether activating/casting this ability puts it on the stack.
-        Defaults to `True`; mana abilities and some special/loyalty
-        actions override this.
+        Defaults to `True`; mana abilities and special actions override this.
     @var subdefs
         Map from `SAVariableType` to `SubAbilityVariable`, describing any
         X/Y-style scalable costs or effects this ability has.
@@ -589,69 +596,30 @@ class AbilityDefinition:
     key: str = "ability"
     cost_subdefs: tuple[SubAbilityDefinition, ...] = ()
     action_subdefs: tuple[SubAbilityDefinition, ...] = ()
-    is_spell: bool = False
+    is_spell: ClassVar[bool] = False
     sorcery_speed: bool = False
-    is_mana_ability: bool = False
-    loyalty_cost: int | None = None
+    is_mana_ability: ClassVar[bool] = False
+    loyalty_cost: ClassVar[int | None] = None
 
     def validation_error(self, source: Card, controller: Player, state: State) -> str | None:
-        """!
-        @brief Return a validation message when the requested action is not legal.
-
-        Checks, in order: loyalty-ability-specific rules (integer cost,
-        must use the stack, must be on the battlefield, once-per-turn
-        limit, sufficient loyalty counters), that a spell has a mana
-        cost and isn't a land, that the ability is usable from the
-        source's current zone, that `controller` actually controls (or
-        owns, for spells) the ability, and finally timing restrictions
-        for sorcery-speed abilities (active player, main phase, empty
-        stack).
-
-        @param source The card the ability originates from.
-        @param controller The player attempting to use the ability.
-        @param state Current game state.
-        @return `None` if the action is legal, otherwise a short
-                human-readable string explaining why it is not.
-        """
-        if self.loyalty_cost is not None:
-            if type(self.loyalty_cost) is not int:
-                return "Loyalty cost must be an integer."
-            if self.is_spell or self.is_mana_ability or not self.uses_stack:
-                return "Loyalty abilities must be activated abilities using the stack."
-            if source.get_zone() != ZoneType.BATTLEFIELD:
-                return "Loyalty abilities require a battlefield permanent."
-            if source.loyalty_activated_turn == state.turn.number:
-                return "A loyalty ability of this permanent was already activated this turn."
-            if source.state.counters.get(CounterType.LOYALTY, 0) + self.loyalty_cost < 0:
-                return "Insufficient loyalty counters."
-        if self.is_spell and source.get_mana_cost(state) is None:
-            return "A spell without a mana cost cannot be cast by paying its mana cost."
-        if self.is_spell and CardType.LAND in source.get_types(state):
-            return "Lands are played as special actions, not cast as spells."
+        """Validate shared zone, controller and timing restrictions."""
         if not self.is_usable_in_zone(source.get_zone()):
             return f"Ability '{self.key}' is not available in {source.get_zone().name}."
-        permitted_player = source.owner if self.is_spell else source.get_controller(state)
-        if controller is not permitted_player:
+        if controller is not self._permitted_player(source, state):
             return "You do not control this ability."
-        # Determine whether the ability is restricted to sorcery speed:
-        # explicit sorcery_speed flag, loyalty abilities (always sorcery
-        # speed), or a spell that is neither an instant nor flash.
-        sorcery_speed = (
-            self.loyalty_cost is not None
-            or self.sorcery_speed
-            or (
-                self.is_spell
-                and CardType.INSTANT not in source.get_types(state)
-                and not source.has_keyword(state, "flash")
-            )
-        )
-        if sorcery_speed and (
+        if self._requires_sorcery_speed(source, state) and (
             state.active_player is not controller
             or state.turn.phase not in {TurnPhase.PRECOMBAT_MAIN, TurnPhase.POSTCOMBAT_MAIN}
             or not state.stack.is_empty()
         ):
             return "Use this ability during your main phase with an empty stack."
         return None
+
+    def _permitted_player(self, source, state):
+        return source.get_controller(state)
+
+    def _requires_sorcery_speed(self, source, state):
+        return self.sorcery_speed
 
     def is_usable_in_zone(self, zone: ZoneType) -> bool:
         """!
@@ -661,17 +629,105 @@ class AbilityDefinition:
         """
         return zone in self.allowed_zones
 
+    @abstractmethod
     def to_ability(self, card: Card, player: Player) -> Ability:
-        """!
-        @brief Binds this static definition to a specific source card and controller.
-        @param card The card this ability instance originates from.
-        @param player The player who would control/cast this ability
-               instance.
-        @return A new runtime `Ability` wrapping this definition.
-        """
-        ability_type = (CastSpellAbility if self.is_spell else
-                        ManaAbility if self.is_mana_ability else ActivatedAbility)
-        return ability_type(self, card, player)
+        """Bind the definition to its matching runtime ability type."""
+        raise NotImplementedError
+
+
+@dataclass(frozen=True)
+class PriorityActionAbilityDefinition(AbilityDefinition):
+    """Base for abilities offered during a priority window."""
+
+
+@dataclass(frozen=True)
+class ActivatedAbilityDefinition(PriorityActionAbilityDefinition):
+    loyalty_cost: int | None = None
+
+    def validation_error(self, source, controller, state):
+        if self.loyalty_cost is not None:
+            if type(self.loyalty_cost) is not int:
+                return "Loyalty cost must be an integer."
+            if self.is_mana_ability or not self.uses_stack:
+                return "Loyalty abilities must be activated abilities using the stack."
+            if source.get_zone() != ZoneType.BATTLEFIELD:
+                return "Loyalty abilities require a battlefield permanent."
+            if source.loyalty_activated_turn == state.turn.number:
+                return "A loyalty ability of this permanent was already activated this turn."
+            if source.state.counters.get(CounterType.LOYALTY, 0) + self.loyalty_cost < 0:
+                return "Insufficient loyalty counters."
+        return super().validation_error(source, controller, state)
+
+    def _requires_sorcery_speed(self, source, state):
+        return self.loyalty_cost is not None or super()._requires_sorcery_speed(source, state)
+
+    def to_ability(self, card: Card, player: Player) -> ActivatedAbility:
+        return ActivatedAbility(self, card, player)
+
+
+@dataclass(frozen=True)
+class CastSpellAbilityDefinition(PriorityActionAbilityDefinition):
+    is_spell: ClassVar[bool] = True
+    uses_stack: bool = field(default=True, init=False)
+    allowed_zones: frozenset[ZoneType] = frozenset({ZoneType.HAND})
+
+    def validation_error(self, source, controller, state):
+        if source.get_mana_cost(state) is None:
+            return "A spell without a mana cost cannot be cast by paying its mana cost."
+        if CardType.LAND in source.get_types(state):
+            return "Lands are played as special actions, not cast as spells."
+        return super().validation_error(source, controller, state)
+
+    def _permitted_player(self, source, state):
+        return source.owner
+
+    def _requires_sorcery_speed(self, source, state):
+        return self.sorcery_speed or (
+            CardType.INSTANT not in source.get_types(state) and not source.has_keyword(state, "flash")
+        )
+
+    def to_ability(self, card: Card, player: Player) -> CastSpellAbility:
+        return CastSpellAbility(self, card, player)
+
+
+@dataclass(frozen=True)
+class ManaAbilityDefinition(ActivatedAbilityDefinition):
+    is_mana_ability: ClassVar[bool] = True
+    uses_stack: bool = field(default=False, init=False)
+
+    def to_ability(self, card: Card, player: Player) -> ManaAbility:
+        return ManaAbility(self, card, player)
+
+
+@dataclass(frozen=True)
+class PlayLandAbilityDefinition(PriorityActionAbilityDefinition):
+    """Permission to play this land from the specified zones.
+
+    The intrinsic definition permits only its owner's hand. Card effects may
+    grant another definition through STAT_ABILITIES, optionally with a live
+    condition and a different permitted player (e.g. playing an exiled card).
+    """
+    key: str = "play_land"
+    uses_stack: bool = field(default=False, init=False)
+    allowed_zones: frozenset[ZoneType] = frozenset({ZoneType.HAND})
+    permitted_player: Player | None = None
+    condition: Callable[[Card, Player, State], bool] | None = None
+
+    def validation_error(self, source, controller, state):
+        from ...rules.lands import land_play_timing_error
+        error = land_play_timing_error(source, controller, state)
+        if error:
+            return error
+        if controller is not (self.permitted_player or source.owner):
+            return "This player does not have permission to play this land."
+        if source.get_zone() not in self.allowed_zones:
+            return "This land cannot be played from its current zone."
+        if self.condition is not None and not self.condition(source, controller, state):
+            return "The permission to play this land is no longer active."
+        return None
+
+    def to_ability(self, card, player):
+        return PlayLandAbility(self, card, player)
 
 
 @dataclass(frozen=True)
@@ -818,6 +874,18 @@ class Ability(HasModifiableStats):
         """
         return self._data.caster
 
+    def generate_actions(self, strategy, state, **parameters):
+        """Generate this runtime ability through its appropriate execution path."""
+        from ..generation.ability_action_gen_pipeline import ABILITY_GENERATION_PIPELINE
+        yield from ABILITY_GENERATION_PIPELINE.generate(self, strategy, state, **parameters)
+
+    def casting_mana_cost(self, state):
+        return None
+
+    @property
+    def action_type(self):
+        return AbilityAction
+
     def to_game_action(self, c_generator: ExecutionPlan, a_generator: ExecutionPlan) -> GameAction:
         """!
         @brief Wrap chosen cost and effect generators into an executable game action.
@@ -825,18 +893,12 @@ class Ability(HasModifiableStats):
         @param a_generator Generator for the ability effect operations.
         @return Game action representing one concrete ability choice.
         """
-        from .game_action import ManaAbilityAction
-
-        # Mana abilities are represented by a distinct action subclass
-        # (`ManaAbilityAction`) so the rest of the engine can special-case
-        # them (e.g. never putting them on the stack).
-        action_type = ManaAbilityAction if self.definition.is_mana_ability else AbilityAction
-        return action_type(
+        return self.action_type(
             action_key=self.key,
             source=self._data.source,
             cost_generator=c_generator,
             action_generator=a_generator,
-            uses_stack=self.definition.uses_stack and not self.definition.is_mana_ability,
+            uses_stack=self.definition.uses_stack,
             controller=self.controller,
             ability=self.definition,
         )
@@ -861,7 +923,10 @@ class PriorityActionAbility(Ability):
 
 
 class CastSpellAbility(PriorityActionAbility):
-    """Runtime binding for casting a card as a spell."""
+    """Casting contributes the card's modified mana cost to plan generation."""
+
+    def casting_mana_cost(self, state):
+        return self.source.get_casting_cost(state)
 
 
 class ActivatedAbility(PriorityActionAbility):
@@ -869,7 +934,28 @@ class ActivatedAbility(PriorityActionAbility):
 
 
 class ManaAbility(ActivatedAbility):
-    """An activation also available while planning a mana payment."""
+    """An activation that produces an immediate ManaAbilityAction."""
+
+    @property
+    def action_type(self):
+        from .game_action import ManaAbilityAction
+        return ManaAbilityAction
+
+
+class PlayLandAbility(PriorityActionAbility):
+    """Generate a special land-play action, without spell costs or stack use."""
+
+    def generate_actions(self, strategy, state, **parameters):
+        from ...rules.lands import land_play_error
+        error = land_play_error(self.source, self.controller, state, self.definition)
+        if error:
+            raise ValueError(error)
+        yield self.to_game_action()
+
+    def to_game_action(self, c_generator=None, a_generator=None):
+        from ...rules.lands import LandPlayAction
+        return LandPlayAction(self.source, self.controller, self.definition,
+                              getattr(self.source, "zone_revision", None))
 
 
 class TriggerCondition(ABC):
@@ -932,16 +1018,17 @@ class TriggerAbilityDefinition(AbilityDefinition):
         return None
 
     @override
-    def to_ability(self, card, player):
-        """!
-        @brief Binds this trigger definition to a source card and controller.
-        @param card The card this triggered ability originates from.
-        @param player The player who will control this triggered
-               ability instance.
-        @return A new `TriggerAbility` (without an associated event yet;
-                use its constructor directly to attach one).
-        """
-        return TriggerAbility(self, card, player)
+    def to_ability(self, card, player, *, event=None, source_last_known=None) -> TriggerAbility:
+        return TriggerAbility(self, card, player, event, source_last_known)
+
+
+@dataclass(frozen=True)
+class TriggeredManaAbilityDefinition(TriggerAbilityDefinition):
+    is_mana_ability: ClassVar[bool] = True
+    uses_stack: bool = field(default=False, init=False)
+
+    def to_ability(self, card, player, *, event=None, source_last_known=None) -> TriggeredManaAbility:
+        return TriggeredManaAbility(self, card, player, event, source_last_known)
 
 
 class TriggerAbility(Ability):
@@ -1026,6 +1113,10 @@ class TriggerAbility(Ability):
         if hasattr(self.definition.condition, "matches_trigger"):
             return self.definition.condition.matches_trigger(self, state)
         return self.definition.condition.matches(state, self.event)
+
+
+class TriggeredManaAbility(TriggerAbility):
+    """A triggered ability resolved immediately by TriggerProcessor."""
 
 
 class AbilityCollection(KeyedCollection[AbilityDefinition]):

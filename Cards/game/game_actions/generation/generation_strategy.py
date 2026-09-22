@@ -9,7 +9,8 @@ if TYPE_CHECKING:
     from .exec_plan_gen_pipeline import ExecutionPlanPipelineBase
     from .subability_generator import SubAbilityGenerator
     from .target_binding_generator import TargetBindingGenerator
-    from ...ai.mana_solver import ManaSolver
+    from ...mana.mana_solver import ManaSolver
+    from .pruning.pruning_strategy import PruningStrategy
 
 
 @dataclass(frozen=True)
@@ -64,3 +65,42 @@ class ActionGenerationStrategy:
     action_pipeline: ExecutionPlanPipelineBase
     action_strategy: ExecutionPlanStrategy
 
+
+    # Budgets apply to valid plans, before the cost/effect Cartesian product.
+    cost_plan_pruning: PruningStrategy | None = None
+    action_plan_pruning: PruningStrategy | None = None
+
+
+def execution_plan_strategy(*, mode=None, targets=None, mana_solver=None) -> ExecutionPlanStrategy:
+    """Compose existing generators for exhaustive or explicitly selected input.
+
+    None means enumerate targets/modes; an empty tuple is an explicit selection
+    of no targets. A solver is supplied only for a cost-side strategy.
+    """
+    from .action_node_option_generator import FullActionNodeOptionGenerator, SelectedActionNodeOptionGenerator
+    from .target_binding_generator import FullTargetBindingGenerator, ProvidedTargetBindingGenerator
+    return ExecutionPlanStrategy(
+        FullActionNodeOptionGenerator() if mode is None else SelectedActionNodeOptionGenerator(mode),
+        FullTargetBindingGenerator() if targets is None else ProvidedTargetBindingGenerator(targets),
+        mana_solver,
+    )
+
+
+def action_generation_strategy(
+    *, targets=None, cost_targets=None, mode=None, cost_mode=None,
+    mana_solver=None, subability_gen=None, cost_plan_pruning=None, action_plan_pruning=None,
+) -> ActionGenerationStrategy:
+    """One composition root shared by decision spaces and command adapters."""
+    from .exec_plan_gen_pipeline import ExecutionPlanPipeline
+    from .subability_generator import FullSubAbilityGenerator
+    from ...mana.mana_solver import SourceActivatingManaSolver
+    return ActionGenerationStrategy(
+        subability_gen if subability_gen is not None else FullSubAbilityGenerator(),
+        ExecutionPlanPipeline(),
+        execution_plan_strategy(mode=cost_mode, targets=cost_targets,
+                                mana_solver=mana_solver if mana_solver is not None else SourceActivatingManaSolver()),
+        ExecutionPlanPipeline(),
+        execution_plan_strategy(mode=mode, targets=targets),
+        cost_plan_pruning=cost_plan_pruning,
+        action_plan_pruning=action_plan_pruning,
+    )

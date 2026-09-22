@@ -69,7 +69,8 @@ def resolve_card(
             return card
         matches = list(state.query_cards(EqQuery(IK_NAME, reference)))
         if not matches:
-            matches = [card for card in state.get_cards() if card.key.endswith("-" + reference)]
+            from game.game_state.registers.card_register import IK_KEY_SUFFIX
+            matches = state.query_cards(EqQuery(IK_KEY_SUFFIX, reference))
         if len(matches) != 1:
             ids = ", ".join(card_reference(card) for card in matches)
             raise CommandError(

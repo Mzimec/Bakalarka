@@ -320,7 +320,14 @@ class PermanentStateRule(StateBasedAction):
         """
         violations, legends = [], defaultdict(list)
 
-        for card in getattr(state, "get_cards", lambda: ())():
+        from helper.query_system.query import EqQuery
+        from game.game_state.registers.card_register import IK_ZONE, IK_IS_TOKEN
+
+        # Preserve one stable candidate order for simultaneous violations.
+        candidates = state.query_cards(
+            EqQuery(IK_ZONE, ZoneType.BATTLEFIELD) | EqQuery(IK_IS_TOKEN, True)
+        ) if hasattr(state, "query_cards") else ()
+        for card in candidates:
             context = ResolutionContext(source=card, controller=card.get_controller(state))
 
             if card.get_zone() != ZoneType.BATTLEFIELD:
@@ -373,8 +380,8 @@ class PermanentStateRule(StateBasedAction):
                 if controller is not player or len(cards) < 2:
                     continue
 
-                choose = getattr(player.decision_maker, "choose_legend", None)
-                keep = choose(state, player, tuple(cards)) if choose else cards[0]
+                from ..ai.decision_maker import LegendRequest
+                keep = player.decision_maker.decide(LegendRequest(state, player, tuple(cards))).value.selected
 
                 if keep not in cards:
                     raise ValueError("Choose one of the legendary permanents to keep.")

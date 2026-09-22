@@ -107,8 +107,9 @@ class ScryOperation(Operation):
         """
         player = self.context.controller
         viewed = tuple(reversed(tuple(player.deck.values())))[: self.amount]
-        choose = getattr(player.decision_maker, "choose_scry", None)
-        top, bottom = choose(state, player, viewed) if choose else (viewed, ())
+        from game.ai.decision_maker import ScryRequest
+        choice = player.decision_maker.decide(ScryRequest(state, player, viewed)).value
+        top, bottom = choice.top, choice.bottom
         top, bottom = tuple(top), tuple(bottom)
         if len(top + bottom) != len(viewed) or set(top + bottom) != set(viewed):
             raise ValueError("Scry must partition exactly the viewed cards.")
@@ -153,7 +154,7 @@ class SkipUntapOperation(Operation):
         """!
         @brief Apply this executable object to the supplied game state.
         """
-        self.card._skip_untap = (self.card.zone_revision, self.player)
+        self.card.state.skip_untap = (self.card.zone_revision, self.player)
         return [
             GameEvent(
                 "skip_next_untap", self.card, self.context.controller, {"player": self.player}
@@ -195,30 +196,19 @@ class ChooseMoveOperation(Operation):
         @brief Apply this executable object to the supplied game state.
         """
         if self.sacrifice:
-            options = tuple(
-                card
-                for card in state.get_cards(from_zones=[ZoneType.BATTLEFIELD])
-                if card.get_controller(state) is self.player
-                and card.is_type(state, CardType.CREATURE)
-            )
-            chooser = getattr(self.player.decision_maker, "choose_sacrifices", None)
+            from helper.query_system.query import EqQuery
+            from game.game_state.registers.card_register import IK_ZONE, IK_CONTROLLER, IK_TYPE
+            options = state.query_cards(EqQuery(IK_ZONE, ZoneType.BATTLEFIELD)
+                & EqQuery(IK_CONTROLLER, self.player) & EqQuery(IK_TYPE, CardType.CREATURE))
         else:
             options = tuple(self.player.hand.values())
-            chooser = getattr(self.player.decision_maker, "choose_discards", None)
         count = min(self.amount, len(options))
-        from game.ai.decision_maker import DecisionMaker, AbilityResolutionRequest
-        if isinstance(self.player.decision_maker, DecisionMaker):
-            request = AbilityResolutionRequest(
-                state, self.player, self.context, options, count,
-                "sacrifice" if self.sacrifice else "discard",
-            )
-            chosen = tuple(self.player.decision_maker.decide(request).value)
-        else:
-            chosen = tuple(
-                chooser(state, self.player, options, count)
-                if chooser and self.sacrifice
-                else chooser(state, self.player, count) if chooser else options[:count]
-            )
+        from game.ai.decision_maker import AbilityResolutionRequest
+        request = AbilityResolutionRequest(
+            state, self.player, self.context, options, count,
+            "sacrifice" if self.sacrifice else "discard",
+        )
+        chosen = self.player.decision_maker.decide(request).value.cards
         if (
             len(chosen) != count
             or len(set(chosen)) != count

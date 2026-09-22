@@ -23,7 +23,8 @@ class ActionBuilderSession:
         self.console = ConsoleDecisionMaker(read=read, write=write)
 
     def run(self):
-        return self.console.get_action(self.state, self.player)
+        from game.ai.decision_maker import PriorityDecisionRequest
+        return self.console.decide(PriorityDecisionRequest(self.state, self.player)).value
 
 
 class HumanDecisionMaker(ConsoleDecisionMaker):

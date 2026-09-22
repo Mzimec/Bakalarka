@@ -108,30 +108,22 @@ class ExecutionPlanPipeline(ExecutionPlanPipelineBase):
                     requirement = ManaRequirement(option.mana_req)
                     requirement.add(symbol_requirement)
 
-                    from ...ai.mana_solver import SourceActivatingManaSolver
                     from ..card_effects import TapSourceEffect
 
-                    kwargs = {}
-
-                    # If paying the non-mana cost already taps the ability's
-                    # source, prevent the activating mana solver from also
-                    # selecting that source as a mana producer.
-                    if isinstance(strategy.mana_solver, SourceActivatingManaSolver):
-                        kwargs["reserved"] = (
-                            frozenset({ctx.ability.source})
-                            if any(
-                                isinstance(binding.effect, TapSourceEffect)
-                                for binding in effects.sequence
-                            )
-                            else frozenset()
-                        )
+                    # A source tapped by this cost cannot also produce its mana.
+                    reserved = (
+                        frozenset({ctx.ability.source})
+                        if any(isinstance(binding.effect, TapSourceEffect)
+                               for binding in effects.sequence)
+                        else frozenset()
+                    )
 
                     from .decision_abstraction.requests import ManaGenerationRequest
-                    from .decision_abstraction.decision_option import ManaGenerationPolicy
+                    from .decision_abstraction.policies import ManaGenerationPolicy
 
                     request = ManaGenerationRequest(
                         state, ctx.ability.controller, requirement,
-                        reserved=kwargs.get("reserved", frozenset()),
+                        reserved=reserved,
                     )
                     candidate = next(iter(request.option_space(
                         ManaGenerationPolicy(strategy.mana_solver)

@@ -71,7 +71,12 @@ class AttachmentTargetSpec(TargetSpec):
         @param reserved Optional collection of objects unavailable to this slot.
         @return Generator of legal host permanents.
         """
-        for card in state.get_cards(from_zones=[ZoneType.BATTLEFIELD]):
+        from helper.query_system.query import EqQuery
+        from game.game_state.registers.card_register import IK_ZONE, IK_CONTROLLER
+        query = EqQuery(IK_ZONE, ZoneType.BATTLEFIELD)
+        if self.equip:
+            query &= EqQuery(IK_CONTROLLER, controller)
+        for card in state.query_cards(query):
             if reserved and card in reserved:
                 continue
 
@@ -130,7 +135,8 @@ class AttachSourceEffect(Effect):
         return "Attach this permanent to the selected host."
 
 
-class AttachmentAbilityDefinition(AbilityDefinition):
+class _AttachmentValidation:
+    # Shared attachment validation; concrete classes provide spell/activation semantics.
     """!
     @brief Ability definition restricted to the matching attachment subtype.
 
@@ -156,16 +162,23 @@ class AttachmentAbilityDefinition(AbilityDefinition):
         if error:
             return error
 
-        subtype = (
-            CardSubtype.AURA
-            if self.is_spell
-            else CardSubtype.EQUIPMENT
-        )
+        subtype = self.required_subtype
 
         if subtype not in source.get_subtypes(state):
             return f"This ability requires {subtype.name}."
 
         return None
+
+
+from .data_structs.ability import CastSpellAbilityDefinition, ActivatedAbilityDefinition
+
+
+class AuraCastAbilityDefinition(_AttachmentValidation, CastSpellAbilityDefinition):
+    required_subtype = CardSubtype.AURA
+
+
+class EquipAbilityDefinition(_AttachmentValidation, ActivatedAbilityDefinition):
+    required_subtype = CardSubtype.EQUIPMENT
 
 
 def attachment_ability(*, equip=False, mana_cost=None, key=None):
@@ -188,7 +201,7 @@ def attachment_ability(*, equip=False, mana_cost=None, key=None):
     @param equip Whether to create an Equipment ability instead of an Aura spell.
     @param mana_cost Equip activation cost or additional Aura casting cost.
     @param key Optional explicit ability key.
-    @return Configured `AttachmentAbilityDefinition`.
+    @return Configured `AuraCastAbilityDefinition` or `EquipAbilityDefinition`.
     """
     slot = TargetSlot(
         "attach",
@@ -241,9 +254,9 @@ def attachment_ability(*, equip=False, mana_cost=None, key=None):
             effects=frozenset({move}),
         )
 
-    return AttachmentAbilityDefinition(
+    definition_type = EquipAbilityDefinition if equip else AuraCastAbilityDefinition
+    return definition_type(
         key=key or ("equip" if equip else "cast:aura"),
-        is_spell=not equip,
         sorcery_speed=equip,
         allowed_zones=frozenset(
             {

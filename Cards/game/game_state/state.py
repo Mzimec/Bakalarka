@@ -76,6 +76,8 @@ class State:
         self.combat = CombatState(self)
         self._lookup_system = LookUpSystem()
         self._cont_effect_manager = ContinuousEffectsManager()
+        from .card_snapshot_cache import CardSnapshotCache
+        self._card_snapshots = CardSnapshotCache()
 
         # These flags coordinate lazy/re-entrant continuous-effect refresh.
         self._refreshing_effects = False
@@ -92,7 +94,7 @@ class State:
         self.player_register = PlayerRegister(self)
 
         # Validate all initial identities before binding anything to this state.
-        cards = self.get_cards()
+        cards = [card for player in self.players for card in player.get_cards()]
         if len({card.key for card in cards}) != len(cards) or any(
             card.runtime_id is not None for card in cards
         ):
@@ -167,6 +169,11 @@ class State:
         """
         return tuple(self.card_register.query(query))
 
+    def query_effects(self, query):
+        """Select live continuous effects by source, layer or duration."""
+        self.refresh_continuous_effects()
+        return self._cont_effect_manager.query(query)
+
     def query_players(self, query):
         """!
         @brief Evaluate a query against the synchronized player register.
@@ -189,7 +196,10 @@ class State:
         """!
         @brief Return players that have not yet lost the game.
         """
-        return tuple(player for player in self.players if player.is_alive)
+        from helper.query_system.query import EqQuery
+        from .registers.player_register import IK_ALIVE
+
+        return self.query_players(EqQuery(IK_ALIVE, True))
 
     @property
     def active_player_idx(self) -> int:
@@ -265,7 +275,10 @@ class State:
         """!
         @brief Return whether at least one player has lost.
         """
-        return any(not player.is_alive for player in self.players)
+        from helper.query_system.query import EqQuery
+        from .registers.player_register import IK_ALIVE
+
+        return bool(self.query_players(EqQuery(IK_ALIVE, False)))
 
     def defer_events(self, events):
         """!
@@ -285,18 +298,15 @@ class State:
         @param from_zones Zones to inspect, or all zones when omitted.
         @return Materialized list of known cards.
         """
-        if from_players is None:
-            from_players = self._players
+        from helper.query_system.query import InQuery
+        from .registers.card_register import IK_OWNER, IK_ZONE
 
-        if from_zones is None:
-            from_zones = [z for z in ZoneType]
-
-        cards: list[Card] = []
-
-        for player in from_players:
-            cards.extend(player.get_cards(from_zones))
-
-        return cards
+        owners = self.players if from_players is None else from_players
+        zones = tuple(ZoneType) if from_zones is None else from_zones
+        return list(self.query_cards(
+            InQuery(IK_OWNER, frozenset(owners))
+            & InQuery(IK_ZONE, frozenset(zones))
+        ))
 
     def get_mana_sources(self, player):
         """!
@@ -320,7 +330,10 @@ class State:
         @param ability_key Ability identifier.
         @return True if the ability is currently activatable.
         """
-        if card not in self.get_cards(from_zones=[ZoneType.BATTLEFIELD]):
+        if (
+            self.card_register.get_by_key(card.key) is not card
+            or card.get_zone() != ZoneType.BATTLEFIELD
+        ):
             return False
 
         definition = card.get_ability_def(ability_key, self)
@@ -400,7 +413,10 @@ class State:
 
         triggers: list[TriggerAbility] = []
 
-        for card in self.get_cards():
+        from helper.query_system.query import EqQuery
+        from .registers.card_register import IK_HAS_TRIGGERS
+
+        for card in self.query_cards(EqQuery(IK_HAS_TRIGGERS, True)):
             zone = card.get_zone()
 
             for ability_def in card.get_trigger_defs(self).values():
@@ -409,8 +425,7 @@ class State:
 
                 if ability_def.is_usable_in_zone(zone):
                     triggers.append(
-                        TriggerAbility(
-                            ability_def,
+                        ability_def.to_ability(
                             card,
                             card.get_controller(self),
                             event=event,

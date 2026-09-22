@@ -1,21 +1,21 @@
 """Examples of the real card/player data used by the playable game loop."""
+from game.ai.decision_maker import DecisionResult
+from game.game_actions import PassPriorityAction
+from game.game_actions.data_structs.ability import ActivatedAbilityDefinition
 
 import pytest
 
 from game.enums import CardType, ZoneType
-from game.game_actions.data_structs.ability import (
-    AbilityDefinition,
-    TriggerAbilityDefinition,
-    TriggerCondition,
-)
+from game.game_actions.data_structs.ability import TriggerAbilityDefinition, TriggerCondition
 from game.game_actions.resolution.event_bus import GameEvent
 from game.game_state import Card, CardDefinition, Player, State
-from game.game_state.player import DecisionMaker
+from game.ai.decision_maker import ModularDecisionMaker as DecisionMaker
 
 
 class PassingController(DecisionMaker):
-    def get_action(self, state, player):
-        return None
+    def decide_priority(self, request):
+        state = request.state; player = request.player
+        return DecisionResult(PassPriorityAction(player))
 
 
 class DamageCondition(TriggerCondition):
@@ -80,7 +80,7 @@ def test_draw_and_move_keep_collections_and_card_zone_in_sync():
 def test_real_card_stats_and_ability_lookup():
     state = make_state()
     player = state.active_player
-    ability = AbilityDefinition(key="spark")
+    ability = ActivatedAbilityDefinition(key="spark")
     card = Card(CardDefinition(
         "Ember Adept",
         types=frozenset({CardType.CREATURE}),

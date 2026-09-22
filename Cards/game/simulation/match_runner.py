@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from dataclasses import dataclass, asdict
+from dataclasses import dataclass, asdict, field
 from enum import Enum
 from itertools import combinations
 import json
@@ -12,6 +12,8 @@ from collections import Counter
 import secrets
 
 from game.reporting.readable_log import render_match
+from game.reporting.decision_statistics import DecisionStatistics, format_decision_statistics
+from game.game_actions.generation.decision_abstraction.measurement import observe_decisions
 from pathlib import Path
 from typing import Any
 
@@ -255,6 +257,7 @@ class MatchResult:
     log: str | None
     error: str | None = None
     elapsed_seconds: float = 0.0
+    decision_timing: list[dict] = field(default_factory=list)
 
 
 def run_match(
@@ -313,9 +316,24 @@ def run_match(
     started = perf_counter()
     agents = controllers or tuple(SimpleAgent(max_decisions=max_decisions) for _ in range(2))
 
+    previous_logs = []
     for agent in agents:
-        if isinstance(agent, SimpleAgent):
+        if isinstance(agent, SimpleAgent) and not any(agent is prior for prior, _ in previous_logs):
+            previous_logs.append((agent, agent.log))
             agent.log = log.decision
+
+    decision_statistics = DecisionStatistics()
+
+    def record_decision(agent, request, metrics):
+        player = request.player
+        decision_statistics.record(player.idx, player.name, type(agent).__name__, agent.decision_mode, metrics)
+        log.write(
+            "decision_timing", player=player.name, player_index=player.idx,
+            agent=type(agent).__name__, mode=agent.decision_mode,
+            turn=request.state.turn.number if request.state is not None else 0,
+            phase=request.state.turn.phase if request.state is not None else "SETUP",
+            **metrics,
+        )
 
     state = None
     status, winner, winner_index, error = "error", None, None, None
@@ -332,92 +350,96 @@ def run_match(
         decklists=[{"name": d.name, "cards": d.cards} for d in decklists] if decklists is not None else None,
     )
 
-    try:
-        decks = tuple(decklists) if decklists is not None else tuple(load_arena_starter(color) for color in colors)
-        catalog = game_catalog()
+    with observe_decisions(record_decision):
+        try:
+            decks = tuple(decklists) if decklists is not None else tuple(load_arena_starter(color) for color in colors)
+            catalog = game_catalog()
 
-        # Refuse to start an experiment whose deck contains cards not represented
-        # by the current executable card catalog.
-        missing = sorted({name for deck in decks for name, _ in deck.cards if name not in catalog})
+            # Refuse to start an experiment whose deck contains cards not represented
+            # by the current executable card catalog.
+            missing = sorted({name for deck in decks for name, _ in deck.cards if name not in catalog})
 
-        if missing:
-            status, error = "unsupported", "Missing card definitions: " + ", ".join(missing)
+            if missing:
+                status, error = "unsupported", "Missing card definitions: " + ", ".join(missing)
 
-        else:
-            state = create_game(
-                decks,
-                agents,
-                catalog,
-                seed=seed,
-                starting_player_idx=starting_player,
-                names=names or (f"{colors[0]}-0", f"{colors[1]}-1"),
-            )
-
-            bus = LoggedEventBus(log, state)
-
-            from game.console.demo_game import ConsoleDecisionMaker
-
-            for agent in agents:
-                if isinstance(agent, ConsoleDecisionMaker):
-                    agent.event_bus = bus
-                    agent._event_index = 0
-
-            engine = LoggedResolutionEngine(OperationExecutor(), bus)
-            loop = GameLoop(None, LoggedProcessor(engine))
-
-            log.write(
-                "setup",
-                hands={p.name: list(p.hand.values()) for p in state.players},
-                mulligans=state.mulligans_taken,
-            )
-
-            while not state.is_game_over and state.turn.number <= max_turns:
-                log.write(
-                    "phase",
-                    turn=state.turn.number,
-                    phase=state.turn.phase,
-                    active=state.active_player,
-                )
-
-                loop.step(state)
-
-                # State summaries are snapshots after a complete loop step rather
-                # than references to mutable player objects.
-                log.write(
-                    "state",
-                    turn=state.turn.number,
-                    phase=state.turn.phase,
-                    players=[
-                        {
-                            "name": p.name,
-                            "life": p.health,
-                            "hand_size": len(p.hand),
-                            "library_size": len(p.deck),
-                        }
-                        for p in state.players
-                    ],
-                )
-
-            survivors = [p for p in state.players if p.is_alive]
-
-            if not state.is_game_over:
-                status = "turn_limit"
-            elif len(survivors) == 1:
-                winner_player = survivors[0]
-                winner_index = state.players.index(winner_player)
-                status, winner = "win", winner_player.name  
             else:
-                status = "draw"
+                state = create_game(
+                    decks,
+                    agents,
+                    catalog,
+                    seed=seed,
+                    starting_player_idx=starting_player,
+                    names=names or (f"{colors[0]}-0", f"{colors[1]}-1"),
+                )
 
-    except (EOFError, KeyboardInterrupt):
-        status = "aborted"
+                bus = LoggedEventBus(log, state)
 
-    except DecisionLimitReached as exc:
-        status, error = "decision_limit", str(exc)
+                from game.console.demo_game import ConsoleDecisionMaker
 
-    except Exception as exc:
-        status, error = "error", f"{type(exc).__name__}: {exc}"
-        log.write("exception", traceback=traceback.format_exc())
+                for agent in agents:
+                    if isinstance(agent, ConsoleDecisionMaker):
+                        agent.event_bus = bus
+                        agent._event_index = 0
+
+                engine = LoggedResolutionEngine(OperationExecutor(), bus)
+                loop = GameLoop(None, LoggedProcessor(engine))
+
+                log.write(
+                    "setup",
+                    hands={p.name: list(p.hand.values()) for p in state.players},
+                    mulligans=state.mulligans_taken,
+                )
+
+                while not state.is_game_over and state.turn.number <= max_turns:
+                    log.write(
+                        "phase",
+                        turn=state.turn.number,
+                        phase=state.turn.phase,
+                        active=state.active_player,
+                    )
+
+                    loop.step(state)
+
+                    # State summaries are snapshots after a complete loop step rather
+                    # than references to mutable player objects.
+                    log.write(
+                        "state",
+                        turn=state.turn.number,
+                        phase=state.turn.phase,
+                        players=[
+                            {
+                                "name": p.name,
+                                "life": p.health,
+                                "hand_size": len(p.hand),
+                                "library_size": len(p.deck),
+                            }
+                            for p in state.players
+                        ],
+                    )
+
+                survivors = list(state.active_players)
+
+                if not state.is_game_over:
+                    status = "turn_limit"
+                elif len(survivors) == 1:
+                    winner_player = survivors[0]
+                    winner_index = state.players.index(winner_player)
+                    status, winner = "win", winner_player.name
+                else:
+                    status = "draw"
+
+        except (EOFError, KeyboardInterrupt):
+            status = "aborted"
+
+        except DecisionLimitReached as exc:
+            status, error = "decision_limit", str(exc)
+
+        except Exception as exc:
+            status, error = "error", f"{type(exc).__name__}: {exc}"
+            log.write("exception", traceback=traceback.format_exc())
+        finally:
+            for agent, previous_log in previous_logs:
+                agent.log = previous_log
 
     result = MatchResult(
         tuple(colors),
@@ -431,6 +453,7 @@ def run_match(
         output.name if output is not None else None,
         error,
         perf_counter() - started,
+        decision_timing=decision_statistics.summary(),
     )
 
     log.write("result", **asdict(result))
@@ -492,6 +515,7 @@ def summarize_tournament(
     @brief Build aggregate tournament statistics from individual match results.
     """
     participants = []
+    decision_statistics = DecisionStatistics()
 
     for index, player in enumerate(players):
         participants.append(
@@ -529,6 +553,7 @@ def summarize_tournament(
         )
 
     for result in results:
+        decision_statistics.merge(result.decision_timing)
         for player_index, stats in enumerate(participants):
             stats["games"] += 1
             stats["turns_total"] += result.turns
@@ -565,7 +590,9 @@ def summarize_tournament(
             elif result.status == "error":
                 stats["errors"] += 1
 
+    timing = decision_statistics.summary()
     for stats in participants:
+        stats["decision_timing"] = [entry for entry in timing if entry["player_index"] == stats["index"]]
         _finalize_participant_stats(stats)
 
     statuses = Counter(result.status for result in results)
@@ -588,6 +615,7 @@ def summarize_tournament(
     )
 
     global_stats = {
+        "decision_timing": timing,
         "games": len(results),
         "completed_games": len(completed),
         "decisive_games": len(decisive),
@@ -840,6 +868,8 @@ def run_tournament(
                     f"  Average decisions: {stats['average_decisions']:.2f}",
                 ]
             )
+
+        lines.extend(["", *format_decision_statistics(summary["global"]["decision_timing"])])
 
         (output / "summary.txt").write_text(
             "\n".join(lines) + "\n",
