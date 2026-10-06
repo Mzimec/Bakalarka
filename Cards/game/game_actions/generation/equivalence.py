@@ -136,7 +136,7 @@ class EquivalenceContext:
                     "_stats", "_modifier_sources", "_state", "_incarnation_history",
                 }}
                 values = {k: v for k, v in vars(card.state).items()
-                          if k not in {"_on_change", "zone_info", "attach_info"}}
+                          if k not in {"_on_change", "_on_runtime_change", "zone_info", "attach_info"}}
                 zone_info = dict(vars(card.state.zone_info))
                 from ...enums import CardType
                 from ...rules.lands import BASIC_LAND_MANA

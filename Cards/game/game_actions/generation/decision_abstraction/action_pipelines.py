@@ -1,6 +1,7 @@
 """Compose priority, ability and mana generation using engine components."""
 from __future__ import annotations
 from collections.abc import Iterator
+from dataclasses import replace
 from itertools import chain
 from typing import TYPE_CHECKING
 from .requests import AbilityDecisionRequest, PriorityDecisionRequest, ManaGenerationRequest
@@ -24,7 +25,11 @@ class AbilityDecisionGenerationPipeline:
             raise ValueError("The ability must belong to the requesting player.")
         yield from apply_pruning(self._generate(request, policy), policy.pruning)
 
-    def _generate(self, request, policy):
+    def _generate(
+        self, 
+        request: AbilityDecisionRequest, 
+        policy: AbilityGenerationPolicy,
+    ) -> Iterator[GameAction]:
         if request.choices is not None:
             yield from request.choices
             return
@@ -52,9 +57,20 @@ class PriorityDecisionGenerationPipeline:
     ) -> Iterator[GameAction]:
         from ...data_structs.game_action import PassPriorityAction, ConcedeAction
         from ....game_state.collectors.priority_ability_collector import PRIORITY_ABILITY_COLLECTOR
+
         if request.state.priority.current_player is not request.player:
             raise ValueError("PriorityDecisionRequest player does not currently have priority.")
+        
         yield PassPriorityAction(request.player)
+
+        ability_policy = policy.ability_gp
+
+        if ability_policy.strategy is None:
+            ability_policy = replace(
+                ability_policy,
+                strategy=action_generation_strategy(),
+            )
+
         collector = policy.collector or PRIORITY_ABILITY_COLLECTOR
         groups = (
             (collector.collect_lands(request.state, request.player), policy.land_play_ps),
@@ -77,7 +93,7 @@ class PriorityDecisionGenerationPipeline:
                     equivalence = policy.equivalence.bind(request.state)
                 candidates = equivalence.representatives(candidates)
             for ability in candidates:
-                yield from AbilityDecisionRequest(request.state, request.player, ability).option_space(policy.ability_gp)
+                yield from AbilityDecisionRequest(request.state, request.player, ability).option_space(ability_policy)
         if policy.include_concede:
             yield ConcedeAction(request.player)
 

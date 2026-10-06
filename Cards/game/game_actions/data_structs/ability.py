@@ -353,6 +353,14 @@ class SubAbilityComposer:
 
     def _compile_action_graph(
         self,
+    ):
+        from ..generation.structural_templates import compiled_graph
+        if type(self) is not SubAbilityComposer:
+            return self._build_action_graph()
+        return compiled_graph(self._subdefs, self._build_action_graph)
+
+    def _build_action_graph(
+        self,
     ) -> tuple[
         immutabledict[str, RepetitionTargetSlotWrapper],
         immutabledict[str, Effect],
@@ -408,7 +416,7 @@ class SubAbilityComposer:
         elif len(children) == 1:
             action_node = children[0]
         else:
-            action_node = AndActionNode(children)
+            action_node = AndActionNode(tuple(children))
 
         return immutabledict(slots), immutabledict(effects), action_node
 

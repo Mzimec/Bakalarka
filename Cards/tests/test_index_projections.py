@@ -114,6 +114,51 @@ def test_custom_ability_zone_logic_is_evaluated_again(board):
     assert card not in state.query_cards(query)
 
 
+def test_validation_only_subclass_reuses_indexes_across_layers(board, monkeypatch):
+    state, _ = board
+    class RestrictedAbility(ActivatedAbilityDefinition):
+        def validation_error(self, source, controller, state):
+            pytest.fail("Index membership must not evaluate activation legality")
+    card = Card(CardDefinition("Restricted", abilities=frozenset({RestrictedAbility()})), state.players[0])
+    card.owner.add_card(card, ZoneType.BATTLEFIELD)
+    state.synchronise_registers()
+    state.card_register.index_values(card)
+    monkeypatch.setattr(card, "get_power", lambda *_: pytest.fail("Unchanged projection rebuilt"))
+    state.card_register.mark_layer_changed(card)
+    assert card.key not in state.card_register._dirty
+    card.is_tapped = True
+    assert card in state.query_cards(EqQuery(IK_TAPPED, True))
+
+
+def test_subclass_mana_flag_changes_invalidate_cached_index(board):
+    state, _ = board
+    class ChangingKind(ActivatedAbilityDefinition):
+        pass
+    definition = ChangingKind()
+    card = Card(CardDefinition("Changing kind", abilities=frozenset({definition})), state.players[0])
+    card.owner.add_card(card, ZoneType.BATTLEFIELD)
+    state.synchronise_registers()
+    state.card_register.index_values(card)
+    ChangingKind.is_mana_ability = True
+    state.card_register.mark_layer_changed(card)
+    assert card in state.query_cards(EqQuery(IK_ABILITY_KIND, ActivatableAbilityType.MANA))
+    assert card not in state.query_cards(EqQuery(IK_ABILITY_KIND, ActivatableAbilityType.NON_MANA))
+
+
+def test_subclass_replacing_zone_predicate_disables_cached_projection(board):
+    state, _ = board
+    class ChangingZone(ActivatedAbilityDefinition):
+        pass
+    card = Card(CardDefinition("Changing zone", abilities=frozenset({ChangingZone()})), state.players[0])
+    card.owner.add_card(card, ZoneType.BATTLEFIELD)
+    query = EqQuery(IK_ABILITY_KIND, ActivatableAbilityType.NON_MANA)
+    assert card in state.query_cards(query)
+    state.card_register.index_values(card)
+    ChangingZone.is_usable_in_zone = lambda self, zone: False
+    state.card_register.mark_layer_changed(card)
+    assert card not in state.query_cards(query)
+
+
 def test_layer_boundary_skips_clean_base_cards_but_keeps_queued_changes(board):
     state, card = board
     register = state.card_register

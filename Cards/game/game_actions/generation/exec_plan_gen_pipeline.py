@@ -11,6 +11,11 @@ from ..data_structs.action_node import ActionNodeOption, ImmutableEffectToSlotMa
 from ...mana.mana_value import ManaValue, ManaRequirement, ImmutableManaRequirement
 from ...abilities.parameter_context import ParameterContext
 from ...enums import SAVariableType
+from .structural_templates import prepared_effects
+
+
+_EMPTY_EFFECTS = EffectSequence(())
+_EMPTY_OPTIONS = (ActionNodeOption(ImmutableEffectToSlotMap(), ImmutableManaRequirement()),)
 
 
 class ExecutionPlanPipelineBase(ABC):
@@ -59,7 +64,7 @@ class ExecutionPlanPipeline(ExecutionPlanPipelineBase):
         # treat them uniformly.
         empty = subability is None or subability.action_node is None
         options = (
-            (ActionNodeOption(ImmutableEffectToSlotMap(), ImmutableManaRequirement()),)
+            _EMPTY_OPTIONS
             if empty
             else strategy.options_gen.generate(subability.action_node)
         )
@@ -79,11 +84,8 @@ class ExecutionPlanPipeline(ExecutionPlanPipelineBase):
         )
 
         for option in options:
-            effects = (
-                EffectSequence(())
-                if empty
-                else subability.normalize_effect_map(option.effects)
-            )
+            effects, used_slots = ((_EMPTY_EFFECTS, frozenset()) if empty
+                                   else prepared_effects(subability, option.effects))
 
             mana_solver_result = None
 
@@ -107,6 +109,17 @@ class ExecutionPlanPipeline(ExecutionPlanPipelineBase):
 
                     requirement = ManaRequirement(option.mana_req)
                     requirement.add(symbol_requirement)
+
+                    if not requirement:
+                        from ...mana.mana_solver import ManaSolverResult
+
+                        mana_solver_result = ManaSolverResult(
+                            (),
+                            state,
+                            payment=None,
+                            life_payment=life,
+                        )
+                        break
 
                     from ..card_effects import TapSourceEffect
 
@@ -140,14 +153,10 @@ class ExecutionPlanPipeline(ExecutionPlanPipelineBase):
                 if mana_solver_result is None:
                     continue
 
-            used_slots = (
-                frozenset()
-                if empty
-                else subability.get_used_slots_in_esmap(option.effects)
-            )
-
             # Target generation is performed only for slots actually used
             # by the selected action-node option.
+            if used_slots is None:
+                used_slots = subability.get_used_slots_in_esmap(option.effects)
             for binding in strategy.target_gen.generate(ctx, used_slots, state):
                 yield AbilityExecutionPlan(
                     effects=effects,

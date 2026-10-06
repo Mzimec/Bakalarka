@@ -5,6 +5,7 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 from abc import ABC, abstractmethod
 from dataclasses import dataclass, field
+from functools import cached_property
 
 if TYPE_CHECKING:
     from ...game_state import State
@@ -57,6 +58,11 @@ class SBAResolver:
 
             # Collect against one shared state snapshot before mutating anything.
             for rule in self._rules:
+                # Filters are an explicit opt-in on each concrete rule class.
+                # Inherited/custom collect implementations keep full dispatch.
+                if ("candidate_filter" in type(rule).__dict__ and "collect" not in vars(rule)
+                        and rule.candidate_filter.empty(state)):
+                    continue
                 violations.extend(rule.collect(state))
 
             if not violations:
@@ -108,6 +114,12 @@ class SBAViolation:
 class StateBasedAction(ABC):
     """!
     @brief Base interface for automatic state cleanup and rule enforcement.
+
+    A concrete rule may declare a `candidate_filter` returning an
+    `SBACandidateFilter`. Its query must include every possible violation.
+    All indexes read by that query must be declared as dependencies. The
+    resolver skips only proven empty sets; it never caches collected violations.
+    Subclasses must explicitly redeclare the filter to opt in themselves.
     """
 
     @abstractmethod
@@ -132,6 +144,19 @@ class LethalCreaturesRule(StateBasedAction):
     damage while respecting indestructible where applicable.
     """
 
+    @cached_property
+    def candidate_filter(self):
+        from helper.query_system.query import EqQuery, RangeQuery
+        from ...game_state.registers.card_register import IK_ZONE, IK_TYPE, IK_TOUGHNESS, IK_HAS_DAMAGE, IK_DYNAMIC_CHARACTERISTICS
+        from ...enums import ZoneType, CardType
+        from .sba_candidates import SBACandidateFilter
+        return SBACandidateFilter(
+            EqQuery(IK_ZONE, ZoneType.BATTLEFIELD) & (
+                (EqQuery(IK_TYPE, CardType.CREATURE)
+                 & (RangeQuery(IK_TOUGHNESS, max_value=0) | EqQuery(IK_HAS_DAMAGE, True)))
+                | EqQuery(IK_DYNAMIC_CHARACTERISTICS, True)),
+            (IK_ZONE, IK_TYPE, IK_TOUGHNESS, IK_HAS_DAMAGE, IK_DYNAMIC_CHARACTERISTICS))
+
     def collect(self, state):
         """!
         @brief Collect battlefield creatures that should die as an SBA.
@@ -143,45 +168,39 @@ class LethalCreaturesRule(StateBasedAction):
         from ...operations.card_operations import MoveCardOperation
         from ..data_structs.game_action import ResolutionContext
 
-        from helper.query_system.query import EqQuery
-        from ...game_state.registers.card_register import IK_ZONE, IK_TYPE
-
-        candidates = state.query_cards(
-            EqQuery(IK_ZONE, ZoneType.BATTLEFIELD) & EqQuery(IK_TYPE, CardType.CREATURE)
-        ) if hasattr(state, "query_cards") else ()
-        return [
-            SBAViolation(
-                (
-                    MoveCardOperation(
-                        ResolutionContext(
-                            source=card,
-                            controller=card.get_controller(state),
-                        ),
-                        card,
-                        ZoneType.GRAVEYARD,
-                    ),
-                )
-            )
-            for card in candidates
-            if card.get_toughness(state) is not None
-            and (
-                # Zero or negative toughness ignores indestructible.
-                card.get_toughness(state) <= 0
-                or (
-                    not card.has_keyword(state, "indestructible")
-                    and (
-                        card.state.damage_marked >= card.get_toughness(state)
-                        or card.state.damage_by_deathtouch
-                    )
-                )
-            )
-        ]
+        candidates = state.query_cards(self.candidate_filter.query) if hasattr(state, "query_cards") else ()
+        violations = []
+        for card in candidates:
+            if CardType.CREATURE not in card.get_types(state):
+                continue
+            toughness = card.get_toughness(state)
+            if toughness is None:
+                continue
+            lethal_damage = card.state.damage_by_deathtouch or card.state.damage_marked >= toughness
+            # Zero toughness is not destruction; indestructible cannot prevent it.
+            if toughness <= 0 or (lethal_damage and not card.has_keyword(state, "indestructible")):
+                violations.append(SBAViolation((MoveCardOperation(
+                    ResolutionContext(source=card, controller=card.get_controller(state)),
+                    card, ZoneType.GRAVEYARD,
+                ),)))
+        return violations
 
 
 class PlayerLossRule(StateBasedAction):
     """!
     @brief Detect players that lose due to life, drawing or poison state.
     """
+
+    @cached_property
+    def candidate_filter(self):
+        from helper.query_system.query import EqQuery, RangeQuery
+        from ...game_state.registers.player_register import IK_HAS_LOST, IK_HEALTH, IK_FAILED_DRAW, IK_POISON
+        from .sba_candidates import SBACandidateFilter
+        return SBACandidateFilter(
+            EqQuery(IK_HAS_LOST, False) & (
+                RangeQuery(IK_HEALTH, max_value=0) | EqQuery(IK_FAILED_DRAW, True)
+                | RangeQuery(IK_POISON, min_value=10)),
+            (IK_HAS_LOST, IK_HEALTH, IK_FAILED_DRAW, IK_POISON), players=True)
 
     def collect(self, state):
         """!
@@ -230,14 +249,7 @@ class PlayerLossRule(StateBasedAction):
 
         violations = []
 
-        from helper.query_system.query import EqQuery, RangeQuery
-        from ...game_state.registers.player_register import IK_HAS_LOST, IK_HEALTH, IK_FAILED_DRAW, IK_POISON
-        candidates = state.query_players(
-            EqQuery(IK_HAS_LOST, False) & (
-                RangeQuery(IK_HEALTH, max_value=0) | EqQuery(IK_FAILED_DRAW, True)
-                | RangeQuery(IK_POISON, min_value=10)
-            )
-        ) if hasattr(state, "query_players") else getattr(state, "players", ())
+        candidates = state.query_players(self.candidate_filter.query) if hasattr(state, "query_players") else getattr(state, "players", ())
         for player in candidates:
             if getattr(player, "has_lost", False):
                 continue

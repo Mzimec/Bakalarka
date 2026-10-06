@@ -82,6 +82,7 @@ def entry_projection(state, operation):
             counters=dict(original.state.counters),
             damage_marked=original.state.damage_marked,
             on_change=cloned._notify_changed,
+            on_runtime_change=cloned._notify_runtime_changed,
         )
         cloned._state.zone_info = copy(original.state.zone_info)
 

@@ -47,6 +47,7 @@ from game.operations.card_operations import (
     TapCardOperation,
 )
 from game.target.target_spec import TargetSpec
+from game.target.continuous_targets import CardIncarnationsSpec, SourceControllerLifeSpec
 from helper.query_system.query import EqQuery, InQuery, DifferenceQuery
 from game.game_state.registers.card_register import IK_ZONE, IK_TYPE, IK_CONTROLLER, IK_SUBTYPE, IK_NAME, IK_KEY, IK_OWNER
 from game.target.target_resolver import TargetResolver, TargetSlot
@@ -271,25 +272,12 @@ class TemporaryModifierOperation(Operation):
         """
         incarnations = tuple((card, card.zone_revision) for card in self.targets)
 
-        def fixed_targets(source, controller, current_state):
-            return (
-                card
-                for card, revision in incarnations
-                if card.zone_revision == revision and card.get_zone() == ZoneType.BATTLEFIELD
-            )
-
         definition = ContinuousEffectDefinition(
             duration=TimeStampDuration(TimeStamp(state.turn.number, TurnPhase.CLEANUP)),
             source=self.context.source,
             created_at=state.time_stamp,
             targeting=DynamicTargetingStrategy(
-                PredicateTargetSpec(
-                    lambda card, _source, _controller, _state: any(
-                        card is target and card.zone_revision == revision
-                        for target, revision in incarnations
-                    ),
-                    query=InQuery(IK_KEY, frozenset(target.key for target, _ in incarnations)),
-                )
+                CardIncarnationsSpec(incarnations)
             ),
             modifiers=self.modifiers,
         )
@@ -919,14 +907,6 @@ class _GoblinStaticSpec(PredicateTargetSpec):
         )
 
 
-class _VitalitySpec(PredicateTargetSpec):
-    def __init__(self):
-        super().__init__(
-            lambda card, source, controller, state: card is source and controller.health >= 25,
-            query=lambda source, controller, state: EqQuery(IK_KEY, source.key)
-        )
-
-
 class _OwnCreatureTargetSpec(PredicateTargetSpec):
     def __init__(self):
         super().__init__(
@@ -1053,7 +1033,7 @@ ANGEL_OF_VITALITY = _creature(
     continuous_effects=(
         StaticContinuousRule(
             "vitality_bonus",
-            _VitalitySpec(),
+            SourceControllerLifeSpec(25),
             {STAT_POWER: [AddIntModifier(2)], STAT_TOUGHNESS: [AddIntModifier(2)]},
         ),
     ),
@@ -1074,6 +1054,7 @@ ANGEL_OF_VITALITY = replace_definition(
             lambda state, effect, operation: (
                 GainLifeOperation(operation.context, operation.amount + 1),
             ),
+            operation_types=(GainLifeOperation,),
         ),
     ),
 )

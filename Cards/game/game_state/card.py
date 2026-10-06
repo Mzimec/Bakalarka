@@ -4,6 +4,7 @@ from __future__ import annotations
 from typing import TYPE_CHECKING, override
 from dataclasses import dataclass, field, replace
 from helper.change_tracking import TrackedDict, TrackedSet
+from .card_changes import CardChange
 from collections.abc import Mapping
 from uuid import uuid4
 from immutabledict import immutabledict
@@ -29,6 +30,7 @@ from .modifier import (
     TimeStamp,
     Attachable,
     Modifier,
+    only_empty_builtin_sources,
 )
 from .stat import Stat, HasModifiableStats, ModifiablePrimitiveStat, ModifiableReferenceStat
 from ..enums import *
@@ -193,6 +195,7 @@ class CardRuntimeState:
         damage_marked: int | None = None,
         face_down: bool = False,
         on_change=lambda: None,
+        on_runtime_change=None,
     ) -> None:
         """!
         @brief Initialize mutable gameplay state for one card.
@@ -200,6 +203,7 @@ class CardRuntimeState:
         @param on_change Callback invoked by tracked mutable fields.
         """
         self._on_change = on_change
+        self._on_runtime_change = on_runtime_change
         self.zone_info: ZoneInfo = ZoneInfo()
         self._tapped = tapped
 
@@ -244,7 +248,7 @@ class CardRuntimeState:
     @skip_untap.setter
     def skip_untap(self, value):
         self._skip_untap = value
-        self._on_change()
+        self._runtime_changed(CardChange.SKIP_UNTAP)
 
     @property
     def damage_marked(self):
@@ -253,7 +257,7 @@ class CardRuntimeState:
     @damage_marked.setter
     def damage_marked(self, value):
         self._damage_marked = value
-        self._on_change()
+        self._runtime_changed(CardChange.DAMAGE)
 
     @property
     def damage_by_deathtouch(self):
@@ -262,7 +266,7 @@ class CardRuntimeState:
     @damage_by_deathtouch.setter
     def damage_by_deathtouch(self, value):
         self._damage_by_deathtouch = value
-        self._on_change()
+        self._runtime_changed(CardChange.DAMAGE)
 
     @property
     def tapped(self):
@@ -277,7 +281,13 @@ class CardRuntimeState:
         @brief Change tapped state and invalidate derived state.
         """
         self._tapped = value
-        self._on_change()
+        self._runtime_changed(CardChange.TAPPED)
+
+    def _runtime_changed(self, change):
+        if self._on_runtime_change is None:
+            self._on_change()
+        else:
+            self._on_runtime_change(change)
 
     @classmethod
     def create_permanent_card_state(
@@ -287,6 +297,7 @@ class CardRuntimeState:
         attach_info: AttachInfo | None = None,
         damage_marked: int = 0,
         on_change=lambda: None,
+        on_runtime_change=None,
     ) -> CardRuntimeState:
         """!
         @brief Create runtime state initialized for a permanent card.
@@ -301,6 +312,7 @@ class CardRuntimeState:
             attach_info=attach_info,
             damage_marked=damage_marked,
             on_change=on_change,
+            on_runtime_change=on_runtime_change,
         )
 
 
@@ -312,6 +324,15 @@ class Card(HasModifiableStats, Attachable):
     counters, attachments and derived characteristics change. Printed values
     originate in `CardDefinition` and are exposed through modifiable stats.
     """
+
+    def __setattr__(self, name, value):
+        object.__setattr__(self, name, value)
+        # Replacement/copy projections replace whole immutable input tables.
+        # Notify only the owning live register; shallow clones are not members.
+        if name in {"_stats", "_definition", "_modifier_sources", "_state", "_owner", "zone_revision"}:
+            state = self.__dict__.get("_game_state")
+            if state is not None:
+                state.card_register.invalidate_layer_inputs(self)
 
     def __init__(
         self,
@@ -360,10 +381,10 @@ class Card(HasModifiableStats, Attachable):
 
         self._state = (
             CardRuntimeState.create_permanent_card_state(
-                on_change=self._notify_changed
+                on_change=self._notify_changed, on_runtime_change=self._notify_runtime_changed,
             )
             if prototype.is_permanent()
-            else CardRuntimeState(on_change=self._notify_changed)
+            else CardRuntimeState(on_change=self._notify_changed, on_runtime_change=self._notify_runtime_changed)
         )
 
         # Base stats are initialized from the printed definition. Continuous
@@ -662,6 +683,14 @@ class Card(HasModifiableStats, Attachable):
         if self._game_state is not None:
             self._game_state.notify_card_changed(self)
 
+    def _notify_runtime_changed(self, change):
+        if type(self) is not Card:
+            # Preserve extension hooks; custom cards retain full invalidation.
+            self._notify_changed()
+            return
+        if self._game_state is not None:
+            self._game_state.card_register.mark_runtime_changed(self, change)
+
     def set_base_stat(
         self,
         stat_type: StatType,
@@ -803,6 +832,7 @@ class Card(HasModifiableStats, Attachable):
     @override
     def attached_to(self, value: Card | None):
         self._state.attach_info.attached_to = value
+        self._notify_changed()
 
     @property
     @override
@@ -832,6 +862,12 @@ class Card(HasModifiableStats, Attachable):
         """!
         @brief Return modifiers granted to the object hosting this attachment.
         """
+        # The common immutable grant needs no recursive modifier pipeline.
+        # Custom cards/stat readers and modified attachments retain live reads.
+        stat = self.stats.get(STAT_ATTACH_MODS)
+        if (type(self) is Card and type(stat) in (Stat, ModifiableReferenceStat)
+                and only_empty_builtin_sources(self.modifier_sources)):
+            return stat.base_value
         return self.get_stat(
             STAT_ATTACH_MODS,
             state,

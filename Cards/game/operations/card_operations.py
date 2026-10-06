@@ -302,7 +302,8 @@ class DrawCardOperation(Operation):
     """
 
     def lki_cards(self, state):
-        return (next(reversed(self.context.controller.deck.values())),)
+        card = next(reversed(self.context.controller.deck.values()), None)
+        return () if card is None else (card,)
 
     def execute(self, state):
         """!

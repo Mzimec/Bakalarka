@@ -8,6 +8,8 @@ from game.game_actions.generation.equivalence import EquivalenceContext, Unknown
 class ManaSearchStatistics:
     states_visited: int = 0
     equivalent_branches_skipped: int = 0
+    capacity_rejections: int = 0
+    greedy_successes: int = 0
 
 
 class ManaSymmetry:

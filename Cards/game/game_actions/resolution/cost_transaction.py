@@ -30,15 +30,41 @@ class RuntimeCheckpoint:
     mutable state stored in their `state` attribute.
     """
 
-    def __init__(self, state):
+    def __init__(self, state, *, card_scope=None, shallow_roots=None):
         """!
         @brief Create a checkpoint rooted at the supplied game state.
 
         @param state Root runtime state whose mutable object graph should
                be tracked.
+        @param card_scope Proven card write set; None retains the full graph.
+        @param shallow_roots Proven stack-only writes, without graph traversal.
+               Supplied only by the empty-trigger-cost planner.
         """
         self._seen = set()
         self._restore = []
+        self.card_scope = card_scope
+        self.skipped_cards = 0
+        self.mode = (
+            "stack" if shallow_roots is not None
+            else "full" if card_scope is None else "scoped"
+        )
+        if shallow_roots is not None:
+            for value in shallow_roots:
+                self._seen.add(id(value))
+                if type(value) is list:
+                    self._restore.append(("list", value, value.copy()))
+                else:
+                    self._restore.append(("object", value, vars(value).copy()))
+            return
+        if card_scope is not None:
+            # Native register synchronization replaces rows; it never mutates
+            # the old membership mappings/frozensets in place. Preserve the
+            # original row identities without traversing every card's values.
+            # Unknown cost plans keep the recursive full-checkpoint behavior.
+            for register in (state.card_register, state.player_register):
+                rows = register._snapshots
+                self._seen.add(id(rows))
+                self._restore.append(("dict", rows, rows.copy()))
         self.watch(state, root=True)
 
     def watch(self, value, *, root=False):
@@ -53,85 +79,90 @@ class RuntimeCheckpoint:
         @param root Force inspection of the supplied object even if its module
                is outside the normal engine namespaces.
         """
-        identity = id(value)
+        # Classify once per type in this traversal. In particular, scalar index
+        # values need no snapshot or repeated isinstance checks.
+        # Exact types only: subclasses may own mutable runtime attributes.
+        kinds = {int: "ignore", float: "ignore", bool: "ignore", str: "ignore",
+                 bytes: "ignore", complex: "ignore", type(None): "ignore",
+                 object: "ignore", dict: "dict", list: "list", set: "set",
+                 deque: "deque", tuple: "tuple", frozenset: "frozenset"}
+        pending = [value]
+        seen = self._seen
+        restore = self._restore
+        from ...game_state.card import Card
+        card_scope = self.card_scope
+        excluded = {"_controller", "definition", "_definition", "_stats",
+                    "_modifier_sources"}
+        while pending:
+            value = pending.pop()
+            force_root, root = root, False
+            identity = id(value)
+            if identity in seen:
+                continue
+            seen.add(identity)
+            cls = type(value)
+            kind = kinds.get(cls)
+            if kind is None:
+                if issubclass(cls, Random):
+                    kind = "rng"
+                elif issubclass(cls, dict):
+                    kind = "dict"
+                elif issubclass(cls, list):
+                    kind = "list"
+                elif issubclass(cls, set):
+                    kind = "set"
+                elif issubclass(cls, deque):
+                    kind = "deque"
+                elif issubclass(cls, tuple):
+                    kind = "tuple"
+                elif issubclass(cls, frozenset):
+                    kind = "frozenset"
+                else:
+                    kind = "object" if cls.__module__.startswith(("game.", "helper.")) else "ignore"
+                kinds[cls] = kind
+            if force_root and kind == "ignore":
+                kind = "object"
+            if kind == "ignore":
+                continue
 
-        # Avoid cycles and duplicate snapshots of shared runtime objects.
-        if identity in self._seen:
-            return
-
-        self._seen.add(identity)
-
-        # Random must preserve its internal generator state so rollback also
-        # restores deterministic future draws.
-        if isinstance(value, Random):
-            self._restore.append(("rng", value, value.getstate()))
-            return
-
-        if isinstance(value, dict):
-            saved = dict(value)
-            self._restore.append(("dict", value, saved))
-            children = saved.values()
-
-        elif isinstance(value, list):
-            saved = list(value)
-            self._restore.append(("list", value, saved))
-            children = saved
-
-        elif isinstance(value, set):
-            saved = set(value)
-            self._restore.append(("set", value, saved))
-            children = saved
-
-        elif isinstance(value, deque):
-            saved = tuple(value)
-            self._restore.append(("deque", value, saved))
-            children = saved
-
-        elif isinstance(value, (tuple, frozenset)):
-            # Immutable containers do not need restoration, but may contain
-            # mutable runtime objects that must still be visited.
-            children = value
-
-        elif root or type(value).__module__.startswith(("game.", "helper.")):
-            attributes = getattr(value, "__dict__", None)
-            if attributes is None:
-                return
-
-            # Some frozen dataclass wrappers still contain an explicitly
-            # mutable `.state`; preserve that state without replacing the
-            # wrapper identity itself.
-            if getattr(
-                type(value).__dict__.get("__dataclass_params__"),
-                "frozen",
-                False,
-            ):
-                if "state" in attributes:
-                    self.watch(attributes["state"])
-                return
-
-            saved = dict(attributes)
-            self._restore.append(("object", value, saved))
-
-            # These fields point to definitions/controllers or derived
-            # structures outside the rollback boundary.
-            children = (
-                child
-                for key, child in saved.items()
-                if key
-                not in {
-                    "_controller",
-                    "definition",
-                    "_definition",
-                    "_stats",
-                    "_modifier_sources",
-                }
-            )
-
-        else:
-            return
-
-        for child in children:
-            self.watch(child)
+            if kind == "tuple" or kind == "frozenset":
+                pending.extend(reversed(tuple(value)))
+            elif kind == "object":
+                if card_scope is not None:
+                    if type(value) is Card and value not in card_scope:
+                        self.skipped_cards += 1
+                        continue
+                attributes = getattr(value, "__dict__", None)
+                if attributes is None:
+                    continue
+                if getattr(cls.__dict__.get("__dataclass_params__"), "frozen", False):
+                    if "state" in attributes:
+                        pending.append(attributes["state"])
+                    continue
+                saved = attributes.copy()
+                restore.append(("object", value, saved))
+                # Reverse the work stack to retain the previous depth-first
+                # discovery order and corresponding reverse restoration order.
+                pending.extend([child for key, child in reversed(saved.items())
+                                if key not in excluded])
+            elif kind == "dict":
+                saved = dict(value)
+                restore.append((kind, value, saved))
+                pending.extend(reversed(saved.values()))
+            elif kind == "list":
+                saved = list(value)
+                restore.append((kind, value, saved))
+                pending.extend(reversed(saved))
+            elif kind == "set":
+                saved = set(value)
+                restore.append((kind, value, saved))
+                pending.extend(reversed(tuple(saved)))
+            elif kind == "deque":
+                saved = tuple(value)
+                restore.append((kind, value, saved))
+                pending.extend(reversed(saved))
+            else:
+                restore.append(("rng", value, value.getstate()))
 
     def rollback(self):
         """!
@@ -173,7 +204,7 @@ class CostTransaction:
     fails.
     """
 
-    def __init__(self, state):
+    def __init__(self, state, *, resolutions=None, action=None):
         """!
         @brief Start a cost transaction for the supplied game state.
 
@@ -188,7 +219,16 @@ class CostTransaction:
         self.original_cards = ({id(card) for card in getattr(state, "get_cards", lambda: ())()}
                                if register is None else None)
 
-        self.checkpoint = RuntimeCheckpoint(state)
+        from .cost_scope import card_write_scope, stack_only_cost
+        shallow = (
+            stack_only_cost(state, action, resolutions)
+            if action is not None and resolutions is not None else None
+        )
+        scope = (
+            card_write_scope(state, resolutions)
+            if shallow is None and resolutions is not None else None
+        )
+        self.checkpoint = RuntimeCheckpoint(state, card_scope=scope, shallow_roots=shallow)
         self.events = []
 
     def watch_operations(self, operations):

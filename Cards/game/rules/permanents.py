@@ -1,6 +1,7 @@
 """Permanent lifecycle, attachments and loyalty, using the normal operation pipeline."""
 
 from collections import defaultdict
+from functools import cached_property
 
 from game.enums import CardSubtype, CardType, CounterType, ZoneType
 from game.game_state.card import Card
@@ -308,6 +309,23 @@ class PermanentStateRule(StateBasedAction):
     illegal attachments, the legend rule, and +1/+1/-1/-1 counter cancellation.
     """
 
+    @cached_property
+    def candidate_filter(self):
+        from helper.query_system.query import EqQuery, DifferenceQuery
+        from game.game_state.registers.card_register import (
+            IK_ZONE, IK_IS_TOKEN, IK_TYPE, IK_SUBTYPE,
+            IK_ATTACHED, IK_LEGENDARY, IK_HAS_COUNTERS, IK_DYNAMIC_CHARACTERISTICS,
+        )
+        from game.game_actions.resolution.sba_candidates import SBACandidateFilter
+        return SBACandidateFilter(
+            (EqQuery(IK_ZONE, ZoneType.BATTLEFIELD) & (
+                EqQuery(IK_TYPE, CardType.PLANESWALKER) | EqQuery(IK_SUBTYPE, CardSubtype.AURA)
+                | EqQuery(IK_ATTACHED, True) | EqQuery(IK_LEGENDARY, True)
+                | EqQuery(IK_HAS_COUNTERS, True) | EqQuery(IK_DYNAMIC_CHARACTERISTICS, True)
+            )) | DifferenceQuery(EqQuery(IK_IS_TOKEN, True), (EqQuery(IK_ZONE, ZoneType.BATTLEFIELD),)),
+            (IK_ZONE, IK_IS_TOKEN, IK_TYPE, IK_SUBTYPE, IK_ATTACHED, IK_LEGENDARY,
+             IK_HAS_COUNTERS, IK_DYNAMIC_CHARACTERISTICS))
+
     def collect(self, state):
         """!
         @brief Collect all currently applicable permanent-related SBA violations.
@@ -320,16 +338,9 @@ class PermanentStateRule(StateBasedAction):
         """
         violations, legends = [], defaultdict(list)
 
-        from helper.query_system.query import EqQuery
-        from game.game_state.registers.card_register import IK_ZONE, IK_IS_TOKEN
-
         # Preserve one stable candidate order for simultaneous violations.
-        candidates = state.query_cards(
-            EqQuery(IK_ZONE, ZoneType.BATTLEFIELD) | EqQuery(IK_IS_TOKEN, True)
-        ) if hasattr(state, "query_cards") else ()
+        candidates = state.query_cards(self.candidate_filter.query) if hasattr(state, "query_cards") else ()
         for card in candidates:
-            context = ResolutionContext(source=card, controller=card.get_controller(state))
-
             if card.get_zone() != ZoneType.BATTLEFIELD:
                 if card.is_token:
                     violations.append(SBAViolation((CeaseTokenOperation(card),)))
@@ -353,7 +364,10 @@ class PermanentStateRule(StateBasedAction):
 
             if dies:
                 violations.append(
-                    SBAViolation((MoveCardOperation(context, card, ZoneType.GRAVEYARD),))
+                    SBAViolation((MoveCardOperation(
+                        ResolutionContext(source=card, controller=card.get_controller(state)),
+                        card, ZoneType.GRAVEYARD,
+                    ),))
                 )
 
             if card.definition.legendary:

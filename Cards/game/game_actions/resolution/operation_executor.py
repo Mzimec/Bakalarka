@@ -67,6 +67,10 @@ class OperationExecutor:
         """
         return self.execute_batch(state, (operation,))
 
+    def execute_operation(self, state, operation):
+        """Execute one mutation; shared dispatch point for batch instrumentation."""
+        return operation.execute(state) or ()
+
     def execute_batch(self, state, operations):
         """!
         @brief Execute a simultaneous group of operations.
@@ -124,7 +128,7 @@ class OperationExecutor:
                 operation._defer_lifelink = True
 
             try:
-                generated = operation.execute(state) or ()
+                generated = self.execute_operation(state, operation)
             finally:
                 if damage:
                     operation._defer_lifelink = previous
@@ -177,7 +181,7 @@ class OperationExecutor:
                     (gain,),
                 ):
                     events.extend(
-                        operation.execute(state)
+                        self.execute_operation(state, operation)
                     )
 
         # Keep query/index structures consistent with the final post-batch state

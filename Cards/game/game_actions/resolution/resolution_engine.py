@@ -141,7 +141,7 @@ class ResolutionEngine:
         from .cost_transaction import CostTransaction, CostPaymentError
         from .validator import ValidationResult
 
-        transaction = CostTransaction(state)
+        transaction = CostTransaction(state, resolutions=(scheduled,))
         previous = self._pending_triggers
 
         self._cost_transaction = transaction

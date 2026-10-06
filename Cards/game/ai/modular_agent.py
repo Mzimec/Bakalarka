@@ -40,6 +40,11 @@ class HeuristicSelector:
     def choose(self, observation, candidates):
         return max(range(len(candidates)), key=lambda index: candidates[index].score)
 
+    @property
+    def requires_observation(self):
+        """Overridden selectors keep receiving observations unless they opt out."""
+        return type(self).choose is not HeuristicSelector.choose or "choose" in vars(self)
+
 
 def card_view(card, state):
     """!
@@ -258,7 +263,11 @@ class ModularAgent(SimpleAgent):
         passes = [c for c in candidates if c.description.get("kind") == "pass"]
         ranked = sorted((c for c in candidates if c not in passes), key=lambda c: -c.score)
         candidates = passes + ranked[:self.candidate_limit - len(passes)]
-        index = self.selector.choose(observation(state, player), candidates)
+        # Legacy/custom selectors receive the same public view by default.
+        # A selector opting out must accept None as its observation argument.
+        needs_view = getattr(self.selector, "requires_observation", True)
+        view = observation(state, player) if needs_view else None
+        index = self.selector.choose(view, candidates)
         if type(index) is not int or not 0 <= index < len(candidates):
             raise ValueError("Decision policy returned an invalid candidate index.")
         selected = candidates[index]

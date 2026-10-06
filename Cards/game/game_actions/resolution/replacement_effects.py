@@ -53,6 +53,10 @@ class ReplacementEffectDefinition:
     uses: int | None = None
     budget: int | None = None
     self_entry: bool = False
+    # An enforced applicability restriction, not merely an optimization hint.
+    # None preserves unrestricted custom predicates. Subclasses of listed
+    # operation types are included, as with isinstance in ordinary predicates.
+    operation_types: tuple[type, ...] | None = None
 
     def __post_init__(self):
         """!
@@ -60,6 +64,13 @@ class ReplacementEffectDefinition:
         """
         if self.priority not in range(5):
             raise ValueError("Replacement priority must be between 0 and 4.")
+
+        if self.operation_types is not None:
+            from ..data_structs.operation import Operation
+            if (type(self.operation_types) is not tuple or any(
+                    not isinstance(kind, type) or not issubclass(kind, Operation)
+                    for kind in self.operation_types)):
+                raise ValueError("Replacement operation_types must be a tuple of Operation classes.")
 
         for value in (self.uses, self.budget):
             if value is not None and (type(value) is not int or value < 0):
@@ -160,7 +171,9 @@ class ReplacementEffect:
         @brief Check both runtime activity and declarative applicability.
         """
         return (
-            self.active(state, operation)
+            (self.definition.operation_types is None
+             or isinstance(operation, self.definition.operation_types))
+            and self.active(state, operation)
             and self.definition.predicate(state, self, operation)
         )
 

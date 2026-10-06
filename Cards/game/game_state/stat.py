@@ -13,6 +13,7 @@ if TYPE_CHECKING:
     from .state import State
 
 from .modifier import only_empty_builtin_sources
+from .characteristic_scope import current_scope, pipeline_cache
 from ..stat_type import *
 from helper.mutability_objs import ToImmutableConvertible, ToMutableConvertible
 from ..enums import *
@@ -192,8 +193,14 @@ class HasModifiers(ABC):
         @param state Current game state.
         @return Ordered tuple of raw modifiers.
         """
+        scope = current_scope()
+        cache = pipeline_cache(state, self, scope) if scope is not None else None
+        if cache is not None and stat_t in cache:
+            return cache[stat_t]
         sources = self.modifier_sources
         if only_empty_builtin_sources(sources):
+            if cache is not None:
+                cache[stat_t] = ()
             return ()
         modifiers: list[TimeStampedModifier] = []
 
@@ -201,10 +208,18 @@ class HasModifiers(ABC):
             modifiers.extend(source.get_modifiers(stat_t, state))
 
         if not modifiers:
+            if cache is not None:
+                cache[stat_t] = ()
             return ()
         from .layers import modifier_layer, dependency_order
 
         ceiling = getattr(state, "_layer_ceiling", None)
+        if len(modifiers) == 1:
+            modifier = modifiers[0].modifier
+            result = ((modifier,) if ceiling is None or modifier_layer(stat_t, modifier).value <= ceiling.value else ())
+            if cache is not None:
+                cache[stat_t] = result
+            return result
         groups = {}
 
         for modifier in modifiers:
@@ -227,7 +242,10 @@ class HasModifiers(ABC):
                 )
             )
 
-        return tuple(m.modifier for m in ordered)
+        result = tuple(m.modifier for m in ordered)
+        if cache is not None:
+            cache[stat_t] = result
+        return result
 
 
 class HasModifiableStats(HasStats, HasModifiers, ABC):

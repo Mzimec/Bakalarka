@@ -35,6 +35,14 @@ class Operation(ABC):
         """
         return None
 
+    def source_lki_cards(self):
+            source = self.context.source
+    
+            if getattr(source, "zone_revision", None) is not None:
+                return (source,)
+    
+            return ()
+
     @abstractmethod
     def execute(self, state: State) -> list[GameEvent]:
         """!
@@ -53,14 +61,6 @@ class GameEventOperation(Operation):
     event_key: str
 
     def lki_cards(self, state):
-        source = self.context.source
-
-        if getattr(source, "zone_revision", None) is not None:
-            return (source,)
-
-        return ()
-
-    def source_lki_cards(self):
         source = self.context.source
 
         if getattr(source, "zone_revision", None) is not None:

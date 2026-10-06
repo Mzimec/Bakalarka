@@ -87,7 +87,7 @@ class ActionProcessor:
 
         # Only actions containing cost resolutions need rollback support.
         transaction = (
-            CostTransaction(state)
+            CostTransaction(state, resolutions=resolutions, action=action)
             if any(r.context.is_cost for r in resolutions)
             else None
         )

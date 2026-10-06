@@ -59,7 +59,7 @@ def signature(state, effect, started):
     )
 
 
-def order_layer(state, effects, layer, started, cards):
+def order_layer(state, effects, layer, started):
     """!
     @brief Yield effects in CR 613 dependency order for one continuous-effect layer.
 
@@ -75,7 +75,6 @@ def order_layer(state, effects, layer, started, cards):
     @param effects Effects contributing to this layer.
     @param layer Layer currently being evaluated.
     @param started Keys of effects already started in earlier processing.
-    @param cards Cards participating in the layer evaluation.
     @return Iterator yielding effects in resolved dependency/timestamp order.
     """
     pending = list(effects)

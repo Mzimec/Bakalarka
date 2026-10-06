@@ -168,6 +168,20 @@ class ManaGenerator:
             for index, source in enumerate(sources)
         ]
 
+        # Count alternatives on one permanent as a shared resource. Reject
+        # insufficient capacity before building structural equivalence keys.
+        remaining = {
+            index: (len(fragments) if source.uses_remaining is None
+                    else max(source.uses_remaining, source.produces.generic))
+            for index, source in enumerate(sources)
+        }
+        group_remaining = {}
+        for index, group in enumerate(groups):
+            group_remaining[group] = max(group_remaining.get(group, 0), remaining[index])
+        if sum(group_remaining.values()) < len(fragments):
+            self.statistics.capacity_rejections += 1
+            return None
+
         # Flexibility is measured per shared resource group, because choosing
         # one ability of a permanent consumes access to its alternative abilities.
         flexibility = {}
@@ -201,6 +215,48 @@ class ManaGenerator:
 
             return sorted(result, key=lambda value: value.name)
 
+        # Source outputs and preferences do not change during this search.
+        # Build each requirement's ordered choices once, then only filter uses.
+        candidate_orders = {}
+        for fragment in fragments:
+            if fragment.allowed in candidate_orders:
+                continue
+            candidates = [
+                (source.source is not None, len(flexibility[groups[index]]),
+                 source.costs.cmc(), index, produced)
+                for index, source in enumerate(sources)
+                if remaining[index] > 0 and group_remaining[groups[index]] > 0
+                for produced in options(source, fragment.allowed)
+            ]
+            candidate_orders[fragment.allowed] = tuple(
+                (index, produced)
+                for _, _, _, index, produced in sorted(
+                    candidates, key=lambda item: (*item[:-1], item[-1].name))
+            )
+
+        # Follow exactly the first branch of the ordinary ordered DFS. A full
+        # match needs neither symmetry keys nor failed-state bookkeeping. On
+        # failure restore capacities and let complete backtracking try again.
+        greedy = []
+        for fragment in fragments:
+            self.statistics.states_visited += 1
+            for index, produced in candidate_orders[fragment.allowed]:
+                group = groups[index]
+                if remaining[index] > 0 and group_remaining[group] > 0:
+                    remaining[index] -= 1
+                    group_remaining[group] -= 1
+                    greedy.append((index, produced))
+                    break
+            else:
+                break
+        if len(greedy) == len(fragments):
+            self.statistics.greedy_successes += 1
+            return ManaPlan(tuple(ManaPlanStep(sources[index].source, sources[index].ability_key, produced)
+                                  for index, produced in greedy))
+        for index, _ in greedy:
+            remaining[index] += 1
+            group_remaining[groups[index]] += 1
+
         symmetry = ManaSymmetry(state, sources, groups) if self.deduplicate_equivalent else None
         failed = set()
 
@@ -232,33 +288,13 @@ class ManaGenerator:
                 return None
 
             fragment = fragments[index]
-            candidates = []
-
-            for source_index, source in enumerate(sources):
+            seen = set()
+            for source_index, produced in candidate_orders[fragment.allowed]:
                 if (
                     remaining[source_index] <= 0
                     or group_remaining[groups[source_index]] <= 0
                 ):
                     continue
-
-                for produced in options(source, fragment.allowed):
-                    # Prefer floating mana first, then less flexible groups and
-                    # cheaper activation costs. Backtracking still explores
-                    # alternatives if the preferred choice blocks later payment.
-                    candidates.append(
-                        (
-                            source.source is not None,
-                            len(flexibility[groups[source_index]]),
-                            source.costs.cmc(),
-                            source_index,
-                            produced,
-                        )
-                    )
-
-            seen = set()
-            for _, _, _, source_index, produced in sorted(
-                candidates, key=lambda item: (*item[:-1], item[-1].name)
-            ):
                 if symmetry is not None:
                     key = (symmetry.resource_state(groups[source_index], remaining, group_remaining),
                            symmetry.options[source_index], produced)
@@ -286,27 +322,6 @@ class ManaGenerator:
 
             failed.add(fingerprint)
             return None
-
-        # A source may expose an explicit use count. Generic output is also
-        # treated as repeated colorless capacity in the simplified unit planner.
-        remaining = {
-            index: (
-                len(fragments)
-                if source.uses_remaining is None
-                else max(source.uses_remaining, source.produces.generic)
-            )
-            for index, source in enumerate(sources)
-        }
-
-        # Shared group capacity prevents multiple alternative mana abilities of
-        # the same permanent from being consumed independently.
-        group_remaining = {}
-
-        for index, group in enumerate(groups):
-            group_remaining[group] = max(
-                group_remaining.get(group, 0),
-                remaining[index],
-            )
 
         result = search(0, remaining, [])
 

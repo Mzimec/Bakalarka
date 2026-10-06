@@ -7,7 +7,22 @@ from .mana_value import ManaValue, ColoredSymbol
 from ..enums import ZoneType
 from ..game_actions.card_effects import TapSourceEffect
 from ..game_actions.mana_effects import AddManaEffect
-from ..game_actions.data_structs.ability import SubAbilityComposer
+from ..game_actions.data_structs.ability import SubAbilityComposer, SubAbilityDefinition, ManaAbilityDefinition
+from ..game_actions.data_structs.action_node import EffectActionNode, ImmutableEffectToSlotMap
+from .discovery_context import current_discovery_context
+from .source_template import static_mana_template, EMPTY_MANA
+
+
+def _static_sequence(definitions):
+    """Only immutable declarative leaves can be shared between searches."""
+    return (type(definitions) is tuple and all(
+        type(part) is SubAbilityDefinition and part.mana_cost is None
+        and type(part.effects) is frozenset and type(part.slots) is frozenset
+        and not part.slots and type(part.action_node) is EffectActionNode
+        and type(part.action_node.effect_map) is ImmutableEffectToSlotMap
+        and all(type(slots) is frozenset and not slots for slots in part.action_node.effect_map.values())
+        for part in definitions
+    ))
 
 
 def single_sequence(definitions, ability, state):
@@ -24,6 +39,21 @@ def single_sequence(definitions, ability, state):
     @return Tuple of effects in execution order, or `None` if the definition
         cannot be represented as one deterministic untargeted sequence.
     """
+    # A plain, untargeted leaf already describes its only possible sequence.
+    # Read it directly instead of cloning a graph and allocating options and
+    # bindings. Exact types keep custom compilation/generation on the general
+    # path; dynamic effect amounts are still evaluated by mana_sources below.
+    if type(definitions) is tuple and len(definitions) == 1:
+        definition = definitions[0]
+        if type(definition) is SubAbilityDefinition:
+            node = definition.action_node
+            if (definition.mana_cost is None and not definition.slots
+                    and type(node) is EffectActionNode
+                    and type(node.effect_map) is ImmutableEffectToSlotMap
+                    and not any(node.effect_map.values())):
+                effects = {effect.key: effect for effect in definition.effects}
+                return tuple(effects[key] for key in node.effect_map)
+
     part = SubAbilityComposer(definitions).compile(ability, state)
 
     if part is None or part.mana_cost or part.action_node is None:
@@ -66,24 +96,57 @@ def mana_sources(state, player):
     # continuous effects, so discovery must operate on refreshed characteristics.
     state.refresh_continuous_effects()
 
+    context = current_discovery_context()
+    if context is not None:
+        state.card_register.synchronise()
+        cached = context.lookup(state, player)
+        if cached is not None:
+            return cached
+
     result = []
+    cacheable = context is not None
+    dependencies = []
 
     # Ownership determines zone storage; control determines who may activate.
     from helper.query_system.query import EqQuery
     from ..game_state.registers.card_register import IK_ZONE, IK_CONTROLLER, IK_ABILITY_KIND
     from ..enums import ActivatableAbilityType
 
-    for card in state.query_cards(
+    candidates = state.query_cards(
         EqQuery(IK_ZONE, ZoneType.BATTLEFIELD)
         & EqQuery(IK_CONTROLLER, player)
         & EqQuery(IK_ABILITY_KIND, ActivatableAbilityType.MANA)
-    ):
+    )
+    for card in candidates:
+        if cacheable and not state._card_snapshots.has_current_index_projection(state, card):
+            cacheable = False
 
         for key, definition in card.get_ability_defs(state).items():
             # Variable subabilities and stack-using abilities cannot be treated
             # as one deterministic mana-source activation.
             if not definition.is_mana_ability or definition.subdefs or definition.uses_stack:
+                if definition.is_mana_ability:
+                    cacheable = False
                 continue
+
+            template = static_mana_template(definition)
+            if template is not None:
+                if cacheable:
+                    dependencies.extend(template.costs)
+                    dependencies.extend(template.effects)
+                result.append(ManaSource(card, key, template.produces, EMPTY_MANA, 1,
+                                         output_per_activation=True))
+                continue
+
+            if cacheable:
+                cacheable = (type(definition) is ManaAbilityDefinition
+                             and _static_sequence(definition.cost_subdefs)
+                             and _static_sequence(definition.action_subdefs)
+                             and all(type(effect) is TapSourceEffect for part in definition.cost_subdefs for effect in part.effects)
+                             and all(type(effect) is AddManaEffect and type(effect.amount) is int
+                                     for part in definition.action_subdefs for effect in part.effects))
+                if cacheable:
+                    dependencies.extend(effect for part in (*definition.cost_subdefs, *definition.action_subdefs) for effect in part.effects)
 
             ability = definition.to_ability(card, player)
 
@@ -107,11 +170,11 @@ def mana_sources(state, player):
 
             from ..game_actions.data_structs.game_action import ResolutionContext
 
-            context = ResolutionContext(source=card, controller=player, ability=definition)
+            resolution_context = ResolutionContext(source=card, controller=player, ability=definition)
 
             # Resolve dynamic amounts once in the current state. Discovery is
             # accepted only when every output becomes a concrete nonnegative int.
-            amounts = [effect.get_amount(state, context) for effect in effects]
+            amounts = [effect.get_amount(state, resolution_context) for effect in effects]
 
             if any(type(amount) is not int or amount < 0 for amount in amounts) or sum(amounts) < 1:
                 continue
@@ -127,4 +190,6 @@ def mana_sources(state, player):
                 ManaSource(card, key, produced, ManaValue(), 1, output_per_activation=True)
             )
 
+    if cacheable:
+        return context.remember(state, player, candidates, dependencies, result)
     return tuple(result)

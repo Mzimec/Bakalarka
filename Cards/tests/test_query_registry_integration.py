@@ -56,11 +56,11 @@ def test_tap_untap_and_control_changes_invalidate_only_changed_objects(monkeypat
     second = creature(bob, state, "second")
     state.synchronise_registers()
     reads = []
-    original = state.card_register.index_values
-    def recording(card):
+    original = state.card_register.changed_index_values
+    def recording(card, indexes):
         reads.append(card.key)
-        return original(card)
-    monkeypatch.setattr(state.card_register, "index_values", recording)
+        return original(card, indexes)
+    monkeypatch.setattr(state.card_register, "changed_index_values", recording)
     first.state.tapped = True  # The runtime-state property also notifies.
     assert state.query_cards(TAPPED_CREATURES) == (first,)
     assert reads == ["first"]
