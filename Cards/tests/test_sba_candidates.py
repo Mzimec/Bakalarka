@@ -39,6 +39,34 @@ def test_empty_query_reused_after_tapping_without_evaluation(board, monkeypatch)
     assert selection.empty(state)
 
 
+def test_nonempty_candidates_are_queried_once_per_pass(board, monkeypatch):
+    from helper.query_system.query import AndQuery
+    state, card = board
+    card.state.damage_marked = 1
+    state.synchronise_registers()
+    rule = LethalCreaturesRule()
+    query = rule.candidate_filter.query
+    original = AndQuery.eval
+    calls = []
+    def evaluate(current, ctx):
+        if current is query:
+            calls.append(current)
+        return original(current, ctx)
+    monkeypatch.setattr(AndQuery, "eval", evaluate)
+    resolver(rule).resolve(state)
+    assert len(calls) == 1
+    assert rule.collect(state) == []  # Standalone public collection still works.
+    assert len(calls) == 2
+
+
+def test_custom_query_uses_normal_collection(board, monkeypatch):
+    state, _ = board
+    calls = []
+    monkeypatch.setattr(state, "query_cards", lambda query: calls.append(query) or ())
+    resolver(LethalCreaturesRule()).resolve(state)
+    assert len(calls) == 1
+
+
 def test_damage_changes_from_nonlethal_to_lethal_with_same_membership(board):
     state, card = board
     rule = LethalCreaturesRule()
@@ -115,14 +143,18 @@ def test_token_registration_and_zone_departure_invalidates_candidates(board):
 
 def test_loyalty_amount_is_rechecked_while_counter_membership_stays_true(board):
     state, _ = board
-    walker = Card(CardDefinition("Walker", types=frozenset({CardType.PLANESWALKER})), state.players[0])
+    walker = Card(CardDefinition("Animated walker", types=frozenset({CardType.PLANESWALKER, CardType.CREATURE}),
+                                 power=2, toughness=3), state.players[0])
     walker.owner.add_card(walker, ZoneType.BATTLEFIELD)
     walker.state.counters[CounterType.LOYALTY] = 1
     walker.state.counters[CounterType.PLUS_ONE] = 1
     rule = PermanentStateRule()
     run = resolver(rule)
     run.resolve(state)
+    token = state.card_register.membership_token(rule.candidate_filter.indexes)
     walker.state.counters[CounterType.LOYALTY] = 0
+    state.synchronise_registers()
+    assert token == state.card_register.membership_token(rule.candidate_filter.indexes)
     run.resolve(state)
     assert walker.get_zone() == ZoneType.GRAVEYARD
 

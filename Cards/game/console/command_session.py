@@ -1,5 +1,6 @@
 """Incremental command input; choices remain local until explicit confirmation."""
 
+from __future__ import annotations
 import shlex
 from itertools import islice
 
@@ -16,9 +17,24 @@ from game.console.command_choices import (
 
 
 class CommandSession:
+    """!
+    @brief Incremental builder for one play, activate, or triggered-ability command.
+    """
     stages = ("card", "ability", "mode", "targets", "cost_mode", "cost", "confirm")
 
-    def __init__(self, state, player, command, read, write, *, ability=None):
+    def __init__(
+        self,
+        state: object,
+        player: object,
+        command: str,
+        read: object,
+        write: object,
+        *,
+        ability: object = None,
+    ) -> None:
+        """!
+        @brief Initialize this object.
+        """
         self.state, self.player, self.command = state, player, command
         self.read, self.write = read, write
         self.fixed_ability = ability
@@ -28,33 +44,51 @@ class CommandSession:
         if ability:
             self.values.update(card=ability.source, ability=ability.definition)
 
-    def ability(self):
+    def ability(self) -> object:
+        """!
+        @brief Return the runtime ability currently represented by this session.
+        """
         if self.fixed_ability is not None:
             return self.fixed_ability
         return self.values["ability"].to_ability(self.values["card"], self.player)
 
-    def is_land(self, card):
+    def is_land(self, card: object) -> bool:
+        """!
+        @brief Return whether the selected command is a land play.
+        """
         return self.command == "play" and CardType.LAND in card.get_types(self.state)
 
-    def playable(self, card):
+    def playable(self, card: object) -> bool:
+        """!
+        @brief Return whether a card has a supported playable command.
+        """
         if self.is_land(card):
             from game.rules.lands import land_play_error
 
             return land_play_error(card, self.player, self.state) is None
         return bool(self.definitions(card))
 
-    def parts(self, cost=False):
+    def parts(self, cost: bool = False) -> object:
+        """!
+        @brief Compile the cost or action sub-ability part for this session.
+        """
         ability = self.ability()
         if ability.definition.subdefs:
             raise CommandError("Variable X/Y choices are not supported yet.")
         parts = ability.definition.cost_subdefs if cost else ability.definition.action_subdefs
         return SubAbilityComposer(parts).compile(ability, self.state)
 
-    def modes(self, cost=False):
+    def modes(self, cost: bool = False) -> object:
+        """!
+        @brief Return selectable action-node modes for the current part.
+        """
         part = self.parts(cost)
         return list(part.action_node.generate_options()) if part and part.action_node else []
 
-    def slots(self, cost=False):
+    def slots(self, cost: bool = False) -> object:
+        """!
+        @brief Return target slots used by the currently selected mode.
+        """
         part = self.parts(cost)
         modes = self.modes(cost)
         if not modes:
@@ -65,7 +99,10 @@ class CommandSession:
             key=lambda slot: (slot.slot.key, slot.runtime_key),
         )
 
-    def definitions(self, card=None):
+    def definitions(self, card: object = None) -> dict:
+        """!
+        @brief Return usable ability definitions for the selected card.
+        """
         card = card or self.values["card"]
         result = {}
         for key, definition in card.get_activatable_ability_defs(self.state).items():
@@ -80,7 +117,10 @@ class CommandSession:
                 self.unsupported.add(f"{card_reference(card)}/{key}")
         return result
 
-    def choices(self, stage):
+    def choices(self, stage: str) -> object:
+        """!
+        @brief Yield available values for one command-building stage.
+        """
         if stage == "card":
             from helper.query_system.query import EqQuery, HasQuery
             from game.game_state.registers.card_register import IK_TYPE, IK_ABILITY_KIND
@@ -107,7 +147,10 @@ class CommandSession:
             ):
                 yield target_groups(plan)
 
-    def describe(self, value):
+    def describe(self, value: object) -> str:
+        """!
+        @brief Format one combat card line.
+        """
         if isinstance(value, tuple):
             return (
                 " ".join(",".join(card_reference(obj) for obj in group) or "-" for group in value)
@@ -115,7 +158,10 @@ class CommandSession:
             )
         return str(card_reference(value) if hasattr(value, "key") else value)
 
-    def options(self, stage):
+    def options(self, stage: str) -> None:
+        """!
+        @brief Print available options for one command-building stage.
+        """
         if stage == "card":
             for card in self.choices(stage):
                 self.write(f"{card_reference(card)}: {card.name}")
@@ -186,7 +232,10 @@ class CommandSession:
         else:
             self.write("confirm: execute the chosen action; back: change choices; cancel: discard")
 
-    def accept(self, stage, raw):
+    def accept(self, stage: str, raw: str) -> object:
+        """!
+        @brief Parse and validate user input for one command-building stage.
+        """
         if stage == "card":
             args = shlex.split(raw)
             if len(args) != 1:
@@ -250,7 +299,10 @@ class CommandSession:
             )
             return groups
 
-    def run(self):
+    def run(self) -> object | None:
+        """!
+        @brief Run the incremental command builder until confirmation or cancellation.
+        """
         index = self.minimum
         history = []
         self.write("Build command: options/? | back | cancel. Nothing is paid until confirm.")

@@ -272,6 +272,7 @@ def run_match(
     names=None,
     decklists=None,
     metadata=None,
+    collect_decision_stats: bool = True,
 ) -> MatchResult:
     """!
     @brief Run one reproducible duel between two decks and controllers.
@@ -296,8 +297,12 @@ def run_match(
     @param decklists Optional explicit pair of decklists. When omitted, decks are
                     loaded from `colors` using `ARENA_STARTERS`.
     @param metadata Optional experiment metadata recorded in the match log header.
+    @param collect_decision_stats Measure decisions and consumed options. If False,
+                skip all decision telemetry and return an empty decision_timing.
     @return Match result containing outcome, seed, winner, limits and timing data.
     """
+    if type(collect_decision_stats) is not bool:
+        raise ValueError("collect_decision_stats must be a boolean.")
     if seed is None:
         seed = secrets.randbits(31)
     if len(colors) != 2 or (decklists is None and any(color not in ARENA_STARTERS for color in colors)):
@@ -322,35 +327,38 @@ def run_match(
             previous_logs.append((agent, agent.log))
             agent.log = log.decision
 
-    decision_statistics = DecisionStatistics()
+    decision_statistics = DecisionStatistics() if collect_decision_stats else None
 
     def record_decision(agent, request, metrics):
         player = request.player
         decision_statistics.record(player.idx, player.name, type(agent).__name__, agent.decision_mode, metrics)
-        log.write(
-            "decision_timing", player=player.name, player_index=player.idx,
-            agent=type(agent).__name__, mode=agent.decision_mode,
-            turn=request.state.turn.number if request.state is not None else 0,
-            phase=request.state.turn.phase if request.state is not None else "SETUP",
-            **metrics,
-        )
+        if output is not None:
+            log.write(
+                "decision_timing", player=player.name, player_index=player.idx,
+                agent=type(agent).__name__, mode=agent.decision_mode,
+                turn=request.state.turn.number if request.state is not None else 0,
+                phase=request.state.turn.phase if request.state is not None else "SETUP",
+                **metrics,
+            )
 
     state = None
     status, winner, winner_index, error = "error", None, None, None
 
-    log.write(
-        "match",
-        colors=colors,
-        seed=seed,
-        starting_player=starting_player,
-        max_turns=max_turns,
-        max_decisions=max_decisions,
-        agent=[type(agent).__name__ for agent in agents],
-        metadata=metadata,
-        decklists=[{"name": d.name, "cards": d.cards} for d in decklists] if decklists is not None else None,
-    )
+    if output is not None:
+        log.write(
+            "match",
+            colors=colors,
+            seed=seed,
+            starting_player=starting_player,
+            max_turns=max_turns,
+            max_decisions=max_decisions,
+            agent=[type(agent).__name__ for agent in agents],
+            metadata=metadata,
+            decklists=[{"name": d.name, "cards": d.cards} for d in decklists] if decklists is not None else None,
+        )
 
-    with observe_decisions(record_decision):
+    with observe_decisions(record_decision if collect_decision_stats else None,
+                           enabled=collect_decision_stats):
         try:
             decks = tuple(decklists) if decklists is not None else tuple(load_arena_starter(color) for color in colors)
             catalog = game_catalog()
@@ -372,7 +380,7 @@ def run_match(
                     names=names or (f"{colors[0]}-0", f"{colors[1]}-1"),
                 )
 
-                bus = LoggedEventBus(log, state)
+                bus = LoggedEventBus(log, state) if output is not None else EventBus()
 
                 from game.console.demo_game import ConsoleDecisionMaker
 
@@ -382,44 +390,50 @@ def run_match(
                         agent._event_index = 0
 
                 operation_executor = OperationExecutor()
-                engine = LoggedResolutionEngine(operation_executor, bus)
-                loop = GameLoop(None, LoggedProcessor(engine))
+                engine = (LoggedResolutionEngine(operation_executor, bus) if output is not None
+                          else ResolutionEngine(operation_executor, bus))
+                processor = LoggedProcessor(engine) if output is not None else ActionProcessor(engine)
+                loop = GameLoop(None, processor)
 
-                log.write(
-                    "setup",
-                    hands={p.name: list(p.hand.values()) for p in state.players},
-                    mulligans=state.mulligans_taken,
-                )
+                if output is not None:
+                    log.write(
+                        "setup",
+                        hands={p.name: list(p.hand.values()) for p in state.players},
+                        mulligans=state.mulligans_taken,
+                    )
 
                 while not state.is_game_over and state.turn.number <= max_turns:
-                    log.write(
-                        "phase",
-                        turn=state.turn.number,
-                        phase=state.turn.phase,
-                        active=state.active_player,
-                    )
+                    if output is not None:
+                        log.write(
+                            "phase",
+                            turn=state.turn.number,
+                            phase=state.turn.phase,
+                            active=state.active_player,
+                        )
 
                     loop.step(state)
 
                     # State summaries are snapshots after a complete loop step rather
                     # than references to mutable player objects.
-                    log.write(
-                        "state",
-                        turn=state.turn.number,
-                        phase=state.turn.phase,
-                        players=[
-                            {
-                                "name": p.name,
-                                "life": p.health,
-                                "hand_size": len(p.hand),
-                                "library_size": len(p.deck),
-                            }
-                            for p in state.players
-                        ],
-                    )
+                    if output is not None:
+                        log.write(
+                            "state",
+                            turn=state.turn.number,
+                            phase=state.turn.phase,
+                            players=[
+                                {
+                                    "name": p.name,
+                                    "life": p.health,
+                                    "hand_size": len(p.hand),
+                                    "library_size": len(p.deck),
+                                }
+                                for p in state.players
+                            ],
+                        )
 
                 survivors = list(state.active_players)
-                operation_executor.print_lki_stats()
+                if output is not None:
+                    operation_executor.print_lki_stats()
 
                 if not state.is_game_over:
                     status = "turn_limit"
@@ -438,7 +452,8 @@ def run_match(
 
         except Exception as exc:
             status, error = "error", f"{type(exc).__name__}: {exc}"
-            log.write("exception", traceback=traceback.format_exc())
+            if output is not None:
+                log.write("exception", traceback=traceback.format_exc())
         finally:
             for agent, previous_log in previous_logs:
                 agent.log = previous_log
@@ -455,10 +470,11 @@ def run_match(
         output.name if output is not None else None,
         error,
         perf_counter() - started,
-        decision_timing=decision_statistics.summary(),
+        decision_timing=decision_statistics.summary() if decision_statistics is not None else [],
     )
 
-    log.write("result", **asdict(result))
+    if output is not None:
+        log.write("result", **asdict(result))
     log.close()
 
     if output is not None:
@@ -707,6 +723,7 @@ def run_tournament(
     max_decisions=10000,
     log_matches=True,
     log_batch=True,
+    collect_decision_stats: bool = True,
 ):
     """!
     @brief Run repeated matches between two tournament participants.
@@ -722,8 +739,11 @@ def run_tournament(
     @param max_decisions Per-agent decision limit.
     @param log_matches Whether to create JSONL/TXT logs for individual matches.
     @param log_batch Whether to create aggregate tournament summaries.
+    @param collect_decision_stats Enable optional decision telemetry in each match.
     @return List of individual match results.
     """
+    if type(collect_decision_stats) is not bool:
+        raise ValueError("collect_decision_stats must be a boolean.")
     if len(players) != 2:
         raise ValueError("A tournament requires exactly two players.")
 
@@ -773,6 +793,7 @@ def run_tournament(
                     max_turns=max_turns,
                     max_decisions=max_decisions,
                     controllers=controllers,
+                    collect_decision_stats=collect_decision_stats,
                     names=tuple(player.name for player in players),
                     decklists=tuple(player.deck for player in players),
                     metadata={

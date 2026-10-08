@@ -1,3 +1,4 @@
+from __future__ import annotations
 import argparse
 from pathlib import Path
 
@@ -84,6 +85,8 @@ def main() -> int:
         help="Optional JSONL match log.",
     )
 
+    parser.add_argument("--no-decision-stats", action="store_true",
+                        help="Disable decision timing and option statistics; keep decision limits.")
     args = parser.parse_args()
 
     deck1 = load_arena_starter(args.deck1)
@@ -110,6 +113,7 @@ def main() -> int:
         max_turns=args.max_turns,
         max_decisions=args.max_decisions,
         controllers=controllers,
+        collect_decision_stats=not args.no_decision_stats,
         names=(args.agent1, args.agent2),
         decklists=(deck1, deck2),
         metadata={

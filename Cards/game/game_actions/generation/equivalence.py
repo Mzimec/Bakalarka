@@ -5,19 +5,27 @@ implementations and identity-observing state keep all concrete alternatives.
 """
 from __future__ import annotations
 
-from collections.abc import Mapping, Set
+from collections.abc import Iterable, Iterator, Mapping, Set
 from typing import Protocol
 from dataclasses import dataclass, fields, is_dataclass
 from enum import Enum
 
 
 class UnknownSemantics(Exception):
+    """!
+    @brief Raised when a value cannot be safely reduced to a structural key.
+    """
     pass
 
 
 class StructuralKey:
-    """Exact structured keys for the supported declarative rule vocabulary."""
-    def __init__(self):
+    """!
+    @brief Produces exact structured keys for supported declarative rule objects.
+    """
+    def __init__(self) -> None:
+        """!
+        @brief Build the supported-type tables used for structural freezing.
+        """
         from ..data_structs import ability, action_node
         from ...game_state.card import CardDefinition
         from ...game_state.modifier import TimeStamp
@@ -44,9 +52,14 @@ class StructuralKey:
         }
         self.effects = {TapSourceEffect, MoveSourceEffect, DamagePlayerEffect, AddManaEffect}
         self.supported = self.records | self.effects
-        self.cache = {}
+        self.cache: dict[int, tuple[object, object]] = {}
 
-    def freeze(self, value):
+    def freeze(self, value: object) -> object:
+        """!
+        @brief Convert a supported value into a hashable structural key.
+        @param value Value to freeze.
+        @return Hashable representation of the value.
+        """
         if value is None or type(value) in (bool, int, str, float, bytes):
             return (type(value), value)
         if isinstance(value, Enum):
@@ -68,8 +81,13 @@ class StructuralKey:
             self.cache[identity] = (value, (type(value), tuple((key, self.freeze(v)) for key, v in members)))
         return self.cache[identity][1]
 
-    def ability(self, definition):
+    def ability(self, definition: object) -> object:
         # The local ability name only identifies an otherwise identical rule.
+        """!
+        @brief Create a structural key for an ability definition.
+        @param definition Ability definition to key.
+        @return Structural ability key excluding the local name.
+        """
         if type(definition) not in self.records:
             raise UnknownSemantics(type(definition).__name__)
         return (type(definition), tuple((field.name, self.freeze(getattr(definition, field.name)))
@@ -77,22 +95,45 @@ class StructuralKey:
 
 
 class EquivalencePolicy(Protocol):
-    def bind(self, state) -> EquivalenceContext: ...
+    """!
+    @brief Protocol for creating an equivalence context bound to a state.
+    """
+    def bind(self, state: object) -> EquivalenceContext:
+        """!
+        @brief Create an equivalence context for the supplied state.
+        @param state Game state-like object.
+        @return Bound equivalence context.
+        """
+        ...
 
 
 @dataclass(frozen=True)
 class ConservativeEquivalencePolicy:
-    """Create a fresh context; no signature survives a decision/state mutation."""
-    def bind(self, state):
+    """!
+    @brief Create a fresh context; no signature survives a decision/state mutation.
+    """
+    def bind(self, state: object) -> EquivalenceContext:
+        """!
+        @brief Create a new conservative equivalence context.
+        @param state Game state-like object.
+        @return New equivalence context.
+        """
         return EquivalenceContext(state)
 
 
 class EquivalenceContext:
-    def __init__(self, state):
+    """!
+    @brief State-bound conservative equivalence context for representative pruning.
+    """
+    def __init__(self, state: object) -> None:
+        """!
+        @brief Initialize structural keying for the supplied state.
+        @param state Game state-like object.
+        """
         self.state = state
         self.structure = StructuralKey()
-        self.cards = {}
-        self._classes = {}
+        self.cards: dict[int, object] = {}
+        self._classes: dict[object, int] = {}
         self.enabled = False
         from ...game_state.state import State
         if not isinstance(state, State):
@@ -110,7 +151,12 @@ class EquivalenceContext:
             or state.query_cards(EqQuery(IK_HAS_TRIGGERS, True) | EqQuery(IK_STATIC_REPLACEMENT, True))
         )
 
-    def card_key(self, card):
+    def card_key(self, card: object) -> object:
+        """!
+        @brief Return the equivalence key used for a runtime card.
+        @param card Runtime card-like object.
+        @return Structural card key, or identity key when unsafe.
+        """
         from ...game_state.card import Card
         from ...enums import ZoneType
         from ...game_state.modifier import (
@@ -171,7 +217,12 @@ class EquivalenceContext:
         self.cards[identity] = result
         return result
 
-    def ability_key(self, ability):
+    def ability_key(self, ability: object) -> object:
+        """!
+        @brief Return the equivalence key used for a runtime ability.
+        @param ability Runtime ability-like object.
+        @return Structural ability key, or identity key when unsafe.
+        """
         card = self.card_key(ability.source)
         if card[0] == "identity":
             return ("ability_identity", id(ability.source), ability.key, id(ability.definition))
@@ -181,8 +232,13 @@ class EquivalenceContext:
         except UnknownSemantics:
             return ("ability_identity", id(ability.source), ability.key, id(ability.definition))
 
-    def representatives(self, abilities):
-        seen = set()
+    def representatives(self, abilities: Iterable[object]) -> Iterator[object]:
+        """!
+        @brief Yield one representative ability for each equivalence key.
+        @param abilities Candidate abilities.
+        @return Iterator over representative abilities.
+        """
+        seen: set[object] = set()
         for ability in abilities:
             key = self.ability_key(ability)
             if key not in seen:

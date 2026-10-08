@@ -213,3 +213,56 @@ def test_replacement_type_restriction_rejects_invalid_metadata(restriction):
     with pytest.raises(ValueError, match="Operation classes"):
         ReplacementEffectDefinition("bad", lambda *args: True, lambda *args: (),
                                     operation_types=restriction)
+
+
+@pytest.mark.parametrize("equip", [False, True])
+def test_attachment_payment_rolls_back_before_attachment_resolves(setup, equip):
+    from game.enums import CardSubtype
+    from game.game_actions.permanent_effects import attachment_ability
+    from game.console.demo_game import build_action
+    state, processor, (land, _, _) = setup
+    host = Card(CardDefinition("host", types=frozenset({CardType.CREATURE}),
+                               power=2, toughness=2), land.owner, "host")
+    land.owner.add_card(host, ZoneType.BATTLEFIELD)
+    item = Card(CardDefinition("item", types=frozenset({CardType.ARTIFACT if equip else CardType.ENCHANTMENT}),
+                               subtypes=frozenset({CardSubtype.EQUIPMENT if equip else CardSubtype.AURA}),
+                               abilities=frozenset({attachment_ability(equip=equip)})), land.owner, "item")
+    land.owner.add_card(item, ZoneType.BATTLEFIELD if equip else ZoneType.HAND)
+    action = build_action(state, land.owner, "activate item equip host" if equip else "play item host")
+    state.synchronise_registers()
+    resolutions = action.get_intents()
+    scope = card_write_scope(state, resolutions)
+    assert scope is not None and item in scope
+    failure = intent(ResolutionContext(source=item, controller=item.owner, is_cost=True),
+                     SpendManaOperation(ResolutionContext(controller=item.owner), {ManaType.WHITE: 100}))
+    before = RuntimeCheckpoint(state)
+    result = processor.process(state, MultipleCosts((*resolutions, failure)))
+    assert not result[0].success
+    assert_restored(before)
+    assert item.attached_to is None and not host.state.attached
+
+
+def test_custom_attachment_validator_retains_full_checkpoint(setup):
+    from game.game_actions.permanent_effects import AuraCastAbilityDefinition
+    state, _, (_, spell, _) = setup
+    definition = AuraCastAbilityDefinition()
+    object.__setattr__(definition, "validation_error", lambda *args: None)
+    context = ResolutionContext(source=spell, controller=spell.owner, is_cost=True, ability=definition)
+    assert card_write_scope(state, (intent(context),)) is None
+
+
+def test_scope_fallback_reason_is_counted_only_by_profiler(setup):
+    from benchmarks.profiler import ComponentProfiler
+    from benchmarks.probes import install_cost_checkpoint_probe
+    from game.game_actions.resolution import cost_scope
+    state, _, (_, spell, _) = setup
+    context = ResolutionContext(source=spell, controller=spell.owner, is_cost=True)
+    original = cost_scope._full_checkpoint
+    profiler = ComponentProfiler()
+    install_cost_checkpoint_probe(profiler)
+    try:
+        assert card_write_scope(state, (intent(context, GainLifeOperation(context, 1)),)) is None
+        assert profiler.work_to_dict()["cost.scope.fallback.unsupported_operation"] == 1
+    finally:
+        profiler.restore()
+    assert cost_scope._full_checkpoint is original

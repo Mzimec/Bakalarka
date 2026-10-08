@@ -1,6 +1,8 @@
 """Compile effect bindings and combined mana costs without mutating state."""
 
 from __future__ import annotations
+from typing import TYPE_CHECKING
+from collections.abc import Iterator
 from abc import ABC, abstractmethod
 from dataclasses import replace
 from immutabledict import immutabledict
@@ -8,14 +10,22 @@ from immutabledict import immutabledict
 from ..data_structs.game_action import AbilityExecutionPlan
 from ..data_structs.ability import EffectSequence
 from ..data_structs.action_node import ActionNodeOption, ImmutableEffectToSlotMap
-from ...mana.mana_value import ManaValue, ManaRequirement, ImmutableManaRequirement
+from ...mana.mana_value import ManaValueBase, ManaRequirement, ImmutableManaRequirement
 from ...abilities.parameter_context import ParameterContext
 from ...enums import SAVariableType
 from .structural_templates import prepared_effects
+from .execution_cost import EXECUTION_MANA_COST_COMPILER
+
+if TYPE_CHECKING:
+    from .ability_action_gen_pipeline import ActionGenerationContextBase
+    from .generation_strategy import ExecutionPlanStrategy
+    from ..data_structs.ability import RuntimeSubAbility
+    from ...game_state import State
 
 
 _EMPTY_EFFECTS = EffectSequence(())
 _EMPTY_OPTIONS = (ActionNodeOption(ImmutableEffectToSlotMap(), ImmutableManaRequirement()),)
+_ZERO_X = immutabledict({SAVariableType.X: 0})
 
 
 class ExecutionPlanPipelineBase(ABC):
@@ -24,7 +34,7 @@ class ExecutionPlanPipelineBase(ABC):
     """
 
     @abstractmethod
-    def generate(self, ctx, subability, strategy, state):
+    def generate(self, ctx: ActionGenerationContextBase, subability: RuntimeSubAbility | None, strategy: ExecutionPlanStrategy, state: State) -> Iterator[AbilityExecutionPlan]:
         """!
         @brief Yield legal execution plans for the supplied sub-ability.
         """
@@ -34,21 +44,18 @@ class ExecutionPlanPipelineBase(ABC):
 class ExecutionPlanPipeline(ExecutionPlanPipelineBase):
     """!
     @brief Compile action-node options, mana payment, and target bindings.
-
     Combines the selected sub-ability with the supplied generation
     strategy and produces concrete `AbilityExecutionPlan` instances
     without mutating the game state.
     """
 
-    def generate(self, ctx, subability, strategy, state):
+    def generate(self, ctx: ActionGenerationContextBase, subability: RuntimeSubAbility | None, strategy: ExecutionPlanStrategy, state: State) -> Iterator[AbilityExecutionPlan]:
         """!
         @brief Yield legal execution plans supported by this strategy.
-
         Builds the effective mana cost from the ability-level and
         sub-ability-level costs, resolves action-node options, finds a
         legal mana payment plan, generates target bindings, and combines
         the results into immutable execution plans.
-
         @param ctx Shared action-generation context.
         @param subability Sub-ability whose execution plans are generated,
                or `None` for an empty cost/effect side.
@@ -62,7 +69,7 @@ class ExecutionPlanPipeline(ExecutionPlanPipelineBase):
         # Missing sub-abilities and sub-abilities without an action node
         # still produce one empty option so the rest of the pipeline can
         # treat them uniformly.
-        empty = subability is None or subability.action_node is None
+        empty: bool = subability is None or subability.action_node is None
         options = (
             _EMPTY_OPTIONS
             if empty
@@ -71,16 +78,14 @@ class ExecutionPlanPipeline(ExecutionPlanPipelineBase):
 
         # Combine mana costs inherited from the enclosing ability with any
         # additional mana cost defined by this sub-ability.
-        cost = ManaValue()
-        if strategy.mana_solver is not None and ctx.mana_cost is not None:
-            cost.add(ManaValue(ctx.mana_cost))
+        cost = EXECUTION_MANA_COST_COMPILER.combine(
+            ctx.mana_cost if strategy.mana_solver is not None else None,
+            subability.mana_cost if subability is not None else None,
+        )
 
-        if subability is not None and subability.mana_cost is not None:
-            cost.add(ManaValue(subability.mana_cost))
-
-        x_value = getattr(ctx, "x_value", 0)
-        param_context = ParameterContext(
-            immutabledict({SAVariableType.X: x_value})
+        x_value: int = getattr(ctx, "x_value", 0)
+        param_context: ParameterContext = ParameterContext(
+            _ZERO_X if type(x_value) is int and x_value == 0 else immutabledict({SAVariableType.X: x_value})
         )
 
         for option in options:
@@ -99,7 +104,9 @@ class ExecutionPlanPipeline(ExecutionPlanPipelineBase):
             if strategy.mana_solver is not None:
                 # ManaValue may have several legal payment forms, e.g.
                 # alternative life payments or variable X costs.
-                for symbol_requirement, life in cost.payment_options(x_value):
+                # Use the same built-in expansion for borrowed immutable values
+                # as for the mutable accumulator used previously.
+                for symbol_requirement, life in ManaValueBase.payment_options(cost, x_value):
                     selected_life = getattr(ctx, "life_payment", None)
 
                     if (

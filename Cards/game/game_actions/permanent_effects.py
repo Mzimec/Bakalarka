@@ -1,5 +1,6 @@
 """Reusable effects and ability factories for tokens, Auras and Equipment."""
 
+from __future__ import annotations
 from .data_structs.effect import Effect
 from .data_structs.ability import AbilityDefinition, SubAbilityDefinition
 from .data_structs.action_node import EffectActionNode, ImmutableEffectToSlotMap
@@ -14,22 +15,23 @@ from ..target.target_selector import SingleTargetSelector
 class CreateTokenEffect(Effect):
     """!
     @brief Declarative effect that creates one or more tokens.
-
     @var definition
         Card definition used for each created token.
     @var count
         Number of tokens created by the effect.
     """
 
-    def __init__(self, key, definition, count=1):
+    def __init__(self, key: str, definition: object, count: int = 1) -> None:
+        """!
+        @brief Initialize this object.
+        """
         super().__init__(key)
         self.definition = definition
         self.count = count
 
-    def to_operations(self, state, context):
+    def to_operations(self, state: object, context: object) -> object:
         """!
         @brief Generate the token-creation operation for this effect.
-
         @param state Current game state.
         @param context Bound resolution context.
         """
@@ -39,7 +41,7 @@ class CreateTokenEffect(Effect):
             self.count,
         )
 
-    def get_info(self):
+    def get_info(self) -> str:
         """!
         @brief Return a human-readable description of this effect.
         """
@@ -49,22 +51,28 @@ class CreateTokenEffect(Effect):
 class AttachmentTargetSpec(TargetSpec):
     """!
     @brief Select legal hosts for Aura or Equipment attachment.
-
     Equipment additionally restricts targeting to permanents controlled by the
     activating player, while Aura legality is delegated to the shared
     attachment rules.
-
     @var equip
         Whether candidates are being generated for an equip activation.
     """
 
-    def __init__(self, *, equip=False):
+    def __init__(self, *, equip: bool = False) -> None:
+        """!
+        @brief Initialize this object.
+        """
         self.equip = equip
 
-    def generate_candidates(self, source, controller, state, reserved=None):
+    def generate_candidates(
+        self,
+        source: object,
+        controller: object,
+        state: object,
+        reserved: object = None,
+    ) -> object:
         """!
         @brief Yield legal attachment hosts from the battlefield.
-
         @param source Aura or Equipment being attached.
         @param controller Controller performing the attachment.
         @param state Current game state.
@@ -100,22 +108,29 @@ class AttachmentTargetSpec(TargetSpec):
 class AttachSourceEffect(Effect):
     """!
     @brief Attach this effect's source to hosts selected through a target slot.
-
     @var slot_key
         Target slot containing attachment hosts.
     @var entering
         Whether the attachment is established as part of entering the battlefield.
     """
 
-    def __init__(self, key, slot_key="attach", *, entering=False):
+    def __init__(
+        self,
+        key: str,
+        slot_key: str = "attach",
+        *,
+        entering: bool = False,
+    ) -> None:
+        """!
+        @brief Initialize this object.
+        """
         super().__init__(key)
         self.slot_key = slot_key
         self.entering = entering
 
-    def to_operations(self, state, context):
+    def to_operations(self, state: object, context: object) -> object:
         """!
         @brief Generate attachment operations for the selected hosts.
-
         @param state Current game state.
         @param context Bound resolution context containing selected targets.
         """
@@ -128,7 +143,7 @@ class AttachSourceEffect(Effect):
                     entering=self.entering,
                 )
 
-    def get_info(self):
+    def get_info(self) -> str:
         """!
         @brief Return a human-readable description of this effect.
         """
@@ -139,15 +154,13 @@ class _AttachmentValidation:
     # Shared attachment validation; concrete classes provide spell/activation semantics.
     """!
     @brief Ability definition restricted to the matching attachment subtype.
-
     Spell instances represent Aura casts, while activated instances represent
     Equipment equip abilities.
     """
 
-    def validation_error(self, source, controller, state):
+    def validation_error(self, source: object, controller: object, state: object) -> str | None:
         """!
         @brief Validate the base ability and required card subtype.
-
         @param source Card providing the ability.
         @param controller Player controlling or casting the ability.
         @param state Current game state.
@@ -174,30 +187,32 @@ from .data_structs.ability import CastSpellAbilityDefinition, ActivatedAbilityDe
 
 
 class AuraCastAbilityDefinition(_AttachmentValidation, CastSpellAbilityDefinition):
+    """!
+    @brief Aura spell ability definition with attachment subtype validation.
+    """
     required_subtype = CardSubtype.AURA
 
 
 class EquipAbilityDefinition(_AttachmentValidation, ActivatedAbilityDefinition):
+    """!
+    @brief Equipment equip ability definition with attachment subtype validation.
+    """
     required_subtype = CardSubtype.EQUIPMENT
 
 
-def attachment_ability(*, equip=False, mana_cost=None, key=None):
+def attachment_ability(*, equip: bool = False, mana_cost: object = None, key: str = None) -> object:
     """!
     @brief Build either an Aura casting ability or an Equipment equip ability.
-
     Equip targets a legal permanent controlled by the activating player and is
     available only from the battlefield at sorcery speed. Aura casting targets
     a legal enchant host while the Aura is in hand and moves the source onto
     the stack as part of its casting cost.
-
     The Aura's printed mana cost is supplied by `CardDefinition` automatically.
     `mana_cost` therefore represents the equip activation cost, or an
     additional Aura casting cost.
-
     Structural attachment restrictions continue to apply after resolution.
     Equip's controller restriction is only a targeting restriction and does
     not force an already attached Equipment to detach if control later changes.
-
     @param equip Whether to create an Equipment ability instead of an Aura spell.
     @param mana_cost Equip activation cost or additional Aura casting cost.
     @param key Optional explicit ability key.

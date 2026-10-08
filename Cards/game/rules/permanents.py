@@ -326,7 +326,7 @@ class PermanentStateRule(StateBasedAction):
             (IK_ZONE, IK_IS_TOKEN, IK_TYPE, IK_SUBTYPE, IK_ATTACHED, IK_LEGENDARY,
              IK_HAS_COUNTERS, IK_DYNAMIC_CHARACTERISTICS))
 
-    def collect(self, state):
+    def collect(self, state, *, candidates=None):
         """!
         @brief Collect all currently applicable permanent-related SBA violations.
 
@@ -339,7 +339,8 @@ class PermanentStateRule(StateBasedAction):
         violations, legends = [], defaultdict(list)
 
         # Preserve one stable candidate order for simultaneous violations.
-        candidates = state.query_cards(self.candidate_filter.query) if hasattr(state, "query_cards") else ()
+        if candidates is None:
+            candidates = state.query_cards(self.candidate_filter.query) if hasattr(state, "query_cards") else ()
         for card in candidates:
             if card.get_zone() != ZoneType.BATTLEFIELD:
                 if card.is_token:

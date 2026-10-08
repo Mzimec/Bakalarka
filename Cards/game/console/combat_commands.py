@@ -1,17 +1,21 @@
 """Parse whole combat declarations without mutating the game state."""
 
+from __future__ import annotations
 from game.console.console_commands import CommandError, parse_command, resolve_card, resolve_player
 from game.enums import ZoneType
 
 
-def resolve_defender(reference, state, player):
+def resolve_defender(reference: str, state: object, player: object) -> object:
+    """!
+    @brief Resolve a combat defender from a player or planeswalker reference.
+    """
     try:
         return resolve_player(reference, state, player)
     except CommandError:
         return resolve_card(reference, player, global_scope=True)
 
 
-def parse_attackers(raw, state, player):
+def parse_attackers(raw: str, state: object, player: object) -> dict:
     """!
     @brief ``attack <card>... [defender]`` or ``attack <card>:<defender>...``.
     """
@@ -50,7 +54,7 @@ def parse_attackers(raw, state, player):
         raise CommandError(str(error)) from error
 
 
-def parse_blockers(raw, state, player):
+def parse_blockers(raw: str, state: object, player: object) -> dict:
     """!
     @brief ``block <blocker>:<attacker>...`` or ``pass``.
     """

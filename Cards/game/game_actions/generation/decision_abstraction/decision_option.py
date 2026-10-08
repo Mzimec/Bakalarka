@@ -1,4 +1,5 @@
 """Public decision-generation API; implementations live in dedicated modules."""
+from __future__ import annotations
 from .requests import *
 from .policies import *
 from .options import *

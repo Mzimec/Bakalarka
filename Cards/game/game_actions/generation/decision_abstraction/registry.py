@@ -1,4 +1,5 @@
 """Request-to-pipeline wiring and contract checks; game rules live in pipelines."""
+from __future__ import annotations
 from collections.abc import Iterator
 from typing import cast
 from immutabledict import immutabledict
@@ -46,6 +47,12 @@ DECISION_OPTION_GENERATORS = immutabledict({
 def route_decision_generation[T: DecisionOption](
     request: DecisionRequest[T], policy: GenerationPolicy | None = None,
 ) -> Iterator[T]:
+    """!
+    @brief Route a decision request to its registered generation pipeline.
+    @param request Decision request to generate for.
+    @param policy Optional generation policy.
+    @return Iterator over generated decision options.
+    """
     registration = DECISION_OPTION_GENERATORS.get(type(request))
     if registration is None:
         raise ValueError(f"No decision generation pipeline registered for {type(request).__name__}")

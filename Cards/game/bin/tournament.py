@@ -1,3 +1,4 @@
+from __future__ import annotations
 import argparse
 from datetime import datetime
 from pathlib import Path
@@ -25,6 +26,9 @@ AGENT_CONFIGS = {
 
 
 def main() -> int:
+    """!
+    @brief Run this command-line entry point.
+    """
     parser = argparse.ArgumentParser()
 
     parser.add_argument(
@@ -55,6 +59,8 @@ def main() -> int:
     parser.add_argument("--seed", type=int, default=1)
     parser.add_argument("--max-turns", type=int, default=100)
     parser.add_argument("--max-decisions", type=int, default=10000)
+    parser.add_argument("--no-decision-stats", action="store_true",
+                        help="Disable decision timing and option statistics; keep decision limits.")
 
     parser.add_argument(
         "--output",
@@ -93,6 +99,7 @@ def main() -> int:
         max_decisions=args.max_decisions,
         log_matches=args.log_matches,
         log_batch=True,
+        collect_decision_stats=not args.no_decision_stats,
     )
     print(f"Tournament results: {output.resolve()}")
 

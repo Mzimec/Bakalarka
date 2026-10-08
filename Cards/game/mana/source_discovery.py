@@ -97,15 +97,25 @@ def mana_sources(state, player):
     state.refresh_continuous_effects()
 
     context = current_discovery_context()
+    state.card_register.synchronise()
     if context is not None:
-        state.card_register.synchronise()
         cached = context.lookup(state, player)
         if cached is not None:
             return cached
 
+    persistent = state._mana_source_cache
+    cached = persistent.lookup(state, player)
+    if cached is not None:
+        if context is not None:
+            entry = persistent.entries[player]
+            return context.remember(state, player, entry.cards, entry.effects, cached)
+        return cached
+
     result = []
     cacheable = context is not None
     dependencies = []
+    persistent_cacheable = persistent.supported(state)
+    definitions, templates = [], []
 
     # Ownership determines zone storage; control determines who may activate.
     from helper.query_system.query import EqQuery
@@ -118,25 +128,32 @@ def mana_sources(state, player):
         & EqQuery(IK_ABILITY_KIND, ActivatableAbilityType.MANA)
     )
     for card in candidates:
-        if cacheable and not state._card_snapshots.has_current_index_projection(state, card):
-            cacheable = False
+        if (cacheable or persistent_cacheable) and not state._card_snapshots.has_current_index_projection(state, card):
+            cacheable = persistent_cacheable = False
 
         for key, definition in card.get_ability_defs(state).items():
+            if persistent_cacheable:
+                definitions.append(definition)
             # Variable subabilities and stack-using abilities cannot be treated
             # as one deterministic mana-source activation.
             if not definition.is_mana_ability or definition.subdefs or definition.uses_stack:
                 if definition.is_mana_ability:
                     cacheable = False
+                    persistent_cacheable = False
                 continue
 
             template = static_mana_template(definition)
             if template is not None:
+                if persistent_cacheable:
+                    templates.append(template)
                 if cacheable:
                     dependencies.extend(template.costs)
                     dependencies.extend(template.effects)
                 result.append(ManaSource(card, key, template.produces, EMPTY_MANA, 1,
                                          output_per_activation=True))
                 continue
+
+            persistent_cacheable = False
 
             if cacheable:
                 cacheable = (type(definition) is ManaAbilityDefinition
@@ -190,6 +207,9 @@ def mana_sources(state, player):
                 ManaSource(card, key, produced, ManaValue(), 1, output_per_activation=True)
             )
 
-    if cacheable:
-        return context.remember(state, player, candidates, dependencies, result)
-    return tuple(result)
+    result = context.remember(state, player, candidates, dependencies, result) if cacheable else tuple(result)
+    if persistent_cacheable:
+        persistent.remember(state, player, candidates, definitions, templates, result)
+    else:
+        persistent.entries.pop(player, None)
+    return result

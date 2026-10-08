@@ -78,6 +78,8 @@ class State:
         self._cont_effect_manager = ContinuousEffectsManager()
         from .card_snapshot_cache import CardSnapshotCache
         self._card_snapshots = CardSnapshotCache()
+        from ..mana.source_cache import StaticManaSourceCache
+        self._mana_source_cache = StaticManaSourceCache()
 
         # These flags coordinate lazy/re-entrant continuous-effect refresh.
         self._refreshing_effects = False

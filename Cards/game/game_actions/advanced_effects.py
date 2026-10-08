@@ -1,5 +1,6 @@
 """Effects and trigger conditions used by the expanded declarative demo cards."""
 
+from __future__ import annotations
 from .data_structs.effect import Effect
 from .data_structs.ability import TriggerCondition
 from .data_structs.operation import Operation
@@ -17,13 +18,13 @@ class SourceTappedCondition(TriggerCondition):
     @brief Trigger when this ability's own source becomes tapped.
     """
 
-    def matches(self, state, event):
+    def matches(self, state: object, event: object) -> bool:
         """!
         @brief Check whether the event represents a card being tapped.
         """
         return event.key == "card_tapped"
 
-    def matches_trigger(self, trigger, state):
+    def matches_trigger(self, trigger: object, state: object) -> bool:
         """!
         @brief Require the tapped card to be the bound trigger source.
         """
@@ -46,17 +47,16 @@ class DrawEffect(Effect):
     @brief Declarative effect that draws one card.
     """
 
-    def to_operations(self, state, context):
+    def to_operations(self, state: object, context: object) -> object:
         """!
         @brief Generate the draw operation for this effect.
-
         @param state Current game state.
         @param context Bound resolution context.
         @return Generator yielding one draw operation.
         """
         yield DrawOperation(context)
 
-    def get_info(self):
+    def get_info(self) -> str:
         """!
         @brief Return a human-readable description of this effect.
         """
@@ -66,15 +66,13 @@ class DrawEffect(Effect):
 class InstallShieldOperation(Operation):
     """!
     @brief Install a persistent damage-prevention replacement rule.
-
     Replaces any previous shield installed by the same source incarnation with
     a fresh runtime replacement effect.
     """
 
-    def execute(self, state):
+    def execute(self, state: object) -> list[object]:
         """!
         @brief Install the source's controller damage shield.
-
         @param state Current game state.
         @return No direct game events.
         """
@@ -112,13 +110,13 @@ class InstallShieldEffect(Effect):
     @brief Effect that installs the source's controller damage shield.
     """
 
-    def to_operations(self, state, context):
+    def to_operations(self, state: object, context: object) -> object:
         """!
         @brief Generate the operation that installs the replacement rule.
         """
         yield InstallShieldOperation(context)
 
-    def get_info(self):
+    def get_info(self) -> str:
         """!
         @brief Return a human-readable description of this effect.
         """
@@ -128,25 +126,25 @@ class InstallShieldEffect(Effect):
 class DamageCreaturesEffect(Effect):
     """!
     @brief Deal fixed damage to each creature represented by a target binding.
-
     @var amount
         Damage dealt per selected target occurrence.
     @var slot_key
         Target slot containing the creatures to damage.
     """
 
-    def __init__(self, key, amount, slot_key="target"):
+    def __init__(self, key: str, amount: int, slot_key: str = "target") -> None:
+        """!
+        @brief Initialize this object.
+        """
         super().__init__(key)
         self.amount = amount
         self.slot_key = slot_key
 
-    def to_operations(self, state, context):
+    def to_operations(self, state: object, context: object) -> object:
         """!
         @brief Generate one damage operation for each chosen creature.
-
         Repeated selections represented by target multiplicity scale the damage
         dealt to that target.
-
         @param state Current game state.
         @param context Bound resolution context containing selected targets.
         """
@@ -158,7 +156,7 @@ class DamageCreaturesEffect(Effect):
                     self.amount * count,
                 )
 
-    def get_info(self):
+    def get_info(self) -> str:
         """!
         @brief Return a human-readable description of this effect.
         """
@@ -168,20 +166,21 @@ class DamageCreaturesEffect(Effect):
 class TemporaryBuffOperation(Operation):
     """!
     @brief Give a fixed set of card incarnations +2/+2 until cleanup.
-
     The operation remembers each target's current zone revision so cards that
     later leave and re-enter the battlefield are not treated as the same
     targeted permanent.
     """
 
-    def __init__(self, context, targets):
+    def __init__(self, context: object, targets: object) -> None:
+        """!
+        @brief Initialize this object.
+        """
         super().__init__(context)
         self.targets = frozenset(targets)
 
-    def execute(self, state):
+    def execute(self, state: object) -> list[object]:
         """!
         @brief Install a temporary continuous +2/+2 effect.
-
         @param state Current game state.
         @return Event indicating that the buff was installed.
         """
@@ -208,7 +207,7 @@ class TemporaryBuffOperation(Operation):
             for card in self.targets
         )
 
-        def query(source, controller, current_state):
+        def query(source: object, controller: object, current_state: object) -> object:
             """!
             @brief Select still-valid target incarnations on the battlefield.
             """
@@ -268,7 +267,7 @@ class TemporaryBuffEffect(Effect):
     @brief Give the creatures in the `target` slot +2/+2 until cleanup.
     """
 
-    def to_operations(self, state, context):
+    def to_operations(self, state: object, context: object) -> object:
         """!
         @brief Generate the temporary buff operation for all chosen targets.
         """
@@ -283,7 +282,7 @@ class TemporaryBuffEffect(Effect):
             targets,
         )
 
-    def get_info(self):
+    def get_info(self) -> str:
         """!
         @brief Return a human-readable description of this effect.
         """
@@ -295,10 +294,9 @@ class SacrificeEffect(Effect):
     @brief Sacrifice permanents selected through the `sacrifice` target slot.
     """
 
-    def validation_error(self, state, context):
+    def validation_error(self, state: object, context: object) -> str | None:
         """!
         @brief Validate that every selected permanent can still be sacrificed.
-
         @param state Current game state.
         @param context Bound resolution context.
         @return Validation message on failure, otherwise `None`.
@@ -313,7 +311,7 @@ class SacrificeEffect(Effect):
 
         return None
 
-    def to_operations(self, state, context):
+    def to_operations(self, state: object, context: object) -> object:
         """!
         @brief Generate graveyard moves for all selected sacrifice targets.
         """
@@ -325,7 +323,7 @@ class SacrificeEffect(Effect):
                     ZoneType.GRAVEYARD,
                 )
 
-    def get_info(self):
+    def get_info(self) -> str:
         """!
         @brief Return a human-readable description of this effect.
         """

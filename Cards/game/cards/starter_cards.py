@@ -60,17 +60,29 @@ class PredicateTargetSpec(TargetSpec):
     @brief Target candidates selected by a state-aware predicate.
     """
 
-    def __init__(self, predicate, *, query=None):
+    def __init__(self, predicate: object, *, query: object = None) -> None:
+        """!
+        @brief Initialize this object.
+        """
         self.predicate = predicate
         self.query = query
 
-    def candidate_query(self, source, controller, state):
+    def candidate_query(self, source: object, controller: object, state: object) -> object:
+        """!
+        @brief Build the query used to preselect target candidates.
+        """
         query = EqQuery(IK_ZONE, ZoneType.BATTLEFIELD)
         if self.query is not None:
             query &= self.query(source, controller, state) if callable(self.query) else self.query
         return query
 
-    def generate_candidates(self, source, controller, state, reserved=None):
+    def generate_candidates(
+        self,
+        source: object,
+        controller: object,
+        state: object,
+        reserved: object = None,
+    ) -> object:
         """!
         @brief Yield candidate objects permitted by this target specification.
         """
@@ -80,7 +92,17 @@ class PredicateTargetSpec(TargetSpec):
             if self.predicate(candidate, source, controller, state):
                 yield candidate
 
-    def is_valid_target(self, target, source, controller, state, reserved=None):
+    def is_valid_target(
+        self,
+        target: object,
+        source: object,
+        controller: object,
+        state: object,
+        reserved: object = None,
+    ) -> bool:
+        """!
+        @brief Check whether one object remains a legal target.
+        """
         return (
             (not reserved or target not in reserved)
             and state.card_register.contains(self.candidate_query(source, controller, state), target)
@@ -93,7 +115,13 @@ class AnyTargetSpec(TargetSpec):
     @brief The ordinary Magic "any target" (player, creature, or planeswalker).
     """
 
-    def generate_candidates(self, source, controller, state, reserved=None):
+    def generate_candidates(
+        self,
+        source: object,
+        controller: object,
+        state: object,
+        reserved: object = None,
+    ) -> object:
         """!
         @brief Yield candidate objects permitted by this target specification.
         """
@@ -106,7 +134,10 @@ class AnyTargetSpec(TargetSpec):
                 yield card
 
 
-def _slot(key="target", spec=None):
+def _slot(key: str = "target", spec: object = None) -> object:
+    """!
+    @brief Internal helper for this module.
+    """
     return TargetSlot(
         key,
         TargetResolver(spec or AnyTargetSpec(), SingleTargetSelector()),
@@ -114,7 +145,10 @@ def _slot(key="target", spec=None):
     )
 
 
-def _effect_subdef(effects: Iterable[Effect], slots=(), *, mana_cost=None):
+def _effect_subdef(effects: Iterable[Effect], slots: object = (), *, mana_cost: object = None) -> object:
+    """!
+    @brief Internal helper for this module.
+    """
     effects = tuple(effects)
     slot_keys = frozenset(slot.key for slot in slots)
     mapping = {}
@@ -133,7 +167,18 @@ def _effect_subdef(effects: Iterable[Effect], slots=(), *, mana_cost=None):
     )
 
 
-def _cast_ability(name, mana_cost, *, permanent=False, effects=(), slots=(), sorcery_speed=False):
+def _cast_ability(
+    name: str,
+    mana_cost: object,
+    *,
+    permanent: bool = False,
+    effects: object = (),
+    slots: object = (),
+    sorcery_speed: bool = False,
+) -> object:
+    """!
+    @brief Internal helper for this module.
+    """
     put_on_stack = MoveSourceEffect(f"{name}:put_on_stack", ZoneType.STACK)
     destination = ZoneType.BATTLEFIELD if permanent else ZoneType.GRAVEYARD
     leave_stack = MoveSourceEffect(f"{name}:to_{destination.name.lower()}", destination)
@@ -148,8 +193,17 @@ def _cast_ability(name, mana_cost, *, permanent=False, effects=(), slots=(), sor
 
 
 def _activated_ability(
-    name, *, cost_effects=(), mana_cost=None, action_effects=(), slots=(), sorcery_speed=False
-):
+    name: str,
+    *,
+    cost_effects: object = (),
+    mana_cost: object = None,
+    action_effects: object = (),
+    slots: object = (),
+    sorcery_speed: bool = False,
+) -> object:
+    """!
+    @brief Internal helper for this module.
+    """
     cost = _effect_subdef(tuple(cost_effects), mana_cost=mana_cost)
     action = _effect_subdef(tuple(action_effects), slots=slots)
     return ActivatedAbilityDefinition(
@@ -165,17 +219,23 @@ from game.game_actions.life_effects import GainLifeOperation
 
 
 class GainLifeEffect(Effect):
-    def __init__(self, key, amount):
+    """!
+    @brief GainLifeEffect declarative effect.
+    """
+    def __init__(self, key: str, amount: int) -> None:
+        """!
+        @brief Initialize this object.
+        """
         super().__init__(key)
         self.amount = amount
 
-    def to_operations(self, state, context):
+    def to_operations(self, state: object, context: object) -> object:
         """!
         @brief Generate the operations for this effect and its bound context.
         """
         yield GainLifeOperation(context, self.amount)
 
-    def get_info(self):
+    def get_info(self) -> str:
         """!
         @brief Return a human-readable description of this effect.
         """
@@ -183,11 +243,23 @@ class GainLifeEffect(Effect):
 
 
 class PutCounterOperation(Operation):
-    def __init__(self, context, card, counter, amount=1):
+    """!
+    @brief PutCounterOperation executable operation.
+    """
+    def __init__(
+        self,
+        context: object,
+        card: object,
+        counter: object,
+        amount: int = 1,
+    ) -> None:
+        """!
+        @brief Initialize this object.
+        """
         super().__init__(context)
         self.card, self.counter, self.amount = card, counter, amount
 
-    def execute(self, state):
+    def execute(self, state: object) -> list[object]:
         """!
         @brief Apply this executable object to the supplied game state.
         """
@@ -207,9 +279,21 @@ class PutCounterOperation(Operation):
 
 
 class PutCounterEffect(Effect):
+    """!
+    @brief PutCounterEffect declarative effect.
+    """
     def __init__(
-        self, key, counter=CounterType.PLUS_ONE, amount=1, *, source=True, target_getter=None
-    ):
+        self,
+        key: str,
+        counter: object = CounterType.PLUS_ONE,
+        amount: int = 1,
+        *,
+        source: object = True,
+        target_getter: object = None,
+    ) -> None:
+        """!
+        @brief Initialize this object.
+        """
         super().__init__(key)
         self.counter, self.amount, self.source, self.target_getter = (
             counter,
@@ -218,7 +302,7 @@ class PutCounterEffect(Effect):
             target_getter,
         )
 
-    def to_operations(self, state, context):
+    def to_operations(self, state: object, context: object) -> object:
         """!
         @brief Generate the operations for this effect and its bound context.
         """
@@ -233,7 +317,7 @@ class PutCounterEffect(Effect):
                 return
             yield PutCounterOperation(context, context.source, self.counter, self.amount)
 
-    def get_info(self):
+    def get_info(self) -> str:
         """!
         @brief Return a human-readable description of this effect.
         """
@@ -241,18 +325,24 @@ class PutCounterEffect(Effect):
 
 
 class DrawCardsEffect(Effect):
-    def __init__(self, key, count=1):
+    """!
+    @brief DrawCardsEffect declarative effect.
+    """
+    def __init__(self, key: str, count: int = 1) -> None:
+        """!
+        @brief Initialize this object.
+        """
         super().__init__(key)
         self.count = count
 
-    def to_operations(self, state, context):
+    def to_operations(self, state: object, context: object) -> object:
         """!
         @brief Generate the operations for this effect and its bound context.
         """
         for _ in range(self.count):
             yield DrawCardOperation(context)
 
-    def get_info(self):
+    def get_info(self) -> str:
         """!
         @brief Return a human-readable description of this effect.
         """
@@ -260,13 +350,25 @@ class DrawCardsEffect(Effect):
 
 
 class TemporaryModifierOperation(Operation):
-    def __init__(self, context, targets, modifiers, key="starter-temporary"):
+    """!
+    @brief TemporaryModifierOperation executable operation.
+    """
+    def __init__(
+        self,
+        context: object,
+        targets: object,
+        modifiers: object,
+        key: str = "starter-temporary",
+    ) -> None:
+        """!
+        @brief Initialize this object.
+        """
         super().__init__(context)
         self.targets = tuple(targets)
         self.modifiers = {stat: list(values) for stat, values in modifiers.items()}
         self.effect_key = f"{key}:{uuid4().hex}"
 
-    def execute(self, state):
+    def execute(self, state: object) -> list[object]:
         """!
         @brief Apply this executable object to the supplied game state.
         """
@@ -295,11 +397,23 @@ class TemporaryModifierOperation(Operation):
 
 
 class TemporaryModifierEffect(Effect):
-    def __init__(self, key, modifiers, slot_key="target", target_getter=None):
+    """!
+    @brief TemporaryModifierEffect declarative effect.
+    """
+    def __init__(
+        self,
+        key: str,
+        modifiers: object,
+        slot_key: str = "target",
+        target_getter: object = None,
+    ) -> None:
+        """!
+        @brief Initialize this object.
+        """
         super().__init__(key)
         self.modifiers, self.slot_key, self.target_getter = modifiers, slot_key, target_getter
 
-    def to_operations(self, state, context):
+    def to_operations(self, state: object, context: object) -> object:
         """!
         @brief Generate the operations for this effect and its bound context.
         """
@@ -318,7 +432,7 @@ class TemporaryModifierEffect(Effect):
         if targets:
             yield TemporaryModifierOperation(context, targets, self.modifiers, self.key)
 
-    def get_info(self):
+    def get_info(self) -> str:
         """!
         @brief Return a human-readable description of this effect.
         """
@@ -326,11 +440,17 @@ class TemporaryModifierEffect(Effect):
 
 
 class DamageTargetEffect(Effect):
-    def __init__(self, key, amount, slot_key="target"):
+    """!
+    @brief DamageTargetEffect declarative effect.
+    """
+    def __init__(self, key: str, amount: int, slot_key: str = "target") -> None:
+        """!
+        @brief Initialize this object.
+        """
         super().__init__(key)
         self.amount, self.slot_key = amount, slot_key
 
-    def to_operations(self, state, context):
+    def to_operations(self, state: object, context: object) -> object:
         """!
         @brief Generate the operations for this effect and its bound context.
         """
@@ -341,7 +461,7 @@ class DamageTargetEffect(Effect):
                 )
                 yield operation_type(context, target, self.amount * count)
 
-    def get_info(self):
+    def get_info(self) -> str:
         """!
         @brief Return a human-readable description of this effect.
         """
@@ -353,11 +473,14 @@ class DamageDefenderEffect(Effect):
     @brief Damage the defending player or planeswalker from an attack event.
     """
 
-    def __init__(self, key, amount):
+    def __init__(self, key: str, amount: int) -> None:
+        """!
+        @brief Initialize this object.
+        """
         super().__init__(key)
         self.amount = amount
 
-    def to_operations(self, state, context):
+    def to_operations(self, state: object, context: object) -> object:
         """!
         @brief Generate the operations for this effect and its bound context.
         """
@@ -370,7 +493,7 @@ class DamageDefenderEffect(Effect):
         elif defender.get_zone() == ZoneType.BATTLEFIELD:
             yield DamageCreatureOperation(context, defender, self.amount)
 
-    def get_info(self):
+    def get_info(self) -> str:
         """!
         @brief Return a human-readable description of this effect.
         """
@@ -382,11 +505,14 @@ class DamageDefendingCreaturesEffect(Effect):
     @brief Siege Dragon's attack trigger (Walls are checked at resolution).
     """
 
-    def __init__(self, key, amount):
+    def __init__(self, key: str, amount: int) -> None:
+        """!
+        @brief Initialize this object.
+        """
         super().__init__(key)
         self.amount = amount
 
-    def to_operations(self, state, context):
+    def to_operations(self, state: object, context: object) -> object:
         """!
         @brief Generate the operations for this effect and its bound context.
         """
@@ -406,7 +532,7 @@ class DamageDefendingCreaturesEffect(Effect):
             if not card.has_keyword(state, "flying"):
                 yield DamageCreatureOperation(context, card, self.amount)
 
-    def get_info(self):
+    def get_info(self) -> str:
         """!
         @brief Return a human-readable description of this effect.
         """
@@ -414,10 +540,16 @@ class DamageDefendingCreaturesEffect(Effect):
 
 
 class DestroyOpponentWallsEffect(Effect):
-    def __init__(self, key):
+    """!
+    @brief DestroyOpponentWallsEffect declarative effect.
+    """
+    def __init__(self, key: str) -> None:
+        """!
+        @brief Initialize this object.
+        """
         super().__init__(key)
 
-    def to_operations(self, state, context):
+    def to_operations(self, state: object, context: object) -> object:
         """!
         @brief Generate the operations for this effect and its bound context.
         """
@@ -426,7 +558,7 @@ class DestroyOpponentWallsEffect(Effect):
             (EqQuery(IK_CONTROLLER, context.controller),))):
             yield MoveCardOperation(context, card, ZoneType.GRAVEYARD)
 
-    def get_info(self):
+    def get_info(self) -> str:
         """!
         @brief Return a human-readable description of this effect.
         """
@@ -434,18 +566,30 @@ class DestroyOpponentWallsEffect(Effect):
 
 
 class CreateTokensEffect(Effect):
-    def __init__(self, key, definition, count=1, count_getter=None):
+    """!
+    @brief CreateTokensEffect declarative effect.
+    """
+    def __init__(
+        self,
+        key: str,
+        definition: object,
+        count: int = 1,
+        count_getter: object = None,
+    ) -> None:
+        """!
+        @brief Initialize this object.
+        """
         super().__init__(key)
         self.definition, self.count, self.count_getter = definition, count, count_getter
 
-    def to_operations(self, state, context):
+    def to_operations(self, state: object, context: object) -> object:
         """!
         @brief Generate the operations for this effect and its bound context.
         """
         count = self.count_getter(state, context) if self.count_getter else self.count
         yield CreateTokenOperation(context, self.definition, count)
 
-    def get_info(self):
+    def get_info(self) -> str:
         """!
         @brief Return a human-readable description of this effect.
         """
@@ -453,7 +597,10 @@ class CreateTokensEffect(Effect):
 
 
 class CreateAttackingTokensOperation(CreateTokenOperation):
-    def execute(self, state):
+    """!
+    @brief CreateAttackingTokensOperation executable operation.
+    """
+    def execute(self, state: object) -> list[object]:
         """!
         @brief Apply this executable object to the supplied game state.
         """
@@ -470,7 +617,10 @@ class CreateAttackingTokensOperation(CreateTokenOperation):
 
 
 class CreateAttackingTokensEffect(CreateTokensEffect):
-    def to_operations(self, state, context):
+    """!
+    @brief CreateAttackingTokensEffect declarative effect.
+    """
+    def to_operations(self, state: object, context: object) -> object:
         """!
         @brief Generate the operations for this effect and its bound context.
         """
@@ -479,7 +629,10 @@ class CreateAttackingTokensEffect(CreateTokensEffect):
 
 
 class TapOpponentsEffect(Effect):
-    def to_operations(self, state, context):
+    """!
+    @brief TapOpponentsEffect declarative effect.
+    """
+    def to_operations(self, state: object, context: object) -> object:
         """!
         @brief Generate the operations for this effect and its bound context.
         """
@@ -489,7 +642,7 @@ class TapOpponentsEffect(Effect):
             (EqQuery(IK_CONTROLLER, controller),))):
             yield TapCardOperation(context, card, tap_symbol=False)
 
-    def get_info(self):
+    def get_info(self) -> str:
         """!
         @brief Return a human-readable description of this effect.
         """
@@ -497,11 +650,17 @@ class TapOpponentsEffect(Effect):
 
 
 class DestroyEffect(Effect):
-    def __init__(self, key, slot_key="target", card_type=None):
+    """!
+    @brief DestroyEffect declarative effect.
+    """
+    def __init__(self, key: str, slot_key: str = "target", card_type: object = None) -> None:
+        """!
+        @brief Initialize this object.
+        """
         super().__init__(key)
         self.slot_key, self.card_type = slot_key, card_type
 
-    def to_operations(self, state, context):
+    def to_operations(self, state: object, context: object) -> object:
         """!
         @brief Generate the operations for this effect and its bound context.
         """
@@ -512,7 +671,7 @@ class DestroyEffect(Effect):
                 ):
                     yield MoveCardOperation(context, card, ZoneType.GRAVEYARD)
 
-    def get_info(self):
+    def get_info(self) -> str:
         """!
         @brief Return a human-readable description of this effect.
         """
@@ -520,7 +679,10 @@ class DestroyEffect(Effect):
 
 
 class ReturnSourceEffect(Effect):
-    def to_operations(self, state, context):
+    """!
+    @brief ReturnSourceEffect declarative effect.
+    """
+    def to_operations(self, state: object, context: object) -> object:
         """!
         @brief Generate the operations for this effect and its bound context.
         """
@@ -532,7 +694,7 @@ class ReturnSourceEffect(Effect):
         ):
             yield MoveCardOperation(context, context.source, ZoneType.HAND)
 
-    def get_info(self):
+    def get_info(self) -> str:
         """!
         @brief Return a human-readable description of this effect.
         """
@@ -540,13 +702,16 @@ class ReturnSourceEffect(Effect):
 
 
 class ScryOneEffect(Effect):
-    def to_operations(self, state, context):
+    """!
+    @brief ScryOneEffect declarative effect.
+    """
+    def to_operations(self, state: object, context: object) -> object:
         """!
         @brief Generate the operations for this effect and its bound context.
         """
         yield ScryOneOperation(context)
 
-    def get_info(self):
+    def get_info(self) -> str:
         """!
         @brief Return a human-readable description of this effect.
         """
@@ -554,7 +719,10 @@ class ScryOneEffect(Effect):
 
 
 class ScryOneOperation(Operation):
-    def execute(self, state):
+    """!
+    @brief ScryOneOperation executable operation.
+    """
+    def execute(self, state: object) -> list[object]:
         """!
         @brief Apply this executable object to the supplied game state.
         """
@@ -564,7 +732,10 @@ class ScryOneOperation(Operation):
 
 
 class SacrificeOneGoblinEffect(Effect):
-    def validation_error(self, state, context):
+    """!
+    @brief SacrificeOneGoblinEffect declarative effect.
+    """
+    def validation_error(self, state: object, context: object) -> str | None:
         """!
         @brief Return a validation message when the requested action is not legal.
         """
@@ -573,7 +744,7 @@ class SacrificeOneGoblinEffect(Effect):
             return "You need a Goblin to sacrifice."
         return None
 
-    def to_operations(self, state, context):
+    def to_operations(self, state: object, context: object) -> object:
         """!
         @brief Generate the operations for this effect and its bound context.
         """
@@ -581,7 +752,7 @@ class SacrificeOneGoblinEffect(Effect):
             & EqQuery(IK_CONTROLLER, context.controller) & EqQuery(IK_SUBTYPE, CardSubtype.GOBLIN))))
         yield MoveCardOperation(context, goblin, ZoneType.GRAVEYARD)
 
-    def get_info(self):
+    def get_info(self) -> str:
         """!
         @brief Return a human-readable description of this effect.
         """
@@ -589,16 +760,28 @@ class SacrificeOneGoblinEffect(Effect):
 
 
 class AttackCondition(TriggerCondition):
+    """!
+    @brief AttackCondition trigger condition.
+    """
     looks_back_in_time = False
 
-    def __init__(self, *, source_only=False, controlled_only=True, power_at_most=None):
+    def __init__(
+        self,
+        *,
+        source_only: bool = False,
+        controlled_only: bool = True,
+        power_at_most: object = None,
+    ) -> None:
+        """!
+        @brief Initialize this object.
+        """
         self.source_only, self.controlled_only, self.power_at_most = (
             source_only,
             controlled_only,
             power_at_most,
         )
 
-    def matches(self, state, event):
+    def matches(self, state: object, event: object) -> bool:
         """!
         @brief Check whether the supplied event satisfies this condition.
         """
@@ -611,7 +794,7 @@ class AttackCondition(TriggerCondition):
             return False
         return True
 
-    def matches_trigger(self, trigger, state):
+    def matches_trigger(self, trigger: object, state: object) -> bool:
         """!
         @brief Evaluate the condition using the bound trigger source and event.
         """
@@ -625,15 +808,18 @@ class AttackCondition(TriggerCondition):
 
 
 class OneOrMoreAttackCondition(TriggerCondition):
+    """!
+    @brief OneOrMoreAttackCondition trigger condition.
+    """
     looks_back_in_time = False
 
-    def matches(self, state, event):
+    def matches(self, state: object, event: object) -> bool:
         """!
         @brief Check whether the supplied event satisfies this condition.
         """
         return event.key == "attackers_declared" and bool(event.payload.get("attackers"))
 
-    def matches_trigger(self, trigger, state):
+    def matches_trigger(self, trigger: object, state: object) -> bool:
         """!
         @brief Evaluate the condition using the bound trigger source and event.
         """
@@ -641,15 +827,18 @@ class OneOrMoreAttackCondition(TriggerCondition):
 
 
 class LifeGainCondition(TriggerCondition):
+    """!
+    @brief LifeGainCondition trigger condition.
+    """
     looks_back_in_time = False
 
-    def matches(self, state, event):
+    def matches(self, state: object, event: object) -> bool:
         """!
         @brief Check whether the supplied event satisfies this condition.
         """
         return event.key == "life_gained" and event.payload.get("amount", 0) > 0
 
-    def matches_trigger(self, trigger, state):
+    def matches_trigger(self, trigger: object, state: object) -> bool:
         """!
         @brief Evaluate the condition using the bound trigger source and event.
         """
@@ -657,9 +846,12 @@ class LifeGainCondition(TriggerCondition):
 
 
 class EnteredSmallCreatureCondition(TriggerCondition):
+    """!
+    @brief EnteredSmallCreatureCondition trigger condition.
+    """
     looks_back_in_time = False
 
-    def matches(self, state, event):
+    def matches(self, state: object, event: object) -> bool:
         """!
         @brief Check whether the supplied event satisfies this condition.
         """
@@ -672,7 +864,7 @@ class EnteredSmallCreatureCondition(TriggerCondition):
             and (card.get_power(state) or 0) <= 2
         )
 
-    def matches_trigger(self, trigger, state):
+    def matches_trigger(self, trigger: object, state: object) -> bool:
         """!
         @brief Evaluate the condition using the bound trigger source and event.
         """
@@ -683,15 +875,18 @@ class EnteredSmallCreatureCondition(TriggerCondition):
 
 
 class BlockedCondition(TriggerCondition):
+    """!
+    @brief BlockedCondition trigger condition.
+    """
     looks_back_in_time = False
 
-    def matches(self, state, event):
+    def matches(self, state: object, event: object) -> bool:
         """!
         @brief Check whether the supplied event satisfies this condition.
         """
         return event.key == "attacker_blocked"
 
-    def matches_trigger(self, trigger, state):
+    def matches_trigger(self, trigger: object, state: object) -> bool:
         """!
         @brief Evaluate the condition using the bound trigger source and event.
         """
@@ -699,7 +894,10 @@ class BlockedCondition(TriggerCondition):
 
 
 class ConfrontAssaultAbility(CastSpellAbilityDefinition):
-    def validation_error(self, source, controller, state):
+    """!
+    @brief ConfrontAssaultAbility helper type.
+    """
+    def validation_error(self, source: object, controller: object, state: object) -> str | None:
         """!
         @brief Return a validation message when the requested action is not legal.
         """
@@ -714,7 +912,10 @@ class ConfrontAssaultAbility(CastSpellAbilityDefinition):
         return None
 
 
-def _trigger(name, condition, effects, slots=()):
+def _trigger(name: str, condition: object, effects: object, slots: object = ()) -> object:
+    """!
+    @brief Internal helper for this module.
+    """
     return TriggerAbilityDefinition(
         key=name,
         condition=condition,
@@ -723,21 +924,24 @@ def _trigger(name, condition, effects, slots=()):
 
 
 def _creature(
-    name,
-    cost,
-    subtypes,
-    power,
-    toughness,
+    name: str,
+    cost: object,
+    subtypes: object,
+    power: int,
+    toughness: int,
     *,
-    keywords=(),
-    effects=(),
-    slots=(),
-    triggers=(),
-    abilities=(),
-    continuous_effects=(),
-    oracle_text="",
-    color=ManaType.WHITE,
-):
+    keywords: object = (),
+    effects: object = (),
+    slots: object = (),
+    triggers: object = (),
+    abilities: object = (),
+    continuous_effects: object = (),
+    oracle_text: object = "",
+    color: str = ManaType.WHITE,
+) -> object:
+    """!
+    @brief Internal helper for this module.
+    """
     cast = _cast_ability(name, cost, permanent=True)
     return CardDefinition(
         name=name,
@@ -757,18 +961,21 @@ def _creature(
 
 
 def _spell(
-    name,
-    cost,
-    card_type,
-    effects,
+    name: str,
+    cost: object,
+    card_type: object,
+    effects: object,
     *,
-    slots=(),
-    sorcery_speed=False,
-    ability_cls=CastSpellAbilityDefinition,
-    keywords=(),
-    oracle_text="",
-    color=ManaType.WHITE,
-):
+    slots: object = (),
+    sorcery_speed: bool = False,
+    ability_cls: object = CastSpellAbilityDefinition,
+    keywords: object = (),
+    oracle_text: object = "",
+    color: str = ManaType.WHITE,
+) -> object:
+    """!
+    @brief Internal helper for this module.
+    """
     ability = _cast_ability(name, cost, effects=effects, slots=slots, sorcery_speed=sorcery_speed)
     if ability_cls is not CastSpellAbilityDefinition:
         ability = ability_cls(**{**ability.__dict__})
@@ -818,29 +1025,41 @@ RED_GOBLIN = CardDefinition(
 )
 
 
-def _all_own_creatures(state, context):
+def _all_own_creatures(state: object, context: object) -> object:
+    """!
+    @brief Internal helper for this module.
+    """
     return state.query_cards(EqQuery(IK_ZONE, ZoneType.BATTLEFIELD)
         & EqQuery(IK_CONTROLLER, context.controller) & EqQuery(IK_TYPE, CardType.CREATURE))
 
 
-def _event_attacker(state, context):
+def _event_attacker(state: object, context: object) -> object:
+    """!
+    @brief Internal helper for this module.
+    """
     event = context.trigger_event
     attacker = event.payload.get("attacker", event.source) if event is not None else None
     return (attacker,) if attacker is not None else ()
 
 
-def _event_attackers(state, context):
+def _event_attackers(state: object, context: object) -> object:
+    """!
+    @brief Internal helper for this module.
+    """
     event = context.trigger_event
     return tuple(card for card in event.payload.get("attackers", ())
                  if _event_object_is_current(event, card)) if event is not None else ()
 
 
-def _event_entered(state, context):
+def _event_entered(state: object, context: object) -> object:
+    """!
+    @brief Internal helper for this module.
+    """
     event = context.trigger_event
     return (event.source,) if event is not None and _event_object_is_current(event, event.source) else ()
 
 
-def _event_object_is_current(event, card):
+def _event_object_is_current(event: object, card: object) -> object:
     """! @brief Reject a new incarnation of a non-targeted event object. """
     if card is None:
         return False
@@ -848,25 +1067,40 @@ def _event_object_is_current(event, card):
     return card.zone_revision == revisions.get(id(card), card.zone_revision)
 
 
-def _charmed_stray_targets(state, context):
+def _charmed_stray_targets(state: object, context: object) -> object:
+    """!
+    @brief Internal helper for this module.
+    """
     return tuple(card for card in state.query_cards(
         EqQuery(IK_ZONE, ZoneType.BATTLEFIELD) & EqQuery(IK_NAME, "charmed stray")
         & EqQuery(IK_CONTROLLER, context.controller)) if card is not context.source)
 
 
-def _other_attackers_targets(state, context):
+def _other_attackers_targets(state: object, context: object) -> object:
+    """!
+    @brief Internal helper for this module.
+    """
     event = context.trigger_event
     attacker = event.payload.get("attacker", event.source) if event is not None else None
     return tuple(card for card in _all_own_creatures(state, context) if card is not attacker)
 
 
-def _graveyard_gathering_count(state, context):
+def _graveyard_gathering_count(state: object, context: object) -> object:
+    """!
+    @brief Internal helper for this module.
+    """
     return 2 + len(state.query_cards(EqQuery(IK_ZONE, ZoneType.GRAVEYARD)
         & EqQuery(IK_OWNER, context.controller) & EqQuery(IK_NAME, "goblin gathering")))
 
 
 class _PowerAtMostSpec(PredicateTargetSpec):
-    def __init__(self, maximum, *, controller=None):
+    """!
+    @brief _PowerAtMostSpec target specification.
+    """
+    def __init__(self, maximum: int, *, controller: object = None) -> None:
+        """!
+        @brief Initialize this object.
+        """
         super().__init__(
             lambda card, source, active, state: CardType.CREATURE in card.get_types(state)
             and (controller is None or card.get_controller(state) is active)
@@ -876,7 +1110,13 @@ class _PowerAtMostSpec(PredicateTargetSpec):
 
 
 class _CombatCreatureSpec(PredicateTargetSpec):
-    def __init__(self):
+    """!
+    @brief _CombatCreatureSpec target specification.
+    """
+    def __init__(self) -> None:
+        """!
+        @brief Initialize this object.
+        """
         super().__init__(
             lambda card, source, controller, state: CardType.CREATURE in card.get_types(state)
             and card.get_controller(state) is controller
@@ -890,7 +1130,13 @@ class _CombatCreatureSpec(PredicateTargetSpec):
 
 
 class _ArtifactSpec(PredicateTargetSpec):
-    def __init__(self):
+    """!
+    @brief _ArtifactSpec target specification.
+    """
+    def __init__(self) -> None:
+        """!
+        @brief Initialize this object.
+        """
         super().__init__(
             lambda card, source, controller, state: CardType.ARTIFACT in card.get_types(state),
             query=EqQuery(IK_TYPE, CardType.ARTIFACT)
@@ -898,7 +1144,13 @@ class _ArtifactSpec(PredicateTargetSpec):
 
 
 class _GoblinStaticSpec(PredicateTargetSpec):
-    def __init__(self):
+    """!
+    @brief _GoblinStaticSpec target specification.
+    """
+    def __init__(self) -> None:
+        """!
+        @brief Initialize this object.
+        """
         super().__init__(
             lambda card, source, controller, state: card is not source
             and card.get_controller(state) is source.get_controller(state)
@@ -908,7 +1160,13 @@ class _GoblinStaticSpec(PredicateTargetSpec):
 
 
 class _OwnCreatureTargetSpec(PredicateTargetSpec):
-    def __init__(self):
+    """!
+    @brief _OwnCreatureTargetSpec target specification.
+    """
+    def __init__(self) -> None:
+        """!
+        @brief Initialize this object.
+        """
         super().__init__(
             lambda card, source, controller, state: card.get_controller(state) is controller
             and CardType.CREATURE in card.get_types(state),
@@ -917,7 +1175,13 @@ class _OwnCreatureTargetSpec(PredicateTargetSpec):
 
 
 class _NonFlyingOpponentCreatureSpec(PredicateTargetSpec):
-    def __init__(self):
+    """!
+    @brief _NonFlyingOpponentCreatureSpec target specification.
+    """
+    def __init__(self) -> None:
+        """!
+        @brief Initialize this object.
+        """
         super().__init__(
             lambda card, source, controller, state: card.get_controller(state) is not controller
             and CardType.CREATURE in card.get_types(state)
@@ -1566,7 +1830,7 @@ STARTER_CATALOG = {
 }
 
 
-def starter_catalog():
+def starter_catalog() -> dict:
     """!
     @brief Return a fresh name-to-definition mapping for Arena starter games.
     """

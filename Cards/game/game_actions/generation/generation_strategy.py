@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 from dataclasses import dataclass
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Any
 
 if TYPE_CHECKING:
     from .action_node_option_generator import ActionNodeOptionGenerator
@@ -17,10 +17,8 @@ if TYPE_CHECKING:
 class ExecutionPlanStrategy:
     """!
     @brief Bundle of policies used to generate one execution plan.
-
     Defines how action-node options and target bindings are generated,
     and optionally how mana requirements are solved.
-
     @var options_gen
         Generator used to enumerate or validate `ActionNodeOption`s.
     @var target_gen
@@ -39,12 +37,10 @@ class ExecutionPlanStrategy:
 class ActionGenerationStrategy:
     """!
     @brief Collection of policies controlling complete ability-action generation.
-
     Separates generation of the selected sub-ability, its cost execution
     plan, and its main action execution plan. This allows the same
     pipelines to be reused for exhaustive AI generation and validation
     of player-supplied choices.
-
     @var subability_gen
         Generator selecting the cost/action sub-ability pair to process.
     @var cost_pipeline
@@ -71,9 +67,9 @@ class ActionGenerationStrategy:
     action_plan_pruning: PruningStrategy | None = None
 
 
-def execution_plan_strategy(*, mode=None, targets=None, mana_solver=None) -> ExecutionPlanStrategy:
-    """Compose existing generators for exhaustive or explicitly selected input.
-
+def execution_plan_strategy(*, mode: int | None = None, targets: Any = None, mana_solver: ManaSolver | None = None) -> ExecutionPlanStrategy:
+    """!
+    @brief Compose existing generators for exhaustive or explicitly selected input.
     None means enumerate targets/modes; an empty tuple is an explicit selection
     of no targets. A solver is supplied only for a cost-side strategy.
     """
@@ -87,10 +83,14 @@ def execution_plan_strategy(*, mode=None, targets=None, mana_solver=None) -> Exe
 
 
 def action_generation_strategy(
-    *, targets=None, cost_targets=None, mode=None, cost_mode=None,
-    mana_solver=None, subability_gen=None, cost_plan_pruning=None, action_plan_pruning=None,
+    *, targets: Any = None, cost_targets: Any = None, mode: int | None = None, cost_mode: int | None = None,
+    mana_solver: ManaSolver | None = None, subability_gen: SubAbilityGenerator | None = None,
+    cost_plan_pruning: PruningStrategy | None = None,
+    action_plan_pruning: PruningStrategy | None = None,
 ) -> ActionGenerationStrategy:
-    """One composition root shared by decision spaces and command adapters."""
+    """!
+    @brief One composition root shared by decision spaces and command adapters.
+    """
     from .exec_plan_gen_pipeline import ExecutionPlanPipeline
     from .subability_generator import FullSubAbilityGenerator
     from ...mana.mana_solver import SourceActivatingManaSolver

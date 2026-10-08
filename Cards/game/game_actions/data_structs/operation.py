@@ -23,25 +23,25 @@ class Operation(ABC):
         """
         self.context = context
 
-    def lki_cards(self, state: State):
-        """
-        Cards whose pre-batch information may be needed during event capture.
-
+    def lki_cards(self, state: State) -> tuple[object, ...] | None:
+        """!
+        @brief Cards whose pre-batch information may be needed during event capture.
         None means unknown: OperationExecutor must fall back to capturing
         all cards.
-
         An empty iterable means this operation is known not to require
         card LKI.
         """
         return None
 
-    def source_lki_cards(self):
-            source = self.context.source
-    
-            if getattr(source, "zone_revision", None) is not None:
-                return (source,)
-    
-            return ()
+    def source_lki_cards(self) -> tuple[object, ...]:
+        """!
+        @brief Return this operation source when source LKI is required.
+        @return Source-card tuple, or an empty tuple.
+        """
+        source = self.context.source
+        if getattr(source, "zone_revision", None) is not None:
+            return (source,)
+        return ()
 
     @abstractmethod
     def execute(self, state: State) -> list[GameEvent]:
@@ -60,7 +60,12 @@ class GameEventOperation(Operation):
 
     event_key: str
 
-    def lki_cards(self, state):
+    def lki_cards(self, state: State) -> tuple[object, ...]:
+        """!
+        @brief Return cards whose LKI may be needed for this event operation.
+        @param state Current game state.
+        @return Source-card tuple, or an empty tuple.
+        """
         source = self.context.source
 
         if getattr(source, "zone_revision", None) is not None:

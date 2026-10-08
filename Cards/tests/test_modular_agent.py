@@ -173,13 +173,14 @@ def test_bad_agent_settings_rejected(config):
         make_controller(config, seed=1, max_decisions=100)
 
 
-def test_config_runs_relative_deck_file_and_logs_metadata(tmp_path):
+@pytest.mark.parametrize("collect_stats", [True, False])
+def test_config_runs_relative_deck_file_and_logs_metadata(tmp_path, collect_stats):
     from game.cards.decks import load_arena_starter
     deck = load_arena_starter("blue")
     (tmp_path / "deck.txt").write_text(
         "\n".join(f"{count} {name}" for name, count in deck.cards), encoding="utf-8"
     )
-    config = {"seed": 11, "max_turns": 2, "players": [
+    config = {"seed": 11, "max_turns": 2, "collect_decision_stats": collect_stats, "players": [
         {"name": "New", "deck": {"file": "deck.txt"}, "agent": {"type": "modular"}},
         {"name": "Old", "deck": "white", "agent": {"type": "simple"}},
     ]}
@@ -187,6 +188,7 @@ def test_config_runs_relative_deck_file_and_logs_metadata(tmp_path):
     path.write_text(json.dumps(config), encoding="utf-8")
     result = run_config(path, output=tmp_path / "game.jsonl")
     assert result.status == "turn_limit", result.error
+    assert bool(result.decision_timing) is collect_stats
     rows = [json.loads(line) for line in (tmp_path / result.log).read_text(encoding="utf-8").splitlines()]
     assert rows[0]["metadata"]["effective_seed"] == 11
     assert rows[0]["decklists"][0]["cards"]

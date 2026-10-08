@@ -1,5 +1,6 @@
 """Shared discovery must not survive mutation, rollback, dynamic rules or yields."""
 from dataclasses import replace
+from contextlib import nullcontext
 import pytest
 
 from game.enums import ZoneType, ManaType
@@ -35,12 +36,13 @@ def test_static_sources_are_reused_without_querying_candidates(board, monkeypatc
 
 
 @pytest.mark.parametrize("change", ["tap", "control", "zone", "abilities"])
-def test_changed_sources_are_rediscovered_and_revalidated(board, change):
+@pytest.mark.parametrize("scoped", [True, False])
+def test_changed_sources_are_rediscovered_and_revalidated(board, change, scoped):
     from game.stat_type import STAT_INTRINSIC_MANA
     state, player, lands = board
     requirement = next(ManaValue("{W}{W}").payment_options())[0]
     generator = ManaGenerator()
-    with mana_discovery_scope():
+    with mana_discovery_scope() if scoped else nullcontext():
         assert generator.generate(requirement, state, player) is not None
         if change == "tap":
             lands[0].is_tapped = True
@@ -64,9 +66,10 @@ def test_reserved_sources_and_mana_pool_remain_per_search(board):
         assert all(step.source is None for step in plan.steps)
 
 
-def test_discovery_after_rollback_and_new_mutation_has_no_reused_version(board):
+@pytest.mark.parametrize("scoped", [True, False])
+def test_discovery_after_rollback_and_new_mutation_has_no_reused_version(board, scoped):
     state, player, lands = board
-    with mana_discovery_scope():
+    with mana_discovery_scope() if scoped else nullcontext():
         original = state.get_mana_sources(player)
         checkpoint = RuntimeCheckpoint(state)
         player.move_card(lands[0], ZoneType.GRAVEYARD, state)
@@ -78,7 +81,8 @@ def test_discovery_after_rollback_and_new_mutation_has_no_reused_version(board):
 
 
 @pytest.mark.parametrize("dynamic", [False, True])
-def test_live_effect_amount_is_not_reused(board, dynamic):
+@pytest.mark.parametrize("scoped", [True, False])
+def test_live_effect_amount_is_not_reused(board, dynamic, scoped):
     state, player, _ = board
     class DynamicMana(AddManaEffect):
         def get_amount(self, state, context):
@@ -93,7 +97,7 @@ def test_live_effect_amount_is_not_reused(board, dynamic):
     player.add_card(card, ZoneType.BATTLEFIELD)
     state.synchronise_registers()
     state.card_register.index_values(card)
-    with mana_discovery_scope():
+    with mana_discovery_scope() if scoped else nullcontext():
         old = next(source for source in state.get_mana_sources(player) if source.source is card)
         # Neither of these mutations emits a register notification.
         if dynamic:
@@ -129,3 +133,51 @@ def test_failed_generation_releases_context():
     with pytest.raises(ValueError):
         next(share_mana_discovery(generate()))
     assert current_discovery_context() is None
+
+
+def test_persistent_descriptions_survive_tapping_but_availability_is_live(board):
+    state, player, lands = board
+    first = state.get_mana_sources(player)
+    assert state.get_mana_sources(player) is first
+    lands[0].is_tapped = True
+    assert state.get_mana_sources(player) is first
+    requirement = next(ManaValue("{W}{W}").payment_options())[0]
+    assert ManaGenerator().generate(requirement, state, player) is None
+    lands[0].is_tapped = False
+    assert state.get_mana_sources(player) is first
+    assert ManaGenerator().generate(requirement, state, player) is not None
+
+
+def test_persistent_cache_invalidates_same_membership_output_change(board):
+    from game.stat_type import STAT_ABILITIES
+    state, player, lands = board
+    before = state.get_mana_sources(player)
+    token = state._mana_source_cache.token(state)
+    # Still a battlefield mana source controlled by the same player.
+    new = mana_ability(ManaType.BLUE)
+    lands[0].set_base_stat(STAT_ABILITIES, {new.key: new})
+    after = state.get_mana_sources(player)
+    assert state._mana_source_cache.token(state) == token
+    assert after is not before
+    assert any(ManaType.BLUE in symbol.mana
+               for source in after if source.source is lands[0] for symbol in source.produces)
+
+
+def test_persistent_cache_rechecks_unnotified_template_overrides(board, monkeypatch):
+    state, player, _ = board
+    before = state.get_mana_sources(player)
+    original = AddManaEffect.get_amount
+    monkeypatch.setattr(AddManaEffect, "get_amount", lambda self, state, context: original(self, state, context) + 2)
+    after = state.get_mana_sources(player)
+    assert after is not before
+    assert all(sum(source.produces.values()) == 3 for source in after)
+    assert all(sum(source.produces.values()) == 1 for source in before)
+
+
+def test_empty_source_cache_not_reused_after_source_enters(board):
+    state, _, _ = board
+    player = state.players[1]
+    assert state.get_mana_sources(player) == ()
+    card = Card(basic_land("Island"), player)
+    player.add_card(card, ZoneType.BATTLEFIELD)
+    assert [source.source for source in state.get_mana_sources(player)] == [card]

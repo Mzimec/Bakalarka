@@ -6,6 +6,7 @@ from helper.runtime_object import ImmutableKeyedCollection
 from .modifier import only_empty_builtin_sources
 from .stat import Stat, ModifiablePrimitiveStat, ModifiableReferenceStat
 from .card import Card, CardDefinition
+from .lki_signature import local_lki_signature
 from ..game_actions.data_structs.ability import AbilityDefinition
 from ..stat_type import (STAT_TYPES, STAT_SUBTYPES, STAT_COLORS, STAT_KEYWORDS,
                          STAT_ABILITIES, STAT_TRIGGERS, STAT_POWER, STAT_TOUGHNESS,
@@ -26,8 +27,10 @@ class _Entry:
 class CardSnapshotCache:
     """Separate LKI/index projections, bounded by the state's registered cards.
 
-    Modified/custom cards always use the supplied full reader. Unmodified
+    Custom/dynamic cards always use the supplied full reader. Unmodified
     cards depend only on an immutable stat table, definition and incarnation.
+    LKI also accepts proven constant counter/attachment bonuses, keyed by
+    their live inputs. Index projections keep their stricter eligibility.
     Reference comparisons also handle rollback and entry-copy restoration.
     """
     def __init__(self):
@@ -138,11 +141,13 @@ class CardSnapshotCache:
 
     def _capture(self, state, card, reader, entries, signature_reader=None):
         if not self._eligible(state, card):
+            if entries is self._entries:
+                return self._capture_modified(state, card, reader)
             return reader(state, card)
         identity = id(card)
         entry = entries.get(identity)
         if self._matches(entry, card) and (
-            signature_reader is None or entry.signature == signature_reader(card)
+            entry.signature == (signature_reader(card) if signature_reader else None)
         ):
             return entry.snapshot
         snapshot = reader(state, card)
@@ -153,6 +158,27 @@ class CardSnapshotCache:
                                       card.get_zone(), card.zone_revision, snapshot, signature)
         else:
             entries.pop(identity, None)
+        return snapshot
+
+    def _capture_modified(self, state, card, reader):
+        if (type(card) is not Card or type(card.definition) is not CardDefinition
+                or state.card_register.get_by_key(card.key) is not card):
+            return reader(state, card)
+        signature = local_lki_signature(state, card)
+        if signature is None:
+            return reader(state, card)
+        identity = id(card)
+        entry = self._entries.get(identity)
+        if self._matches(entry, card) and entry.signature == signature:
+            return entry.snapshot
+        snapshot = reader(state, card)
+        if self.has_immutable_inputs(card):
+            self._entries[identity] = _Entry(
+                card, card.stats, card.definition, card.get_zone(),
+                card.zone_revision, snapshot, signature,
+            )
+        else:
+            self._entries.pop(identity, None)
         return snapshot
 
     def discard(self, card):

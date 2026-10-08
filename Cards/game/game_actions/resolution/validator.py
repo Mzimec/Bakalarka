@@ -18,7 +18,6 @@ from ...enums import *
 class ValidationResult:
     """!
     @brief Result of validating a scheduled resolution.
-
     @var success
         Whether validation succeeded.
     @var message
@@ -42,7 +41,6 @@ class Validator(ABC):
     ) -> ValidationResult:
         """!
         @brief Validate a resolution against the current game state.
-
         @param state Current game state.
         @param resolution Resolution being checked.
         @return Validation result.
@@ -55,15 +53,14 @@ class CompositeValidator(Validator):
     @brief Run several validators in sequence and return the first failure.
     """
 
-    def __init__(self, validators: Iterable[Validator]):
+    def __init__(self, validators: Iterable[Validator]) -> None:
         """!
         @brief Create a validator from an ordered validator sequence.
-
         @param validators Validators to evaluate in order.
         """
         self.validators = list(validators)
 
-    def validate(self, state, resolution):
+    def validate(self, state: State, resolution: ScheduledResolution) -> ValidationResult:
         """!
         @brief Validate using each configured validator until one fails.
         """
@@ -81,7 +78,7 @@ class ZoneValidator(Validator):
     @brief Validate that an ability source is still in a usable zone.
     """
 
-    def validate(self, state, resolution):
+    def validate(self, state: State, resolution: ScheduledResolution) -> ValidationResult:
         """!
         @brief Check source-zone legality for ability cost resolution.
         """
@@ -106,7 +103,7 @@ class TimingValidator(Validator):
     @brief Recheck ability-level legality immediately before paying costs.
     """
 
-    def validate(self, state, resolution):
+    def validate(self, state: State, resolution: ScheduledResolution) -> ValidationResult:
         """!
         @brief Evaluate the ability's live validation hook for cost resolution.
         """
@@ -132,15 +129,13 @@ class TargetValidator(Validator):
 
     def validate(
         self,
-        state,
-        resolution,
+        state: State,
+        resolution: ScheduledResolution,
     ) -> ValidationResult:
         """!
         @brief Check whether all currently required selected targets remain legal.
-
         Bindings already filtered during resolution preparation are accepted
         without repeating full target validation.
-
         @param state Current game state.
         @param resolution Resolution whose target binding should be checked.
         @return Validation result.
@@ -199,17 +194,14 @@ class TargetValidator(Validator):
         return ValidationResult()
 
 
-def prepare_resolution(state, resolution):
+def prepare_resolution(state: State, resolution: ScheduledResolution) -> tuple[ScheduledResolution, ValidationResult]:
     """!
     @brief Remove illegal targets immediately before effect resolution.
-
     Implements the resolution-time target rule: targets that became illegal
     are removed individually, while the whole resolution fails only when it
     originally had targets and none of them remain legal.
-
     Cost resolutions and generators other than `AbilityExecutionPlan` are left
     unchanged.
-
     @param state Current game state.
     @param resolution Scheduled resolution to prepare.
     @return Tuple `(prepared_resolution, validation_result)`.

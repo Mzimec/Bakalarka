@@ -4,6 +4,7 @@ Applicability is pure. Only the selected transform may consume a runtime budget.
 Each effect applies once to an event, including all descendants of a split event.
 """
 
+from __future__ import annotations
 from dataclasses import dataclass, field
 from collections import deque
 from copy import copy
@@ -16,11 +17,9 @@ from ...operations.card_operations import DamagePlayerOperation, MoveCardOperati
 class ReplacementEffectDefinition:
     """!
     @brief Immutable definition of a replacement effect.
-
     Defines applicability, transformation, active zones, ordering priority,
     and optional runtime limits. A definition is bound to a concrete source
     card through `bind()` before participating in replacement resolution.
-
     @var key
         Stable identifier used by static-ability filtering.
     @var predicate
@@ -58,7 +57,7 @@ class ReplacementEffectDefinition:
     # operation types are included, as with isinstance in ordinary predicates.
     operation_types: tuple[type, ...] | None = None
 
-    def __post_init__(self):
+    def __post_init__(self) -> None:
         """!
         @brief Validate priority and runtime-limit configuration.
         """
@@ -76,10 +75,9 @@ class ReplacementEffectDefinition:
             if value is not None and (type(value) is not int or value < 0):
                 raise ValueError("Replacement limits must be nonnegative integers.")
 
-    def bind(self, source=None):
+    def bind(self, source: object | None = None) -> ReplacementEffect:
         """!
         @brief Bind this definition to a runtime source.
-
         @param source Runtime object providing the replacement effect.
         @return Bound `ReplacementEffect` instance.
         """
@@ -90,11 +88,9 @@ class ReplacementEffectDefinition:
 class ReplacementEffect:
     """!
     @brief Runtime replacement effect bound to one source incarnation.
-
     Stores source revision and mutable usage/budget state so the same static
     definition can be instantiated independently for different card
     incarnations.
-
     @var definition
         Immutable replacement-effect definition.
     @var source
@@ -113,25 +109,26 @@ class ReplacementEffect:
     remaining_uses: int | None = field(init=False)
     remaining_budget: int | None = field(init=False)
 
-    def __post_init__(self):
+    def __post_init__(self) -> None:
+        """!
+        @brief Capture source incarnation and initialize runtime limits.
+        """
         self.source_revision = getattr(self.source, "zone_revision", None)
         self.remaining_uses = self.definition.uses
         self.remaining_budget = self.definition.budget
 
     @property
-    def key(self):
+    def key(self) -> str:
         """!
         @brief Return the stable key of the underlying definition.
         """
         return self.definition.key
 
-    def active(self, state, operation=None):
+    def active(self, state: object, operation: object | None = None) -> bool:
         """!
         @brief Check whether this runtime effect is currently active.
-
         Considers exhausted uses/budget, duration, source zone, source
         incarnation, and special self-entry handling.
-
         @param state Current game state.
         @param operation Optional operation currently being replaced.
         @return `True` if this runtime effect may currently participate.
@@ -166,7 +163,7 @@ class ReplacementEffect:
 
         return True
 
-    def applies(self, state, operation):
+    def applies(self, state: object, operation: object) -> bool:
         """!
         @brief Check both runtime activity and declarative applicability.
         """
@@ -177,13 +174,11 @@ class ReplacementEffect:
             and self.definition.predicate(state, self, operation)
         )
 
-    def apply(self, state, operation):
+    def apply(self, state: object, operation: object) -> tuple[object, ...]:
         """!
         @brief Apply the selected transform and consume one use if limited.
-
         Applicability checks remain pure; mutable counters are consumed only
         after this effect has actually been selected by the resolver.
-
         @return Tuple of replacement operations.
         """
         result = tuple(
@@ -200,10 +195,9 @@ class ReplacementEffect:
         return result
 
 
-def affected_player(state, operation):
+def affected_player(state: object, operation: object) -> object:
     """!
     @brief Determine which player makes replacement choices for an operation.
-
     @param state Current game state.
     @param operation Operation being replaced.
     @return Player considered affected by the operation.
@@ -235,14 +229,12 @@ def affected_player(state, operation):
     return operation.context.controller
 
 
-def active_effects(state):
+def active_effects(state: object) -> tuple[object, ...]:
     """!
     @brief Return active replacement effects bound to current card incarnations.
-
     Static replacement definitions are cached per card zone revision so their
     runtime limits survive repeated replacement passes but reset when the card
     becomes a new incarnation.
-
     @param state Current game state.
     @return Tuple of currently active replacement effects and global rules.
     """
@@ -295,14 +287,12 @@ def active_effects(state):
     )
 
 
-def incoming_effects(state, operation):
+def incoming_effects(state: object, operation: object) -> tuple[object, ...]:
     """!
     @brief Collect self-entry replacement effects for an entering permanent.
-
     Entry replacement effects must be evaluated before the permanent exists
     on the battlefield. Their availability is therefore determined against
     projected entry characteristics rather than the current state.
-
     @param state Current game state.
     @param operation Candidate battlefield-entry operation.
     @return Tuple of bound replacement effects available during entry.
@@ -382,21 +372,18 @@ def incoming_effects(state, operation):
 class ReplacementResolver:
     """!
     @brief Resolve competing replacement effects until operations are final.
-
     Each replacement effect may apply at most once to an original event and
     all descendant operations produced from it. Competing effects are first
     restricted by CR 616 priority and then chosen by the affected player.
     """
 
-    def replace(self, state, operations):
+    def replace(self, state: object, operations: object) -> tuple[object, ...]:
         """!
         @brief Apply replacement effects to one operation or simultaneous batch.
-
         Simultaneous operations are ordered in APNAP order where necessary so
         players can choose the order in which finite replacement resources are
         consumed. Each operation is repeatedly replaced until no applicable
         effect remains.
-
         @param state Current game state.
         @param operations Operations to pass through replacement processing.
         @return Tuple of final operations after all replacements.
@@ -490,7 +477,12 @@ class ReplacementResolver:
                 result.append(operation)
                 continue
 
-            def priority(effect):
+            def priority(effect: object) -> int:
+                """!
+                @brief Return the replacement priority category for a candidate effect.
+                @param effect Replacement candidate.
+                @return Priority bucket.
+                """
                 return (
                     effect.definition.priority
                     if isinstance(effect, ReplacementEffect)
@@ -566,15 +558,14 @@ class ReplacementResolver:
 
 
 def damage_multiplier(
-    key,
-    factor,
+    key: str,
+    factor: int,
     *,
-    predicate=None,
-    **kwargs,
-):
+    predicate: object | None = None,
+    **kwargs: object,
+) -> ReplacementEffectDefinition:
     """!
     @brief Create a replacement effect multiplying matching player damage.
-
     @param key Unique replacement-effect key.
     @param factor Positive integer damage multiplier.
     @param predicate Optional additional applicability predicate.
@@ -585,7 +576,7 @@ def damage_multiplier(
             "Damage multiplier must be a positive integer."
         )
 
-    def matches(state, effect, operation):
+    def matches(state: object, effect: object, operation: object) -> bool:
         """!
         @brief Check whether this effect applies to the damage operation.
         """
@@ -602,7 +593,7 @@ def damage_multiplier(
             )
         )
 
-    def transform(state, effect, operation):
+    def transform(state: object, effect: object, operation: object) -> tuple[object, ...]:
         """!
         @brief Return a copy of the damage operation with multiplied damage.
         """
@@ -619,19 +610,17 @@ def damage_multiplier(
 
 
 def prevent_damage(
-    key,
-    amount,
+    key: str,
+    amount: int,
     *,
-    total=False,
-    predicate=None,
-    **kwargs,
-):
+    total: bool = False,
+    predicate: object | None = None,
+    **kwargs: object,
+) -> ReplacementEffectDefinition:
     """!
     @brief Create a replacement effect preventing matching player damage.
-
     If `total` is false, each application prevents up to `amount`. If true,
     the amount is a shared runtime budget consumed across applications.
-
     @param key Unique replacement-effect key.
     @param amount Positive prevention amount.
     @param total Whether `amount` is a shared prevention budget.
@@ -643,7 +632,7 @@ def prevent_damage(
             "Prevention amount must be a positive integer."
         )
 
-    def matches(state, effect, operation):
+    def matches(state: object, effect: object, operation: object) -> bool:
         """!
         @brief Check whether this effect applies to the damage operation.
         """
@@ -665,7 +654,7 @@ def prevent_damage(
             )
         )
 
-    def transform(state, effect, operation):
+    def transform(state: object, effect: object, operation: object) -> tuple[object, ...]:
         """!
         @brief Return the remaining damage after prevention.
         """
@@ -698,17 +687,16 @@ def prevent_damage(
 
 
 def replace_zone(
-    key,
-    origin,
-    destination,
-    instead,
+    key: str,
+    origin: object,
+    destination: object,
+    instead: object,
     *,
-    predicate=None,
-    **kwargs,
-):
+    predicate: object | None = None,
+    **kwargs: object,
+) -> ReplacementEffectDefinition:
     """!
     @brief Create a replacement effect redirecting matching zone changes.
-
     @param key Unique replacement-effect key.
     @param origin Required origin zone, or `None` for any origin.
     @param destination Destination zone being replaced.
@@ -717,7 +705,7 @@ def replace_zone(
     @return Zone-change replacement-effect definition.
     """
 
-    def matches(state, effect, operation):
+    def matches(state: object, effect: object, operation: object) -> bool:
         """!
         @brief Check whether this effect applies to the move operation.
         """
@@ -739,7 +727,7 @@ def replace_zone(
             )
         )
 
-    def transform(state, effect, operation):
+    def transform(state: object, effect: object, operation: object) -> tuple[object, ...]:
         """!
         @brief Return a copy of the move operation with redirected destination.
         """

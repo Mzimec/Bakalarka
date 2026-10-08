@@ -12,14 +12,24 @@ if TYPE_CHECKING:
 
 
 class ExecutionPlanValidator:
-    """Own target and cost validation shared by every plan consumer."""
+    """!
+    @brief Own target and cost validation shared by every plan consumer.
+    """
 
     def validation_error(self, plan: AbilityExecutionPlan, ability: Ability, state: State, *, is_cost: bool) -> str | None:
+        """!
+        @brief Validate target legality and optional cost-payment restrictions.
+        @param plan Execution plan being checked.
+        @param ability Runtime ability owning the plan.
+        @param state Current game state.
+        @param is_cost Whether the plan represents a cost side.
+        @return Error message, or `None` when legal.
+        """
         if not plan.binding.are_targets_valid(
             ability.source, ability.controller, state, plan.effects.get_used_slots()
         ):
             return "Targets were no longer valid."
-        if is_cost:
+        if is_cost and plan.effects.sequence:
             context = ResolutionContext(source=ability.source, controller=ability.controller,
                                         ability=ability.definition, action_key=ability.key, is_cost=True)
             for binding in plan.effects.sequence:
@@ -34,7 +44,9 @@ class ExecutionPlanValidator:
         self, plans: Iterable[AbilityExecutionPlan], ability: Ability, state: State,
         *, is_cost: bool, strict: bool = False,
     ) -> Iterator[AbilityExecutionPlan]:
-        """Validate before applying budgets; strict command input retains errors."""
+        """!
+        @brief Validate before applying budgets; strict command input retains errors.
+        """
         for plan in plans:
             error = self.validation_error(plan, ability, state, is_cost=is_cost)
             if error:

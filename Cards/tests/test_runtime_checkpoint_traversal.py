@@ -83,3 +83,65 @@ def test_deep_graph_and_explicit_operation_roots_can_be_watched():
     checkpoint.rollback()
     assert leaf == []
     assert operation.values == [1]
+
+
+def test_native_index_snapshot_restores_memberships_capacity_aliases_and_nested_boundaries():
+    from helper.query_system.object_register import BitSet, SimpleObjectIndexProvider
+    provider = SimpleObjectIndexProvider(("zone", "alias"))
+    bucket = BitSet(3)
+    groups = provider.data
+    group = groups["zone"]
+    group["hand"] = bucket
+    groups["alias"] = group
+    bucket.extra = ["before"]
+    capacity = bucket._max_elements, bucket._all_bits_mask
+    outer = RuntimeCheckpoint(provider)
+    bucket.add(1024)
+    inner = RuntimeCheckpoint(provider)
+    bucket.remove(0)
+    bucket.extra.append("tentative")
+    group.clear()
+    group["stack"] = BitSet(8)
+    provider._data = {}
+    inner.rollback()
+    assert provider.data is groups and groups["zone"] is group
+    assert groups["alias"] is group and group["hand"] is bucket
+    assert bucket.contains(0) and bucket.contains(1024)
+    assert bucket.extra == ["before"]
+    outer.rollback()
+    assert tuple(bucket) == (0, 1)
+    assert (bucket._max_elements, bucket._all_bits_mask) == capacity
+    assert tuple(~bucket) == tuple(range(2, capacity[0]))
+
+
+def test_index_snapshot_preserves_generic_traversal_for_custom_buckets_and_containers():
+    from helper.query_system.object_register import BitSet, SimpleObjectIndexProvider
+
+    class CustomBitSet(BitSet):
+        pass
+
+    class CustomGroup(dict):
+        pass
+
+    class RuntimeInt(int):
+        pass
+
+    CustomBitSet.__module__ = RuntimeInt.__module__ = "helper.checkpoint_test"
+    provider = SimpleObjectIndexProvider(("native", "custom"))
+    custom = CustomBitSet(1)
+    custom.extra = [1]
+    native = BitSet(2)
+    native._bits = RuntimeInt(2)
+    native._bits.extra = [2]
+    provider.data["native"]["custom"] = custom
+    provider.data["native"]["native"] = native
+    provider.data["custom"] = CustomGroup(shared=custom, mutable=[3])
+    before = RuntimeCheckpoint(provider)
+    custom.extra.clear()
+    native._bits.extra.clear()
+    provider.data["custom"]["mutable"].clear()
+    provider.clear()
+    before.rollback()
+    assert provider.data["native"]["custom"] is custom
+    assert custom.extra == [1] and native._bits.extra == [2]
+    assert provider.data["custom"]["mutable"] == [3]

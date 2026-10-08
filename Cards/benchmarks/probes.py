@@ -11,6 +11,14 @@ from game.game_actions.generation.decision_abstraction.option_space import (
 
 def install_cost_checkpoint_probe(profiler):
     from game.game_actions.resolution.cost_transaction import RuntimeCheckpoint
+    from game.game_actions.resolution import cost_scope
+    original_fallback = cost_scope._full_checkpoint
+
+    def fallback(reason):
+        profiler.count(f"cost.scope.fallback.{reason}")
+        return original_fallback(reason)
+
+    profiler.patch_replacement(cost_scope, "_full_checkpoint", fallback)
     original = RuntimeCheckpoint.__init__
 
     @wraps(original)
@@ -159,6 +167,18 @@ def install_mana_discovery_probe(profiler):
 
     profiler.patch_replacement(ManaDiscoveryContext, "lookup", lookup)
 
+    from game.mana.source_cache import StaticManaSourceCache
+    persistent_lookup = StaticManaSourceCache.lookup
+
+    @wraps(persistent_lookup)
+    def lookup_persistent(cache, state, player):
+        result = persistent_lookup(cache, state, player)
+        suffix = "hit" if result is not None else f"miss.{cache.miss_reason}"
+        profiler.count(f"mana.source_revision_cache.{suffix}")
+        return result
+
+    profiler.patch_replacement(StaticManaSourceCache, "lookup", lookup_persistent)
+
 
 def install_mana_search_probe(profiler):
     from game.mana.mana_generator import ManaGenerator
@@ -177,13 +197,13 @@ def install_mana_search_probe(profiler):
 
 def install_sba_candidate_probe(profiler):
     from game.game_actions.resolution.sba_candidates import SBACandidateFilter
-    original = SBACandidateFilter.empty
+    original = SBACandidateFilter.select
 
     @wraps(original)
-    def empty(selection, state):
+    def select(selection, state):
         result = original(selection, state)
-        profiler.count("sba.candidates.skipped" if result else "sba.candidates.required")
+        profiler.count("sba.candidates.skipped" if result is not None and not result else "sba.candidates.required")
         return result
 
-    profiler.patch_replacement(SBACandidateFilter, "empty", empty)
-    profiler.patch_method(SBACandidateFilter, "empty", "sba.candidates")
+    profiler.patch_replacement(SBACandidateFilter, "select", select)
+    profiler.patch_method(SBACandidateFilter, "select", "sba.candidates")

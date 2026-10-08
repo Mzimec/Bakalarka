@@ -16,11 +16,20 @@ if TYPE_CHECKING:
 
 
 class AbilityDecisionGenerationPipeline:
+    """!
+    @brief Generates concrete actions for one requested runtime ability.
+    """
     def generate(
         self,
         request: AbilityDecisionRequest,
         policy: AbilityGenerationPolicy,
     ) -> Iterator[GameAction]:
+        """!
+        @brief Validate ownership and yield pruned ability decisions.
+        @param request Ability decision request.
+        @param policy Ability generation policy.
+        @return Iterator over generated game actions.
+        """
         if request.ability.controller is not request.player:
             raise ValueError("The ability must belong to the requesting player.")
         yield from apply_pruning(self._generate(request, policy), policy.pruning)
@@ -30,6 +39,12 @@ class AbilityDecisionGenerationPipeline:
         request: AbilityDecisionRequest, 
         policy: AbilityGenerationPolicy,
     ) -> Iterator[GameAction]:
+        """!
+        @brief Generate unpruned ability actions for the requested ability.
+        @param request Ability decision request.
+        @param policy Ability generation policy.
+        @return Iterator over generated game actions.
+        """
         if request.choices is not None:
             yield from request.choices
             return
@@ -50,11 +65,20 @@ class AbilityDecisionGenerationPipeline:
 
 
 class PriorityDecisionGenerationPipeline:
+    """!
+    @brief Generates priority-window decisions for the active priority player.
+    """
     def generate(
         self,
         request: PriorityDecisionRequest,
         policy: PriorityGenerationPolicy,
     ) -> Iterator[GameAction]:
+        """!
+        @brief Yield pass, ability, land-play and optional concede actions.
+        @param request Priority decision request.
+        @param policy Priority generation policy.
+        @return Iterator over generated game actions.
+        """
         from ...data_structs.game_action import PassPriorityAction, ConcedeAction
         from ....game_state.collectors.priority_ability_collector import PRIORITY_ABILITY_COLLECTOR
 
@@ -99,7 +123,16 @@ class PriorityDecisionGenerationPipeline:
 
 
 class ManaDecisionGenerationPipeline:
+    """!
+    @brief Generates a legal mana plan for a mana request.
+    """
     def generate(self, request: ManaGenerationRequest, policy: ManaGenerationPolicy) -> Iterator[ManaSolverResult]:
+        """!
+        @brief Yield the legal mana plan produced by the configured solver.
+        @param request Mana generation request.
+        @param policy Mana generation policy.
+        @return Iterator containing a mana solver result if one exists.
+        """
         from ....mana.mana_solver import SourceActivatingManaSolver
         solver = policy.solver or SourceActivatingManaSolver()
         plan = solver.get_mana_plan(

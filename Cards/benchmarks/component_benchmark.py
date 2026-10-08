@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import argparse
 import json
 from datetime import datetime
 from pathlib import Path
@@ -68,6 +69,7 @@ def configure_profiler(profiler: ComponentProfiler):
         "capture_single_card",
         "lki.capture_card",
     )
+    profiler.patch_function(event_bus, "_capture_single_card", "lki.rebuild")
 
     profiler.patch_function(
         event_bus,
@@ -155,9 +157,23 @@ def configure_profiler(profiler: ComponentProfiler):
     install_layer_candidate_probe(profiler)
 
 
-def main():
+def main(argv=None):
+    parser = argparse.ArgumentParser(description="Profile game components over 20 seeded matches.")
+    parser.add_argument("--no-decision-stats", action="store_true",
+                        help="Disable engine decision telemetry (component profiler remains enabled).")
+    parser.add_argument("--no-source-cache", action="store_true",
+                        help="Disable persistent mana-source caching; retain scoped discovery caching.")
+    args = parser.parse_args(argv)
+    from benchmarks.cache_controls import source_cache_mode
+    with source_cache_mode(not args.no_source_cache):
+        return run_benchmark(args)
+
+
+def run_benchmark(args):
     started_at = datetime.now().astimezone()
     environment = collect_environment(Path(__file__).resolve().parents[1])
+    environment["instrumentation"]["decision_stats_enabled"] = not args.no_decision_stats
+    environment["instrumentation"]["persistent_mana_source_cache_enabled"] = not args.no_source_cache
     profiler = ComponentProfiler()
     configure_profiler(profiler)
 
@@ -177,6 +193,7 @@ def main():
                     seed=seed,
                     starting_player=starting_player,
                     max_turns=100,
+                    collect_decision_stats=not args.no_decision_stats,
                     controllers=(
                         ModularAgent(),
                         SimpleAgent(),
@@ -239,6 +256,8 @@ def main():
             "starting_players": [0, 1],
             "max_turns": 100,
             "event_logging": False,
+            "collect_decision_stats": not args.no_decision_stats,
+            "persistent_mana_source_cache": not args.no_source_cache,
         },
         "timing_scope": {
             "elapsed_seconds": "Wall time of match loop, excluding imports, metadata, profiler setup/restore and report writing.",

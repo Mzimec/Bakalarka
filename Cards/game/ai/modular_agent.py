@@ -20,6 +20,7 @@ from game.ai.simple_agent import SimpleAgent
 from game.mana.mana_solver import SourceActivatingManaSolver
 from game.enums import ZoneType
 from game.game_actions.data_structs.game_action import PassPriorityAction, GameAction
+from game.game_actions.generation.decision_abstraction.priority_availability import NON_MANA_PRIORITY_AVAILABILITY
 
 
 @dataclass
@@ -37,16 +38,21 @@ class HeuristicSelector:
     """!
     @brief Select the highest prior; replace this policy with search or an LLM.
     """
-    def choose(self, observation, candidates):
+    def choose(self, observation: object, candidates: object) -> int:
+        """!
+        @brief Choose an index from candidate decisions.
+        """
         return max(range(len(candidates)), key=lambda index: candidates[index].score)
 
     @property
-    def requires_observation(self):
-        """Overridden selectors keep receiving observations unless they opt out."""
+    def requires_observation(self) -> bool:
+        """!
+        @brief Overridden selectors keep receiving observations unless they opt out.
+        """
         return type(self).choose is not HeuristicSelector.choose or "choose" in vars(self)
 
 
-def card_view(card, state):
+def card_view(card: object, state: object) -> dict:
     """!
     @brief Snapshot a visible card without serializing runtime references.
     """
@@ -62,7 +68,7 @@ def card_view(card, state):
     }
 
 
-def observation(state, player):
+def observation(state: object, player: object) -> dict:
     """!
     @brief Expose own hand and public battlefield, never library order or enemy hand.
     """
@@ -97,10 +103,12 @@ def observation(state, player):
 class ActionEvaluator:
     """!
     @brief Rank concrete target choices using baseline value and threat size.
-
     Scores are priors, not predictions from simulated future states.
     """
-    def score(self, state, player, action):
+    def score(self, state: object, player: object, action: object) -> float:
+        """!
+        @brief Return a heuristic score for a candidate action.
+        """
         value = SimpleAgent.score(self, state, player, action)
         for target in SimpleAgent._targets(action):
             if hasattr(target, "get_power") and target.get_controller(state) is not player:
@@ -112,19 +120,27 @@ class ActionEvaluator:
 class ParameterPolicy:
     """!
     @brief Bound X proposals before legal cost and target generation.
-
     This is a proposal budget, not a claim that higher X values are illegal.
     """
-    def __init__(self, max_x=8):
+    def __init__(self, max_x: int = 8) -> None:
+        """!
+        @brief Initialize this object.
+        """
         if type(max_x) is not int or max_x < 0:
             raise ValueError("Maximum proposed X must be nonnegative.")
         self.max_x = max_x
 
-    def values(self, ability, state):
+    def values(self, ability: object, state: object) -> object:
+        """!
+        @brief values helper.
+        """
         cost = str(ability.source.get_mana_cost(state))
         return range(self.max_x, -1, -1) if "X" in cost else (0,)
 
-    def generate(self, ability, state):
+    def generate(self, ability: object, state: object) -> object:
+        """!
+        @brief Yield candidates for the supplied request.
+        """
         from game.game_actions.generation.decision_abstraction.parameters import AbilityParameters
         for value in self.values(ability, state):
             yield AbilityParameters(x_value=value)
@@ -133,12 +149,22 @@ class ParameterPolicy:
 class CandidateGenerator:
     """!
     @brief Bound target/cost search and retain the best concrete actions per ability.
-
     The mana policy supplies a canonical payment, avoiding equivalent tap-order
     branches. Target and cost plans still come from the engine's public pipeline.
     """
-    def __init__(self, *, target_limit=24, cost_limit=4, keep_per_ability=4,
-                 mana_solver=None, evaluator=None, parameters=None):
+    def __init__(
+        self,
+        *,
+        target_limit: int = 24,
+        cost_limit: int = 4,
+        keep_per_ability: int = 4,
+        mana_solver: object = None,
+        evaluator: object = None,
+        parameters: object = None,
+    ) -> None:
+        """!
+        @brief Initialize this object.
+        """
         if any(type(v) is not int or v < 1 for v in
                (target_limit, cost_limit, keep_per_ability)):
             raise ValueError("Candidate budgets must be positive integers.")
@@ -149,7 +175,14 @@ class CandidateGenerator:
         self.evaluator = evaluator or ActionEvaluator()
         self.parameters = parameters or ParameterPolicy()
 
-    def generate(self, state, player, attempted):
+    def generate(
+        self,
+        state: object,
+        player: object,
+        attempted: object,
+        *,
+        collector: object = None,
+    ) -> object:
         """!
         @brief Return ranked legal witnesses plus the always-available priority pass.
         """
@@ -168,6 +201,7 @@ class CandidateGenerator:
             ability_gp=AbilityGenerationPolicy(strategy=strategy, parameter_strategy=self.parameters),
             ability_space_ps=FilterPruning(lambda ability: (ability.source.command_id, ability.key) not in attempted),
             include_mana=False, include_concede=False,
+            collector=collector,
         )
         result, by_ability = [], {}
         for action in PriorityDecisionRequest(state, player).option_space(policy):
@@ -185,8 +219,10 @@ class CandidateGenerator:
             result.extend(ranked)
         return result
 
-    def _ability_candidate(self, state, player, action):
-        """Agent-owned ranking and presentation of an already generated action."""
+    def _ability_candidate(self, state: object, player: object, action: object) -> object:
+        """!
+        @brief Agent-owned ranking and presentation of an already generated action.
+        """
         from game.enums import SAVariableType
         cost = action.cost_generator
         payment = cost.mana_solver_result
@@ -209,10 +245,21 @@ class CandidateGenerator:
 
 
 class CombatPolicy:
-    """Compose proposals, shared legality pipelines and agent-owned evaluation."""
+    """!
+    @brief Compose proposals, shared legality pipelines and agent-owned evaluation.
+    """
 
-    def __init__(self, *, max_assignments=512, attackers_strategy=None,
-                 blockers_strategy=None, evaluator=None):
+    def __init__(
+        self,
+        *,
+        max_assignments: int = 512,
+        attackers_strategy: object = None,
+        blockers_strategy: object = None,
+        evaluator: object = None,
+    ) -> None:
+        """!
+        @brief Initialize this object.
+        """
         from game.ai.combat_strategies import (
             BoundedBlockersStrategy, ConservativeAttackersStrategy, CombatEvaluator,
         )
@@ -223,7 +270,10 @@ class CombatPolicy:
         self.attackers_strategy = attackers_strategy or ConservativeAttackersStrategy(self.evaluator)
         self.blockers_strategy = blockers_strategy or BoundedBlockersStrategy(max_assignments)
 
-    def attackers(self, state, player):
+    def attackers(self, state: object, player: object) -> object:
+        """!
+        @brief attackers helper.
+        """
         from game.game_actions.generation.decision_abstraction.requests import DeclareAttackersRequest
         from game.game_actions.generation.decision_abstraction.policies import DeclareAttackersPolicy
         request = DeclareAttackersRequest(state, player)
@@ -231,7 +281,10 @@ class CombatPolicy:
             "kind": "attack", "attackers": [c.command_id for c in option.declarations],
         }) for option in request.option_space(DeclareAttackersPolicy(strategy=self.attackers_strategy))]
 
-    def blockers(self, state, player):
+    def blockers(self, state: object, player: object) -> object:
+        """!
+        @brief blockers helper.
+        """
         from game.game_actions.generation.decision_abstraction.requests import DeclareBlockersRequest
         from game.game_actions.generation.decision_abstraction.policies import DeclareBlockersPolicy
         request = DeclareBlockersRequest(state, player)
@@ -244,10 +297,20 @@ class CombatPolicy:
 class ModularAgent(SimpleAgent):
     """!
     @brief Delegate proposal, valuation, payment and combat to replaceable policies.
-
     Inherited auxiliary decisions provide deterministic mulligans and discards.
     """
-    def __init__(self, *, candidates=None, selector=None, combat=None, candidate_limit=32, **kwargs):
+    def __init__(
+        self,
+        *,
+        candidates: object = None,
+        selector: object = None,
+        combat: object = None,
+        candidate_limit: int = 32,
+        **kwargs: object,
+    ) -> None:
+        """!
+        @brief Initialize this object.
+        """
         super().__init__(**kwargs)
         if type(candidate_limit) is not int or candidate_limit < 2:
             raise ValueError("Main candidate limit must be at least two.")
@@ -256,7 +319,10 @@ class ModularAgent(SimpleAgent):
         self.selector = selector or HeuristicSelector()
         self.combat_policy = combat or CombatPolicy()
 
-    def _choose(self, state, player, candidates):
+    def _choose(self, state: object, player: object, candidates: object) -> object:
+        """!
+        @brief Internal helper for ModularAgent.
+        """
         if not candidates:
             raise ValueError("No legal decision candidate was generated.")
         # Keep passing available even when pruning low-prior branches.
@@ -285,7 +351,16 @@ class ModularAgent(SimpleAgent):
         if window != self._window:
             self._window = window
             self._attempted.clear()
-        candidates = self.candidates.generate(state, player, self._attempted)
+        # A custom generator may offer a different policy or synthetic actions.
+        # Only the built-in generator has the no-mana/no-concede contract.
+        prepared = None
+        if (self.auto_pass and type(self.candidates) is CandidateGenerator
+                and "generate" not in vars(self.candidates)):
+            prepared = NON_MANA_PRIORITY_AVAILABILITY.prepare(state, player, self._attempted)
+        if prepared is not None and prepared.empty:
+            return self._auto_pass_result(request, reason="no_available_abilities")
+        candidates = (self.candidates.generate(state, player, self._attempted, collector=prepared)
+                      if prepared is not None else self.candidates.generate(state, player, self._attempted))
         # This is the configured policy's space, not a claim about all legal
         # actions. Do not build an observation or call a model for its sole pass.
         if (self.auto_pass and len(candidates) == 1
@@ -297,10 +372,16 @@ class ModularAgent(SimpleAgent):
         return DecisionResult(selected.action)
 
     def decide_attackers(self, request: DeclareAttackersRequest) -> DecisionResult[DeclareAttackersOption]:
+        """!
+        @brief Choose an attacker declaration.
+        """
         state, player = request.state, request.player
         return DecisionResult(DeclareAttackersOption(self._choose(state, player, self.combat_policy.attackers(state, player)).action))
 
     def decide_blockers(self, request: DeclareBlockersRequest) -> DecisionResult[DeclareBlockersOption]:
+        """!
+        @brief Choose a blocker declaration.
+        """
         state, player = request.state, request.player
         return DecisionResult(DeclareBlockersOption(self._choose(state, player, self.combat_policy.blockers(state, player)).action))
 

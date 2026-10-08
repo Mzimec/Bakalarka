@@ -4,16 +4,16 @@ Custom conditions use ``event.payload['last_known']`` for the previous zone,
 types and controller, and ``matches_trigger`` to inspect their own source.
 """
 
+from __future__ import annotations
 from dataclasses import dataclass
 
 from ..data_structs.ability import TriggerAbility, TriggerCondition
 from ...enums import CardType, ZoneType
 
 
-def _zone_name(zone):
+def _zone_name(zone: object) -> object:
     """!
     @brief Normalize a zone value to its enum name when available.
-
     @param zone Zone enum or already-normalized value.
     @return Zone name or the original value.
     """
@@ -24,7 +24,6 @@ def _zone_name(zone):
 class EventKeyCondition(TriggerCondition):
     """!
     @brief Match a specific game-event key.
-
     @var key
         Event key that must match.
     @var source_only
@@ -34,13 +33,13 @@ class EventKeyCondition(TriggerCondition):
     key: str
     source_only: bool = False
 
-    def matches(self, state, event):
+    def matches(self, state: object, event: object) -> bool:
         """!
         @brief Check whether the event has the configured key.
         """
         return event.key == self.key
 
-    def matches_trigger(self, trigger, state):
+    def matches_trigger(self, trigger: object, state: object) -> bool:
         """!
         @brief Evaluate the condition with access to the bound trigger source.
         """
@@ -54,10 +53,8 @@ class EventKeyCondition(TriggerCondition):
 class ZoneChangeCondition(TriggerCondition):
     """!
     @brief Match card movement between zones with optional source restrictions.
-
     Leaving-the-battlefield conditions use last-known information so controller
     and type checks observe the card as it existed before leaving.
-
     @var origin
         Required origin zone, or `None` for any origin.
     @var destination
@@ -80,16 +77,15 @@ class ZoneChangeCondition(TriggerCondition):
     card_type: CardType | None = None
 
     @property
-    def looks_back_in_time(self):
+    def looks_back_in_time(self) -> bool:
         """!
         @brief Whether this condition must inspect the pre-event trigger roster.
-
         Battlefield-leave triggers are detected using characteristics from
         immediately before the card left the battlefield.
         """
         return self.origin == ZoneType.BATTLEFIELD
 
-    def matches(self, state, event):
+    def matches(self, state: object, event: object) -> bool:
         """!
         @brief Check whether the event represents the configured zone change.
         """
@@ -107,10 +103,9 @@ class ZoneChangeCondition(TriggerCondition):
             != _zone_name(event.payload.get("to"))
         )
 
-    def matches_trigger(self, trigger, state):
+    def matches_trigger(self, trigger: object, state: object) -> bool:
         """!
         @brief Evaluate source, controller and type restrictions for the trigger.
-
         Uses last-known information for battlefield-leave conditions so checks
         are not affected by characteristics changing after the zone transition.
         """
@@ -162,11 +157,11 @@ class EntersBattlefieldCondition(ZoneChangeCondition):
     def __init__(
         self,
         *,
-        source_only=False,
-        another=False,
-        controlled_only=False,
-        card_type=None,
-    ):
+        source_only: bool = False,
+        another: bool = False,
+        controlled_only: bool = False,
+        card_type: object = None,
+    ) -> None:
         """!
         @brief Create a battlefield-entry trigger condition.
         """
@@ -187,11 +182,11 @@ class LeavesBattlefieldCondition(ZoneChangeCondition):
     def __init__(
         self,
         *,
-        source_only=False,
-        another=False,
-        controlled_only=False,
-        card_type=None,
-    ):
+        source_only: bool = False,
+        another: bool = False,
+        controlled_only: bool = False,
+        card_type: object = None,
+    ) -> None:
         """!
         @brief Create a battlefield-leave trigger condition.
         """
@@ -212,10 +207,10 @@ class DiesCondition(ZoneChangeCondition):
     def __init__(
         self,
         *,
-        source_only=False,
-        another=False,
-        controlled_only=False,
-    ):
+        source_only: bool = False,
+        another: bool = False,
+        controlled_only: bool = False,
+    ) -> None:
         """!
         @brief Create a creature-death trigger condition.
         """
@@ -233,7 +228,6 @@ class DiesCondition(ZoneChangeCondition):
 class StepCondition(TriggerCondition):
     """!
     @brief Match the beginning of a configured phase or step.
-
     @var phase
         Phase identifier that must begin.
     @var controller_turn_only
@@ -244,7 +238,7 @@ class StepCondition(TriggerCondition):
     controller_turn_only: bool = False
     looks_back_in_time = False
 
-    def matches(self, state, event):
+    def matches(self, state: object, event: object) -> bool:
         """!
         @brief Check whether the configured phase has started.
         """
@@ -254,7 +248,7 @@ class StepCondition(TriggerCondition):
             == _zone_name(self.phase)
         )
 
-    def matches_trigger(self, trigger, state):
+    def matches_trigger(self, trigger: object, state: object) -> bool:
         """!
         @brief Evaluate the phase condition for the bound trigger controller.
         """
@@ -268,7 +262,6 @@ class StepCondition(TriggerCondition):
 class SpellCastCondition(TriggerCondition):
     """!
     @brief Match spell-cast events with optional controller/source restrictions.
-
     @var controlled_only
         Whether the spell must be controlled by the trigger controller.
     @var source_only
@@ -279,13 +272,13 @@ class SpellCastCondition(TriggerCondition):
     source_only: bool = False
     looks_back_in_time = False
 
-    def matches(self, state, event):
+    def matches(self, state: object, event: object) -> bool:
         """!
         @brief Check whether the supplied event represents a spell being cast.
         """
         return event.key == "spell_cast"
 
-    def matches_trigger(self, trigger, state):
+    def matches_trigger(self, trigger: object, state: object) -> bool:
         """!
         @brief Evaluate controller and source restrictions for the spell event.
         """
@@ -306,7 +299,6 @@ class SpellCastCondition(TriggerCondition):
 class DamageDealtCondition(TriggerCondition):
     """!
     @brief Match positive damage events with optional combat/target restrictions.
-
     @var source_only
         Whether the damage source must be the trigger's own source.
     @var combat_only
@@ -320,7 +312,7 @@ class DamageDealtCondition(TriggerCondition):
     to_player_only: bool = False
     looks_back_in_time = False
 
-    def matches(self, state, event):
+    def matches(self, state: object, event: object) -> bool:
         """!
         @brief Check whether the supplied event represents matching damage.
         """
@@ -342,7 +334,7 @@ class DamageDealtCondition(TriggerCondition):
             )
         )
 
-    def matches_trigger(self, trigger, state):
+    def matches_trigger(self, trigger: object, state: object) -> bool:
         """!
         @brief Evaluate the damage condition for the bound trigger source.
         """

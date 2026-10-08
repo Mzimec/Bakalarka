@@ -1,4 +1,5 @@
 """All demo card rules are defined here once, before a game starts."""
+from __future__ import annotations
 from game.game_actions.data_structs.ability import ActivatedAbilityDefinition, CastSpellAbilityDefinition, ManaAbilityDefinition
 
 from helper.query_system.query import EqQuery, DifferenceQuery
@@ -155,7 +156,10 @@ from game.game_actions.advanced_effects import (
 from game.target.target_selector import MinMaxTegetSelector
 
 
-def _allied_beasts(source, controller, state):
+def _allied_beasts(source: object, controller: object, state: object) -> object:
+    """!
+    @brief Internal helper for this module.
+    """
     return DifferenceQuery(
         EqQuery(IK_ZONE, ZoneType.BATTLEFIELD)
         & EqQuery(IK_TYPE, CardType.CREATURE)

@@ -14,7 +14,7 @@ from game.game_state.layers import LayeredModifier
 from game.operations.card_operations import MoveCardOperation, DamageCreatureOperation
 
 
-def targets(context, key="target"):
+def targets(context: object, key: str = "target") -> tuple[object, ...]:
     """!
     @brief Return the distinct objects in one bound target slot.
     """
@@ -26,18 +26,28 @@ class RuleEffect(Effect):
     @brief Adapt a pure operation generator to the declarative ability pipeline.
     """
 
-    def __init__(self, key, generate, *, slot_key="target", info=None):
+    def __init__(
+        self,
+        key: str,
+        generate: object,
+        *,
+        slot_key: str = "target",
+        info: object = None,
+    ) -> None:
+        """!
+        @brief Initialize this object.
+        """
         super().__init__(key)
         self.generate, self.slot_key = generate, slot_key
         self.info = info or key.replace("_", " ")
 
-    def to_operations(self, state, context):
+    def to_operations(self, state: object, context: object) -> object:
         """!
         @brief Generate the operations for this effect and its bound context.
         """
         yield from self.generate(state, context)
 
-    def get_info(self):
+    def get_info(self) -> str:
         """!
         @brief Return a human-readable description of this effect.
         """
@@ -49,17 +59,20 @@ class EventCondition(TriggerCondition):
     @brief Evaluate a bound trigger against event-time source and controller data.
     """
 
-    def __init__(self, predicate, *, looks_back=False):
+    def __init__(self, predicate: object, *, looks_back: bool = False) -> None:
+        """!
+        @brief Initialize this object.
+        """
         self.predicate = predicate
         self.looks_back_in_time = looks_back
 
-    def matches(self, state, event):
+    def matches(self, state: object, event: object) -> bool:
         """!
         @brief Check whether the supplied event satisfies this condition.
         """
         return True  # Source-aware checks are performed by matches_trigger.
 
-    def matches_trigger(self, trigger, state):
+    def matches_trigger(self, trigger: object, state: object) -> bool:
         """!
         @brief Evaluate the condition using the bound trigger source and event.
         """
@@ -75,17 +88,26 @@ class FormulaModifier(Modifier):
     formula: object
 
     @property
-    def behavior(self):
+    def behavior(self) -> object:
+        """!
+        @brief Return the modifier behavior.
+        """
         return ModifierType.SET
 
     @property
-    def layer(self):
+    def layer(self) -> object:
+        """!
+        @brief Return the continuous-effect layer.
+        """
         return Layer.PT_CDA
 
-    def for_context(self, source, state):
+    def for_context(self, source: object, state: object) -> object:
+        """!
+        @brief Bind this modifier to a concrete source and state.
+        """
         return LayeredModifier(SetModifier(self.formula(state, source)), self.layer)
 
-    def modify(self, original):
+    def modify(self, original: object) -> object:
         """!
         @brief Apply this modifier to the current characteristic value.
         """
@@ -97,11 +119,14 @@ class ScryOperation(Operation):
     @brief Reorder a chosen prefix of a library without drawing the cards.
     """
 
-    def __init__(self, context, amount=1):
+    def __init__(self, context: object, amount: int = 1) -> None:
+        """!
+        @brief Initialize this object.
+        """
         super().__init__(context)
         self.amount = amount
 
-    def execute(self, state):
+    def execute(self, state: object) -> list[object]:
         """!
         @brief Apply this executable object to the supplied game state.
         """
@@ -129,11 +154,17 @@ class ScryOperation(Operation):
 
 
 class UntapOperation(Operation):
-    def __init__(self, context, card):
+    """!
+    @brief UntapOperation executable operation.
+    """
+    def __init__(self, context: object, card: object) -> None:
+        """!
+        @brief Initialize this object.
+        """
         super().__init__(context)
         self.card = card
 
-    def execute(self, state):
+    def execute(self, state: object) -> list[object]:
         """!
         @brief Apply this executable object to the supplied game state.
         """
@@ -146,11 +177,14 @@ class SkipUntapOperation(Operation):
     @brief Remember the affected incarnation and the specified player's next untap.
     """
 
-    def __init__(self, context, card, player):
+    def __init__(self, context: object, card: object, player: object) -> None:
+        """!
+        @brief Initialize this object.
+        """
         super().__init__(context)
         self.card, self.player = card, player
 
-    def execute(self, state):
+    def execute(self, state: object) -> list[object]:
         """!
         @brief Apply this executable object to the supplied game state.
         """
@@ -163,11 +197,17 @@ class SkipUntapOperation(Operation):
 
 
 class LoseLifeOperation(Operation):
-    def __init__(self, context, player, amount):
+    """!
+    @brief LoseLifeOperation executable operation.
+    """
+    def __init__(self, context: object, player: object, amount: int) -> None:
+        """!
+        @brief Initialize this object.
+        """
         super().__init__(context)
         self.player, self.amount = player, amount
 
-    def execute(self, state):
+    def execute(self, state: object) -> list[object]:
         """!
         @brief Apply this executable object to the supplied game state.
         """
@@ -187,11 +227,21 @@ class ChooseMoveOperation(Operation):
     @brief Resolve a nontargeted discard or sacrifice chosen by the affected player.
     """
 
-    def __init__(self, context, player, amount, *, sacrifice=False):
+    def __init__(
+        self,
+        context: object,
+        player: object,
+        amount: int,
+        *,
+        sacrifice: bool = False,
+    ) -> None:
+        """!
+        @brief Initialize this object.
+        """
         super().__init__(context)
         self.player, self.amount, self.sacrifice = player, amount, sacrifice
 
-    def execute(self, state):
+    def execute(self, state: object) -> list[object]:
         """!
         @brief Apply this executable object to the supplied game state.
         """
@@ -228,11 +278,21 @@ class FightOperation(Operation):
     @brief Assign both creatures' fight damage before either creature can die.
     """
 
-    def __init__(self, context, first, second, *, one_way=False):
+    def __init__(
+        self,
+        context: object,
+        first: object,
+        second: object,
+        *,
+        one_way: bool = False,
+    ) -> None:
+        """!
+        @brief Initialize this object.
+        """
         super().__init__(context)
         self.first, self.second, self.one_way = first, second, one_way
 
-    def execute(self, state):
+    def execute(self, state: object) -> list[object]:
         """!
         @brief Apply this executable object to the supplied game state.
         """
@@ -260,7 +320,10 @@ class FightOperation(Operation):
         )
 
 
-def is_death(event):
+def is_death(event: object) -> bool:
+    """!
+    @brief is_death helper.
+    """
     return (
         event.key == "card_moved"
         and event.payload.get("from") == "BATTLEFIELD"
@@ -269,7 +332,10 @@ def is_death(event):
     )
 
 
-def lost_life_this_turn(state, player):
+def lost_life_this_turn(state: object, player: object) -> bool:
+    """!
+    @brief lost_life_this_turn helper.
+    """
     if getattr(state, "_history_turn", None) != state.turn.number:
         return False
     return any(

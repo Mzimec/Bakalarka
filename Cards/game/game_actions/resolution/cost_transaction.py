@@ -5,6 +5,7 @@ Definitions, controller state, callback closures and external I/O are outside th
 boundary. Custom costs must use engine runtime state and pure reserve_cost hooks.
 """
 
+from __future__ import annotations
 from collections import deque
 from random import Random
 
@@ -20,20 +21,17 @@ class CostPaymentError(ValueError):
 class RuntimeCheckpoint:
     """!
     @brief Snapshot mutable runtime state for in-place rollback.
-
     Containers and engine runtime objects are restored in place so that
     indexes, attachments, selected targets, and other references keep
     pointing to the same object identities after rollback.
-
     Card definitions and other immutable/external structures are not
     copied. Frozen runtime wrappers are skipped except for explicitly
     mutable state stored in their `state` attribute.
     """
 
-    def __init__(self, state, *, card_scope=None, shallow_roots=None):
+    def __init__(self, state: object, *, card_scope: object | None = None, shallow_roots: object | None = None) -> None:
         """!
         @brief Create a checkpoint rooted at the supplied game state.
-
         @param state Root runtime state whose mutable object graph should
                be tracked.
         @param card_scope Proven card write set; None retains the full graph.
@@ -67,14 +65,12 @@ class RuntimeCheckpoint:
                 self._restore.append(("dict", rows, rows.copy()))
         self.watch(state, root=True)
 
-    def watch(self, value, *, root=False):
+    def watch(self, value: object, *, root: bool = False) -> None:
         """!
         @brief Add a mutable value and its relevant descendants to the checkpoint.
-
         Each object identity is visited at most once. Mutable containers
         and engine runtime objects receive shallow snapshots, while immutable
         containers are traversed only to discover mutable children.
-
         @param value Runtime value to inspect and potentially snapshot.
         @param root Force inspection of the supplied object even if its module
                is outside the normal engine namespaces.
@@ -164,10 +160,9 @@ class RuntimeCheckpoint:
             else:
                 restore.append(("rng", value, value.getstate()))
 
-    def rollback(self):
+    def rollback(self) -> None:
         """!
         @brief Restore every tracked runtime value to its checkpointed state.
-
         Restoration runs in reverse discovery order so nested mutations are
         undone before their containing objects.
         """
@@ -198,16 +193,14 @@ class RuntimeCheckpoint:
 class CostTransaction:
     """!
     @brief Transaction boundary for reversible cost payment.
-
     Captures the mutable runtime state before costs are paid, buffers events
     until the transaction commits, and restores the checkpoint if payment
     fails.
     """
 
-    def __init__(self, state, *, resolutions=None, action=None):
+    def __init__(self, state: object, *, resolutions: object | None = None, action: object | None = None) -> None:
         """!
         @brief Start a cost transaction for the supplied game state.
-
         @param state Current game state to checkpoint.
         """
         self.state = state
@@ -231,20 +224,18 @@ class CostTransaction:
         self.checkpoint = RuntimeCheckpoint(state, card_scope=scope, shallow_roots=shallow)
         self.events = []
 
-    def watch_operations(self, operations):
+    def watch_operations(self, operations: object) -> None:
         """!
         @brief Extend the checkpoint with mutable state owned by cost operations.
-
         @param operations Operations whose runtime fields may be mutated while
                reserving or paying a cost.
         """
         for operation in operations:
             self.checkpoint.watch(operation, root=True)
 
-    def rollback(self):
+    def rollback(self) -> None:
         """!
         @brief Restore the checkpoint and discard all buffered transaction events.
-
         Runtime identities created during the failed transaction are detached
         after restoration so they no longer appear associated with the game
         state.

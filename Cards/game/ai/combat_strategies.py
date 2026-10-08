@@ -21,9 +21,14 @@ if TYPE_CHECKING:
 
 
 class AllAttackersStrategy:
-    """Propose positive-power attackers against the first opponent."""
+    """!
+    @brief Propose positive-power attackers against the first opponent.
+    """
 
     def generate(self, request: DeclareAttackersRequest) -> Iterable[DeclareAttackersOption]:
+        """!
+        @brief Yield candidates for the supplied request.
+        """
         state, player = request.state, request.player
         opponent = next(p for p in state.active_players if p is not player)
         yield DeclareAttackersOption({
@@ -33,9 +38,14 @@ class AllAttackersStrategy:
 
 
 class CombatEvaluator:
-    """Estimate trades using visible power/toughness, without resolving combat."""
+    """!
+    @brief Estimate trades using visible power/toughness, without resolving combat.
+    """
 
     def defenders(self, state: State, opponent: Player) -> tuple[Card, ...]:
+        """!
+        @brief defenders helper.
+        """
         from helper.query_system.query import EqQuery
         from game.game_state.registers.card_register import IK_ZONE, IK_TYPE, IK_CONTROLLER, IK_TAPPED
 
@@ -45,6 +55,9 @@ class CombatEvaluator:
         )
 
     def safe_attacker(self, state: State, attacker: Card, defenders: Iterable[Card]) -> bool:
+        """!
+        @brief safe_attacker helper.
+        """
         return not any(
             (not attacker.has_keyword(state, "flying")
              or b.has_keyword(state, "flying") or b.has_keyword(state, "reach"))
@@ -53,6 +66,9 @@ class CombatEvaluator:
         )
 
     def attack_score(self, request: DeclareAttackersRequest, option: DeclareAttackersOption) -> float:
+        """!
+        @brief attack_score helper.
+        """
         state = request.state
         value = 0
         for opponent in state.active_players:
@@ -69,6 +85,9 @@ class CombatEvaluator:
         return value
 
     def block_score(self, request: DeclareBlockersRequest, option: DeclareBlockersOption) -> float:
+        """!
+        @brief block_score helper.
+        """
         state, player = request.state, request.player
         attackers = combat_view(state).attackers
         declaration = option.declarations
@@ -88,12 +107,20 @@ class CombatEvaluator:
 
 
 class ConservativeAttackersStrategy:
-    """Offer no attack, estimated safe attackers, and all attackers."""
+    """!
+    @brief Offer no attack, estimated safe attackers, and all attackers.
+    """
 
-    def __init__(self, evaluator=None):
+    def __init__(self, evaluator: object = None) -> None:
+        """!
+        @brief Initialize this object.
+        """
         self.evaluator = evaluator or CombatEvaluator()
 
     def generate(self, request: DeclareAttackersRequest) -> Iterable[DeclareAttackersOption]:
+        """!
+        @brief Yield candidates for the supplied request.
+        """
         all_attackers = next(AllAttackersStrategy().generate(request))
         safe = {}
         for attacker, opponent in all_attackers.declarations.items():
@@ -106,9 +133,14 @@ class ConservativeAttackersStrategy:
 
 
 class GreedyBlockersStrategy:
-    """Propose mandatory blocks first, then cover the largest threats."""
+    """!
+    @brief Propose mandatory blocks first, then cover the largest threats.
+    """
 
     def generate(self, request: DeclareBlockersRequest) -> Iterable[DeclareBlockersOption]:
+        """!
+        @brief Yield candidates for the supplied request.
+        """
         state, player = request.state, request.player
         combat = combat_view(state)
         result = {}
@@ -129,17 +161,23 @@ class GreedyBlockersStrategy:
 
 
 class BoundedBlockersStrategy:
-    """Include a greedy proposal before bounded exhaustive enumeration.
-
+    """!
+    @brief Include a greedy proposal before bounded exhaustive enumeration.
     The limit counts proposals, not legal results. A pipeline may reject all of
     them; callers must not interpret this as proof that no legal block exists.
     """
 
-    def __init__(self, max_assignments=512):
+    def __init__(self, max_assignments: int = 512) -> None:
+        """!
+        @brief Initialize this object.
+        """
         if type(max_assignments) is not int or max_assignments < 1:
             raise ValueError("Combat search budget must be positive.")
         self.max_assignments = max_assignments
 
     def generate(self, request: DeclareBlockersRequest) -> Iterable[DeclareBlockersOption]:
+        """!
+        @brief Yield candidates for the supplied request.
+        """
         yield from GreedyBlockersStrategy().generate(request)
         yield from islice(FullBlockersStrategy().generate(request), self.max_assignments)

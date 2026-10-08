@@ -442,6 +442,12 @@ class ManaValueBase(Mapping[ManaSymbol, int], ABC):
             else:
                 raise ValueError("Generalised symbols must be compiled as subabilities.")
 
+        # Ordinary costs have one result. No recursive expansion or duplicate
+        # tracking is needed; still return a fresh immutable requirement.
+        if not alternatives:
+            yield fixed.to_immutable(), 0
+            return
+
         seen = set()
 
         def expand(index, requirement, life):

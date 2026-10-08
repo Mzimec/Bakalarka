@@ -74,7 +74,10 @@ def run_config(path, *, output=None, seed=None):
     path = Path(path).resolve()
     config = json.loads(path.read_text(encoding="utf-8"))
     known_keys(config, ("seed", "starting_player", "max_turns", "max_decisions",
-                        "players", "output"), "match")
+                        "players", "output", "collect_decision_stats"), "match")
+    collect_decision_stats = config.get("collect_decision_stats", True)
+    if type(collect_decision_stats) is not bool:
+        raise ValueError("collect_decision_stats must be a boolean.")
     players = config.get("players")
     if not isinstance(players, list) or len(players) != 2:
         raise ValueError("Configure exactly two players.")
@@ -124,5 +127,6 @@ def run_config(path, *, output=None, seed=None):
         starting_player=starting, controllers=tuple(controllers),
         names=tuple(names), decklists=tuple(decks),
         metadata={"configuration": config, "effective_seed": seed},
+        collect_decision_stats=collect_decision_stats,
         **limits,
     )

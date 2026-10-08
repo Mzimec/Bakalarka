@@ -1,5 +1,6 @@
 """Optional Ollama selector with bounded requests and deterministic fallback."""
 
+from __future__ import annotations
 import json
 from urllib.request import Request, urlopen
 
@@ -9,12 +10,22 @@ from game.ai.modular_agent import HeuristicSelector
 class OllamaSelector:
     """!
     @brief Ask a chat model for one candidate ID, never executable game commands.
-
     Only the supplied observation and public candidate descriptions are sent.
     An invalid response, exhausted request budget or network error uses the prior.
     """
-    def __init__(self, model, *, endpoint="http://localhost:11434/api/chat",
-                 timeout=30, max_requests=100, seed=1, transport=None):
+    def __init__(
+        self,
+        model: object,
+        *,
+        endpoint: object = "http://localhost:11434/api/chat",
+        timeout: int = 30,
+        max_requests: int = 100,
+        seed: int = 1,
+        transport: object = None,
+    ) -> None:
+        """!
+        @brief Initialize this object.
+        """
         if not isinstance(model, str) or not model.strip():
             raise ValueError("An Ollama model name is required.")
         if not 0 < timeout <= 60 or type(max_requests) is not int or max_requests < 0:
@@ -25,7 +36,10 @@ class OllamaSelector:
         self.requests = 0
         self.last_error = None
 
-    def _request(self, payload):
+    def _request(self, payload: object) -> object:
+        """!
+        @brief Send one request to the configured model transport.
+        """
         request = Request(self.endpoint, data=json.dumps(payload).encode("utf-8"),
                           headers={"Content-Type": "application/json"})
         with urlopen(request, timeout=self.timeout) as response:
@@ -34,7 +48,7 @@ class OllamaSelector:
             raise ValueError("Model response exceeds the size limit.")
         return json.loads(raw)["message"]["content"]
 
-    def choose(self, observation, candidates):
+    def choose(self, observation: object, candidates: object) -> int:
         """!
         @brief Return a validated candidate index and remember fallback diagnostics.
         """

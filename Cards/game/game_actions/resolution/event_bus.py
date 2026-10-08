@@ -16,10 +16,8 @@ if TYPE_CHECKING:
 class CardLastKnownInformation:
     """!
     @brief Snapshot of card characteristics needed by zone-change triggers.
-
     Stores the relevant pre-event characteristics so triggers can inspect
     an object as it existed before leaving its previous zone.
-
     @var card
         Runtime card object the snapshot belongs to.
     @var controller
@@ -66,10 +64,9 @@ class CardLastKnownInformation:
     counters: Mapping = field(default_factory=dict)
     subtypes: frozenset = frozenset()
 
-    def __post_init__(self):
+    def __post_init__(self) -> None:
         """!
         @brief Freeze incarnation-local values before the live card is reset.
-
         A copied mapping is essential: the live counter collection is cleared
         on a zone change and must never rewrite an already captured snapshot.
         """
@@ -82,10 +79,8 @@ class CardLastKnownInformation:
 class GameEvent:
     """!
     @brief Immutable game event with triggers captured at event time.
-
     `triggered_abilities` stores the triggers detected when the event
     occurred rather than recomputing them later during dispatch.
-
     @var key
         Event type identifier.
     @var source
@@ -104,7 +99,7 @@ class GameEvent:
     payload: Mapping[str, Any] = field(default_factory=dict)
     triggered_abilities: tuple | None = field(default=None, repr=False, compare=False)
 
-    def __post_init__(self):
+    def __post_init__(self) -> None:
         """!
         @brief Freeze the payload mapping after event construction.
         """
@@ -115,10 +110,9 @@ class GameEvent:
         )
 
 
-def capture_trigger_roster(state):
+def capture_trigger_roster(state: object) -> tuple:
     """!
     @brief Snapshot all currently available triggered abilities.
-
     @param state Current game state.
     @return Tuple of triggered abilities visible at capture time.
     """
@@ -126,10 +120,9 @@ def capture_trigger_roster(state):
     return tuple(getter(None)) if getter is not None else ()
 
 
-def capture_card_information(state, cards=None):
+def capture_card_information(state: object, cards: object | None = None) -> dict[int, CardLastKnownInformation]:
     """!
     @brief Capture last-known information for every card in the game state.
-
     @param state Current game state.
     @return Mapping from card identity to its current LKI snapshot.
     """
@@ -147,7 +140,7 @@ def capture_card_information(state, cards=None):
     }
 
 
-def capture_single_card(state, card):
+def capture_single_card(state: object, card: object) -> CardLastKnownInformation:
     """!
     @brief Snapshot evaluated characteristics without keeping live collections.
     @param state Game whose continuous effects determine these characteristics.
@@ -161,7 +154,13 @@ def capture_single_card(state, card):
     return _capture_single_card(state, card)
 
 
-def _capture_single_card(state, card):
+def _capture_single_card(state: object, card: object) -> CardLastKnownInformation:
+    """!
+    @brief Capture one card without using the optional snapshot cache.
+    @param state Current game state.
+    @param card Card to capture.
+    @return Last-known card information.
+    """
     from ...stat_type import STAT_COLORS, STAT_KEYWORDS
     return CardLastKnownInformation(
         card, card.get_controller(state), card.get_zone(),
@@ -176,18 +175,14 @@ def _capture_single_card(state, card):
     )
 
 
-
-def capture_event(state, event, before=None, information=None, after=None):
+def capture_event(state: object, event: GameEvent, before: object | None = None, information: object | None = None, after: object | None = None) -> GameEvent:
     """!
     @brief Bind triggered abilities to an event when that event occurs.
-
     Uses trigger rosters from before and after the mutation so zone-change
     triggers can follow look-back rules. Last-known card information is
     attached to the event and trigger where available.
-
     Operations may supply shared `before`, `information`, and `after`
     snapshots when several events belong to the same simultaneous batch.
-
     @param state Current game state after the event's mutation.
     @param event Event whose triggers should be captured.
     @param before Optional trigger roster captured before the mutation.
@@ -211,7 +206,11 @@ def capture_event(state, event, before=None, information=None, after=None):
         )
 
     references = {}
-    def remember(value):
+    def remember(value: object) -> None:
+        """!
+        @brief Record zone revisions reachable from an event value.
+        @param value Event value to inspect.
+        """
         if hasattr(value, "zone_revision"):
             references[id(value)] = value.zone_revision
         elif isinstance(value, (tuple, list)):
@@ -286,12 +285,11 @@ def capture_event(state, event, before=None, information=None, after=None):
 class EventBus:
     """!
     @brief Publish events and preserve triggers captured at event time.
-
     Captured triggers remain attached to their originating event even if
     their source later changes zone or otherwise changes characteristics.
     """
 
-    def __init__(self):
+    def __init__(self) -> None:
         """!
         @brief Create an empty event bus.
         """
@@ -304,11 +302,9 @@ class EventBus:
     ) -> GameEvent:
         """!
         @brief Publish an event and optionally capture its triggers.
-
         When a game state is supplied, uncaptured events are bound to their
         triggers before publication and also recorded in the current turn's
         event history.
-
         @param event Event to publish.
         @param state Optional current game state.
         @return The published event, possibly replaced by a captured version.
@@ -335,11 +331,9 @@ class EventBus:
     ) -> list[TriggerAbility]:
         """!
         @brief Collect triggered abilities produced by the supplied events.
-
         Prefer triggers already captured at event time. Events created by
         legacy or external code without capture fall back to evaluation
         against the current game state.
-
         @param state Current game state.
         @param events Events whose triggers should be collected.
         @return List of matching trigger abilities.
@@ -363,16 +357,14 @@ class EventBus:
 class TriggerProcessor:
     """!
     @brief Put pending triggers onto the stack in APNAP order.
-
     Players are processed starting with the active player and continuing
     in turn order. Each player chooses the ordering and required choices
     for triggers they control before those triggers are placed on the stack.
     """
 
-    def __init__(self, engine=None):
+    def __init__(self, engine: object | None = None) -> None:
         """!
         @brief Create a trigger processor.
-
         @param engine Resolution engine used for triggered mana abilities,
                which resolve immediately instead of using the stack.
         """
@@ -385,7 +377,6 @@ class TriggerProcessor:
     ) -> None:
         """!
         @brief Process pending triggers in active-player/nonactive-player order.
-
         @param state Current game state.
         @param triggers Pending trigger abilities.
         """
@@ -443,11 +434,9 @@ class TriggerProcessor:
     ) -> None:
         """!
         @brief Let one controller order and complete choices for its triggers.
-
         Illegal triggers with no legal action are skipped. Triggered mana
         abilities resolve immediately; all other trigger actions are pushed
         onto the stack.
-
         @param controller Player controlling the pending triggers.
         @param state Current game state.
         @param triggers Trigger abilities controlled by the player.

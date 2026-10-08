@@ -41,23 +41,20 @@ class ProvidedTargetBindingGenerator(TargetBindingGenerator):
     @brief Bind exactly the targets supplied by the player, without a search.
     """
 
-    def __init__(self, targets=()):
+    def __init__(self, targets: Iterable[object] = ()) -> None:
         """!
         @brief Store the explicit target selection to validate.
-
         @param targets Sequence of targets corresponding to the used
                target slots.
         """
-        self.targets = tuple(targets)
+        self.targets: tuple[object, ...] = tuple(targets)
 
-    def generate(self, ctx, used_slots, state):
+    def generate(self, ctx: ActionGenerationContextBase, used_slots: Iterable[RepetitionTargetSlotWrapper], state: State) -> Iterator[ImmutableTargetBinding]:
         """!
         @brief Validate supplied targets and yield their binding.
-
         Used when the caller has already selected targets and only needs
         to verify that the selection is legal for the current ability
         and state.
-
         @param ctx Shared action-generation context.
         @param used_slots Target slots required by the selected effects.
         @param state Current game state.
@@ -67,7 +64,7 @@ class ProvidedTargetBindingGenerator(TargetBindingGenerator):
         """
         # Keep a deterministic order so supplied targets map consistently
         # to their corresponding runtime slots.
-        slots = sorted(
+        slots: list[RepetitionTargetSlotWrapper] = sorted(
             used_slots,
             key=lambda slot: (slot.slot.key, slot.runtime_key),
         )
@@ -81,7 +78,7 @@ class ProvidedTargetBindingGenerator(TargetBindingGenerator):
                 + ", ".join(slot.slot.key for slot in slots)
             )
 
-        binding = TargetBinding()
+        binding: TargetBinding = TargetBinding()
 
         for slot, target in zip(slots, self.targets):
             from collections import Counter
@@ -137,28 +134,38 @@ class FullTargetBindingGenerator(TargetBindingGenerator):
     @override
     def generate(
         self,
-        ctx,
-        used_slots,
-        state,
+        ctx: ActionGenerationContextBase,
+        used_slots: Iterable[RepetitionTargetSlotWrapper],
+        state: State,
     ) -> Iterator[ImmutableTargetBinding]:
         """!
         @brief Yield all legal target combinations.
-
         Target slots are assigned recursively. At each step, the slot
         with the fewest currently available options is selected first
         to reduce the branching factor.
-
         @param ctx Shared action-generation context.
         @param used_slots Target slots required by the selected effects.
         @param state Current game state.
         @return Iterator of legal immutable target bindings.
         """
 
+        used_slots = tuple(used_slots)
+        if not used_slots:
+            binding = TargetBinding()
+            if binding.are_targets_valid(ctx.ability.source, ctx.ability.controller, state, used_slots):
+                yield binding.to_immutable()
+            return
+
         def _recursion_step(
             binding: TargetBinding,
         ) -> Iterator[ImmutableTargetBinding]:
             # Once every slot has been assigned, validate constraints that
             # depend on the complete target combination.
+            """!
+            @brief Recursively assign remaining target slots.
+            @param binding Mutable target binding accumulated so far.
+            @return Iterator of completed immutable target bindings.
+            """
             if not remaining_slots:
                 if binding.are_targets_valid(
                     ctx.ability.source,
@@ -207,7 +214,6 @@ class FullTargetBindingGenerator(TargetBindingGenerator):
 
             remaining_slots.add(slot)
 
-        used_slots = tuple(used_slots)
         remaining_slots: set[RepetitionTargetSlotWrapper] = set(used_slots)
 
         yield from _recursion_step(TargetBinding())

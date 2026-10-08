@@ -291,14 +291,17 @@ def test_ai_logs_limits_as_unfinished_and_never_overwrites(tmp_path):
         run_match(('white', 'red'), tmp_path / 'match.jsonl')
 
 
-def test_tournament_schedules_both_starters_and_records_repeated_seeds(tmp_path):
+@pytest.mark.parametrize("collect_stats", [True, False])
+def test_tournament_schedules_both_starters_and_records_repeated_seeds(tmp_path, collect_stats):
     from game.simulation.match_runner import TournamentPlayer
     from game.cards.decks import load_arena_starter
     players = tuple(TournamentPlayer(color, load_arena_starter(color), {"type": "simple"})
                     for color in ("white", "red"))
-    results = run_tournament(tmp_path / 'league', players, games=2, seed=2026, max_turns=1)
+    results = run_tournament(tmp_path / 'league', players, games=2, seed=2026, max_turns=1,
+                             collect_decision_stats=collect_stats)
     assert len(results) == 4
     assert all(result.status == 'turn_limit' for result in results)
+    assert all(bool(result.decision_timing) is collect_stats for result in results)
     assert {(result.seed, result.starting_player) for result in results} == {
         (2026, 0), (2026, 1), (2027, 0), (2027, 1),
     }

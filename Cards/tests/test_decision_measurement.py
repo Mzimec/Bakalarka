@@ -141,3 +141,66 @@ def test_aborted_human_decision_is_logged_separately_from_agent_time(tmp_path):
     assert result.status == "aborted"
     timing = result.decision_timing[0]
     assert timing["mode"] == "human" and timing["overall"]["errors"] == 1
+
+
+def test_disabled_diagnostics_skip_measurement_and_observer_but_validate_results(state, monkeypatch):
+    import game.ai.decision_maker as decisions
+    request = MulliganRequest(state, state.active_player)
+    rows = []
+    with observe_decisions(lambda *args: rows.append(args)):
+        with observe_decisions(None, enabled=False), monkeypatch.context() as patch:
+            patch.setattr(decisions, "DecisionMeasurement", lambda *args: pytest.fail("Measurement allocated"))
+            assert ModularDecisionMaker().decide(request).info == {}
+
+            class Wrong(ModularDecisionMaker):
+                def decide_mulligan(self, request):
+                    from game.game_actions.data_structs.game_action import PassPriorityAction
+                    return DecisionResult(PassPriorityAction(request.player))
+
+            with pytest.raises(TypeError, match="MulliganOption"):
+                Wrong().decide(request)
+        assert rows == []
+        assert "decision_metrics" in ModularDecisionMaker().decide(request).info
+    assert len(rows) == 1
+
+
+def test_disabled_scope_isolated_from_active_measurement_and_restored_after_failure(state):
+    from game.game_actions.generation.decision_abstraction.measurement import DecisionMeasurement
+    request = MulliganRequest(state, state.active_player)
+    with DecisionMeasurement(request) as measurement:
+        with pytest.raises(RuntimeError), observe_decisions(None, enabled=False):
+            assert len(list(request.options)) == 2
+            raise RuntimeError("nested failure")
+        assert measurement.streams == []
+        assert len(list(request.options)) == 2
+    assert measurement.metrics["options_observed"] == 2
+
+
+def test_match_without_diagnostics_preserves_events_and_decision_budget(tmp_path, monkeypatch):
+    import game.simulation.match_runner as runner
+    from game.ai.modular_agent import ModularAgent
+    games, events = [], []
+    for enabled in (True, False):
+        path = tmp_path / f"stats-{enabled}.jsonl"
+        if not enabled:
+            monkeypatch.setattr(runner, "DecisionStatistics", lambda: pytest.fail("Statistics allocated"))
+        agent = ModularAgent(max_decisions=30)
+        previous_log = agent.log
+        result = run_match(("white", "white"), path, seed=123, max_turns=6,
+                           controllers=(agent, SimpleAgent(max_decisions=30)),
+                           collect_decision_stats=enabled)
+        assert result.status == "decision_limit", result.error
+        assert agent.log is previous_log
+        assert bool(result.decision_timing) is enabled
+        rows = [json.loads(line) for line in path.read_text(encoding="utf-8").splitlines()]
+        assert any(row["kind"] == "decision_timing" for row in rows) is enabled
+        events.append([{key: value for key, value in row.items() if key != "seq"}
+                       for row in rows if row["kind"] not in {"decision_timing", "result"}])
+        games.append((result.status, result.turns, result.decisions, result.winner_index))
+    assert games[0] == games[1]
+    assert events[0] == events[1]
+
+
+def test_match_rejects_non_boolean_diagnostics():
+    with pytest.raises(ValueError, match="boolean"):
+        run_match(("white", "white"), None, collect_decision_stats="false")

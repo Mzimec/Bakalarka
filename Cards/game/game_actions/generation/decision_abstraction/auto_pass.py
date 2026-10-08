@@ -1,19 +1,35 @@
 """Optional conservative preflight for interactive priority selection."""
+from __future__ import annotations
+from collections.abc import Callable
+from typing import TYPE_CHECKING
 from game.enums import TurnPhase
 from game.game_state.collectors.ability_collector import ABILITY_COLLECTOR
 from game.game_state.collectors.land_play_collector import LAND_PLAY_COLLECTOR
 from game.game_state.registers.card_register import IK_HAS_TRIGGERS, IK_STATIC_REPLACEMENT
 from helper.query_system.query import EqQuery
 
+if TYPE_CHECKING:
+    from game.game_state import Player, State
+    from game.game_actions.data_structs.ability import Ability
+
 
 class PriorityAutoPass:
-    def can_pass(self, state, player, *, is_available=None):
-        """Prove a quiet window without building the entire option space.
-
+    """!
+    @brief Conservative preflight that proves when priority can be passed safely.
+    """
+    def can_pass(
+        self,
+        state: State,
+        player: Player,
+        *,
+        is_available: Callable[[Ability, State], bool] | None = None,
+    ) -> bool:
+        """!
+        @brief Prove a quiet window without building the entire option space.
         By default any nontrivial ability defers to the normal pipeline. A UI
         may supply a lazy feasibility probe to also skip unpayable actions.
-        Agents instead detect a sole pass in their normal candidate pipeline,
-        avoiding duplicate discovery and mana-source compilation.
+        Agents use a separate absence proof for their no-standalone-mana policy,
+        then detect a sole pass in the normal candidate pipeline if uncertain.
         """
         if (state.is_game_over or state.priority.current_player is not player
                 or state.turn.phase in {TurnPhase.UNTAP, TurnPhase.CLEANUP}):

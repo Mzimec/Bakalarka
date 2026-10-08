@@ -21,19 +21,38 @@ if TYPE_CHECKING:
 
 
 class SelectionPolicy[R, T: DecisionOption](Protocol):
+    """!
+    @brief Protocol implemented by policies for selection pipelines.
+    """
     @property
-    def strategy(self) -> SelectionStrategy[R, T]: ...
+    def strategy(self) -> SelectionStrategy[R, T]:
+        """!
+        @brief Return the strategy used by the selection policy.
+        @return Selection strategy.
+        """
+        ...
 
     @property
-    def pruning(self) -> PruningStrategy | None: ...
+    def pruning(self) -> PruningStrategy | None:
+        """!
+        @brief Return optional pruning applied after legality checks.
+        @return Pruning strategy, or `None`.
+        """
+        ...
 
 
 class GenerationPolicy:
+    """!
+    @brief Base marker type for decision-generation policies.
+    """
     pass
 
 
 @dataclass(frozen=True)
 class AbilityGenerationPolicy(GenerationPolicy):
+    """!
+    @brief Policy controlling ability-action generation.
+    """
     strategy: ActionGenerationStrategy | None = None
     x_value: int = 0
     life_payment: int | None = None
@@ -43,6 +62,9 @@ class AbilityGenerationPolicy(GenerationPolicy):
 
 @dataclass(frozen=True)
 class PriorityGenerationPolicy(GenerationPolicy):
+    """!
+    @brief Policy controlling priority-window action generation.
+    """
     ability_gp: AbilityGenerationPolicy = field(default_factory=AbilityGenerationPolicy)
     ability_space_ps: PruningStrategy | None = None
     land_play_ps: PruningStrategy | None = None
@@ -54,42 +76,65 @@ class PriorityGenerationPolicy(GenerationPolicy):
 
 @dataclass(frozen=True)
 class SelectionGenerationPolicy(GenerationPolicy):
-    """Shared pruning only; use the concrete request's policy when generating."""
+    """!
+    @brief Shared pruning only; use the concrete request policy when generating.
+    """
     pruning: PruningStrategy | None = None
 
 
 @dataclass(frozen=True)
 class DeclareAttackersPolicy(SelectionGenerationPolicy):
+    """!
+    @brief Policy for attacker declaration generation.
+    """
     strategy: SelectionStrategy[DeclareAttackersRequest, DeclareAttackersOption] = field(default_factory=FullAttackersStrategy)
 
 
 @dataclass(frozen=True)
 class DeclareBlockersPolicy(SelectionGenerationPolicy):
+    """!
+    @brief Policy for blocker declaration generation.
+    """
     strategy: SelectionStrategy[DeclareBlockersRequest, DeclareBlockersOption] = field(default_factory=FullBlockersStrategy)
 
 
 @dataclass(frozen=True)
 class MulliganPolicy(SelectionGenerationPolicy):
+    """!
+    @brief Policy for mulligan decisions.
+    """
     strategy: SelectionStrategy[MulliganRequest, MulliganOption] = field(default_factory=FullMulliganStrategy)
 
 
 @dataclass(frozen=True)
 class MulliganBottomPolicy(SelectionGenerationPolicy):
+    """!
+    @brief Policy for choosing cards put on bottom after mulligan.
+    """
     strategy: SelectionStrategy[MulliganBottomRequest, MulliganBottomOption] = field(default_factory=FullMulliganBottomStrategy)
 
 
 @dataclass(frozen=True)
 class DiscardPolicy(SelectionGenerationPolicy):
+    """!
+    @brief Policy for discard choices.
+    """
     strategy: SelectionStrategy[DiscardRequest, DiscardOption] = field(default_factory=FullDiscardStrategy)
 
 
 @dataclass(frozen=True)
 class AbilityResolutionPolicy(SelectionGenerationPolicy):
+    """!
+    @brief Policy for choices made while resolving an ability.
+    """
     strategy: SelectionStrategy[AbilityResolutionRequest, AbilityResolutionOption] = field(default_factory=FullAbilityResolutionStrategy)
 
 
 @dataclass(frozen=True)
 class ManaGenerationPolicy(GenerationPolicy):
+    """!
+    @brief Policy controlling mana-plan generation.
+    """
     solver: ManaSolver | None = None
 
 

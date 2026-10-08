@@ -1,5 +1,6 @@
 """First executable cards from the supplied Azorius Control deck."""
 
+from __future__ import annotations
 from dataclasses import replace
 
 from game.cards.starter_cards import _spell, _slot
@@ -11,7 +12,7 @@ from game.game_actions.control_effects import (
 from game.operations.card_operations import DrawCardOperation
 
 
-def opt_operations(state, context):
+def opt_operations(state: object, context: object) -> object:
     """!
     @brief Finish scrying before drawing from the newly ordered library.
     """
@@ -19,7 +20,7 @@ def opt_operations(state, context):
     yield DrawCardOperation(context)
 
 
-def control_catalog():
+def control_catalog() -> dict:
     """!
     @brief Return fully implemented control definitions, without placeholders.
     """

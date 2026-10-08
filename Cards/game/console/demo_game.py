@@ -19,6 +19,7 @@ from game.ai.decision_maker import (
     ScryRequest,
     StartingPlayerRequest,
     TriggerOrderRequest,
+    DecisionMaker,
 )
 
 from game.ai.decision_maker import DecisionResult
@@ -63,7 +64,10 @@ from game.cards.demo_cards import (
 )
 
 
-def _resolve_target(reference, state, player):
+def _resolve_target(reference: str, state: object, player: object) -> object:
+    """!
+    @brief Resolve a target reference as a player or global card.
+    """
     try:
         return resolve_player(reference, state, player)
     except CommandError:
@@ -158,6 +162,9 @@ def build_action(state: State, player: Player, raw: str) -> GameAction:
 
 @dataclass(frozen=True)
 class ActionOption:
+    """!
+    @brief Display label and concrete engine action pair.
+    """
     label: str
     action: GameAction
 
@@ -203,7 +210,10 @@ def available_actions(state: State, player: Player) -> list[ActionOption]:
     return options
 
 
-def permanent_details(card, state):
+def permanent_details(card: object, state: object) -> str:
+    """!
+    @brief Format visible battlefield details for one permanent.
+    """
     details = ["tapped" if card.is_tapped else "ready"]
     if CardType.CREATURE in card.get_types(state):
         details.append(f"{card.get_power(state)}/{card.get_toughness(state)}")
@@ -230,7 +240,10 @@ def format_combat(state: State) -> list[str]:
     if not combat.attackers:
         return lines + ["  No current attackers."]
 
-    def describe(card):
+    def describe(card: object) -> str:
+        """!
+        @brief Format one combat card line.
+        """
         return (
             f"{card_reference(card)} ({card.name}, "
             f"{card.get_power(state)}/{card.get_toughness(state)}, "
@@ -251,7 +264,7 @@ def format_combat(state: State) -> list[str]:
     return lines
 
 
-def describe_event_value(value):
+def describe_event_value(value: object) -> str:
     """! @brief Render event payloads using readable card names and command IDs."""
     if isinstance(value, Card):
         return f"{card_reference(value)} ({value.name})"
@@ -271,6 +284,9 @@ def describe_event_value(value):
 
 
 def format_state(state: State) -> str:
+    """!
+    @brief Format the current game state for console display.
+    """
     lines = [f"Turn {state.turn.number} | {state.active_player.name} | {state.turn.phase.name}"]
     for player in state.players:
         board = (
@@ -314,7 +330,10 @@ class ConsoleDecisionMaker(ModularDecisionMaker):
         write: Callable[[str], None] | None = None,
         *,
         auto_pass: bool = False,
-    ):
+    ) -> None:
+        """!
+        @brief Initialize this object.
+        """
         self.event_bus = event_bus
         self.read = read or input
         self.write = write or print
@@ -322,6 +341,9 @@ class ConsoleDecisionMaker(ModularDecisionMaker):
         self.auto_pass = auto_pass
 
     def decide_starting_player(self, request: StartingPlayerRequest) -> DecisionResult[StartingPlayerOption]:
+        """!
+        @brief Choose the starting player from console input.
+        """
         players = request.candidates
         while True:
             self.write(
@@ -421,6 +443,9 @@ class ConsoleDecisionMaker(ModularDecisionMaker):
             ))))
 
     def decide_mulligan(self, request: MulliganRequest) -> DecisionResult[MulliganOption]:
+        """!
+        @brief Ask whether to take a mulligan.
+        """
         state, player = request.state, request.player
         mulligans_taken = request.mulligans_taken
         if not request.can_mulligan:
@@ -443,6 +468,9 @@ class ConsoleDecisionMaker(ModularDecisionMaker):
 
 
     def decide_mulligan_bottom(self, request: MulliganBottomRequest) -> DecisionResult[MulliganBottomOption]:
+        """!
+        @brief Choose cards to put on the bottom after a mulligan.
+        """
         state, player = request.state, request.player
         count = request.count
         self.write(
@@ -481,6 +509,9 @@ class ConsoleDecisionMaker(ModularDecisionMaker):
             )
 
     def show_events(self) -> None:
+        """!
+        @brief Print newly emitted events since the last console prompt.
+        """
         if self.event_bus is None:
             return
         for event in self.event_bus.emitted_events[self._event_index :]:
@@ -525,6 +556,9 @@ class ConsoleDecisionMaker(ModularDecisionMaker):
         self._event_index = len(self.event_bus.emitted_events)
 
     def decide_attackers(self, request: DeclareAttackersRequest) -> DecisionResult[DeclareAttackersOption]:
+        """!
+        @brief Ask for a legal attacker declaration.
+        """
         state, player = request.state, request.player
         from game.console.combat_commands import parse_attackers
 
@@ -535,6 +569,9 @@ class ConsoleDecisionMaker(ModularDecisionMaker):
         )))
 
     def decide_blockers(self, request: DeclareBlockersRequest) -> DecisionResult[DeclareBlockersOption]:
+        """!
+        @brief Ask for a legal blocker declaration.
+        """
         state, player = request.state, request.player
         from game.console.combat_commands import parse_blockers
 
@@ -546,7 +583,16 @@ class ConsoleDecisionMaker(ModularDecisionMaker):
             state, player, parse_blockers, "block <blocker>:<attacker>... | pass"
         )))
 
-    def _combat_choice(self, state, player, parser, usage):
+    def _combat_choice(
+        self,
+        state: object,
+        player: object,
+        parser: object,
+        usage: str,
+    ) -> object:
+        """!
+        @brief Read and validate one combat declaration command.
+        """
         self.show_events()
         self.write(format_state(state))
         self.write(usage)
@@ -564,6 +610,9 @@ class ConsoleDecisionMaker(ModularDecisionMaker):
                 self.write(f"Invalid input: {error}")
 
     def decide_legend(self, request: LegendRequest) -> DecisionResult[LegendOption]:
+        """!
+        @brief Choose which legendary permanent to keep.
+        """
         state, player = request.state, request.player
         cards = request.candidates
         self.write(
@@ -581,6 +630,9 @@ class ConsoleDecisionMaker(ModularDecisionMaker):
                 self.write(str(error))
 
     def decide_replacement(self, request: ReplacementRequest) -> DecisionResult[ReplacementOption]:
+        """!
+        @brief Choose one applicable replacement effect.
+        """
         state, player = request.state, request.player
         operation, effects = request.operation, request.candidates
         for index, effect in enumerate(effects, 1):
@@ -598,6 +650,9 @@ class ConsoleDecisionMaker(ModularDecisionMaker):
             self.write("Choose a listed replacement number.")
 
     def decide_replacement_order(self, request: ReplacementOrderRequest) -> DecisionResult[ReplacementOrderOption]:
+        """!
+        @brief Choose the order for replacement-affected operations.
+        """
         state, player = request.state, request.player
         operations = request.candidates
         from game.game_actions.resolution.replacement_effects import (
@@ -634,6 +689,9 @@ class ConsoleDecisionMaker(ModularDecisionMaker):
             self.write("List every event number exactly once.")
 
     def decide_replacement_acceptance(self, request: ReplacementAcceptanceRequest) -> DecisionResult[ReplacementAcceptanceOption]:
+        """!
+        @brief Ask whether to apply an optional replacement effect.
+        """
         state, player = request.state, request.player
         operation, effect = request.operation, request.effect
         while True:
@@ -644,6 +702,9 @@ class ConsoleDecisionMaker(ModularDecisionMaker):
                 return DecisionResult(ReplacementAcceptanceOption(raw in {"yes", "y"}))
 
     def decide_discard(self, request: DiscardRequest) -> DecisionResult[DiscardOption]:
+        """!
+        @brief Choose cards to discard.
+        """
         state, player = request.state, request.player
         count = request.count
         self.write(self._hand(player))
@@ -660,6 +721,9 @@ class ConsoleDecisionMaker(ModularDecisionMaker):
                 self.write(f"Invalid input: {error}")
 
     def decide_trigger_order(self, request: TriggerOrderRequest) -> DecisionResult[TriggerOrderOption]:
+        """!
+        @brief Choose APNAP trigger ordering.
+        """
         pending = list(request.candidates)
         ordered = []
         while pending:
@@ -682,6 +746,9 @@ class ConsoleDecisionMaker(ModularDecisionMaker):
         return DecisionResult(TriggerOrderOption(ordered))
 
     def decide_ability(self, request: AbilityDecisionRequest) -> DecisionResult[GameAction]:
+        """!
+        @brief Choose a concrete action for a mandatory ability.
+        """
         from game.console.command_session import CommandSession
         ability = request.ability
         self.write(f"Ability: {card_reference(ability.source)} {ability.key}")
@@ -694,6 +761,9 @@ class ConsoleDecisionMaker(ModularDecisionMaker):
             self.write("This ability is mandatory; choose its action or quit the game with EOF/Ctrl+C.")
 
     def decide_ability_resolution(self, request: AbilityResolutionRequest) -> DecisionResult[AbilityResolutionOption]:
+        """!
+        @brief Choose cards during ability resolution.
+        """
         by_id = {card_reference(c).lower(): c for c in request.candidates}
         self.write(", ".join(f"{key}: {card.name}" for key, card in by_id.items()))
         while True:
@@ -827,6 +897,9 @@ class ConsoleDecisionMaker(ModularDecisionMaker):
 
     @staticmethod
     def _hand(player: Player) -> str:
+        """!
+        @brief Format one player's hand for display.
+        """
         return "Hand: " + (
             ", ".join(f"{card_reference(card)}: {card.name}" for card in player.hand.values())
             or "empty"
@@ -835,6 +908,9 @@ class ConsoleDecisionMaker(ModularDecisionMaker):
 
 @dataclass(frozen=True)
 class DemoGame:
+    """!
+    @brief Container for a demo state, event bus, and game loop.
+    """
     state: State
     event_bus: EventBus
     loop: GameLoop
@@ -924,15 +1000,14 @@ def create_demo_game(
 def create_starter_demo_game(
     controllers: tuple[DecisionMaker, DecisionMaker] | None = None,
     *,
-    colors=("white", "red"),
-    seed=1,
-    starting_player_idx=0,
-    names=("Alice", "Bob"),
-    config=None,
+    colors: object = ("white", "red"),
+    seed: int = 1,
+    starting_player_idx: int = 0,
+    names: object = ("Alice", "Bob"),
+    config: object = None,
 ) -> DemoGame:
     """!
     @brief Build a normal 20-life game from two Arena Beginner starter lists.
-
     The default is the requested Keep the Peace (white) versus Goblins
     Everywhere (red) matchup.  Deck construction, shuffle, opening hands and
     mulligans are delegated to :func:`game.game_loop.setup.create_game`; this helper only

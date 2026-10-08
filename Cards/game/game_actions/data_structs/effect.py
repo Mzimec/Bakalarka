@@ -4,7 +4,7 @@ from __future__ import annotations
 
 from abc import abstractmethod
 from typing import TYPE_CHECKING, override
-from collections.abc import Iterator, Iterable
+from collections.abc import Iterator
 
 if TYPE_CHECKING:
     from ...game_state import State
@@ -20,7 +20,6 @@ __all__ = ["Effect"]
 class Effect(RuntimeObject):
     """!
     @brief Base class for ability effects that generate executable operations.
-
     An `Effect` is the declarative description of "what should happen"
     (e.g. deal damage, draw a card, destroy a permanent) as authored on
     a card. It doesn't perform any mutation itself — instead, given a
@@ -29,7 +28,6 @@ class Effect(RuntimeObject):
     executes. This keeps effect definitions side-effect free and lets
     the same effect be used both for planning (e.g. cost validation,
     action generation) and for real execution.
-
     Effects are also used to represent costs (e.g. "sacrifice a
     creature", "pay life"), which is why `validation_error` exists
     separately from `to_operations` — some costs need to check legality
@@ -45,7 +43,7 @@ class Effect(RuntimeObject):
 
     @property
     @override
-    def key(self):
+    def key(self) -> str:
         """!
         @brief The effect's identifier, as referenced by ability/action-node definitions.
         """
@@ -54,13 +52,11 @@ class Effect(RuntimeObject):
     def validation_error(self, state: State, context: ResolutionContext) -> str | None:
         """!
         @brief Return an error when this effect cannot currently be paid as a cost.
-
         Default implementation always considers the effect legal;
         subclasses representing costs with extra legality requirements
         (e.g. "sacrifice a creature you control" when you control none)
         should override this to report why the cost currently cannot be
         paid.
-
         @param state Current game state.
         @param context Resolution context with targets scoped to this
                effect.
@@ -83,11 +79,9 @@ class Effect(RuntimeObject):
     def get_info(self) -> str:
         """!
         @brief Return a human-readable description of this effect.
-
         Intended for UI/logging purposes (e.g. rules text or a
         stack/log description of what the effect does), not for
         gameplay logic.
-
         @return Short, human-readable description of the effect.
         """
-        pass
+        ...

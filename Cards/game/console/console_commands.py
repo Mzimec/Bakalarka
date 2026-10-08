@@ -20,11 +20,17 @@ class CommandError(ValueError):
 
 @dataclass(frozen=True)
 class ParsedCommand:
+    """!
+    @brief Parsed console command name and positional arguments.
+    """
     name: str
     arguments: tuple[str, ...] = ()
 
 
 def parse_command(raw: str) -> ParsedCommand:
+    """!
+    @brief Parse raw console input into a normalized command.
+    """
     try:
         tokens = shlex.split(raw)
     except ValueError as error:
@@ -55,9 +61,12 @@ def resolve_card(
     player: Player,
     zone: ZoneType | None = None,
     *,
-    controlled=False,
-    global_scope=False,
+    controlled: bool = False,
+    global_scope: bool = False,
 ) -> Card:
+    """!
+    @brief Resolve a card reference in the requested player scope.
+    """
     reference = reference.casefold()
     state = player.game_state
     if state is None:
@@ -107,6 +116,9 @@ def resolve_card(
 
 
 def resolve_player(reference: str, state: State, player: Player) -> Player:
+    """!
+    @brief Resolve a player reference in the current game.
+    """
     reference = reference.casefold()
     by_id = state.player_register.get_by_key(reference)
     if by_id is not None:

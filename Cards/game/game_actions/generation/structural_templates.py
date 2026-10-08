@@ -4,6 +4,8 @@ Only native immutable action nodes are shared. Effect objects remain live
 references; changing their key invalidates the graph, while changing their
 behavior/amount is observed during normal validation and resolution.
 """
+from __future__ import annotations
+from typing import Any, Callable
 from dataclasses import dataclass
 from immutabledict import immutabledict
 
@@ -27,7 +29,12 @@ _NORMALIZE = RuntimeSubAbility.normalize_effect_map
 _USED_SLOTS = RuntimeSubAbility.get_used_slots_in_esmap
 
 
-def _map_signature(mapping):
+def _map_signature(mapping: object) -> tuple[object, ...] | None:
+    """!
+    @brief Build a compact signature for an immutable effect-to-slot map.
+    @param mapping Mapping to inspect.
+    @return Signature tuple, or `None` when the mapping is not cache-safe.
+    """
     if type(mapping) is not ImmutableEffectToSlotMap or len(mapping) > 64:
         return None
     if any(type(key) is not str or type(slots) is not frozenset
@@ -38,7 +45,15 @@ def _map_signature(mapping):
     return tuple(mapping.items())
 
 
-def _node_signature(node, budget, fields, nodes):
+def _node_signature(node: object, budget: list[int], fields: list[tuple[object, ...]], nodes: list[tuple[object, type]]) -> tuple[object, ...] | None:
+    """!
+    @brief Build a cache signature for a supported immutable action-node tree.
+    @param node Action node to inspect.
+    @param budget Mutable node budget consumed during traversal.
+    @param fields Output list of identity-checked fields.
+    @param nodes Output list of visited nodes and exact types.
+    @return Structural node signature, or `None` when unsafe.
+    """
     if node is None:
         return ()
     budget[0] -= 1
@@ -66,16 +81,23 @@ def _node_signature(node, budget, fields, nodes):
 
 @dataclass(frozen=True)
 class _Graph:
+    """!
+    @brief Cached compiled graph plus the identity checks that keep it valid.
+    """
     definitions: tuple
     fields: tuple
     nodes: tuple
     effects: tuple
     value: tuple
 
-    def current(self):
+    def current(self) -> bool:
         # Immutable containers were validated on construction. Comparing their
         # identities avoids rebuilding their signatures on every cache hit.
         # Mutable effect keys and method overrides are still checked live.
+        """!
+        @brief Check whether all cached graph dependencies are still valid.
+        @return True if the cached graph may still be reused.
+        """
         return (all(type(part) is SubAbilityDefinition for part in self.definitions)
                 and all(type(node) is kind
                         and kind.create_with_sufix is _SUFFIX_METHODS[kind]
@@ -87,8 +109,10 @@ class _Graph:
                         for effect, key in self.effects))
 
 
-def compiled_graph(subdefs, build):
-    """Reuse suffixes and lookup maps; mana-cost evaluation stays in compile()."""
+def compiled_graph(subdefs: dict[SubAbilityDefinition, int], build: Callable[[], tuple[Any, ...]]) -> tuple[Any, ...]:
+    """!
+    @brief Reuse suffixes and lookup maps; mana-cost evaluation stays in compile().
+    """
     key = tuple((id(part), count) for part, count in subdefs.items())
     cached = _GRAPHS.get(key)
     if cached is not None and cached.current():
@@ -121,9 +145,9 @@ def compiled_graph(subdefs, build):
     return value
 
 
-def prepared_effects(subability, mapping):
-    """Bind definition effects to slots once; target selections remain live.
-
+def prepared_effects(subability: RuntimeSubAbility, mapping: object) -> tuple[object, set | None]:
+    """!
+    @brief Bind definition effects to slots once; target selections remain live.
     Custom normalization/slot hooks preserve their original dispatch. None
     requests deferred slot collection after payment feasibility is checked.
     Return a fresh set so a target strategy cannot mutate cached slots.

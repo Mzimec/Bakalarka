@@ -1,5 +1,6 @@
 """Preflight built-in costs without copying the mutable game or paying twice."""
 
+from __future__ import annotations
 from collections import defaultdict
 
 from ...enums import ZoneType
@@ -12,10 +13,20 @@ class CostResources:
     @brief Shared reservations for custom costs; hooks may only mutate this ledger.
     """
 
-    def __init__(self):
-        self.used = defaultdict(int)
+    def __init__(self) -> None:
+        """!
+        @brief Create an empty resource reservation ledger.
+        """
+        self.used: defaultdict[object, int] = defaultdict(int)
 
-    def reserve(self, resource, amount, available):
+    def reserve(self, resource: object, amount: int, available: int) -> str | None:
+        """!
+        @brief Reserve an amount of a named resource if available.
+        @param resource Resource identifier.
+        @param amount Amount to reserve.
+        @param available Available amount.
+        @return Error message, or `None` when reserved.
+        """
         if type(amount) is not int or amount < 0:
             return "A cost reservation must be a nonnegative integer."
         if self.used[resource] + amount > available:
@@ -24,7 +35,13 @@ class CostResources:
         return None
 
 
-def validate_cost_operations(state, operations):
+def validate_cost_operations(state: object, operations: object) -> str | None:
+    """!
+    @brief Validate a complete cost-operation sequence before execution.
+    @param state Current game state.
+    @param operations Operations proposed for cost payment.
+    @return Error message, or `None` when valid.
+    """
     from game.rules.permanents import LoyaltyCostOperation
     from ..data_structs.operation import PassPriorityOperation
 
@@ -93,10 +110,9 @@ def validate_cost_operations(state, operations):
     return None
 
 
-def validate_replaced_cost_operation(state, operation):
+def validate_replaced_cost_operation(state: object, operation: object) -> str | None:
     """!
     @brief A replacement is an effect, so do not reimpose the original cost's form.
-
     Still require an executable operation covered by the rollback contract.
     In particular a replaced tap may affect another player's permanent.
     """

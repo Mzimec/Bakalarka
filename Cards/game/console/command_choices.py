@@ -1,5 +1,6 @@
 """Lazy legal choices for one command step; no operations are materialized."""
 
+from __future__ import annotations
 from game.game_actions.data_structs.ability import SubAbilityComposer
 from game.game_actions.generation.ability_action_gen_pipeline import ActionGenerationContext
 from game.game_actions.generation.exec_plan_gen_pipeline import ExecutionPlanPipeline
@@ -9,13 +10,23 @@ from game.mana.mana_solver import SourceActivatingManaSolver
 
 
 class UnsupportedCommandDefinition(ValueError):
+    """!
+    @brief Raised when the console builder cannot represent an ability definition.
+    """
     pass
 
 
-def legal_plans(ability, state, *, cost=False, mode=None, mana_solver=None, x_value=0):
+def legal_plans(
+    ability: object,
+    state: object,
+    *,
+    cost: bool = False,
+    mode: int = None,
+    mana_solver: object = None,
+    x_value: int = 0,
+) -> object:
     """!
     @brief Search only until the caller has enough witnesses (usually one or two).
-
     @param mana_solver Optional payment policy; defaults to automatic source activation.
     @param x_value Chosen X passed to both payment and effect parameter generation.
     """
@@ -45,15 +56,20 @@ def legal_plans(ability, state, *, cost=False, mode=None, mana_solver=None, x_va
             yield index, plan
 
 
-
-def feasible(ability, state):
+def feasible(ability: object, state: object) -> bool:
+    """!
+    @brief Return whether an ability has both payable costs and legal effects.
+    """
     return (
         next(legal_plans(ability, state, cost=True), None) is not None
         and next(legal_plans(ability, state), None) is not None
     )
 
 
-def target_groups(plan):
+def target_groups(plan: object) -> tuple[object, ...]:
+    """!
+    @brief Flatten a plan binding into ordered target groups.
+    """
     slots = sorted(
         plan.effects.get_used_slots(), key=lambda slot: (slot.slot.key, slot.runtime_key)
     )

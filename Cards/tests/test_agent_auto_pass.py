@@ -28,7 +28,7 @@ def add(state, name, zone=ZoneType.BATTLEFIELD):
 
 @pytest.mark.parametrize("agent_type", [SimpleAgent, ModularAgent])
 @pytest.mark.parametrize("phase", [TurnPhase.UPKEEP, TurnPhase.PRECOMBAT_MAIN, TurnPhase.END_STEP])
-def test_quiet_window_uses_one_pipeline_without_mana_or_equivalence_work(agent_type, phase, monkeypatch):
+def test_quiet_window_avoids_generation_when_absence_is_proven(agent_type, phase, monkeypatch):
     logs, metrics = [], []
     agent = agent_type(log=lambda *args: logs.append(args))
     state, player = board(agent)
@@ -44,6 +44,9 @@ def test_quiet_window_uses_one_pipeline_without_mana_or_equivalence_work(agent_t
     monkeypatch.setattr(state, "get_mana_sources", unexpected)
     monkeypatch.setattr(ConservativeEquivalencePolicy, "bind", unexpected)
     monkeypatch.setattr(AbilityDecisionGenerationPipeline, "generate", unexpected)
+    if phase is not TurnPhase.PRECOMBAT_MAIN:
+        from game.game_actions.generation.decision_abstraction.action_pipelines import PriorityDecisionGenerationPipeline
+        monkeypatch.setattr(PriorityDecisionGenerationPipeline, "generate", unexpected)
     if isinstance(agent, ModularAgent):
         monkeypatch.setattr(agent.selector, "choose", unexpected)
     with observe_decisions(lambda controller, request, sample: metrics.append(sample)):
@@ -51,9 +54,16 @@ def test_quiet_window_uses_one_pipeline_without_mana_or_equivalence_work(agent_t
     assert isinstance(result.value, PassPriorityAction)
     assert agent.decisions == 1 and len(logs) == 1
     assert logs[0][2] == "pass" and logs[0][3]["auto_pass"]
-    assert metrics[0]["auto_pass"] and metrics[0]["auto_pass_reason"] == "only_pass_candidate"
-    assert metrics[0]["options_observed"] == metrics[0]["option_space_size"] == 1
-    assert len(metrics[0]["option_spaces"]) == 1
+    assert metrics[0]["auto_pass"]
+    if phase is TurnPhase.PRECOMBAT_MAIN:
+        assert metrics[0]["auto_pass_reason"] == "only_pass_candidate"
+        assert metrics[0]["options_observed"] == metrics[0]["option_space_size"] == 1
+        assert len(metrics[0]["option_spaces"]) == 1
+    else:
+        assert metrics[0]["auto_pass_reason"] == "no_available_abilities"
+        assert metrics[0]["options_observed"] == 0
+        assert metrics[0]["option_space_size"] is None
+        assert metrics[0]["option_spaces"] == []
     assert state.priority.current_player is player and state.turn.phase == phase
     assert not island.is_tapped and state.stack.is_empty()
 
@@ -108,6 +118,7 @@ def test_disabled_autopass_keeps_selector_and_observation(monkeypatch):
 def test_autopass_still_enforces_runaway_budget(agent_type):
     agent = agent_type(max_decisions=1)
     state, player = board(agent)
+    state.turn.phase = TurnPhase.UPKEEP
     agent.decide(PriorityDecisionRequest(state, player))
     with pytest.raises(DecisionLimitReached):
         agent.decide(PriorityDecisionRequest(state, player))
@@ -172,3 +183,141 @@ def test_autopass_preserves_seeded_game_events(tmp_path):
         outcomes.append((result.status, result.turns, result.decisions, result.winner_index))
     assert outcomes[0] == outcomes[1]
     assert events[0] == events[1]
+
+
+@pytest.mark.parametrize("custom", ["subclass", "instance"])
+def test_early_autopass_never_bypasses_custom_candidate_generator(custom):
+    from game.ai.modular_agent import CandidateGenerator, Candidate
+    from game.game_actions.generation.decision_abstraction.priority_availability import NON_MANA_PRIORITY_AVAILABILITY
+    calls = []
+
+    def generate(state, player, attempted):
+        calls.append(True)
+        return [Candidate(PassPriorityAction(player), 0, {"kind": "pass"})]
+
+    if custom == "subclass":
+        class Custom(CandidateGenerator):
+            def generate(self, *args):
+                return generate(*args)
+        generator = Custom()
+    else:
+        generator = CandidateGenerator()
+        generator.generate = generate
+    agent = ModularAgent(candidates=generator)
+    state, player = board(agent)
+    state.turn.phase = TurnPhase.UPKEEP
+    assert NON_MANA_PRIORITY_AVAILABILITY.can_pass(state, player)
+    result = agent.decide(PriorityDecisionRequest(state, player))
+    assert calls == [True]
+    assert result.info["auto_pass_reason"] == "only_pass_candidate"
+
+
+@pytest.mark.parametrize("agent_type", [SimpleAgent, ModularAgent])
+def test_attempted_filter_applies_to_proof_and_resets_in_new_window(agent_type):
+    from game.enums import CardType
+    from game.game_state import CardDefinition
+    from game.game_actions.data_structs.ability import ActivatedAbilityDefinition
+    agent = agent_type()
+    state, player = board(agent)
+    state.turn.phase = TurnPhase.UPKEEP
+    definition = ActivatedAbilityDefinition()
+    card = Card(CardDefinition("Source", types=frozenset({CardType.ARTIFACT}),
+                               abilities=frozenset({definition})), player)
+    player.add_card(card, ZoneType.BATTLEFIELD)
+    agent._window = (state.turn.number, state.turn.phase)
+    agent._attempted.add((card.command_id, definition.key))
+    request = PriorityDecisionRequest(state, player)
+    assert agent.decide(request).info["auto_pass_reason"] == "no_available_abilities"
+    state.turn.phase = TurnPhase.END_STEP
+    assert agent.decide(request).info.get("auto_pass_reason") != "no_available_abilities"
+
+
+@pytest.mark.parametrize("kind", ["instant", "flash", "activated", "custom"])
+def test_available_non_mana_actions_prevent_absence_proof(kind):
+    from game.enums import CardType
+    from game.game_state import CardDefinition
+    from game.game_actions.data_structs.ability import ActivatedAbilityDefinition, CastSpellAbilityDefinition
+    from game.game_actions.generation.decision_abstraction.priority_availability import NON_MANA_PRIORITY_AVAILABILITY
+    from game.mana.mana_value import ManaValue
+    state, player = board(SimpleAgent())
+    state.turn.phase = TurnPhase.UPKEEP
+    definition = CastSpellAbilityDefinition() if kind in {"instant", "flash"} else ActivatedAbilityDefinition()
+    if kind == "custom":
+        class Custom(ActivatedAbilityDefinition):
+            pass
+        definition = Custom()
+    card = Card(CardDefinition("Available", types=frozenset({CardType.INSTANT if kind == "instant" else CardType.ARTIFACT}),
+                               mana_cost=ManaValue(), keywords=frozenset({"flash"}) if kind == "flash" else frozenset(),
+                               abilities=frozenset({definition})), player)
+    player.add_card(card, ZoneType.HAND if kind in {"instant", "flash"} else ZoneType.BATTLEFIELD)
+    assert not NON_MANA_PRIORITY_AVAILABILITY.can_pass(state, player)
+    if kind == "custom":
+        assert NON_MANA_PRIORITY_AVAILABILITY.can_pass(state, player, {(card.command_id, definition.key)})
+
+
+def test_absence_proof_rechecks_live_ability_changes():
+    from game.enums import CardType
+    from game.game_state import CardDefinition
+    from game.game_actions.data_structs.ability import ActivatedAbilityDefinition
+    from game.game_actions.generation.decision_abstraction.priority_availability import NON_MANA_PRIORITY_AVAILABILITY
+    from game.stat_type import STAT_ABILITIES
+    state, player = board(SimpleAgent())
+    state.turn.phase = TurnPhase.UPKEEP
+    card = Card(CardDefinition("Source", types=frozenset({CardType.ARTIFACT})), player)
+    player.add_card(card, ZoneType.BATTLEFIELD)
+    assert NON_MANA_PRIORITY_AVAILABILITY.can_pass(state, player)
+    definition = ActivatedAbilityDefinition()
+    card.set_base_stat(STAT_ABILITIES, {definition.key: definition})
+    assert not NON_MANA_PRIORITY_AVAILABILITY.can_pass(state, player)
+    card.set_base_stat(STAT_ABILITIES, {})
+    assert NON_MANA_PRIORITY_AVAILABILITY.can_pass(state, player)
+
+
+@pytest.mark.parametrize("agent_type", [SimpleAgent, ModularAgent])
+def test_failed_proof_transfers_discovery_to_generation_once(agent_type, monkeypatch):
+    from game.enums import CardType
+    from game.game_state import CardDefinition
+    from game.game_actions.data_structs.ability import ActivatedAbilityDefinition
+    from game.game_state.collectors.priority_ability_collector import PriorityAbilityCollector
+    agent = agent_type()
+    state, player = board(agent)
+    state.turn.phase = TurnPhase.UPKEEP
+    for key in ("first", "second"):
+        card = Card(CardDefinition(key, types=frozenset({CardType.ARTIFACT}),
+                                   abilities=frozenset({ActivatedAbilityDefinition(key=key)})), player)
+        player.add_card(card, ZoneType.BATTLEFIELD)
+    original = PriorityAbilityCollector.collect_abilities
+    calls, candidates = [], []
+
+    def counted(self, *args, **kwargs):
+        calls.append(True)
+        for ability in original(self, *args, **kwargs):
+            candidates.append(ability.key)
+            yield ability
+
+    monkeypatch.setattr(PriorityAbilityCollector, "collect_abilities", counted)
+    agent.decide(PriorityDecisionRequest(state, player))
+    assert calls == [True]
+    assert candidates == ["first", "second"]
+
+
+def test_prepared_collector_reiteration_returns_live_candidates():
+    from game.enums import CardType
+    from game.game_state import CardDefinition
+    from game.game_actions.data_structs.ability import ActivatedAbilityDefinition
+    from game.game_actions.generation.decision_abstraction.priority_availability import NON_MANA_PRIORITY_AVAILABILITY
+    from game.game_actions.generation.decision_abstraction.policies import PriorityGenerationPolicy
+    from game.stat_type import STAT_ABILITIES
+    state, player = board(SimpleAgent())
+    state.turn.phase = TurnPhase.UPKEEP
+    definition = ActivatedAbilityDefinition()
+    card = Card(CardDefinition("Source", types=frozenset({CardType.ARTIFACT}),
+                               abilities=frozenset({definition})), player)
+    player.add_card(card, ZoneType.BATTLEFIELD)
+    prepared = NON_MANA_PRIORITY_AVAILABILITY.prepare(state, player)
+    space = PriorityDecisionRequest(state, player).option_space(
+        PriorityGenerationPolicy(collector=prepared, include_mana=False, include_concede=False))
+    assert len(list(space)) == 2
+    assert len(list(space)) == 2
+    card.set_base_stat(STAT_ABILITIES, {})
+    assert len(list(space)) == 1
