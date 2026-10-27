@@ -208,7 +208,7 @@ def test_mana_production_payment_and_stale_payment_validation():
 
 def test_pool_solver_reserves_restricted_colors_before_generic_mana():
     from game.enums import ManaType
-    from game.ai.mana_solver import PoolManaSolver
+    from game.mana.mana_solver import PoolManaSolver
     from game.mana.mana_value import ImmutableManaRequirement
     game = make_game()
     player = game.state.active_player

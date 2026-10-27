@@ -1,0 +1,454 @@
+{
+  "scope": "Forensic replay: old own choices, real searches only at failures/crash roots.\n\nScripted choices are explicitly marked and are NOT training/search results.\nNo rules or guards are patched. Failure-only hooks collect exception metadata.\n",
+  "status": "win",
+  "error": null,
+  "matched_logged_search_roots": 43,
+  "actual_searches": [
+    {
+      "information_key": "9e07e0f3b7dedc5f9827e8fcaacca3c6bed2cfaba9957b6535b2f1c6a6e81cb0",
+      "previous_reason": "sampled_root_mismatch",
+      "request": "PriorityDecisionRequest",
+      "turn": 4,
+      "phase": "PRECOMBAT_MAIN",
+      "exception": "SampledRootMismatch: Sampled root does not match the player's information and actions"
+    }
+  ],
+  "diagnostics": [
+    {
+      "type": "SampledRootMismatch",
+      "message": "Sampled root does not match the player's information and actions",
+      "turn": 4,
+      "phase": "PRECOMBAT_MAIN",
+      "request": "PriorityDecisionRequest",
+      "terminal": false,
+      "cutoff": false,
+      "recall_difference": "observation/actions/2/card",
+      "actions_equal": false,
+      "actual_actions": [
+        {
+          "ability_key": "cast:Jungle Delver",
+          "action_key": "cast:Jungle Delver",
+          "controller": {
+            "player": 1
+          },
+          "cost": {
+            "effects": [
+              {
+                "features": {
+                  "destination": "STACK",
+                  "kind": "move_source"
+                },
+                "rule": [
+                  "game.game_actions.card_effects",
+                  "MoveSourceEffect",
+                  "Jungle Delver:put_on_stack"
+                ],
+                "slots": []
+              }
+            ],
+            "mana": {
+              "life_payment": 0,
+              "mana_plan": [
+                {
+                  "ability_key": "mana_green",
+                  "action_key": "mana_green",
+                  "controller": {
+                    "player": 1
+                  },
+                  "cost": {
+                    "effects": [
+                      {
+                        "features": {
+                          "kind": "tap_source"
+                        },
+                        "rule": [
+                          "game.game_actions.card_effects",
+                          "TapSourceEffect",
+                          "tap_for_mana"
+                        ],
+                        "slots": []
+                      }
+                    ],
+                    "mana": {
+                      "life_payment": 0,
+                      "mana_plan": [],
+                      "payment": null
+                    },
+                    "parameters": {
+                      "x_variables": {
+                        "mapping": [
+                          [
+                            [
+                              "game.enums",
+                              "SAVariableType",
+                              "X"
+                            ],
+                            0
+                          ]
+                        ]
+                      }
+                    },
+                    "targets": {
+                      "mapping": []
+                    }
+                  },
+                  "effect": {
+                    "effects": [
+                      {
+                        "features": {
+                          "kind": "unknown"
+                        },
+                        "rule": [
+                          "game.game_actions.mana_effects",
+                          "AddManaEffect",
+                          "add_green"
+                        ],
+                        "slots": []
+                      }
+                    ],
+                    "mana": null,
+                    "parameters": {
+                      "x_variables": {
+                        "mapping": [
+                          [
+                            [
+                              "game.enums",
+                              "SAVariableType",
+                              "X"
+                            ],
+                            0
+                          ]
+                        ]
+                      }
+                    },
+                    "targets": {
+                      "mapping": []
+                    }
+                  },
+                  "kind": "ManaAbilityAction",
+                  "source": {
+                    "card": "c99",
+                    "name": "Forest",
+                    "zone_revision": 2
+                  },
+                  "source_revision": 2,
+                  "uses_stack": false
+                }
+              ],
+              "payment": {
+                "mapping": [
+                  [
+                    [
+                      "game.enums",
+                      "ManaType",
+                      "GREEN"
+                    ],
+                    1
+                  ]
+                ]
+              }
+            },
+            "parameters": {
+              "x_variables": {
+                "mapping": [
+                  [
+                    [
+                      "game.enums",
+                      "SAVariableType",
+                      "X"
+                    ],
+                    0
+                  ]
+                ]
+              }
+            },
+            "targets": {
+              "mapping": []
+            }
+          },
+          "effect": {
+            "effects": [
+              {
+                "features": {
+                  "destination": "BATTLEFIELD",
+                  "kind": "move_source"
+                },
+                "rule": [
+                  "game.game_actions.card_effects",
+                  "MoveSourceEffect",
+                  "Jungle Delver:to_battlefield"
+                ],
+                "slots": []
+              }
+            ],
+            "mana": null,
+            "parameters": {
+              "x_variables": {
+                "mapping": [
+                  [
+                    [
+                      "game.enums",
+                      "SAVariableType",
+                      "X"
+                    ],
+                    0
+                  ]
+                ]
+              }
+            },
+            "targets": {
+              "mapping": []
+            }
+          },
+          "kind": "AbilityAction",
+          "source": {
+            "card": "c61",
+            "name": "Jungle Delver",
+            "zone_revision": 4
+          },
+          "source_revision": 4,
+          "uses_stack": true
+        },
+        {
+          "card": {
+            "card": "c108",
+            "name": "Forest",
+            "zone_revision": 1
+          },
+          "kind": "LandPlayAction",
+          "permission": "play_land",
+          "player": {
+            "player": 1
+          },
+          "source_revision": 1
+        },
+        {
+          "card": {
+            "card": "c120",
+            "name": "Forest",
+            "zone_revision": 1
+          },
+          "kind": "LandPlayAction",
+          "permission": "play_land",
+          "player": {
+            "player": 1
+          },
+          "source_revision": 1
+        },
+        {
+          "kind": "PassPriorityAction",
+          "player": {
+            "player": 1
+          }
+        }
+      ],
+      "expected_actions": [
+        {
+          "ability_key": "cast:Jungle Delver",
+          "action_key": "cast:Jungle Delver",
+          "controller": {
+            "player": 1
+          },
+          "cost": {
+            "effects": [
+              {
+                "features": {
+                  "destination": "STACK",
+                  "kind": "move_source"
+                },
+                "rule": [
+                  "game.game_actions.card_effects",
+                  "MoveSourceEffect",
+                  "Jungle Delver:put_on_stack"
+                ],
+                "slots": []
+              }
+            ],
+            "mana": {
+              "life_payment": 0,
+              "mana_plan": [
+                {
+                  "ability_key": "mana_green",
+                  "action_key": "mana_green",
+                  "controller": {
+                    "player": 1
+                  },
+                  "cost": {
+                    "effects": [
+                      {
+                        "features": {
+                          "kind": "tap_source"
+                        },
+                        "rule": [
+                          "game.game_actions.card_effects",
+                          "TapSourceEffect",
+                          "tap_for_mana"
+                        ],
+                        "slots": []
+                      }
+                    ],
+                    "mana": {
+                      "life_payment": 0,
+                      "mana_plan": [],
+                      "payment": null
+                    },
+                    "parameters": {
+                      "x_variables": {
+                        "mapping": [
+                          [
+                            [
+                              "game.enums",
+                              "SAVariableType",
+                              "X"
+                            ],
+                            0
+                          ]
+                        ]
+                      }
+                    },
+                    "targets": {
+                      "mapping": []
+                    }
+                  },
+                  "effect": {
+                    "effects": [
+                      {
+                        "features": {
+                          "kind": "unknown"
+                        },
+                        "rule": [
+                          "game.game_actions.mana_effects",
+                          "AddManaEffect",
+                          "add_green"
+                        ],
+                        "slots": []
+                      }
+                    ],
+                    "mana": null,
+                    "parameters": {
+                      "x_variables": {
+                        "mapping": [
+                          [
+                            [
+                              "game.enums",
+                              "SAVariableType",
+                              "X"
+                            ],
+                            0
+                          ]
+                        ]
+                      }
+                    },
+                    "targets": {
+                      "mapping": []
+                    }
+                  },
+                  "kind": "ManaAbilityAction",
+                  "source": {
+                    "card": "c99",
+                    "name": "Forest",
+                    "zone_revision": 2
+                  },
+                  "source_revision": 2,
+                  "uses_stack": false
+                }
+              ],
+              "payment": {
+                "mapping": [
+                  [
+                    [
+                      "game.enums",
+                      "ManaType",
+                      "GREEN"
+                    ],
+                    1
+                  ]
+                ]
+              }
+            },
+            "parameters": {
+              "x_variables": {
+                "mapping": [
+                  [
+                    [
+                      "game.enums",
+                      "SAVariableType",
+                      "X"
+                    ],
+                    0
+                  ]
+                ]
+              }
+            },
+            "targets": {
+              "mapping": []
+            }
+          },
+          "effect": {
+            "effects": [
+              {
+                "features": {
+                  "destination": "BATTLEFIELD",
+                  "kind": "move_source"
+                },
+                "rule": [
+                  "game.game_actions.card_effects",
+                  "MoveSourceEffect",
+                  "Jungle Delver:to_battlefield"
+                ],
+                "slots": []
+              }
+            ],
+            "mana": null,
+            "parameters": {
+              "x_variables": {
+                "mapping": [
+                  [
+                    [
+                      "game.enums",
+                      "SAVariableType",
+                      "X"
+                    ],
+                    0
+                  ]
+                ]
+              }
+            },
+            "targets": {
+              "mapping": []
+            }
+          },
+          "kind": "AbilityAction",
+          "source": {
+            "card": "c61",
+            "name": "Jungle Delver",
+            "zone_revision": 4
+          },
+          "source_revision": 4,
+          "uses_stack": true
+        },
+        {
+          "card": {
+            "card": "c108",
+            "name": "Forest",
+            "zone_revision": 1
+          },
+          "kind": "LandPlayAction",
+          "permission": "play_land",
+          "player": {
+            "player": 1
+          },
+          "source_revision": 1
+        },
+        {
+          "kind": "PassPriorityAction",
+          "player": {
+            "player": 1
+          }
+        }
+      ]
+    }
+  ],
+  "fingerprint": "8c066b348be83c2aaeb581276109a303dc63c9531f0a7448da7d19ea931bbc26",
+  "source_unchanged": true
+}

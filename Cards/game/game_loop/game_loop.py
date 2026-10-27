@@ -123,6 +123,17 @@ class PriorityWindow:
             if self._should_close():
                 return
 
+    @classmethod
+    def resume(cls, state, context, processor):
+        """Resume at a priority decision, preserving earlier consecutive passes."""
+        current = state.priority.current_player
+        passed = tuple(state.priority.passed_players)
+        window = cls(state, context, processor)
+        window.current_index = window.players.index(current)
+        window.passed_players = {id(player) for player in passed}
+        window._sync_priority()
+        return window
+
     def _get_player_action(self, player: Player) -> GameAction:
         """!
         @brief Ask the player's controller for its next priority action.
@@ -130,7 +141,19 @@ class PriorityWindow:
         Returning `None` is intentionally treated as passing priority so simple
         AI and test controllers need not construct an explicit pass action.
         """
-        return player.get_action(self.state)
+        from ..game_state.state import State
+        from .continuations import PriorityDecisionBoundary
+        executor = getattr(self.processor, "executor", None)
+        if (type(self.state) is not State or executor is None
+                or getattr(executor, "_pending_triggers", None) is not None
+                or getattr(executor, "_cost_transaction", None) is not None):
+            return player.get_action(self.state)
+        self.state.priority_decision_boundary = PriorityDecisionBoundary(
+            self.state.turn.phase, player.idx, self.context.allow_sorcery_speed)
+        try:
+            return player.get_action(self.state)
+        finally:
+            del self.state.priority_decision_boundary
 
     def _process_action(self, action: GameAction) -> None:
         """!
@@ -255,12 +278,19 @@ class PhaseController(ABC):
         are performed so all resulting state changes settle before those triggers
         are processed.
         """
+        self._run(state, processor)
+
+    def _run(self, state, processor, *, phase_started=False, pending_triggers=(), turn_based_frame=None):
         previous = getattr(processor.executor, "_pending_triggers", None)
-        processor.executor._pending_triggers = []
+        processor.executor._pending_triggers = list(pending_triggers)
 
         try:
-            _phase_event(state, processor)
-            self.execute_with_processor(state, processor)
+            if not phase_started:
+                _phase_event(state, processor)
+            if turn_based_frame is None:
+                self.execute_with_processor(state, processor)
+            else:
+                self.resume_turn_based_actions(state, processor, turn_based_frame)
             processor.executor.settle(state)
         finally:
             pending = processor.executor._pending_triggers
@@ -580,6 +610,44 @@ class CombatPhaseController(SimplePhaseController):
     @brief Execute combat-specific turn-based actions for combat phases.
     """
 
+    def _choose_declaration(self, state, processor, request):
+        from .continuations import CombatDeclarationBoundary
+        pending = getattr(processor.executor, "_pending_triggers", None)
+        if pending is None or len(state.players) != 2:
+            return request.player.controller.decide(request).value.declarations
+        previous = getattr(state, "combat_declaration_boundary", None)
+        state.combat_declaration_boundary = CombatDeclarationBoundary(
+            state.turn.phase, request.player.idx, tuple(pending))
+        try:
+            return request.player.controller.decide(request).value.declarations
+        finally:
+            if previous is None:
+                del state.combat_declaration_boundary
+            else:
+                state.combat_declaration_boundary = previous
+
+    def _resolve_damage_batch(self, state, processor, operations, *, ordering_frame=None):
+        from .continuations import CombatDamageBatchBoundary
+        pending = getattr(processor.executor, "_pending_triggers", None)
+        if pending is None:
+            # Standalone/custom execution has no native phase continuation.
+            return processor.executor.resolve_simultaneous(state, operations)
+        previous = getattr(state, "combat_damage_batch_boundary", None)
+        state.combat_damage_batch_boundary = CombatDamageBatchBoundary(
+            state.turn.phase, tuple(operations), tuple(pending))
+        try:
+            if ordering_frame is None:
+                return processor.executor.resolve_simultaneous(state, operations)
+            return processor.executor.resolve_simultaneous(state, operations, ordering_frame=ordering_frame)
+        finally:
+            if previous is None:
+                del state.combat_damage_batch_boundary
+            else:
+                state.combat_damage_batch_boundary = previous
+
+    def resume_turn_based_actions(self, state, processor, frame):
+        self._resolve_damage_batch(state, processor, frame.operations, ordering_frame=frame)
+
     def execute_with_processor(self, state, processor):
         """!
         @brief Dispatch mandatory combat processing for the current combat phase.
@@ -595,7 +663,7 @@ class CombatPhaseController(SimplePhaseController):
 
             events = combat.declare_attackers(
                 player,
-                player.controller.decide(DeclareAttackersRequest(state, player)).value.declarations,
+                self._choose_declaration(state, processor, DeclareAttackersRequest(state, player)),
             )
 
             _publish_events(
@@ -612,7 +680,7 @@ class CombatPhaseController(SimplePhaseController):
 
                 events = combat.declare_blockers(
                     player,
-                    player.controller.decide(DeclareBlockersRequest(state, player)).value.declarations,
+                    self._choose_declaration(state, processor, DeclareBlockersRequest(state, player)),
                 )
 
                 _publish_events(
@@ -631,10 +699,7 @@ class CombatPhaseController(SimplePhaseController):
 
             # Combat damage is simultaneous, so replacements and trigger capture
             # must observe one shared pre/post batch state.
-            processor.executor.resolve_simultaneous(
-                state,
-                operations,
-            )
+            self._resolve_damage_batch(state, processor, operations)
 
 
 def _game_over(state):
@@ -814,6 +879,62 @@ class GameLoop:
             state,
             self.processor,
         )
+
+        self._finish_phase(state)
+
+    def resume_priority(self, state):
+        """Continue a settled priority boundary without repeating phase actions.
+
+        Cleanup has an enclosing repeat-until-stable loop, so it needs a separate
+        continuation and is deliberately rejected here.
+        """
+        if state.turn.phase in (TurnPhase.UNTAP, TurnPhase.CLEANUP):
+            raise ValueError("This phase has no supported priority continuation")
+        PriorityWindow.resume(state, self.phase_map[state.turn.phase].priority_context,
+                              self.processor).run()
+        self._finish_phase(state)
+
+    def resume_combat_declaration(self, state):
+        """Resume a native two-player declaration with its deferred phase triggers."""
+        from .continuations import CombatDeclarationBoundary
+        boundary = getattr(state, "combat_declaration_boundary", None)
+        if (not isinstance(boundary, CombatDeclarationBoundary) or len(state.players) != 2
+                or boundary.phase != state.turn.phase
+                or boundary.phase not in (TurnPhase.DECLARE_ATTACKERS, TurnPhase.DECLARE_BLOCKERS)):
+            raise ValueError("Missing compatible combat declaration boundary")
+        expected = (state.active_player.idx if boundary.phase == TurnPhase.DECLARE_ATTACKERS
+                    else 1 - state.active_player.idx)
+        if boundary.player != expected:
+            raise ValueError("Combat declaration belongs to another player")
+        del state.combat_declaration_boundary
+        controller = self.phase_map[state.turn.phase]
+        controller._run(state, self.processor, phase_started=True,
+                        pending_triggers=boundary.pending_triggers)
+        self._finish_phase(state)
+
+    def resume_combat_damage_batch(self, state):
+        """Resume committed damage, without repeating assignments or phase events."""
+        from .continuations import CombatDamageBatchBoundary, ReplacementOrderingFrame
+        boundary = getattr(state, "combat_damage_batch_boundary", None)
+        frame = getattr(state, "replacement_order_boundary", None)
+        if (type(boundary) is not CombatDamageBatchBoundary or type(frame) is not ReplacementOrderingFrame
+                or boundary.phase != state.turn.phase
+                or boundary.phase not in (TurnPhase.FIRST_COMBAT_DAMAGE, TurnPhase.SECOND_COMBAT_DAMAGE)
+                or tuple(map(id, frame.operations)) != tuple(map(id, boundary.operations))):
+            raise ValueError("Missing native combat batch continuation")
+        del state.combat_damage_batch_boundary
+        del state.replacement_order_boundary
+        try:
+            self.phase_map[state.turn.phase]._run(state, self.processor, phase_started=True,
+                pending_triggers=boundary.pending_triggers, turn_based_frame=frame)
+        finally:
+            # A root inside order construction carries a prefix, not a Python
+            # frame. It is consumed only by the matching resumed group.
+            if hasattr(state, "order_decision_frame"):
+                del state.order_decision_frame
+        self._finish_phase(state)
+
+    def _finish_phase(self, state):
 
         if (
             state.turn.phase == TurnPhase.END_COMBAT

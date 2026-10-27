@@ -18,6 +18,8 @@ class SourceTappedCondition(TriggerCondition):
     @brief Trigger when this ability's own source becomes tapped.
     """
 
+    event_keys = frozenset({"card_tapped"})
+
     def matches(self, state: object, event: object) -> bool:
         """!
         @brief Check whether the event represents a card being tapped.

@@ -17,7 +17,7 @@ from game.rules.lands import basic_land, mana_ability
 from game.console.command_choices import feasible
 from game.console.command_session import CommandSession
 from game.console.priority_choices import can_auto_pass
-from game.ai.mana_solver import SourceActivatingManaSolver
+from game.mana.mana_solver import SourceActivatingManaSolver
 from game.mana.mana_value import ManaValue
 from game.game_actions.data_structs.game_action import PassPriorityAction
 from game.game_actions.data_structs.ability import SubAbilityDefinition

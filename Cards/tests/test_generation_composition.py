@@ -137,10 +137,3 @@ def test_custom_solver_receives_reserved_cost_source_through_ability_pipeline(st
     assert actions[0].cost_generator.mana_solver_result.mana_plan == ()
     assert not ability.source.is_tapped
     assert state.active_player.mana_pool[ManaType.RED] == 1
-
-
-def test_mana_solver_compatibility_imports_preserve_type_identity():
-    from game.ai import mana_solver as old
-    from game.mana import mana_solver as current
-    for name in ("ManaSolver", "ManaSolverResult", "PoolManaSolver", "SourceActivatingManaSolver"):
-        assert getattr(old, name) is getattr(current, name)

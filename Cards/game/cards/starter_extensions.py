@@ -41,7 +41,7 @@ from game.operations.card_operations import (
     TapCardOperation,
     DamagePlayerOperation,
 )
-from game.target.target_spec import TargetSpec
+from game.target.target_spec import TargetSpec, SelfSpec
 from game.rules.lands import mana_ability
 from game.cards.starter_support import (
     RuleEffect,
@@ -150,28 +150,6 @@ class HandSpec(TargetSpec):
         )
 
 
-class SelfSpec(TargetSpec):
-    """!
-    @brief SelfSpec target specification.
-    """
-    def __init__(self, condition: object = lambda s, c: True) -> None:
-        """!
-        @brief Initialize this object.
-        """
-        self.condition = condition
-
-    def generate_candidates(
-        self,
-        source: object,
-        controller: object,
-        state: object,
-        reserved: object = None,
-    ) -> object:
-        """!
-        @brief Yield candidate objects permitted by this target specification.
-        """
-        if self.condition(state, source):
-            yield source
 
 
 class FlyingSpellSpec(TargetSpec):
@@ -383,6 +361,9 @@ def sengir_condition(state: object, trigger: object) -> bool:
         return False
     dying = trigger.event.source
     revision = trigger.event.payload["last_known"].zone_revision
+    history = getattr(state, "turn_history", None)
+    if history is not None:
+        return history.dealt_damage(trigger.source, trigger.source_revision, dying, revision)
     return any(
         event.key == "damage_dealt"
         and event.source is trigger.source

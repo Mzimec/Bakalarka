@@ -65,7 +65,7 @@ class SetupConfig:
             raise ValueError("Maximum copies must be positive or None.")
 
 
-def shuffle_library(player, rng):
+def shuffle_library(player, rng, *, top_cards=(), draw_deadlines=()):
     """!
     @brief Shuffle a player's existing library without replacing card identities.
 
@@ -74,9 +74,46 @@ def shuffle_library(player, rng):
 
     @param player Player whose library is shuffled.
     @param rng Random generator controlling deterministic shuffle order.
+    @param top_cards Optional distinct library cards pinned in future draw
+        order. All remaining cards retain a uniform random permutation.
+    @param draw_deadlines Optional (card, prefix_length) constraints, sampled
+        uniformly over feasible draw orders. Mutually exclusive with top_cards.
     """
+    # Conditioning on an ordered opening hand leaves a uniform permutation of
+    # the remaining physical cards. Normal setup supplies no constraint.
+    top_cards = tuple(top_cards)
+    draw_deadlines = tuple(draw_deadlines)
+    if top_cards and draw_deadlines:
+        raise ValueError("Ordered top cards and draw deadlines cannot constrain the same shuffle.")
+    if (len({card for card, _ in draw_deadlines}) != len(draw_deadlines)
+            or any(player.deck.get(card.key) is not card or type(limit) is not int
+                   or not 1 <= limit <= len(player.deck) for card, limit in draw_deadlines)):
+        raise ValueError("Draw deadlines require distinct library cards and valid prefix lengths.")
+    if len(set(top_cards)) != len(top_cards) or any(
+        player.deck.get(card.key) is not card for card in top_cards
+    ):
+        raise ValueError("Top cards must be distinct cards in this library.")
     cards = list(player.deck.values())
     rng.shuffle(cards)
+    if draw_deadlines:
+        # Assign constrained cards in increasing deadline order. Previously
+        # occupied slots all precede the next deadline, so each stage has a
+        # constant number of available slots. Every feasible assignment is
+        # equally likely; the remaining shuffled cards retain uniform order.
+        slots = {}
+        for card, limit in sorted(draw_deadlines, key=lambda item: item[1]):
+            free = [i for i in range(limit) if i not in slots]
+            if not free:
+                raise ValueError("Incompatible draw deadlines.")
+            slots[rng.choice(free)] = card
+        selected = {card for card, _ in draw_deadlines}
+        remaining = iter(card for card in cards if card not in selected)
+        ordered = [slots[i] if i in slots else next(remaining) for i in range(len(cards))]
+        cards = list(reversed(ordered))  # Runtime library is bottom-first.
+    if top_cards:
+        selected = set(top_cards)
+        cards = [card for card in cards if card not in selected]
+        cards.extend(reversed(top_cards))
 
     player.deck.clear()
     player.deck.update(
@@ -122,7 +159,23 @@ def bottom_cards(player, cards):
     )
 
 
-def _opening_hands(state, config):
+def _resolve_setup_hand(state, player_index, references, hand_size):
+    """Bind an optional complete deal constraint to fresh runtime cards."""
+    if references is None:
+        return ()
+    references = tuple(references)
+    if (len(references) != hand_size
+            or any(type(ref) is not str for ref in references)
+            or len(set(references)) != len(references)):
+        raise ValueError("Supply distinct IDs for a complete opening hand.")
+    cards = tuple(state.card_register.get_by_reference(ref) for ref in references)
+    if (len(set(cards)) != len(cards)
+            or any(card is None or card.owner is not state.players[player_index] for card in cards)):
+        raise ValueError("Opening-hand IDs must be distinct cards belonging to the corresponding player.")
+    return cards
+
+
+def _opening_hands(state, config, opening_hands, mulligan_hands, opening_deadlines):
     """!
     @brief Draw opening hands and perform simultaneous London mulligans.
 
@@ -150,6 +203,8 @@ def _opening_hands(state, config):
         shuffle_library(
             player,
             state.rng,
+            top_cards=opening_hands[player.idx],
+            draw_deadlines=opening_deadlines[player.idx],
         )
 
         for _ in range(config.opening_hand_size):
@@ -188,6 +243,8 @@ def _opening_hands(state, config):
             shuffle_library(
                 player,
                 state.rng,
+                top_cards=(mulligan_hands[player.idx][counts[player]]
+                           if counts[player] < len(mulligan_hands[player.idx]) else ()),
             )
 
             for _ in range(config.opening_hand_size):
@@ -247,6 +304,9 @@ def create_game(
     starting_player_idx=None,
     names=("Alice", "Bob"),
     config=SetupConfig(),
+    opening_hand_ids=None,
+    mulligan_hand_ids=None,
+    opening_draw_deadlines=None,
 ):
     """!
     @brief Build and prepare a deterministic two-player game state.
@@ -266,6 +326,15 @@ def create_game(
     @param starting_player_idx Explicit starting player index, or `None`.
     @param names Two player names.
     @param config Pregame setup configuration.
+    @param opening_hand_ids Optional two entries of ordered visible card IDs (or
+        None per player), for simulations conditioned on an initial hand. Only
+        the first shuffle is constrained by this argument.
+    @param mulligan_hand_ids Optional two sequences of complete redraw ID tuples,
+        indexed by mulligan round (first entry is the first redraw). None entries
+        and rounds beyond the supplied sequence remain random. Constraints are
+        applied before bottom choices; no decisions or zone changes are skipped.
+    @param opening_draw_deadlines Optional two sequences of (card_id, prefix_length)
+        constraints on the initial shuffled draw order, not on later redraws.
     @return Fully prepared `State` ready for `GameLoop.run`.
     @throws ValueError If setup arguments or controller choices are invalid.
     """
@@ -346,9 +415,42 @@ def create_game(
 
     state.rng = rng
     state.setup_seed = seed
+    opening_hands = [(), ()]
+    mulligan_hands = [(), ()]
+    opening_deadlines = [(), ()]
+    if opening_draw_deadlines is not None:
+        if len(opening_draw_deadlines) != 2:
+            raise ValueError("Supply draw deadlines for exactly two players.")
+        for index, constraints in enumerate(opening_draw_deadlines):
+            bound = []
+            for ref, limit in constraints:
+                card = state.card_register.get_by_reference(ref) if type(ref) is str else None
+                if card is None or card.owner is not state.players[index]:
+                    raise ValueError("Draw deadline card must belong to its player.")
+                bound.append((card, limit))
+            opening_deadlines[index] = tuple(bound)
+    if opening_hand_ids is not None:
+        if len(opening_hand_ids) != 2:
+            raise ValueError("Supply opening-hand constraints for exactly two players.")
+        for index, references in enumerate(opening_hand_ids):
+            opening_hands[index] = _resolve_setup_hand(state, index, references, config.opening_hand_size)
+    if mulligan_hand_ids is not None:
+        if len(mulligan_hand_ids) != 2:
+            raise ValueError("Supply mulligan constraints for exactly two players.")
+        for index, rounds in enumerate(mulligan_hand_ids):
+            if rounds is None:
+                continue
+            rounds = tuple(rounds)
+            if len(rounds) > config.opening_hand_size:
+                raise ValueError("More redraw constraints than permitted mulligan rounds.")
+            mulligan_hands[index] = tuple(
+                _resolve_setup_hand(state, index, refs, config.opening_hand_size) for refs in rounds)
     state.mulligans_taken = _opening_hands(
         state,
         config,
+        opening_hands,
+        mulligan_hands,
+        opening_deadlines,
     )
 
     # Setup mutates zones directly; refresh derived register state once before

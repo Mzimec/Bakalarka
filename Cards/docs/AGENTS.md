@@ -18,13 +18,21 @@ At the current stage, the main decision-making components are:
 ```text
 Full agents
 ├── SimpleAgent
-└── LLM-based agent
+├── ModularAgent (heuristic or LLM selector)
+├── MCTSAgent
+└── TrivialAgent (minimal baseline)
 
 Partial decision modules
 └── Mana solver
 ```
 
 The rules engine remains authoritative.
+
+The current MCTS object model, player-information boundary, sampled worlds,
+progressive widening, cache ownership and RAM-only runtime contract are described
+in [AI_SEARCH.md](AI_SEARCH.md). The sections below discuss the shared controller
+boundary and the Simple/LLM composition in more detail. Mana planning is owned
+by `game.mana.mana_solver`; the former `game.ai.mana_solver` shim was removed.
 
 Agents choose among actions that the engine exposes or validates; they do not
 replace the rules implementation.

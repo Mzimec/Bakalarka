@@ -1,0 +1,1518 @@
+{
+  "state": {
+    "schema_version": 2,
+    "turn": 5,
+    "phase": "PRECOMBAT_MAIN",
+    "self": 0,
+    "active": 0,
+    "priority": 0,
+    "passed_players": [],
+    "players": [
+      {
+        "id": 0,
+        "name": "white-0",
+        "life": 20,
+        "poison_counters": 0,
+        "has_lost": false,
+        "hand_size": 6,
+        "library_size": 51,
+        "maximum_hand_size": 7,
+        "lands_played_this_turn": 0,
+        "land_plays_per_turn": 1,
+        "mana": {}
+      },
+      {
+        "id": 1,
+        "name": "white-1",
+        "life": 20,
+        "poison_counters": 0,
+        "has_lost": false,
+        "hand_size": 6,
+        "library_size": 51,
+        "maximum_hand_size": 7,
+        "lands_played_this_turn": 0,
+        "land_plays_per_turn": 1,
+        "mana": {}
+      }
+    ],
+    "hand": [
+      {
+        "id": "c9",
+        "zone_revision": 1,
+        "owner": 0,
+        "controller": 0,
+        "zone": "HAND",
+        "face_down": false,
+        "tapped": false,
+        "counters": {},
+        "damage_marked": 0,
+        "damage_by_deathtouch": false,
+        "attached_to": null,
+        "attachments": [],
+        "name": "Hallowed Priest",
+        "identity_visible": true,
+        "token": false,
+        "legendary": false,
+        "types": [
+          "CREATURE"
+        ],
+        "subtypes": [
+          "CLERIC",
+          "HUMAN"
+        ],
+        "colors": [
+          "WHITE"
+        ],
+        "keywords": [],
+        "text": "Whenever you gain life, put a +1/+1 counter on this creature.",
+        "cost": "{1}{W}",
+        "casting_cost": "{1}{W}",
+        "mana_value": 2,
+        "chosen_x": 0,
+        "power": 1,
+        "toughness": 1,
+        "summoning_sick": false,
+        "skip_untap": null,
+        "loyalty_activated_this_turn": false,
+        "abilities": [
+          {
+            "key": "cast:Hallowed Priest",
+            "kind": "CastSpellAbilityDefinition",
+            "uses_stack": true,
+            "mana_ability": false,
+            "sorcery_speed": false,
+            "allowed_zones": [
+              "HAND"
+            ],
+            "loyalty_cost": null,
+            "costs": [
+              {
+                "kind": "SubAbilityDefinition",
+                "action_node": {
+                  "kind": "EffectActionNode",
+                  "effect_map": {
+                    "Hallowed Priest:put_on_stack": []
+                  }
+                },
+                "mana_cost": null,
+                "slots": [],
+                "effects": [
+                  {
+                    "kind": "MoveSourceEffect",
+                    "key": "Hallowed Priest:put_on_stack",
+                    "text": "Move this card to STACK.",
+                    "description_unavailable": false
+                  }
+                ],
+                "resolution_speed": null
+              }
+            ],
+            "effects": [
+              {
+                "kind": "SubAbilityDefinition",
+                "action_node": {
+                  "kind": "EffectActionNode",
+                  "effect_map": {
+                    "Hallowed Priest:to_battlefield": []
+                  }
+                },
+                "mana_cost": null,
+                "slots": [],
+                "effects": [
+                  {
+                    "kind": "MoveSourceEffect",
+                    "key": "Hallowed Priest:to_battlefield",
+                    "text": "Move this card to BATTLEFIELD.",
+                    "description_unavailable": false
+                  }
+                ],
+                "resolution_speed": null
+              }
+            ],
+            "parameters": {}
+          }
+        ],
+        "triggers": [
+          {
+            "key": "hallowed_priest_life",
+            "kind": "TriggerAbilityDefinition",
+            "uses_stack": true,
+            "mana_ability": false,
+            "sorcery_speed": false,
+            "allowed_zones": [
+              "BATTLEFIELD"
+            ],
+            "loyalty_cost": null,
+            "costs": [],
+            "effects": [
+              {
+                "kind": "SubAbilityDefinition",
+                "action_node": {
+                  "kind": "EffectActionNode",
+                  "effect_map": {
+                    "hallowed_priest_counter": []
+                  }
+                },
+                "mana_cost": null,
+                "slots": [],
+                "effects": [
+                  {
+                    "kind": "PutCounterEffect",
+                    "key": "hallowed_priest_counter",
+                    "text": "Put a PLUS_ONE counter on this creature.",
+                    "description_unavailable": false
+                  }
+                ],
+                "resolution_speed": null
+              }
+            ],
+            "parameters": {}
+          }
+        ],
+        "static_abilities": []
+      },
+      {
+        "id": "c55",
+        "zone_revision": 1,
+        "owner": 0,
+        "controller": 0,
+        "zone": "HAND",
+        "face_down": false,
+        "tapped": false,
+        "counters": {},
+        "damage_marked": 0,
+        "damage_by_deathtouch": false,
+        "attached_to": null,
+        "attachments": [],
+        "name": "Plains",
+        "identity_visible": true,
+        "token": false,
+        "legendary": false,
+        "types": [
+          "LAND"
+        ],
+        "subtypes": [
+          "PLAINS"
+        ],
+        "colors": [],
+        "keywords": [],
+        "text": "({T}: Add {W}.)",
+        "cost": "none",
+        "casting_cost": "none",
+        "mana_value": 0,
+        "chosen_x": 0,
+        "power": null,
+        "toughness": null,
+        "summoning_sick": false,
+        "skip_untap": null,
+        "loyalty_activated_this_turn": false,
+        "abilities": [
+          {
+            "key": "play_land",
+            "kind": "PlayLandAbilityDefinition",
+            "uses_stack": false,
+            "mana_ability": false,
+            "sorcery_speed": false,
+            "allowed_zones": [
+              "HAND"
+            ],
+            "loyalty_cost": null,
+            "costs": [],
+            "effects": [],
+            "parameters": {}
+          },
+          {
+            "key": "mana_white",
+            "kind": "ManaAbilityDefinition",
+            "uses_stack": false,
+            "mana_ability": true,
+            "sorcery_speed": false,
+            "allowed_zones": [
+              "BATTLEFIELD"
+            ],
+            "loyalty_cost": null,
+            "costs": [
+              {
+                "kind": "SubAbilityDefinition",
+                "action_node": {
+                  "kind": "EffectActionNode",
+                  "effect_map": {
+                    "tap_for_mana": []
+                  }
+                },
+                "mana_cost": null,
+                "slots": [],
+                "effects": [
+                  {
+                    "kind": "TapSourceEffect",
+                    "key": "tap_for_mana",
+                    "text": "Tap this card.",
+                    "description_unavailable": false
+                  }
+                ],
+                "resolution_speed": null
+              }
+            ],
+            "effects": [
+              {
+                "kind": "SubAbilityDefinition",
+                "action_node": {
+                  "kind": "EffectActionNode",
+                  "effect_map": {
+                    "add_white": []
+                  }
+                },
+                "mana_cost": null,
+                "slots": [],
+                "effects": [
+                  {
+                    "kind": "AddManaEffect",
+                    "key": "add_white",
+                    "text": "Add 1 WHITE mana.",
+                    "description_unavailable": false
+                  }
+                ],
+                "resolution_speed": null
+              }
+            ],
+            "parameters": {}
+          }
+        ],
+        "triggers": [],
+        "static_abilities": []
+      },
+      {
+        "id": "c52",
+        "zone_revision": 1,
+        "owner": 0,
+        "controller": 0,
+        "zone": "HAND",
+        "face_down": false,
+        "tapped": false,
+        "counters": {},
+        "damage_marked": 0,
+        "damage_by_deathtouch": false,
+        "attached_to": null,
+        "attachments": [],
+        "name": "Plains",
+        "identity_visible": true,
+        "token": false,
+        "legendary": false,
+        "types": [
+          "LAND"
+        ],
+        "subtypes": [
+          "PLAINS"
+        ],
+        "colors": [],
+        "keywords": [],
+        "text": "({T}: Add {W}.)",
+        "cost": "none",
+        "casting_cost": "none",
+        "mana_value": 0,
+        "chosen_x": 0,
+        "power": null,
+        "toughness": null,
+        "summoning_sick": false,
+        "skip_untap": null,
+        "loyalty_activated_this_turn": false,
+        "abilities": [
+          {
+            "key": "play_land",
+            "kind": "PlayLandAbilityDefinition",
+            "uses_stack": false,
+            "mana_ability": false,
+            "sorcery_speed": false,
+            "allowed_zones": [
+              "HAND"
+            ],
+            "loyalty_cost": null,
+            "costs": [],
+            "effects": [],
+            "parameters": {}
+          },
+          {
+            "key": "mana_white",
+            "kind": "ManaAbilityDefinition",
+            "uses_stack": false,
+            "mana_ability": true,
+            "sorcery_speed": false,
+            "allowed_zones": [
+              "BATTLEFIELD"
+            ],
+            "loyalty_cost": null,
+            "costs": [
+              {
+                "kind": "SubAbilityDefinition",
+                "action_node": {
+                  "kind": "EffectActionNode",
+                  "effect_map": {
+                    "tap_for_mana": []
+                  }
+                },
+                "mana_cost": null,
+                "slots": [],
+                "effects": [
+                  {
+                    "kind": "TapSourceEffect",
+                    "key": "tap_for_mana",
+                    "text": "Tap this card.",
+                    "description_unavailable": false
+                  }
+                ],
+                "resolution_speed": null
+              }
+            ],
+            "effects": [
+              {
+                "kind": "SubAbilityDefinition",
+                "action_node": {
+                  "kind": "EffectActionNode",
+                  "effect_map": {
+                    "add_white": []
+                  }
+                },
+                "mana_cost": null,
+                "slots": [],
+                "effects": [
+                  {
+                    "kind": "AddManaEffect",
+                    "key": "add_white",
+                    "text": "Add 1 WHITE mana.",
+                    "description_unavailable": false
+                  }
+                ],
+                "resolution_speed": null
+              }
+            ],
+            "parameters": {}
+          }
+        ],
+        "triggers": [],
+        "static_abilities": []
+      },
+      {
+        "id": "c17",
+        "zone_revision": 1,
+        "owner": 0,
+        "controller": 0,
+        "zone": "HAND",
+        "face_down": false,
+        "tapped": false,
+        "counters": {},
+        "damage_marked": 0,
+        "damage_by_deathtouch": false,
+        "attached_to": null,
+        "attachments": [],
+        "name": "Angel of Vitality",
+        "identity_visible": true,
+        "token": false,
+        "legendary": false,
+        "types": [
+          "CREATURE"
+        ],
+        "subtypes": [
+          "ANGEL"
+        ],
+        "colors": [
+          "WHITE"
+        ],
+        "keywords": [
+          "flying"
+        ],
+        "text": "Flying\nIf you would gain life, you gain that much life plus 1 instead.\nThis creature gets +2/+2 as long as you have 25 or more life.",
+        "cost": "{2}{W}",
+        "casting_cost": "{2}{W}",
+        "mana_value": 3,
+        "chosen_x": 0,
+        "power": 2,
+        "toughness": 2,
+        "summoning_sick": false,
+        "skip_untap": null,
+        "loyalty_activated_this_turn": false,
+        "abilities": [
+          {
+            "key": "cast:Angel of Vitality",
+            "kind": "CastSpellAbilityDefinition",
+            "uses_stack": true,
+            "mana_ability": false,
+            "sorcery_speed": false,
+            "allowed_zones": [
+              "HAND"
+            ],
+            "loyalty_cost": null,
+            "costs": [
+              {
+                "kind": "SubAbilityDefinition",
+                "action_node": {
+                  "kind": "EffectActionNode",
+                  "effect_map": {
+                    "Angel of Vitality:put_on_stack": []
+                  }
+                },
+                "mana_cost": null,
+                "slots": [],
+                "effects": [
+                  {
+                    "kind": "MoveSourceEffect",
+                    "key": "Angel of Vitality:put_on_stack",
+                    "text": "Move this card to STACK.",
+                    "description_unavailable": false
+                  }
+                ],
+                "resolution_speed": null
+              }
+            ],
+            "effects": [
+              {
+                "kind": "SubAbilityDefinition",
+                "action_node": {
+                  "kind": "EffectActionNode",
+                  "effect_map": {
+                    "Angel of Vitality:to_battlefield": []
+                  }
+                },
+                "mana_cost": null,
+                "slots": [],
+                "effects": [
+                  {
+                    "kind": "MoveSourceEffect",
+                    "key": "Angel of Vitality:to_battlefield",
+                    "text": "Move this card to BATTLEFIELD.",
+                    "description_unavailable": false
+                  }
+                ],
+                "resolution_speed": null
+              }
+            ],
+            "parameters": {}
+          }
+        ],
+        "triggers": [],
+        "static_abilities": [
+          "vitality_bonus",
+          "vitality_gain"
+        ]
+      },
+      {
+        "id": "c8",
+        "zone_revision": 1,
+        "owner": 0,
+        "controller": 0,
+        "zone": "HAND",
+        "face_down": false,
+        "tapped": false,
+        "counters": {},
+        "damage_marked": 0,
+        "damage_by_deathtouch": false,
+        "attached_to": null,
+        "attachments": [],
+        "name": "Hallowed Priest",
+        "identity_visible": true,
+        "token": false,
+        "legendary": false,
+        "types": [
+          "CREATURE"
+        ],
+        "subtypes": [
+          "CLERIC",
+          "HUMAN"
+        ],
+        "colors": [
+          "WHITE"
+        ],
+        "keywords": [],
+        "text": "Whenever you gain life, put a +1/+1 counter on this creature.",
+        "cost": "{1}{W}",
+        "casting_cost": "{1}{W}",
+        "mana_value": 2,
+        "chosen_x": 0,
+        "power": 1,
+        "toughness": 1,
+        "summoning_sick": false,
+        "skip_untap": null,
+        "loyalty_activated_this_turn": false,
+        "abilities": [
+          {
+            "key": "cast:Hallowed Priest",
+            "kind": "CastSpellAbilityDefinition",
+            "uses_stack": true,
+            "mana_ability": false,
+            "sorcery_speed": false,
+            "allowed_zones": [
+              "HAND"
+            ],
+            "loyalty_cost": null,
+            "costs": [
+              {
+                "kind": "SubAbilityDefinition",
+                "action_node": {
+                  "kind": "EffectActionNode",
+                  "effect_map": {
+                    "Hallowed Priest:put_on_stack": []
+                  }
+                },
+                "mana_cost": null,
+                "slots": [],
+                "effects": [
+                  {
+                    "kind": "MoveSourceEffect",
+                    "key": "Hallowed Priest:put_on_stack",
+                    "text": "Move this card to STACK.",
+                    "description_unavailable": false
+                  }
+                ],
+                "resolution_speed": null
+              }
+            ],
+            "effects": [
+              {
+                "kind": "SubAbilityDefinition",
+                "action_node": {
+                  "kind": "EffectActionNode",
+                  "effect_map": {
+                    "Hallowed Priest:to_battlefield": []
+                  }
+                },
+                "mana_cost": null,
+                "slots": [],
+                "effects": [
+                  {
+                    "kind": "MoveSourceEffect",
+                    "key": "Hallowed Priest:to_battlefield",
+                    "text": "Move this card to BATTLEFIELD.",
+                    "description_unavailable": false
+                  }
+                ],
+                "resolution_speed": null
+              }
+            ],
+            "parameters": {}
+          }
+        ],
+        "triggers": [
+          {
+            "key": "hallowed_priest_life",
+            "kind": "TriggerAbilityDefinition",
+            "uses_stack": true,
+            "mana_ability": false,
+            "sorcery_speed": false,
+            "allowed_zones": [
+              "BATTLEFIELD"
+            ],
+            "loyalty_cost": null,
+            "costs": [],
+            "effects": [
+              {
+                "kind": "SubAbilityDefinition",
+                "action_node": {
+                  "kind": "EffectActionNode",
+                  "effect_map": {
+                    "hallowed_priest_counter": []
+                  }
+                },
+                "mana_cost": null,
+                "slots": [],
+                "effects": [
+                  {
+                    "kind": "PutCounterEffect",
+                    "key": "hallowed_priest_counter",
+                    "text": "Put a PLUS_ONE counter on this creature.",
+                    "description_unavailable": false
+                  }
+                ],
+                "resolution_speed": null
+              }
+            ],
+            "parameters": {}
+          }
+        ],
+        "static_abilities": []
+      },
+      {
+        "id": "c32",
+        "zone_revision": 1,
+        "owner": 0,
+        "controller": 0,
+        "zone": "HAND",
+        "face_down": false,
+        "tapped": false,
+        "counters": {},
+        "damage_marked": 0,
+        "damage_by_deathtouch": false,
+        "attached_to": null,
+        "attachments": [],
+        "name": "Pacifism",
+        "identity_visible": true,
+        "token": false,
+        "legendary": false,
+        "types": [
+          "ENCHANTMENT"
+        ],
+        "subtypes": [
+          "AURA"
+        ],
+        "colors": [
+          "WHITE"
+        ],
+        "keywords": [],
+        "text": "Enchant creature\nEnchanted creature can't attack or block.",
+        "cost": "{1}{W}",
+        "casting_cost": "{1}{W}",
+        "mana_value": 2,
+        "chosen_x": 0,
+        "power": null,
+        "toughness": null,
+        "summoning_sick": false,
+        "skip_untap": null,
+        "loyalty_activated_this_turn": false,
+        "abilities": [
+          {
+            "key": "cast:aura",
+            "kind": "AuraCastAbilityDefinition",
+            "uses_stack": true,
+            "mana_ability": false,
+            "sorcery_speed": false,
+            "allowed_zones": [
+              "HAND"
+            ],
+            "loyalty_cost": null,
+            "costs": [
+              {
+                "kind": "SubAbilityDefinition",
+                "action_node": {
+                  "kind": "EffectActionNode",
+                  "effect_map": {
+                    "aura_to_stack": []
+                  }
+                },
+                "mana_cost": null,
+                "slots": [],
+                "effects": [
+                  {
+                    "kind": "MoveSourceEffect",
+                    "key": "aura_to_stack",
+                    "text": "Move this card to STACK.",
+                    "description_unavailable": false
+                  }
+                ],
+                "resolution_speed": null
+              }
+            ],
+            "effects": [
+              {
+                "kind": "SubAbilityDefinition",
+                "action_node": {
+                  "kind": "EffectActionNode",
+                  "effect_map": {
+                    "attach_source": [
+                      "attach"
+                    ]
+                  }
+                },
+                "mana_cost": null,
+                "slots": [
+                  {
+                    "kind": "TargetSlot",
+                    "key": "attach",
+                    "target_resolver": {
+                      "kind": "TargetResolver",
+                      "target_spec": {
+                        "kind": "AttachmentTargetSpec",
+                        "description_unavailable": true
+                      },
+                      "target_selector": {
+                        "kind": "SingleTargetSelector",
+                        "min_target_count": 1,
+                        "max_target_count": 1,
+                        "is_target_repeatable": false
+                      }
+                    },
+                    "distinct_from": []
+                  }
+                ],
+                "effects": [
+                  {
+                    "kind": "AttachSourceEffect",
+                    "key": "attach_source",
+                    "text": "Attach this permanent to the selected host.",
+                    "description_unavailable": false
+                  }
+                ],
+                "resolution_speed": null
+              }
+            ],
+            "parameters": {}
+          }
+        ],
+        "triggers": [],
+        "static_abilities": []
+      }
+    ],
+    "battlefield": [
+      {
+        "id": "c5",
+        "zone_revision": 3,
+        "owner": 0,
+        "controller": 0,
+        "zone": "BATTLEFIELD",
+        "face_down": false,
+        "tapped": false,
+        "counters": {},
+        "damage_marked": 0,
+        "damage_by_deathtouch": false,
+        "attached_to": null,
+        "attachments": [
+          {
+            "card": "c93",
+            "zone_revision": 3
+          }
+        ],
+        "name": "Fencing Ace",
+        "identity_visible": true,
+        "token": false,
+        "legendary": false,
+        "types": [
+          "CREATURE"
+        ],
+        "subtypes": [
+          "HUMAN",
+          "SOLDIER"
+        ],
+        "colors": [
+          "WHITE"
+        ],
+        "keywords": [
+          "can't attack",
+          "can't block",
+          "double strike"
+        ],
+        "text": "Double strike (This creature deals both first-strike and regular combat damage.)",
+        "cost": "{1}{W}",
+        "casting_cost": "{1}{W}",
+        "mana_value": 2,
+        "chosen_x": 0,
+        "power": 1,
+        "toughness": 1,
+        "summoning_sick": false,
+        "skip_untap": null,
+        "loyalty_activated_this_turn": false,
+        "abilities": [
+          {
+            "key": "cast:Fencing Ace",
+            "kind": "CastSpellAbilityDefinition",
+            "uses_stack": true,
+            "mana_ability": false,
+            "sorcery_speed": false,
+            "allowed_zones": [
+              "HAND"
+            ],
+            "loyalty_cost": null,
+            "costs": [
+              {
+                "kind": "SubAbilityDefinition",
+                "action_node": {
+                  "kind": "EffectActionNode",
+                  "effect_map": {
+                    "Fencing Ace:put_on_stack": []
+                  }
+                },
+                "mana_cost": null,
+                "slots": [],
+                "effects": [
+                  {
+                    "kind": "MoveSourceEffect",
+                    "key": "Fencing Ace:put_on_stack",
+                    "text": "Move this card to STACK.",
+                    "description_unavailable": false
+                  }
+                ],
+                "resolution_speed": null
+              }
+            ],
+            "effects": [
+              {
+                "kind": "SubAbilityDefinition",
+                "action_node": {
+                  "kind": "EffectActionNode",
+                  "effect_map": {
+                    "Fencing Ace:to_battlefield": []
+                  }
+                },
+                "mana_cost": null,
+                "slots": [],
+                "effects": [
+                  {
+                    "kind": "MoveSourceEffect",
+                    "key": "Fencing Ace:to_battlefield",
+                    "text": "Move this card to BATTLEFIELD.",
+                    "description_unavailable": false
+                  }
+                ],
+                "resolution_speed": null
+              }
+            ],
+            "parameters": {}
+          }
+        ],
+        "triggers": [],
+        "static_abilities": []
+      },
+      {
+        "id": "c37",
+        "zone_revision": 2,
+        "owner": 0,
+        "controller": 0,
+        "zone": "BATTLEFIELD",
+        "face_down": false,
+        "tapped": false,
+        "counters": {},
+        "damage_marked": 0,
+        "damage_by_deathtouch": false,
+        "attached_to": null,
+        "attachments": [],
+        "name": "Plains",
+        "identity_visible": true,
+        "token": false,
+        "legendary": false,
+        "types": [
+          "LAND"
+        ],
+        "subtypes": [
+          "PLAINS"
+        ],
+        "colors": [],
+        "keywords": [],
+        "text": "({T}: Add {W}.)",
+        "cost": "none",
+        "casting_cost": "none",
+        "mana_value": 0,
+        "chosen_x": 0,
+        "power": null,
+        "toughness": null,
+        "summoning_sick": false,
+        "skip_untap": null,
+        "loyalty_activated_this_turn": false,
+        "abilities": [
+          {
+            "key": "play_land",
+            "kind": "PlayLandAbilityDefinition",
+            "uses_stack": false,
+            "mana_ability": false,
+            "sorcery_speed": false,
+            "allowed_zones": [
+              "HAND"
+            ],
+            "loyalty_cost": null,
+            "costs": [],
+            "effects": [],
+            "parameters": {}
+          },
+          {
+            "key": "mana_white",
+            "kind": "ManaAbilityDefinition",
+            "uses_stack": false,
+            "mana_ability": true,
+            "sorcery_speed": false,
+            "allowed_zones": [
+              "BATTLEFIELD"
+            ],
+            "loyalty_cost": null,
+            "costs": [
+              {
+                "kind": "SubAbilityDefinition",
+                "action_node": {
+                  "kind": "EffectActionNode",
+                  "effect_map": {
+                    "tap_for_mana": []
+                  }
+                },
+                "mana_cost": null,
+                "slots": [],
+                "effects": [
+                  {
+                    "kind": "TapSourceEffect",
+                    "key": "tap_for_mana",
+                    "text": "Tap this card.",
+                    "description_unavailable": false
+                  }
+                ],
+                "resolution_speed": null
+              }
+            ],
+            "effects": [
+              {
+                "kind": "SubAbilityDefinition",
+                "action_node": {
+                  "kind": "EffectActionNode",
+                  "effect_map": {
+                    "add_white": []
+                  }
+                },
+                "mana_cost": null,
+                "slots": [],
+                "effects": [
+                  {
+                    "kind": "AddManaEffect",
+                    "key": "add_white",
+                    "text": "Add 1 WHITE mana.",
+                    "description_unavailable": false
+                  }
+                ],
+                "resolution_speed": null
+              }
+            ],
+            "parameters": {}
+          }
+        ],
+        "triggers": [],
+        "static_abilities": []
+      },
+      {
+        "id": "c49",
+        "zone_revision": 2,
+        "owner": 0,
+        "controller": 0,
+        "zone": "BATTLEFIELD",
+        "face_down": false,
+        "tapped": false,
+        "counters": {},
+        "damage_marked": 0,
+        "damage_by_deathtouch": false,
+        "attached_to": null,
+        "attachments": [],
+        "name": "Plains",
+        "identity_visible": true,
+        "token": false,
+        "legendary": false,
+        "types": [
+          "LAND"
+        ],
+        "subtypes": [
+          "PLAINS"
+        ],
+        "colors": [],
+        "keywords": [],
+        "text": "({T}: Add {W}.)",
+        "cost": "none",
+        "casting_cost": "none",
+        "mana_value": 0,
+        "chosen_x": 0,
+        "power": null,
+        "toughness": null,
+        "summoning_sick": false,
+        "skip_untap": null,
+        "loyalty_activated_this_turn": false,
+        "abilities": [
+          {
+            "key": "play_land",
+            "kind": "PlayLandAbilityDefinition",
+            "uses_stack": false,
+            "mana_ability": false,
+            "sorcery_speed": false,
+            "allowed_zones": [
+              "HAND"
+            ],
+            "loyalty_cost": null,
+            "costs": [],
+            "effects": [],
+            "parameters": {}
+          },
+          {
+            "key": "mana_white",
+            "kind": "ManaAbilityDefinition",
+            "uses_stack": false,
+            "mana_ability": true,
+            "sorcery_speed": false,
+            "allowed_zones": [
+              "BATTLEFIELD"
+            ],
+            "loyalty_cost": null,
+            "costs": [
+              {
+                "kind": "SubAbilityDefinition",
+                "action_node": {
+                  "kind": "EffectActionNode",
+                  "effect_map": {
+                    "tap_for_mana": []
+                  }
+                },
+                "mana_cost": null,
+                "slots": [],
+                "effects": [
+                  {
+                    "kind": "TapSourceEffect",
+                    "key": "tap_for_mana",
+                    "text": "Tap this card.",
+                    "description_unavailable": false
+                  }
+                ],
+                "resolution_speed": null
+              }
+            ],
+            "effects": [
+              {
+                "kind": "SubAbilityDefinition",
+                "action_node": {
+                  "kind": "EffectActionNode",
+                  "effect_map": {
+                    "add_white": []
+                  }
+                },
+                "mana_cost": null,
+                "slots": [],
+                "effects": [
+                  {
+                    "kind": "AddManaEffect",
+                    "key": "add_white",
+                    "text": "Add 1 WHITE mana.",
+                    "description_unavailable": false
+                  }
+                ],
+                "resolution_speed": null
+              }
+            ],
+            "parameters": {}
+          }
+        ],
+        "triggers": [],
+        "static_abilities": []
+      },
+      {
+        "id": "c93",
+        "zone_revision": 3,
+        "owner": 1,
+        "controller": 1,
+        "zone": "BATTLEFIELD",
+        "face_down": false,
+        "tapped": false,
+        "counters": {},
+        "damage_marked": 0,
+        "damage_by_deathtouch": false,
+        "attached_to": {
+          "card": "c5",
+          "zone_revision": 3
+        },
+        "attachments": [],
+        "name": "Pacifism",
+        "identity_visible": true,
+        "token": false,
+        "legendary": false,
+        "types": [
+          "ENCHANTMENT"
+        ],
+        "subtypes": [
+          "AURA"
+        ],
+        "colors": [
+          "WHITE"
+        ],
+        "keywords": [],
+        "text": "Enchant creature\nEnchanted creature can't attack or block.",
+        "cost": "{1}{W}",
+        "casting_cost": "{1}{W}",
+        "mana_value": 2,
+        "chosen_x": 0,
+        "power": null,
+        "toughness": null,
+        "summoning_sick": false,
+        "skip_untap": null,
+        "loyalty_activated_this_turn": false,
+        "abilities": [
+          {
+            "key": "cast:aura",
+            "kind": "AuraCastAbilityDefinition",
+            "uses_stack": true,
+            "mana_ability": false,
+            "sorcery_speed": false,
+            "allowed_zones": [
+              "HAND"
+            ],
+            "loyalty_cost": null,
+            "costs": [
+              {
+                "kind": "SubAbilityDefinition",
+                "action_node": {
+                  "kind": "EffectActionNode",
+                  "effect_map": {
+                    "aura_to_stack": []
+                  }
+                },
+                "mana_cost": null,
+                "slots": [],
+                "effects": [
+                  {
+                    "kind": "MoveSourceEffect",
+                    "key": "aura_to_stack",
+                    "text": "Move this card to STACK.",
+                    "description_unavailable": false
+                  }
+                ],
+                "resolution_speed": null
+              }
+            ],
+            "effects": [
+              {
+                "kind": "SubAbilityDefinition",
+                "action_node": {
+                  "kind": "EffectActionNode",
+                  "effect_map": {
+                    "attach_source": [
+                      "attach"
+                    ]
+                  }
+                },
+                "mana_cost": null,
+                "slots": [
+                  {
+                    "kind": "TargetSlot",
+                    "key": "attach",
+                    "target_resolver": {
+                      "kind": "TargetResolver",
+                      "target_spec": {
+                        "kind": "AttachmentTargetSpec",
+                        "description_unavailable": true
+                      },
+                      "target_selector": {
+                        "kind": "SingleTargetSelector",
+                        "min_target_count": 1,
+                        "max_target_count": 1,
+                        "is_target_repeatable": false
+                      }
+                    },
+                    "distinct_from": []
+                  }
+                ],
+                "effects": [
+                  {
+                    "kind": "AttachSourceEffect",
+                    "key": "attach_source",
+                    "text": "Attach this permanent to the selected host.",
+                    "description_unavailable": false
+                  }
+                ],
+                "resolution_speed": null
+              }
+            ],
+            "parameters": {}
+          }
+        ],
+        "triggers": [],
+        "static_abilities": []
+      },
+      {
+        "id": "c103",
+        "zone_revision": 2,
+        "owner": 1,
+        "controller": 1,
+        "zone": "BATTLEFIELD",
+        "face_down": false,
+        "tapped": true,
+        "counters": {},
+        "damage_marked": 0,
+        "damage_by_deathtouch": false,
+        "attached_to": null,
+        "attachments": [],
+        "name": "Plains",
+        "identity_visible": true,
+        "token": false,
+        "legendary": false,
+        "types": [
+          "LAND"
+        ],
+        "subtypes": [
+          "PLAINS"
+        ],
+        "colors": [],
+        "keywords": [],
+        "text": "({T}: Add {W}.)",
+        "cost": "none",
+        "casting_cost": "none",
+        "mana_value": 0,
+        "chosen_x": 0,
+        "power": null,
+        "toughness": null,
+        "summoning_sick": false,
+        "skip_untap": null,
+        "loyalty_activated_this_turn": false,
+        "abilities": [
+          {
+            "key": "play_land",
+            "kind": "PlayLandAbilityDefinition",
+            "uses_stack": false,
+            "mana_ability": false,
+            "sorcery_speed": false,
+            "allowed_zones": [
+              "HAND"
+            ],
+            "loyalty_cost": null,
+            "costs": [],
+            "effects": [],
+            "parameters": {}
+          },
+          {
+            "key": "mana_white",
+            "kind": "ManaAbilityDefinition",
+            "uses_stack": false,
+            "mana_ability": true,
+            "sorcery_speed": false,
+            "allowed_zones": [
+              "BATTLEFIELD"
+            ],
+            "loyalty_cost": null,
+            "costs": [
+              {
+                "kind": "SubAbilityDefinition",
+                "action_node": {
+                  "kind": "EffectActionNode",
+                  "effect_map": {
+                    "tap_for_mana": []
+                  }
+                },
+                "mana_cost": null,
+                "slots": [],
+                "effects": [
+                  {
+                    "kind": "TapSourceEffect",
+                    "key": "tap_for_mana",
+                    "text": "Tap this card.",
+                    "description_unavailable": false
+                  }
+                ],
+                "resolution_speed": null
+              }
+            ],
+            "effects": [
+              {
+                "kind": "SubAbilityDefinition",
+                "action_node": {
+                  "kind": "EffectActionNode",
+                  "effect_map": {
+                    "add_white": []
+                  }
+                },
+                "mana_cost": null,
+                "slots": [],
+                "effects": [
+                  {
+                    "kind": "AddManaEffect",
+                    "key": "add_white",
+                    "text": "Add 1 WHITE mana.",
+                    "description_unavailable": false
+                  }
+                ],
+                "resolution_speed": null
+              }
+            ],
+            "parameters": {}
+          }
+        ],
+        "triggers": [],
+        "static_abilities": []
+      },
+      {
+        "id": "c106",
+        "zone_revision": 2,
+        "owner": 1,
+        "controller": 1,
+        "zone": "BATTLEFIELD",
+        "face_down": false,
+        "tapped": true,
+        "counters": {},
+        "damage_marked": 0,
+        "damage_by_deathtouch": false,
+        "attached_to": null,
+        "attachments": [],
+        "name": "Plains",
+        "identity_visible": true,
+        "token": false,
+        "legendary": false,
+        "types": [
+          "LAND"
+        ],
+        "subtypes": [
+          "PLAINS"
+        ],
+        "colors": [],
+        "keywords": [],
+        "text": "({T}: Add {W}.)",
+        "cost": "none",
+        "casting_cost": "none",
+        "mana_value": 0,
+        "chosen_x": 0,
+        "power": null,
+        "toughness": null,
+        "summoning_sick": false,
+        "skip_untap": null,
+        "loyalty_activated_this_turn": false,
+        "abilities": [
+          {
+            "key": "play_land",
+            "kind": "PlayLandAbilityDefinition",
+            "uses_stack": false,
+            "mana_ability": false,
+            "sorcery_speed": false,
+            "allowed_zones": [
+              "HAND"
+            ],
+            "loyalty_cost": null,
+            "costs": [],
+            "effects": [],
+            "parameters": {}
+          },
+          {
+            "key": "mana_white",
+            "kind": "ManaAbilityDefinition",
+            "uses_stack": false,
+            "mana_ability": true,
+            "sorcery_speed": false,
+            "allowed_zones": [
+              "BATTLEFIELD"
+            ],
+            "loyalty_cost": null,
+            "costs": [
+              {
+                "kind": "SubAbilityDefinition",
+                "action_node": {
+                  "kind": "EffectActionNode",
+                  "effect_map": {
+                    "tap_for_mana": []
+                  }
+                },
+                "mana_cost": null,
+                "slots": [],
+                "effects": [
+                  {
+                    "kind": "TapSourceEffect",
+                    "key": "tap_for_mana",
+                    "text": "Tap this card.",
+                    "description_unavailable": false
+                  }
+                ],
+                "resolution_speed": null
+              }
+            ],
+            "effects": [
+              {
+                "kind": "SubAbilityDefinition",
+                "action_node": {
+                  "kind": "EffectActionNode",
+                  "effect_map": {
+                    "add_white": []
+                  }
+                },
+                "mana_cost": null,
+                "slots": [],
+                "effects": [
+                  {
+                    "kind": "AddManaEffect",
+                    "key": "add_white",
+                    "text": "Add 1 WHITE mana.",
+                    "description_unavailable": false
+                  }
+                ],
+                "resolution_speed": null
+              }
+            ],
+            "parameters": {}
+          }
+        ],
+        "triggers": [],
+        "static_abilities": []
+      }
+    ],
+    "graveyard": [],
+    "exile": [],
+    "stack": [],
+    "pending_abilities": [],
+    "continuous_effects": [],
+    "replacement_effects": [],
+    "combat": {
+      "active": false,
+      "attackers": [],
+      "defenders": {},
+      "blockers": {},
+      "blocked": [],
+      "attackers_declared": false,
+      "first_strike_step": false,
+      "first_damage_done": false,
+      "regular_damage_done": false
+    },
+    "information_limits": [
+      "Opponent hands and all library identities/order are hidden.",
+      "Face-down identities are masked; inspection permissions are not yet modeled.",
+      "No remembered reveals or event history are included in this snapshot.",
+      "description_unavailable marks rule code without a declarative description; do not infer its meaning."
+    ]
+  },
+  "candidates": [
+    {
+      "kind": "pass",
+      "id": 0
+    },
+    {
+      "kind": "land",
+      "source": "c52",
+      "id": 1
+    },
+    {
+      "kind": "action",
+      "source": "c8",
+      "ability": "cast:Hallowed Priest",
+      "x": 0,
+      "payment": {
+        "mana": {
+          "WHITE": 2
+        },
+        "life": 0,
+        "activate": [
+          "c37",
+          "c49"
+        ]
+      },
+      "cost_targets": [],
+      "targets": [],
+      "id": 2
+    },
+    {
+      "kind": "action",
+      "source": "c9",
+      "ability": "cast:Hallowed Priest",
+      "x": 0,
+      "payment": {
+        "mana": {
+          "WHITE": 2
+        },
+        "life": 0,
+        "activate": [
+          "c37",
+          "c49"
+        ]
+      },
+      "cost_targets": [],
+      "targets": [],
+      "id": 3
+    },
+    {
+      "kind": "action",
+      "source": "c32",
+      "ability": "cast:aura",
+      "x": 0,
+      "payment": {
+        "mana": {
+          "WHITE": 2
+        },
+        "life": 0,
+        "activate": [
+          "c37",
+          "c49"
+        ]
+      },
+      "cost_targets": [],
+      "targets": [
+        "c5"
+      ],
+      "id": 4
+    }
+  ]
+}

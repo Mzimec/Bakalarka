@@ -88,6 +88,12 @@ class DecisionMeasurement:
             "option_spaces": [dict(s) for s in self.streams],
             "precomputed_choices": len(choices) if choices is not None else None,
         }
+        # Only active next() calls are timed. Time while a generator is
+        # suspended belongs to its consumer, and nested ability/mana streams
+        # are already contained in the outer next() interval.
+        generation_ns = sum(s["generation_elapsed_ns"] for s in self.streams)
+        self.metrics["generation_elapsed_ns"] = generation_ns
+        self.metrics["other_decision_elapsed_ns"] = elapsed_ns - generation_ns
 
     def publish(self, controller: object) -> None:
         """!
@@ -116,12 +122,14 @@ def measure_options(request: object, policy: object, options: Iterable[object]) 
             "policy_type": type(policy).__name__ if policy is not None else "default",
             "options_observed": 0,
             "exhausted": False,
+            "generation_elapsed_ns": 0,
         }
         measurement.streams.append(stream)
     iterator = iter(options)
     try:
         while True:
             token = _generation_depth.set(_generation_depth.get() + 1)
+            started_ns = perf_counter_ns() if stream is not None else None
             try:
                 option = next(iterator)
             except StopIteration:
@@ -129,6 +137,8 @@ def measure_options(request: object, policy: object, options: Iterable[object]) 
                     stream["exhausted"] = True
                 return
             finally:
+                if stream is not None:
+                    stream["generation_elapsed_ns"] += perf_counter_ns() - started_ns
                 _generation_depth.reset(token)
             if stream is not None:
                 stream["options_observed"] += 1

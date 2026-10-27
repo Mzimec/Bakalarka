@@ -180,6 +180,11 @@ class EquivalenceContext:
                 runtime = {k: v for k, v in vars(card).items() if k not in {
                     "_key", "runtime_id", "command_id", "_game_state", "_definition",
                     "_stats", "_modifier_sources", "_state", "_incarnation_history",
+                    # Derived read caches are not characteristics or identity
+                    # observations. Their authoritative inputs/results are
+                    # already represented below, independently of cache warmth.
+                    "_native_empty_sources", "_native_modifier_plan",
+                    "_characteristic_values", "_ability_definition_cache",
                 }}
                 values = {k: v for k, v in vars(card.state).items()
                           if k not in {"_on_change", "_on_runtime_change", "zone_info", "attach_info"}}

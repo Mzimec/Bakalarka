@@ -157,6 +157,10 @@ def refresh_continuous_effects(state):
                 and graph_signature(effects) == getattr(state, "_continuous_graph_signature", None)):
             # Targets, modifier values and ordering are unchanged. Still update
             # every candidate: custom characteristics may read live runtime data.
+            # The graph is fully applied and has no intermediate layer ceiling.
+            # Proven native getters may reuse their live-signature values here;
+            # unknown/custom readers retain ordinary evaluation.
+            state._reusing_continuous_graph = True
             for card, indexes in layer_cards.items():
                 register.mark_layer_changed(card, indexes)
             register.synchronise()
@@ -245,5 +249,6 @@ def refresh_continuous_effects(state):
         # Always release both guards even if dependency ordering, targeting or
         # index synchronization raises.
         state._layer_ceiling = None
+        state._reusing_continuous_graph = False
         state._refreshing_effects = False
         state.card_register._layer_read_cards.clear()

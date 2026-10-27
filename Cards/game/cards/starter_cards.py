@@ -764,6 +764,7 @@ class AttackCondition(TriggerCondition):
     @brief AttackCondition trigger condition.
     """
     looks_back_in_time = False
+    event_keys = frozenset({"attacker_declared"})
 
     def __init__(
         self,
@@ -812,6 +813,7 @@ class OneOrMoreAttackCondition(TriggerCondition):
     @brief OneOrMoreAttackCondition trigger condition.
     """
     looks_back_in_time = False
+    event_keys = frozenset({"attackers_declared"})
 
     def matches(self, state: object, event: object) -> bool:
         """!
@@ -831,6 +833,7 @@ class LifeGainCondition(TriggerCondition):
     @brief LifeGainCondition trigger condition.
     """
     looks_back_in_time = False
+    event_keys = frozenset({"life_gained"})
 
     def matches(self, state: object, event: object) -> bool:
         """!
@@ -850,6 +853,7 @@ class EnteredSmallCreatureCondition(TriggerCondition):
     @brief EnteredSmallCreatureCondition trigger condition.
     """
     looks_back_in_time = False
+    event_keys = frozenset({"card_moved"})
 
     def matches(self, state: object, event: object) -> bool:
         """!
@@ -879,6 +883,7 @@ class BlockedCondition(TriggerCondition):
     @brief BlockedCondition trigger condition.
     """
     looks_back_in_time = False
+    event_keys = frozenset({"attacker_blocked"})
 
     def matches(self, state: object, event: object) -> bool:
         """!

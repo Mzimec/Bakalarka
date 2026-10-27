@@ -21,6 +21,7 @@ from game.mana.mana_solver import SourceActivatingManaSolver
 from game.enums import ZoneType
 from game.game_actions.data_structs.game_action import PassPriorityAction, GameAction
 from game.game_actions.generation.decision_abstraction.priority_availability import NON_MANA_PRIORITY_AVAILABILITY
+from game.ai.observation import card_view, observation
 
 
 @dataclass
@@ -52,54 +53,6 @@ class HeuristicSelector:
         return type(self).choose is not HeuristicSelector.choose or "choose" in vars(self)
 
 
-def card_view(card: object, state: object) -> dict:
-    """!
-    @brief Snapshot a visible card without serializing runtime references.
-    """
-    return {
-        "id": card.command_id, "name": card.name,
-        "controller": card.get_controller(state).idx,
-        "zone": card.get_zone().name,
-        "types": sorted(value.name for value in card.get_types(state)),
-        "text": card.definition.oracle_text,
-        "cost": str(card.get_mana_cost(state)),
-        "power": card.get_power(state), "toughness": card.get_toughness(state),
-        "tapped": card.is_tapped,
-    }
-
-
-def observation(state: object, player: object) -> dict:
-    """!
-    @brief Expose own hand and public battlefield, never library order or enemy hand.
-    """
-    return {
-        "turn": state.turn.number, "phase": state.turn.phase.name,
-        "self": player.idx, "active": state.active_player.idx,
-        "players": [
-            {"id": p.idx, "life": p.health, "hand_size": len(p.hand),
-             "library_size": len(p.deck),
-             "mana": {mana.name: amount for mana, amount in p.mana_pool.items()}}
-            for p in state.players
-        ],
-        "hand": [card_view(c, state) for c in player.hand.values()],
-        "battlefield": [
-            card_view(c, state) for c in state.get_cards(from_zones=[ZoneType.BATTLEFIELD])
-        ],
-        "stack": [
-            card_view(c, state) for c in state.get_cards(from_zones=[ZoneType.STACK])
-        ],
-        "pending_abilities": [
-            {"ability": item.action_resolution.context.action_key,
-             "controller": item.action_resolution.context.controller.idx}
-            for item in state.stack.items
-        ],
-        "combat": {
-            "attackers": [c.command_id for c in state.combat.attackers],
-            "blockers": {b.command_id: a.command_id for b, a in state.combat.blockers.items()},
-        },
-    }
-
-
 class ActionEvaluator:
     """!
     @brief Rank concrete target choices using baseline value and threat size.
@@ -109,6 +62,9 @@ class ActionEvaluator:
         """!
         @brief Return a heuristic score for a candidate action.
         """
+        from game.ai.tactical_evaluation import redundant_restriction_aura
+        if redundant_restriction_aura(state, action):
+            return -1.0  # Keep the option, but prefer pass to spending a card for no new restriction.
         value = SimpleAgent.score(self, state, player, action)
         for target in SimpleAgent._targets(action):
             if hasattr(target, "get_power") and target.get_controller(state) is not player:
@@ -318,6 +274,15 @@ class ModularAgent(SimpleAgent):
         self.candidates = candidates or CandidateGenerator()
         self.selector = selector or HeuristicSelector()
         self.combat_policy = combat or CombatPolicy()
+        from game.ai.knowledge import PlayerKnowledge
+        self.knowledge = PlayerKnowledge()
+
+    def receive_player_event(self, event, *, game_token, player):
+        """!
+        @brief Record only this player projected event in the current session.
+        """
+        self.knowledge.bind(game_token, player)
+        self.knowledge.observe(event)
 
     def _choose(self, state: object, player: object, candidates: object) -> object:
         """!

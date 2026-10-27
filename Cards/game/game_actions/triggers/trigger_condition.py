@@ -69,6 +69,7 @@ class ZoneChangeCondition(TriggerCondition):
         Optional required card type.
     """
 
+    event_keys = frozenset({"card_moved"})
     origin: ZoneType | None = None
     destination: ZoneType | None = None
     source_only: bool = False
@@ -154,6 +155,8 @@ class EntersBattlefieldCondition(ZoneChangeCondition):
     @brief Match cards entering the battlefield.
     """
 
+    event_keys = frozenset({"card_moved"})
+
     def __init__(
         self,
         *,
@@ -179,6 +182,8 @@ class LeavesBattlefieldCondition(ZoneChangeCondition):
     @brief Match cards leaving the battlefield.
     """
 
+    event_keys = frozenset({"card_moved"})
+
     def __init__(
         self,
         *,
@@ -203,6 +208,8 @@ class DiesCondition(ZoneChangeCondition):
     """!
     @brief Match creatures moving from the battlefield to the graveyard.
     """
+
+    event_keys = frozenset({"card_moved"})
 
     def __init__(
         self,
@@ -234,6 +241,7 @@ class StepCondition(TriggerCondition):
         Whether the phase must belong to the trigger controller's turn.
     """
 
+    event_keys = frozenset({"phase_started"})
     phase: object
     controller_turn_only: bool = False
     looks_back_in_time = False
@@ -268,6 +276,7 @@ class SpellCastCondition(TriggerCondition):
         Whether the cast spell must be the trigger's own source.
     """
 
+    event_keys = frozenset({"spell_cast"})
     controlled_only: bool = False
     source_only: bool = False
     looks_back_in_time = False
@@ -307,6 +316,7 @@ class DamageDealtCondition(TriggerCondition):
         Whether the damaged object must be a player.
     """
 
+    event_keys = frozenset({"damage_dealt"})
     source_only: bool = False
     combat_only: bool = False
     to_player_only: bool = False

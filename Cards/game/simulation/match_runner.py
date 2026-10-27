@@ -18,6 +18,7 @@ from pathlib import Path
 from typing import Any
 
 from game.ai.simple_agent import SimpleAgent, DecisionLimitReached
+from game.ai.trivial_agent import TrivialAgent
 from game.cards.decks import ARENA_STARTERS, load_arena_starter
 from game.game_loop.setup import create_game
 from game.cards.catalog import game_catalog
@@ -84,7 +85,7 @@ class MatchLog:
     @brief Append ordered decisions, events and results to one JSON Lines file.
     """
 
-    def __init__(self, path: Path) -> None:
+    def __init__(self, path: Path | None = None, *, stream=None) -> None:
         """!
         @brief Create a new experiment log.
 
@@ -92,7 +93,10 @@ class MatchLog:
 
         @param path Destination JSONL path.
         """
-        self.stream = path.open("x", encoding="utf-8")
+        if (path is None) == (stream is None):
+            raise ValueError('Supply exactly one log path or stream')
+        self.owns_stream = stream is None
+        self.stream = path.open("x", encoding="utf-8") if self.owns_stream else stream
         self.sequence = 0
 
     def write(self, kind: str, **data) -> None:
@@ -124,7 +128,8 @@ class MatchLog:
         """! 
         @brief Close the underlying JSONL stream.
         """
-        self.stream.close()
+        if self.owns_stream:
+            self.stream.close()
 
 
 class NullMatchLog:
@@ -258,11 +263,12 @@ class MatchResult:
     error: str | None = None
     elapsed_seconds: float = 0.0
     decision_timing: list[dict] = field(default_factory=list)
+    search_diagnostics: list[dict] = field(default_factory=list)
 
 
 def run_match(
     colors,
-    output: Path | None,
+    output: Path | None = None,
     *,
     seed: int | None = None,
     starting_player=0,
@@ -273,6 +279,7 @@ def run_match(
     decklists=None,
     metadata=None,
     collect_decision_stats: bool = True,
+    log_stream=None,
 ) -> MatchResult:
     """!
     @brief Run one reproducible duel between two decks and controllers.
@@ -282,6 +289,8 @@ def run_match(
     created. When an output path is supplied, the match writes a structured JSONL
     log and derives a human-readable TXT log from it. When output is `None`, the
     match runs without persistent per-match log files.
+    A caller-owned log_stream (e.g. StringIO) records the same JSONL in memory;
+    it cannot be combined with a file output and is not closed by the runner.
 
     @param colors Two deck labels used for identification and fallback starter-deck
                 loading when `decklists` is not supplied.
@@ -301,6 +310,11 @@ def run_match(
                 skip all decision telemetry and return an empty decision_timing.
     @return Match result containing outcome, seed, winner, limits and timing data.
     """
+    if output is not None and log_stream is not None:
+        raise ValueError('Choose a log file or a memory stream')
+    if output is not None:
+        output = Path(output)
+    logging = output is not None or log_stream is not None
     if type(collect_decision_stats) is not bool:
         raise ValueError("collect_decision_stats must be a boolean.")
     if seed is None:
@@ -317,22 +331,35 @@ def run_match(
     if decklists is not None and len(decklists) != 2:
         raise ValueError("A duel needs two decklists.")
 
-    log = MatchLog(output) if output is not None else NullMatchLog()
+    log = MatchLog(output,stream=log_stream) if logging else NullMatchLog()
     started = perf_counter()
     agents = controllers or tuple(SimpleAgent(max_decisions=max_decisions) for _ in range(2))
 
     previous_logs = []
+    previous_search_logs = []
     for agent in agents:
-        if isinstance(agent, SimpleAgent) and not any(agent is prior for prior, _ in previous_logs):
+        if isinstance(agent, (SimpleAgent, TrivialAgent)) and not any(agent is prior for prior, _ in previous_logs):
             previous_logs.append((agent, agent.log))
             agent.log = log.decision
+        if callable(getattr(agent, "search_summary", None)):
+            previous = agent.on_search_decision
+            previous_search_logs.append((agent, previous))
+            def record_search(request, detail, previous=previous):
+                if logging:
+                    log.write("search_decision", player=request.player.name, player_index=request.player.idx,
+                              request=type(request).__name__,
+                              turn=request.state.turn.number if request.state is not None else None,
+                              phase=request.state.turn.phase.name if request.state is not None else None, **detail)
+                if previous is not None:
+                    previous(request, detail)
+            agent.on_search_decision = record_search
 
     decision_statistics = DecisionStatistics() if collect_decision_stats else None
 
     def record_decision(agent, request, metrics):
         player = request.player
         decision_statistics.record(player.idx, player.name, type(agent).__name__, agent.decision_mode, metrics)
-        if output is not None:
+        if logging:
             log.write(
                 "decision_timing", player=player.name, player_index=player.idx,
                 agent=type(agent).__name__, mode=agent.decision_mode,
@@ -344,7 +371,7 @@ def run_match(
     state = None
     status, winner, winner_index, error = "error", None, None, None
 
-    if output is not None:
+    if logging:
         log.write(
             "match",
             colors=colors,
@@ -380,7 +407,7 @@ def run_match(
                     names=names or (f"{colors[0]}-0", f"{colors[1]}-1"),
                 )
 
-                bus = LoggedEventBus(log, state) if output is not None else EventBus()
+                bus = LoggedEventBus(log, state) if logging else EventBus()
 
                 from game.console.demo_game import ConsoleDecisionMaker
 
@@ -390,12 +417,12 @@ def run_match(
                         agent._event_index = 0
 
                 operation_executor = OperationExecutor()
-                engine = (LoggedResolutionEngine(operation_executor, bus) if output is not None
+                engine = (LoggedResolutionEngine(operation_executor, bus) if logging
                           else ResolutionEngine(operation_executor, bus))
-                processor = LoggedProcessor(engine) if output is not None else ActionProcessor(engine)
+                processor = LoggedProcessor(engine) if logging else ActionProcessor(engine)
                 loop = GameLoop(None, processor)
 
-                if output is not None:
+                if logging:
                     log.write(
                         "setup",
                         hands={p.name: list(p.hand.values()) for p in state.players},
@@ -403,7 +430,7 @@ def run_match(
                     )
 
                 while not state.is_game_over and state.turn.number <= max_turns:
-                    if output is not None:
+                    if logging:
                         log.write(
                             "phase",
                             turn=state.turn.number,
@@ -415,7 +442,7 @@ def run_match(
 
                     # State summaries are snapshots after a complete loop step rather
                     # than references to mutable player objects.
-                    if output is not None:
+                    if logging:
                         log.write(
                             "state",
                             turn=state.turn.number,
@@ -432,7 +459,7 @@ def run_match(
                         )
 
                 survivors = list(state.active_players)
-                if output is not None:
+                if logging:
                     operation_executor.print_lki_stats()
 
                 if not state.is_game_over:
@@ -452,11 +479,17 @@ def run_match(
 
         except Exception as exc:
             status, error = "error", f"{type(exc).__name__}: {exc}"
-            if output is not None:
+            if logging:
                 log.write("exception", traceback=traceback.format_exc())
         finally:
             for agent, previous_log in previous_logs:
                 agent.log = previous_log
+            for agent, previous_log in previous_search_logs:
+                agent.on_search_decision = previous_log
+            for agent in agents:
+                close_search = getattr(agent, 'close_search', None)
+                if close_search is not None:
+                    close_search()
 
     result = MatchResult(
         tuple(colors),
@@ -471,9 +504,11 @@ def run_match(
         error,
         perf_counter() - started,
         decision_timing=decision_statistics.summary() if decision_statistics is not None else [],
+        search_diagnostics=[{"player": index, "agent": type(agent).__name__, **agent.search_summary()}
+                            for index, agent in enumerate(agents) if callable(getattr(agent, "search_summary", None))],
     )
 
-    if output is not None:
+    if logging:
         log.write("result", **asdict(result))
     log.close()
 
@@ -714,15 +749,15 @@ def _file_name(value: str) -> str:
     return value.lower().replace(" ", "-")
 
 def run_tournament(
-    output: Path,
+    output: Path | None,
     players: tuple[TournamentPlayer, TournamentPlayer],
     *,
     games=1,
     seed:int | None = None,
     max_turns=100,
     max_decisions=10000,
-    log_matches=True,
-    log_batch=True,
+    log_matches=None,
+    log_batch=None,
     collect_decision_stats: bool = True,
 ):
     """!
@@ -742,6 +777,15 @@ def run_tournament(
     @param collect_decision_stats Enable optional decision telemetry in each match.
     @return List of individual match results.
     """
+    # Supplying an output directory opts into logs. No destination means RAM.
+    log_matches = output is not None if log_matches is None else log_matches
+    log_batch = output is not None if log_batch is None else log_batch
+    if any(type(v) is not bool for v in (log_matches,log_batch)):
+        raise ValueError('Log flags must be booleans')
+    if (log_matches or log_batch) and output is None:
+        raise ValueError('File logging requires an explicit output directory')
+    if output is not None:
+        output = Path(output)
     if type(collect_decision_stats) is not bool:
         raise ValueError("collect_decision_stats must be a boolean.")
     if len(players) != 2:

@@ -328,7 +328,7 @@ def test_simultaneous_lifelink_is_one_gain_per_source_and_triggers_priest(game):
 
 
 def test_bundle_cannot_split_caryatid_output_between_colors(game):
-    from game.ai.mana_solver import SourceActivatingManaSolver
+    from game.mana.mana_solver import SourceActivatingManaSolver
     from game.mana.mana_value import ManaValue
     from game.stat_type import STAT_KEYWORDS
     source = add(game, 'Ilysian Caryatid')
@@ -353,6 +353,10 @@ def test_seed_repeats_decisions_and_events(tmp_path):
         for record in records:
             if record['kind'] == 'decision_timing':
                 record.pop('elapsed_ns')
+                record.pop('generation_elapsed_ns')
+                record.pop('other_decision_elapsed_ns')
+                for stream in record['option_spaces']:
+                    stream.pop('generation_elapsed_ns')
         return records
     assert rows('first') == rows('second')
 

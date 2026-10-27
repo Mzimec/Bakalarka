@@ -76,7 +76,26 @@ class DecisionMaker(ABC):
         """!
         @brief Run a decision and validate its result type.
         """
-        result = self._decide(request)
+        if type(request) in (TriggerOrderRequest, ReplacementOrderRequest) and len(request.candidates) >= 7:
+            from ..game_actions.generation.decision_abstraction.order_frames import choose_order
+            # Seven candidates already have 5040 permutations. All controllers,
+            # including live/search/replay, use the same construction protocol.
+            # Small legacy menus stay exhaustive for differential validation.
+            result = DecisionResult(choose_order(request, self.decide))
+        else:
+            result = self._decide(request)
+        if isinstance(request, PriorityDecisionRequest) and isinstance(result, DecisionResult):
+            from ..game_actions.generation.decision_abstraction.priority_frames import (
+                PrioritySourceOption, complete_priority_source,
+            )
+            if type(result.value) is PrioritySourceOption:
+                result = complete_priority_source(request, result.value, self.decide)
+        from ..game_actions.generation.decision_abstraction.ability_frames import (
+            AbilityConstructionRequest, AbilityConstructionOption, choose_construction,
+        )
+        if type(request) is AbilityConstructionRequest and isinstance(result, DecisionResult):
+            if type(result.value) is AbilityConstructionOption:
+                result = choose_construction(request, result.value._next_frame, self.decide)
         if not isinstance(result, DecisionResult) or not isinstance(result.value, request.option_type):
             raise TypeError(f"{type(request).__name__} requires DecisionResult[{request.option_type.__name__}].")
         return result
@@ -106,6 +125,9 @@ class ModularDecisionMaker(DecisionMaker):
         """!
         @brief Dispatch or implement one decision request.
         """
+        from ..game_actions.generation.decision_abstraction.order_frames import OrderNextRequest
+        if isinstance(request, OrderNextRequest):
+            return self.decide_order_next(request)
         if isinstance(request, PriorityDecisionRequest):
             return self.decide_priority(request)
         if isinstance(request, AbilityDecisionRequest):
@@ -143,6 +165,12 @@ class ModularDecisionMaker(DecisionMaker):
         if isinstance(request, CombatDamageRequest):
             return self.decide_combat_damage(request)
         raise NotImplementedError(f"Unsupported request: {type(request).__name__}")
+
+    def decide_order_next(self, request):
+        """!
+        @brief Choose the next item through the typed ordering handler.
+        """
+        return _first(request)
 
     def decide_priority(self, request: PriorityDecisionRequest) -> DecisionResult[GameAction]:
         """!

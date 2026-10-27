@@ -8,6 +8,7 @@ from game.simulation.match_runner import run_match
 
 
 AGENT_CONFIGS = {
+    "trivial": {"type": "trivial"},
     "simple": {
         "type": "simple",
     },
@@ -81,7 +82,7 @@ def main() -> int:
     parser.add_argument(
         "--output",
         type=Path,
-        default=Path("runs/match.jsonl"),
+        default=None,
         help="Optional JSONL match log.",
     )
 

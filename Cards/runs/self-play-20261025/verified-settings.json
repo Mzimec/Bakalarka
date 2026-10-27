@@ -1,0 +1,38 @@
+{
+  "actors": 2,
+  "generations": 2,
+  "games_per_generation": 2,
+  "evaluation_games": 2,
+  "seed": 42,
+  "decks": [
+    "red",
+    "white"
+  ],
+  "max_turns": 60,
+  "max_decisions": 10000,
+  "replay_capacity": 1024,
+  "batch_size": 4,
+  "updates_per_generation": 4,
+  "hidden": 16,
+  "bootstrap_generations": 1,
+  "temperature": 0,
+  "temperature_drop_turn": 8,
+  "dirichlet_epsilon": 0,
+  "dirichlet_alpha": 0.3,
+  "validation_fraction": 0.25,
+  "mcts": {
+    "deck_knowledge": "both_lists",
+    "selection": "puct",
+    "prior": "heuristic",
+    "parallel_workers": 1,
+    "worlds": 1,
+    "iterations": 4,
+    "max_depth": 1,
+    "max_extensions": 16,
+    "max_advances": 512,
+    "max_search_ms": 0,
+    "compress_forced": true,
+    "require_root_coverage": false,
+    "force_initial_coverage": false
+  }
+}

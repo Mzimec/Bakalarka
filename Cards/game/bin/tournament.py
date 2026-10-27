@@ -1,5 +1,6 @@
 from __future__ import annotations
 import argparse
+from contextlib import nullcontext
 from datetime import datetime
 from pathlib import Path
 
@@ -8,6 +9,7 @@ from game.simulation.match_runner import TournamentPlayer, run_tournament
 
 
 AGENT_CONFIGS = {
+    "trivial": {"type": "trivial"},
     "simple": {
         "type": "simple",
     },
@@ -61,12 +63,14 @@ def main() -> int:
     parser.add_argument("--max-decisions", type=int, default=10000)
     parser.add_argument("--no-decision-stats", action="store_true",
                         help="Disable decision timing and option statistics; keep decision limits.")
+    parser.add_argument("--profile-functions", action="store_true",
+                        help="Save all-function call counts, averages and maxima in function-profile/ (adds substantial timing overhead).")
 
     parser.add_argument(
         "--output",
         type=Path,
-        default=Path("runs"),
-        help="Parent directory for a new tournament-<timestamp> folder.",
+        default=None,
+        help="Optional parent directory for tournament output logs; default: memory only.",
     )
 
     parser.add_argument(
@@ -75,6 +79,8 @@ def main() -> int:
     )
 
     args = parser.parse_args()
+    if (args.profile_functions or args.log_matches) and args.output is None:
+        parser.error('--profile-functions/--log-matches require an explicit --output directory')
 
     players = (
         TournamentPlayer(
@@ -89,19 +95,33 @@ def main() -> int:
         ),
     )
 
-    output = args.output / f"tournament-{datetime.now():%Y%m%d-%H%M%S-%f}"
-    results = run_tournament(
-        output,
-        players,
-        games=args.rounds,
-        seed=args.seed,
-        max_turns=args.max_turns,
-        max_decisions=args.max_decisions,
-        log_matches=args.log_matches,
-        log_batch=True,
-        collect_decision_stats=not args.no_decision_stats,
-    )
-    print(f"Tournament results: {output.resolve()}")
+    output = args.output / f"tournament-{datetime.now():%Y%m%d-%H%M%S-%f}" if args.output is not None else None
+    profiler = None
+    if args.profile_functions:
+        from benchmarks.function_profile import FunctionProfile
+        from benchmarks.environment import collect_environment
+        root = Path(__file__).resolve().parents[2]
+        profiler = FunctionProfile(root)
+        environment = collect_environment(root)
+        environment["instrumentation"]["component_profiler_enabled"] = False
+        environment["instrumentation"]["function_profiler_enabled"] = True
+    with profiler if profiler is not None else nullcontext():
+        results = run_tournament(
+            output,
+            players,
+            games=args.rounds,
+            seed=args.seed,
+            max_turns=args.max_turns,
+            max_decisions=args.max_decisions,
+            log_matches=args.log_matches,
+            log_batch=output is not None,
+            collect_decision_stats=not args.no_decision_stats,
+        )
+    if profiler is not None:
+        profiler.write(output / "function-profile", dict(environment=environment,
+                       arguments={k: str(v) if isinstance(v, Path) else v for k, v in vars(args).items()}))
+        print("Function profiling was enabled: tournament timings include profiler overhead.")
+    print(f"Tournament results: {output.resolve()}" if output is not None else f"Completed {len(results)} games (memory only)")
 
     return int(
         any(

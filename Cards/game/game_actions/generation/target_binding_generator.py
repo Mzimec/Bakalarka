@@ -137,6 +137,7 @@ class FullTargetBindingGenerator(TargetBindingGenerator):
         ctx: ActionGenerationContextBase,
         used_slots: Iterable[RepetitionTargetSlotWrapper],
         state: State,
+        *, prefix_binding=None, group_prefix=None,
     ) -> Iterator[ImmutableTargetBinding]:
         """!
         @brief Yield all legal target combinations.
@@ -150,6 +151,13 @@ class FullTargetBindingGenerator(TargetBindingGenerator):
         """
 
         used_slots = tuple(used_slots)
+        initial = TargetBinding() if prefix_binding is None else prefix_binding.to_mutable()
+        expected = {(s.slot.key, s.runtime_key) for s in used_slots}
+        assigned = {(key, runtime) for key, inner in initial.items() for runtime in inner}
+        if not assigned <= expected:
+            raise ValueError("Target prefix contains an unused slot")
+        if group_prefix is not None and (group_prefix[0].slot.key, group_prefix[0].runtime_key) not in expected - assigned:
+            raise ValueError("Group prefix must belong to an unassigned used slot")
         if not used_slots:
             binding = TargetBinding()
             if binding.are_targets_valid(ctx.ability.source, ctx.ability.controller, state, used_slots):
@@ -194,11 +202,16 @@ class FullTargetBindingGenerator(TargetBindingGenerator):
 
             remaining_slots.remove(slot)
 
+            prefix = group_prefix[1] if group_prefix is not None and group_prefix[0] == slot else ()
+            # Keep the legacy resolver call contract for ordinary generation
+            # and authored extensions without the native prefix adapter.
+            prefix_kwargs = {"selection_prefix": prefix} if prefix else {}
             for option in slot.slot.target_resolver.generate_target_options(
                 ctx.ability.source,
                 ctx.ability.controller,
                 state,
                 reserved,
+                **prefix_kwargs,
             ):
                 slot_bindings[slot.runtime_key] = option
 
@@ -214,6 +227,7 @@ class FullTargetBindingGenerator(TargetBindingGenerator):
 
             remaining_slots.add(slot)
 
-        remaining_slots: set[RepetitionTargetSlotWrapper] = set(used_slots)
+        remaining_slots: set[RepetitionTargetSlotWrapper] = {s for s in used_slots
+            if (s.slot.key, s.runtime_key) not in assigned}
 
-        yield from _recursion_step(TargetBinding())
+        yield from _recursion_step(initial)

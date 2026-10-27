@@ -1,0 +1,2194 @@
+{
+  "scope": "Scripted own opening; live opponent counter; MCTS response under an explicit hidden-world prior.",
+  "provider": "history",
+  "seed": 42,
+  "iterations": 12,
+  "prior_counter_in_hand": 0.25,
+  "elapsed_ms": 7102.853799937293,
+  "terminal": true,
+  "opponent_lost": true,
+  "passed": true,
+  "response_searches": 1,
+  "response_fallbacks": 0,
+  "response_input": {
+    "active": 0,
+    "battlefield": [
+      {
+        "abilities": [
+          {
+            "allowed_zones": [
+              "HAND"
+            ],
+            "costs": [],
+            "effects": [],
+            "key": "play_land",
+            "kind": "PlayLandAbilityDefinition",
+            "loyalty_cost": null,
+            "mana_ability": false,
+            "parameters": {},
+            "sorcery_speed": false,
+            "uses_stack": false
+          },
+          {
+            "allowed_zones": [
+              "BATTLEFIELD"
+            ],
+            "costs": [
+              {
+                "action_node": {
+                  "effect_map": {
+                    "tap_for_mana": []
+                  },
+                  "kind": "EffectActionNode"
+                },
+                "effects": [
+                  {
+                    "description_unavailable": false,
+                    "features": {
+                      "kind": "tap_source"
+                    },
+                    "key": "tap_for_mana",
+                    "kind": "TapSourceEffect",
+                    "text": "Tap this card."
+                  }
+                ],
+                "kind": "SubAbilityDefinition",
+                "mana_cost": null,
+                "resolution_speed": null,
+                "slots": []
+              }
+            ],
+            "effects": [
+              {
+                "action_node": {
+                  "effect_map": {
+                    "add_red": []
+                  },
+                  "kind": "EffectActionNode"
+                },
+                "effects": [
+                  {
+                    "description_unavailable": false,
+                    "features": {
+                      "kind": "unknown"
+                    },
+                    "key": "add_red",
+                    "kind": "AddManaEffect",
+                    "text": "Add 1 RED mana."
+                  }
+                ],
+                "kind": "SubAbilityDefinition",
+                "mana_cost": null,
+                "resolution_speed": null,
+                "slots": []
+              }
+            ],
+            "key": "mana_red",
+            "kind": "ManaAbilityDefinition",
+            "loyalty_cost": null,
+            "mana_ability": true,
+            "parameters": {},
+            "sorcery_speed": false,
+            "uses_stack": false
+          }
+        ],
+        "attached_to": null,
+        "attachment_restrictions": [],
+        "attachments": [],
+        "casting_cost": "none",
+        "chosen_x": 0,
+        "colors": [],
+        "controller": 0,
+        "cost": "none",
+        "counters": {},
+        "damage_by_deathtouch": false,
+        "damage_marked": 0,
+        "face_down": false,
+        "id": "c1",
+        "identity_visible": true,
+        "keywords": [],
+        "legendary": false,
+        "loyalty_activated_this_turn": false,
+        "mana_value": 0,
+        "name": "Mountain",
+        "owner": 0,
+        "power": null,
+        "skip_untap": null,
+        "static_abilities": [],
+        "subtypes": [
+          "MOUNTAIN"
+        ],
+        "summoning_sick": false,
+        "tapped": true,
+        "text": "({T}: Add {R}.)",
+        "token": false,
+        "toughness": null,
+        "triggers": [],
+        "types": [
+          "LAND"
+        ],
+        "zone": "BATTLEFIELD",
+        "zone_revision": 1
+      },
+      {
+        "abilities": [
+          {
+            "allowed_zones": [
+              "HAND"
+            ],
+            "costs": [],
+            "effects": [],
+            "key": "play_land",
+            "kind": "PlayLandAbilityDefinition",
+            "loyalty_cost": null,
+            "mana_ability": false,
+            "parameters": {},
+            "sorcery_speed": false,
+            "uses_stack": false
+          },
+          {
+            "allowed_zones": [
+              "BATTLEFIELD"
+            ],
+            "costs": [
+              {
+                "action_node": {
+                  "effect_map": {
+                    "tap_for_mana": []
+                  },
+                  "kind": "EffectActionNode"
+                },
+                "effects": [
+                  {
+                    "description_unavailable": false,
+                    "features": {
+                      "kind": "tap_source"
+                    },
+                    "key": "tap_for_mana",
+                    "kind": "TapSourceEffect",
+                    "text": "Tap this card."
+                  }
+                ],
+                "kind": "SubAbilityDefinition",
+                "mana_cost": null,
+                "resolution_speed": null,
+                "slots": []
+              }
+            ],
+            "effects": [
+              {
+                "action_node": {
+                  "effect_map": {
+                    "add_blue": []
+                  },
+                  "kind": "EffectActionNode"
+                },
+                "effects": [
+                  {
+                    "description_unavailable": false,
+                    "features": {
+                      "kind": "unknown"
+                    },
+                    "key": "add_blue",
+                    "kind": "AddManaEffect",
+                    "text": "Add 1 BLUE mana."
+                  }
+                ],
+                "kind": "SubAbilityDefinition",
+                "mana_cost": null,
+                "resolution_speed": null,
+                "slots": []
+              }
+            ],
+            "key": "mana_blue",
+            "kind": "ManaAbilityDefinition",
+            "loyalty_cost": null,
+            "mana_ability": true,
+            "parameters": {},
+            "sorcery_speed": false,
+            "uses_stack": false
+          }
+        ],
+        "attached_to": null,
+        "attachment_restrictions": [],
+        "attachments": [],
+        "casting_cost": "none",
+        "chosen_x": 0,
+        "colors": [],
+        "controller": 1,
+        "cost": "none",
+        "counters": {},
+        "damage_by_deathtouch": false,
+        "damage_marked": 0,
+        "face_down": false,
+        "id": "c2",
+        "identity_visible": true,
+        "keywords": [],
+        "legendary": false,
+        "loyalty_activated_this_turn": false,
+        "mana_value": 0,
+        "name": "Island",
+        "owner": 1,
+        "power": null,
+        "skip_untap": null,
+        "static_abilities": [],
+        "subtypes": [
+          "ISLAND"
+        ],
+        "summoning_sick": false,
+        "tapped": true,
+        "text": "({T}: Add {U}.)",
+        "token": false,
+        "toughness": null,
+        "triggers": [],
+        "types": [
+          "LAND"
+        ],
+        "zone": "BATTLEFIELD",
+        "zone_revision": 1
+      },
+      {
+        "abilities": [
+          {
+            "allowed_zones": [
+              "HAND"
+            ],
+            "costs": [],
+            "effects": [],
+            "key": "play_land",
+            "kind": "PlayLandAbilityDefinition",
+            "loyalty_cost": null,
+            "mana_ability": false,
+            "parameters": {},
+            "sorcery_speed": false,
+            "uses_stack": false
+          },
+          {
+            "allowed_zones": [
+              "BATTLEFIELD"
+            ],
+            "costs": [
+              {
+                "action_node": {
+                  "effect_map": {
+                    "tap_for_mana": []
+                  },
+                  "kind": "EffectActionNode"
+                },
+                "effects": [
+                  {
+                    "description_unavailable": false,
+                    "features": {
+                      "kind": "tap_source"
+                    },
+                    "key": "tap_for_mana",
+                    "kind": "TapSourceEffect",
+                    "text": "Tap this card."
+                  }
+                ],
+                "kind": "SubAbilityDefinition",
+                "mana_cost": null,
+                "resolution_speed": null,
+                "slots": []
+              }
+            ],
+            "effects": [
+              {
+                "action_node": {
+                  "effect_map": {
+                    "add_blue": []
+                  },
+                  "kind": "EffectActionNode"
+                },
+                "effects": [
+                  {
+                    "description_unavailable": false,
+                    "features": {
+                      "kind": "unknown"
+                    },
+                    "key": "add_blue",
+                    "kind": "AddManaEffect",
+                    "text": "Add 1 BLUE mana."
+                  }
+                ],
+                "kind": "SubAbilityDefinition",
+                "mana_cost": null,
+                "resolution_speed": null,
+                "slots": []
+              }
+            ],
+            "key": "mana_blue",
+            "kind": "ManaAbilityDefinition",
+            "loyalty_cost": null,
+            "mana_ability": true,
+            "parameters": {},
+            "sorcery_speed": false,
+            "uses_stack": false
+          }
+        ],
+        "attached_to": null,
+        "attachment_restrictions": [],
+        "attachments": [],
+        "casting_cost": "none",
+        "chosen_x": 0,
+        "colors": [],
+        "controller": 1,
+        "cost": "none",
+        "counters": {},
+        "damage_by_deathtouch": false,
+        "damage_marked": 0,
+        "face_down": false,
+        "id": "c3",
+        "identity_visible": true,
+        "keywords": [],
+        "legendary": false,
+        "loyalty_activated_this_turn": false,
+        "mana_value": 0,
+        "name": "Island",
+        "owner": 1,
+        "power": null,
+        "skip_untap": null,
+        "static_abilities": [],
+        "subtypes": [
+          "ISLAND"
+        ],
+        "summoning_sick": false,
+        "tapped": true,
+        "text": "({T}: Add {U}.)",
+        "token": false,
+        "toughness": null,
+        "triggers": [],
+        "types": [
+          "LAND"
+        ],
+        "zone": "BATTLEFIELD",
+        "zone_revision": 1
+      },
+      {
+        "abilities": [
+          {
+            "allowed_zones": [
+              "HAND"
+            ],
+            "costs": [],
+            "effects": [],
+            "key": "play_land",
+            "kind": "PlayLandAbilityDefinition",
+            "loyalty_cost": null,
+            "mana_ability": false,
+            "parameters": {},
+            "sorcery_speed": false,
+            "uses_stack": false
+          },
+          {
+            "allowed_zones": [
+              "BATTLEFIELD"
+            ],
+            "costs": [
+              {
+                "action_node": {
+                  "effect_map": {
+                    "tap_for_mana": []
+                  },
+                  "kind": "EffectActionNode"
+                },
+                "effects": [
+                  {
+                    "description_unavailable": false,
+                    "features": {
+                      "kind": "tap_source"
+                    },
+                    "key": "tap_for_mana",
+                    "kind": "TapSourceEffect",
+                    "text": "Tap this card."
+                  }
+                ],
+                "kind": "SubAbilityDefinition",
+                "mana_cost": null,
+                "resolution_speed": null,
+                "slots": []
+              }
+            ],
+            "effects": [
+              {
+                "action_node": {
+                  "effect_map": {
+                    "add_red": []
+                  },
+                  "kind": "EffectActionNode"
+                },
+                "effects": [
+                  {
+                    "description_unavailable": false,
+                    "features": {
+                      "kind": "unknown"
+                    },
+                    "key": "add_red",
+                    "kind": "AddManaEffect",
+                    "text": "Add 1 RED mana."
+                  }
+                ],
+                "kind": "SubAbilityDefinition",
+                "mana_cost": null,
+                "resolution_speed": null,
+                "slots": []
+              }
+            ],
+            "key": "mana_red",
+            "kind": "ManaAbilityDefinition",
+            "loyalty_cost": null,
+            "mana_ability": true,
+            "parameters": {},
+            "sorcery_speed": false,
+            "uses_stack": false
+          }
+        ],
+        "attached_to": null,
+        "attachment_restrictions": [],
+        "attachments": [],
+        "casting_cost": "none",
+        "chosen_x": 0,
+        "colors": [],
+        "controller": 0,
+        "cost": "none",
+        "counters": {},
+        "damage_by_deathtouch": false,
+        "damage_marked": 0,
+        "face_down": false,
+        "id": "c4",
+        "identity_visible": true,
+        "keywords": [],
+        "legendary": false,
+        "loyalty_activated_this_turn": false,
+        "mana_value": 0,
+        "name": "Mountain",
+        "owner": 0,
+        "power": null,
+        "skip_untap": null,
+        "static_abilities": [],
+        "subtypes": [
+          "MOUNTAIN"
+        ],
+        "summoning_sick": false,
+        "tapped": false,
+        "text": "({T}: Add {R}.)",
+        "token": false,
+        "toughness": null,
+        "triggers": [],
+        "types": [
+          "LAND"
+        ],
+        "zone": "BATTLEFIELD",
+        "zone_revision": 1
+      }
+    ],
+    "combat": {
+      "active": false,
+      "attackers": [],
+      "attackers_declared": false,
+      "blocked": [],
+      "blockers": {},
+      "defenders": {},
+      "first_damage_done": false,
+      "first_strike_step": false,
+      "regular_damage_done": false
+    },
+    "continuous_effects": [],
+    "decision_context": {
+      "kind": "PriorityDecisionRequest"
+    },
+    "exile": [],
+    "graveyard": [],
+    "hand": [
+      {
+        "abilities": [
+          {
+            "allowed_zones": [
+              "HAND"
+            ],
+            "costs": [
+              {
+                "action_node": {
+                  "effect_map": {
+                    "Shock:put_on_stack": []
+                  },
+                  "kind": "EffectActionNode"
+                },
+                "effects": [
+                  {
+                    "description_unavailable": false,
+                    "features": {
+                      "destination": "STACK",
+                      "kind": "move_source"
+                    },
+                    "key": "Shock:put_on_stack",
+                    "kind": "MoveSourceEffect",
+                    "text": "Move this card to STACK."
+                  }
+                ],
+                "kind": "SubAbilityDefinition",
+                "mana_cost": null,
+                "resolution_speed": null,
+                "slots": []
+              }
+            ],
+            "effects": [
+              {
+                "action_node": {
+                  "effect_map": {
+                    "Shock:to_graveyard": [],
+                    "shock_damage": [
+                      "target"
+                    ]
+                  },
+                  "kind": "EffectActionNode"
+                },
+                "effects": [
+                  {
+                    "description_unavailable": false,
+                    "features": {
+                      "amount": 2,
+                      "kind": "damage",
+                      "slot": "target"
+                    },
+                    "key": "shock_damage",
+                    "kind": "DamageTargetEffect",
+                    "text": "Deal 2 damage to the selected target."
+                  },
+                  {
+                    "description_unavailable": false,
+                    "features": {
+                      "destination": "GRAVEYARD",
+                      "kind": "move_source"
+                    },
+                    "key": "Shock:to_graveyard",
+                    "kind": "MoveSourceEffect",
+                    "text": "Move this card to GRAVEYARD."
+                  }
+                ],
+                "kind": "SubAbilityDefinition",
+                "mana_cost": null,
+                "resolution_speed": null,
+                "slots": [
+                  {
+                    "distinct_from": [],
+                    "key": "target",
+                    "kind": "TargetSlot",
+                    "target_resolver": {
+                      "kind": "TargetResolver",
+                      "target_selector": {
+                        "is_target_repeatable": false,
+                        "kind": "SingleTargetSelector",
+                        "max_target_count": 1,
+                        "min_target_count": 1
+                      },
+                      "target_spec": {
+                        "description_unavailable": true,
+                        "kind": "AnyTargetSpec"
+                      }
+                    }
+                  }
+                ]
+              }
+            ],
+            "key": "cast:Shock",
+            "kind": "CastSpellAbilityDefinition",
+            "loyalty_cost": null,
+            "mana_ability": false,
+            "parameters": {},
+            "sorcery_speed": false,
+            "uses_stack": true
+          }
+        ],
+        "attached_to": null,
+        "attachment_restrictions": [],
+        "attachments": [],
+        "casting_cost": "{R}",
+        "chosen_x": 0,
+        "colors": [
+          "RED"
+        ],
+        "controller": 0,
+        "cost": "{R}",
+        "counters": {},
+        "damage_by_deathtouch": false,
+        "damage_marked": 0,
+        "face_down": false,
+        "id": "c6",
+        "identity_visible": true,
+        "keywords": [],
+        "legendary": false,
+        "loyalty_activated_this_turn": false,
+        "mana_value": 1,
+        "name": "Shock",
+        "owner": 0,
+        "power": null,
+        "skip_untap": null,
+        "static_abilities": [],
+        "subtypes": [],
+        "summoning_sick": false,
+        "tapped": false,
+        "text": "Shock deals 2 damage to any target.",
+        "token": false,
+        "toughness": null,
+        "triggers": [],
+        "types": [
+          "INSTANT"
+        ],
+        "zone": "HAND",
+        "zone_revision": 1
+      }
+    ],
+    "information_limits": [
+      "Opponent hands and all library identities/order are hidden.",
+      "Face-down identities are masked; inspection permissions are not yet modeled.",
+      "Knowledge covers published zone changes/draws; general reveal and scry permissions are not yet modeled.",
+      "description_unavailable marks rule code without a declarative description; do not infer its meaning."
+    ],
+    "initial_search_evidence": {
+      "players": [
+        {
+          "hand_size": 2,
+          "known_hand": [
+            {
+              "id": "c5",
+              "name": "Shock"
+            },
+            {
+              "id": "c6",
+              "name": "Shock"
+            }
+          ],
+          "known_library_top": [],
+          "player": 0,
+          "remaining_composition": {
+            "Island": 2,
+            "Shock": 2
+          }
+        },
+        {
+          "hand_size": 1,
+          "known_hand": [],
+          "known_library_top": [],
+          "player": 1,
+          "remaining_composition": {
+            "Counterspell": 1,
+            "Island": 3
+          }
+        }
+      ],
+      "scope": "At scenario origin; composition is an explicitly supplied belief, not a runtime inspection."
+    },
+    "knowledge": {
+      "coverage": "Zone changes and draws published since this agent joined; no general reveal/scry adapter yet.",
+      "event_count": 2,
+      "known_locations": [
+        {
+          "card_id": "c5",
+          "name": "Shock",
+          "owner": 0,
+          "provenance": "snapshot",
+          "zone": "STACK"
+        },
+        {
+          "card_id": "c6",
+          "name": "Shock",
+          "owner": 0,
+          "provenance": "snapshot",
+          "zone": "HAND"
+        },
+        {
+          "card_id": "c1",
+          "name": "Mountain",
+          "owner": 0,
+          "provenance": "snapshot",
+          "zone": "BATTLEFIELD"
+        },
+        {
+          "card_id": "c2",
+          "name": "Island",
+          "owner": 1,
+          "provenance": "snapshot",
+          "zone": "BATTLEFIELD"
+        },
+        {
+          "card_id": "c3",
+          "name": "Island",
+          "owner": 1,
+          "provenance": "snapshot",
+          "zone": "BATTLEFIELD"
+        },
+        {
+          "card_id": "c4",
+          "name": "Mountain",
+          "owner": 0,
+          "provenance": "snapshot",
+          "zone": "BATTLEFIELD"
+        },
+        {
+          "card_id": "c7",
+          "name": "Counterspell",
+          "owner": 1,
+          "provenance": "snapshot",
+          "zone": "STACK"
+        }
+      ],
+      "observed_cards": [
+        {
+          "card_id": "c5",
+          "name": "Shock",
+          "owner": 0
+        },
+        {
+          "card_id": "c6",
+          "name": "Shock",
+          "owner": 0
+        },
+        {
+          "card_id": "c1",
+          "name": "Mountain",
+          "owner": 0
+        },
+        {
+          "card_id": "c2",
+          "name": "Island",
+          "owner": 1
+        },
+        {
+          "card_id": "c3",
+          "name": "Island",
+          "owner": 1
+        },
+        {
+          "card_id": "c4",
+          "name": "Mountain",
+          "owner": 0
+        },
+        {
+          "card_id": "c7",
+          "name": "Counterspell",
+          "owner": 1
+        }
+      ],
+      "recent_events": [
+        {
+          "card_id": "c5",
+          "from_zone": "HAND",
+          "kind": "card_moved",
+          "name": "Shock",
+          "owner": 0,
+          "phase": "END_STEP",
+          "player": 0,
+          "to_zone": "STACK",
+          "turn": 5
+        },
+        {
+          "card_id": "c7",
+          "from_zone": "HAND",
+          "kind": "card_moved",
+          "name": "Counterspell",
+          "owner": 1,
+          "phase": "END_STEP",
+          "player": 1,
+          "to_zone": "STACK",
+          "turn": 5
+        }
+      ]
+    },
+    "passed_players": [
+      1
+    ],
+    "pending_abilities": [
+      {
+        "ability": "cast:Shock",
+        "controller": 0,
+        "effects": {
+          "kind": "EffectSequence",
+          "sequence": [
+            {
+              "effect": {
+                "description_unavailable": false,
+                "features": {
+                  "amount": 2,
+                  "kind": "damage",
+                  "slot": "target"
+                },
+                "key": "shock_damage",
+                "kind": "DamageTargetEffect",
+                "text": "Deal 2 damage to the selected target."
+              },
+              "kind": "EffectBinding",
+              "slots": [
+                {
+                  "kind": "RepetitionTargetSlotWrapper",
+                  "runtime_key": "target_0",
+                  "slot": {
+                    "distinct_from": [],
+                    "key": "target",
+                    "kind": "TargetSlot",
+                    "target_resolver": {
+                      "kind": "TargetResolver",
+                      "target_selector": {
+                        "is_target_repeatable": false,
+                        "kind": "SingleTargetSelector",
+                        "max_target_count": 1,
+                        "min_target_count": 1
+                      },
+                      "target_spec": {
+                        "description_unavailable": true,
+                        "kind": "AnyTargetSpec"
+                      }
+                    }
+                  }
+                }
+              ]
+            },
+            {
+              "effect": {
+                "description_unavailable": false,
+                "features": {
+                  "destination": "GRAVEYARD",
+                  "kind": "move_source"
+                },
+                "key": "Shock:to_graveyard",
+                "kind": "MoveSourceEffect",
+                "text": "Move this card to GRAVEYARD."
+              },
+              "kind": "EffectBinding",
+              "slots": []
+            }
+          ]
+        },
+        "parameters": {
+          "kind": "ParameterContext",
+          "x_variables": {
+            "X": 0
+          }
+        },
+        "position_from_bottom": 0,
+        "resolves_next": false,
+        "source": {
+          "card": "c5",
+          "zone_revision": 2
+        },
+        "source_last_known": null,
+        "source_revision": 1,
+        "source_text": "Shock deals 2 damage to any target.",
+        "targets": {
+          "target": {
+            "target_0": [
+              {
+                "object": {
+                  "player": 1
+                },
+                "value": 1
+              }
+            ]
+          }
+        }
+      },
+      {
+        "ability": "cast:Counterspell",
+        "controller": 1,
+        "effects": {
+          "kind": "EffectSequence",
+          "sequence": [
+            {
+              "effect": {
+                "description_unavailable": false,
+                "features": {
+                  "kind": "counter",
+                  "slot": "target"
+                },
+                "key": "counterspell",
+                "kind": "CounterSpellEffect",
+                "text": "Counter target spell."
+              },
+              "kind": "EffectBinding",
+              "slots": [
+                {
+                  "kind": "RepetitionTargetSlotWrapper",
+                  "runtime_key": "target_0",
+                  "slot": {
+                    "distinct_from": [],
+                    "key": "target",
+                    "kind": "TargetSlot",
+                    "target_resolver": {
+                      "kind": "TargetResolver",
+                      "target_selector": {
+                        "is_target_repeatable": false,
+                        "kind": "SingleTargetSelector",
+                        "max_target_count": 1,
+                        "min_target_count": 1
+                      },
+                      "target_spec": {
+                        "description_unavailable": true,
+                        "kind": "SpellTargetSpec"
+                      }
+                    }
+                  }
+                }
+              ]
+            },
+            {
+              "effect": {
+                "description_unavailable": false,
+                "features": {
+                  "destination": "GRAVEYARD",
+                  "kind": "move_source"
+                },
+                "key": "Counterspell:to_graveyard",
+                "kind": "MoveSourceEffect",
+                "text": "Move this card to GRAVEYARD."
+              },
+              "kind": "EffectBinding",
+              "slots": []
+            }
+          ]
+        },
+        "parameters": {
+          "kind": "ParameterContext",
+          "x_variables": {
+            "X": 0
+          }
+        },
+        "position_from_bottom": 1,
+        "resolves_next": true,
+        "source": {
+          "card": "c7",
+          "zone_revision": 2
+        },
+        "source_last_known": null,
+        "source_revision": 1,
+        "source_text": "Counter target spell.",
+        "targets": {
+          "target": {
+            "target_0": [
+              {
+                "object": {
+                  "card": "c5",
+                  "zone_revision": 2
+                },
+                "value": 1
+              }
+            ]
+          }
+        }
+      }
+    ],
+    "phase": "END_STEP",
+    "players": [
+      {
+        "hand_size": 1,
+        "has_lost": false,
+        "id": 0,
+        "land_plays_per_turn": 1,
+        "lands_played_this_turn": 0,
+        "library_size": 2,
+        "life": 20,
+        "mana": {},
+        "maximum_hand_size": 7,
+        "name": "Player 1",
+        "poison_counters": 0
+      },
+      {
+        "hand_size": 0,
+        "has_lost": false,
+        "id": 1,
+        "land_plays_per_turn": 1,
+        "lands_played_this_turn": 0,
+        "library_size": 3,
+        "life": 2,
+        "mana": {},
+        "maximum_hand_size": 7,
+        "name": "Player 2",
+        "poison_counters": 0
+      }
+    ],
+    "priority": 0,
+    "replacement_effects": [],
+    "schema_version": 2,
+    "self": 0,
+    "stack": [
+      {
+        "abilities": [
+          {
+            "allowed_zones": [
+              "HAND"
+            ],
+            "costs": [
+              {
+                "action_node": {
+                  "effect_map": {
+                    "Shock:put_on_stack": []
+                  },
+                  "kind": "EffectActionNode"
+                },
+                "effects": [
+                  {
+                    "description_unavailable": false,
+                    "features": {
+                      "destination": "STACK",
+                      "kind": "move_source"
+                    },
+                    "key": "Shock:put_on_stack",
+                    "kind": "MoveSourceEffect",
+                    "text": "Move this card to STACK."
+                  }
+                ],
+                "kind": "SubAbilityDefinition",
+                "mana_cost": null,
+                "resolution_speed": null,
+                "slots": []
+              }
+            ],
+            "effects": [
+              {
+                "action_node": {
+                  "effect_map": {
+                    "Shock:to_graveyard": [],
+                    "shock_damage": [
+                      "target"
+                    ]
+                  },
+                  "kind": "EffectActionNode"
+                },
+                "effects": [
+                  {
+                    "description_unavailable": false,
+                    "features": {
+                      "amount": 2,
+                      "kind": "damage",
+                      "slot": "target"
+                    },
+                    "key": "shock_damage",
+                    "kind": "DamageTargetEffect",
+                    "text": "Deal 2 damage to the selected target."
+                  },
+                  {
+                    "description_unavailable": false,
+                    "features": {
+                      "destination": "GRAVEYARD",
+                      "kind": "move_source"
+                    },
+                    "key": "Shock:to_graveyard",
+                    "kind": "MoveSourceEffect",
+                    "text": "Move this card to GRAVEYARD."
+                  }
+                ],
+                "kind": "SubAbilityDefinition",
+                "mana_cost": null,
+                "resolution_speed": null,
+                "slots": [
+                  {
+                    "distinct_from": [],
+                    "key": "target",
+                    "kind": "TargetSlot",
+                    "target_resolver": {
+                      "kind": "TargetResolver",
+                      "target_selector": {
+                        "is_target_repeatable": false,
+                        "kind": "SingleTargetSelector",
+                        "max_target_count": 1,
+                        "min_target_count": 1
+                      },
+                      "target_spec": {
+                        "description_unavailable": true,
+                        "kind": "AnyTargetSpec"
+                      }
+                    }
+                  }
+                ]
+              }
+            ],
+            "key": "cast:Shock",
+            "kind": "CastSpellAbilityDefinition",
+            "loyalty_cost": null,
+            "mana_ability": false,
+            "parameters": {},
+            "sorcery_speed": false,
+            "uses_stack": true
+          }
+        ],
+        "attached_to": null,
+        "attachment_restrictions": [],
+        "attachments": [],
+        "casting_cost": "{R}",
+        "chosen_x": 0,
+        "colors": [
+          "RED"
+        ],
+        "controller": 0,
+        "cost": "{R}",
+        "counters": {},
+        "damage_by_deathtouch": false,
+        "damage_marked": 0,
+        "face_down": false,
+        "id": "c5",
+        "identity_visible": true,
+        "keywords": [],
+        "legendary": false,
+        "loyalty_activated_this_turn": false,
+        "mana_value": 1,
+        "name": "Shock",
+        "owner": 0,
+        "power": null,
+        "skip_untap": null,
+        "static_abilities": [],
+        "subtypes": [],
+        "summoning_sick": false,
+        "tapped": false,
+        "text": "Shock deals 2 damage to any target.",
+        "token": false,
+        "toughness": null,
+        "triggers": [],
+        "types": [
+          "INSTANT"
+        ],
+        "zone": "STACK",
+        "zone_revision": 2
+      },
+      {
+        "abilities": [
+          {
+            "allowed_zones": [
+              "HAND"
+            ],
+            "costs": [
+              {
+                "action_node": {
+                  "effect_map": {
+                    "Counterspell:put_on_stack": []
+                  },
+                  "kind": "EffectActionNode"
+                },
+                "effects": [
+                  {
+                    "description_unavailable": false,
+                    "features": {
+                      "destination": "STACK",
+                      "kind": "move_source"
+                    },
+                    "key": "Counterspell:put_on_stack",
+                    "kind": "MoveSourceEffect",
+                    "text": "Move this card to STACK."
+                  }
+                ],
+                "kind": "SubAbilityDefinition",
+                "mana_cost": null,
+                "resolution_speed": null,
+                "slots": []
+              }
+            ],
+            "effects": [
+              {
+                "action_node": {
+                  "effect_map": {
+                    "Counterspell:to_graveyard": [],
+                    "counterspell": [
+                      "target"
+                    ]
+                  },
+                  "kind": "EffectActionNode"
+                },
+                "effects": [
+                  {
+                    "description_unavailable": false,
+                    "features": {
+                      "destination": "GRAVEYARD",
+                      "kind": "move_source"
+                    },
+                    "key": "Counterspell:to_graveyard",
+                    "kind": "MoveSourceEffect",
+                    "text": "Move this card to GRAVEYARD."
+                  },
+                  {
+                    "description_unavailable": false,
+                    "features": {
+                      "kind": "counter",
+                      "slot": "target"
+                    },
+                    "key": "counterspell",
+                    "kind": "CounterSpellEffect",
+                    "text": "Counter target spell."
+                  }
+                ],
+                "kind": "SubAbilityDefinition",
+                "mana_cost": null,
+                "resolution_speed": null,
+                "slots": [
+                  {
+                    "distinct_from": [],
+                    "key": "target",
+                    "kind": "TargetSlot",
+                    "target_resolver": {
+                      "kind": "TargetResolver",
+                      "target_selector": {
+                        "is_target_repeatable": false,
+                        "kind": "SingleTargetSelector",
+                        "max_target_count": 1,
+                        "min_target_count": 1
+                      },
+                      "target_spec": {
+                        "description_unavailable": true,
+                        "kind": "SpellTargetSpec"
+                      }
+                    }
+                  }
+                ]
+              }
+            ],
+            "key": "cast:Counterspell",
+            "kind": "CastSpellAbilityDefinition",
+            "loyalty_cost": null,
+            "mana_ability": false,
+            "parameters": {},
+            "sorcery_speed": false,
+            "uses_stack": true
+          }
+        ],
+        "attached_to": null,
+        "attachment_restrictions": [],
+        "attachments": [],
+        "casting_cost": "{U}{U}",
+        "chosen_x": 0,
+        "colors": [
+          "BLUE"
+        ],
+        "controller": 1,
+        "cost": "{U}{U}",
+        "counters": {},
+        "damage_by_deathtouch": false,
+        "damage_marked": 0,
+        "face_down": false,
+        "id": "c7",
+        "identity_visible": true,
+        "keywords": [],
+        "legendary": false,
+        "loyalty_activated_this_turn": false,
+        "mana_value": 2,
+        "name": "Counterspell",
+        "owner": 1,
+        "power": null,
+        "skip_untap": null,
+        "static_abilities": [],
+        "subtypes": [],
+        "summoning_sick": false,
+        "tapped": false,
+        "text": "Counter target spell.",
+        "token": false,
+        "toughness": null,
+        "triggers": [],
+        "types": [
+          "INSTANT"
+        ],
+        "zone": "STACK",
+        "zone_revision": 2
+      }
+    ],
+    "turn": 5
+  },
+  "trace": [
+    {
+      "player": 0,
+      "request": "PriorityDecisionRequest",
+      "action": {
+        "ability_key": "cast:Shock",
+        "action_key": "cast:Shock",
+        "controller": {
+          "player": 0
+        },
+        "cost": {
+          "effects": [
+            {
+              "features": {
+                "destination": "STACK",
+                "kind": "move_source"
+              },
+              "rule": [
+                "game.game_actions.card_effects",
+                "MoveSourceEffect",
+                "Shock:put_on_stack"
+              ],
+              "slots": []
+            }
+          ],
+          "mana": {
+            "life_payment": 0,
+            "mana_plan": [
+              {
+                "ability_key": "mana_red",
+                "action_key": "mana_red",
+                "controller": {
+                  "player": 0
+                },
+                "cost": {
+                  "effects": [
+                    {
+                      "features": {
+                        "kind": "tap_source"
+                      },
+                      "rule": [
+                        "game.game_actions.card_effects",
+                        "TapSourceEffect",
+                        "tap_for_mana"
+                      ],
+                      "slots": []
+                    }
+                  ],
+                  "mana": {
+                    "life_payment": 0,
+                    "mana_plan": [],
+                    "payment": null
+                  },
+                  "parameters": {
+                    "x_variables": {
+                      "mapping": [
+                        [
+                          [
+                            "game.enums",
+                            "SAVariableType",
+                            "X"
+                          ],
+                          0
+                        ]
+                      ]
+                    }
+                  },
+                  "targets": {
+                    "mapping": []
+                  }
+                },
+                "effect": {
+                  "effects": [
+                    {
+                      "features": {
+                        "kind": "unknown"
+                      },
+                      "rule": [
+                        "game.game_actions.mana_effects",
+                        "AddManaEffect",
+                        "add_red"
+                      ],
+                      "slots": []
+                    }
+                  ],
+                  "mana": null,
+                  "parameters": {
+                    "x_variables": {
+                      "mapping": [
+                        [
+                          [
+                            "game.enums",
+                            "SAVariableType",
+                            "X"
+                          ],
+                          0
+                        ]
+                      ]
+                    }
+                  },
+                  "targets": {
+                    "mapping": []
+                  }
+                },
+                "kind": "ManaAbilityAction",
+                "source": {
+                  "card": "c1",
+                  "name": "Mountain",
+                  "zone_revision": 1
+                },
+                "source_revision": 1,
+                "uses_stack": false
+              }
+            ],
+            "payment": {
+              "mapping": [
+                [
+                  [
+                    "game.enums",
+                    "ManaType",
+                    "RED"
+                  ],
+                  1
+                ]
+              ]
+            }
+          },
+          "parameters": {
+            "x_variables": {
+              "mapping": [
+                [
+                  [
+                    "game.enums",
+                    "SAVariableType",
+                    "X"
+                  ],
+                  0
+                ]
+              ]
+            }
+          },
+          "targets": {
+            "mapping": []
+          }
+        },
+        "effect": {
+          "effects": [
+            {
+              "features": {
+                "amount": 2,
+                "kind": "damage",
+                "slot": "target"
+              },
+              "rule": [
+                "game.cards.starter_cards",
+                "DamageTargetEffect",
+                "shock_damage"
+              ],
+              "slots": [
+                [
+                  "target",
+                  "target_0"
+                ]
+              ]
+            },
+            {
+              "features": {
+                "destination": "GRAVEYARD",
+                "kind": "move_source"
+              },
+              "rule": [
+                "game.game_actions.card_effects",
+                "MoveSourceEffect",
+                "Shock:to_graveyard"
+              ],
+              "slots": []
+            }
+          ],
+          "mana": null,
+          "parameters": {
+            "x_variables": {
+              "mapping": [
+                [
+                  [
+                    "game.enums",
+                    "SAVariableType",
+                    "X"
+                  ],
+                  0
+                ]
+              ]
+            }
+          },
+          "targets": {
+            "mapping": [
+              [
+                "target",
+                {
+                  "mapping": [
+                    [
+                      "target_0",
+                      {
+                        "mapping": [
+                          [
+                            {
+                              "player": 1
+                            },
+                            1
+                          ]
+                        ]
+                      }
+                    ]
+                  ]
+                }
+              ]
+            ]
+          }
+        },
+        "kind": "AbilityAction",
+        "source": {
+          "card": "c5",
+          "name": "Shock",
+          "zone_revision": 1
+        },
+        "source_revision": 1,
+        "uses_stack": true
+      },
+      "reason": "no_world_provider_match",
+      "used_search": false,
+      "used_fallback": true,
+      "options": 5,
+      "information_key": "d6f31cac51c9872079846c82fb2aa8705e13fd8eef98317a4c32e20af89d5d5b",
+      "search": null
+    },
+    {
+      "player": 0,
+      "request": "PriorityDecisionRequest",
+      "action": {
+        "kind": "PassPriorityAction",
+        "player": {
+          "player": 0
+        }
+      },
+      "reason": "no_world_provider_match",
+      "used_search": false,
+      "used_fallback": true,
+      "options": 3,
+      "information_key": "a69a76de0fdcc3442ef5579c99631d0ee7964c097c7a7a348dd6f6b827dfcc27",
+      "search": null
+    },
+    {
+      "player": 1,
+      "request": "PriorityDecisionRequest",
+      "action": {
+        "ability_key": "cast:Counterspell",
+        "action_key": "cast:Counterspell",
+        "controller": {
+          "player": 1
+        },
+        "cost": {
+          "effects": [
+            {
+              "features": {
+                "destination": "STACK",
+                "kind": "move_source"
+              },
+              "rule": [
+                "game.game_actions.card_effects",
+                "MoveSourceEffect",
+                "Counterspell:put_on_stack"
+              ],
+              "slots": []
+            }
+          ],
+          "mana": {
+            "life_payment": 0,
+            "mana_plan": [
+              {
+                "ability_key": "mana_blue",
+                "action_key": "mana_blue",
+                "controller": {
+                  "player": 1
+                },
+                "cost": {
+                  "effects": [
+                    {
+                      "features": {
+                        "kind": "tap_source"
+                      },
+                      "rule": [
+                        "game.game_actions.card_effects",
+                        "TapSourceEffect",
+                        "tap_for_mana"
+                      ],
+                      "slots": []
+                    }
+                  ],
+                  "mana": {
+                    "life_payment": 0,
+                    "mana_plan": [],
+                    "payment": null
+                  },
+                  "parameters": {
+                    "x_variables": {
+                      "mapping": [
+                        [
+                          [
+                            "game.enums",
+                            "SAVariableType",
+                            "X"
+                          ],
+                          0
+                        ]
+                      ]
+                    }
+                  },
+                  "targets": {
+                    "mapping": []
+                  }
+                },
+                "effect": {
+                  "effects": [
+                    {
+                      "features": {
+                        "kind": "unknown"
+                      },
+                      "rule": [
+                        "game.game_actions.mana_effects",
+                        "AddManaEffect",
+                        "add_blue"
+                      ],
+                      "slots": []
+                    }
+                  ],
+                  "mana": null,
+                  "parameters": {
+                    "x_variables": {
+                      "mapping": [
+                        [
+                          [
+                            "game.enums",
+                            "SAVariableType",
+                            "X"
+                          ],
+                          0
+                        ]
+                      ]
+                    }
+                  },
+                  "targets": {
+                    "mapping": []
+                  }
+                },
+                "kind": "ManaAbilityAction",
+                "source": {
+                  "card": "c2",
+                  "name": "Island",
+                  "zone_revision": 1
+                },
+                "source_revision": 1,
+                "uses_stack": false
+              },
+              {
+                "ability_key": "mana_blue",
+                "action_key": "mana_blue",
+                "controller": {
+                  "player": 1
+                },
+                "cost": {
+                  "effects": [
+                    {
+                      "features": {
+                        "kind": "tap_source"
+                      },
+                      "rule": [
+                        "game.game_actions.card_effects",
+                        "TapSourceEffect",
+                        "tap_for_mana"
+                      ],
+                      "slots": []
+                    }
+                  ],
+                  "mana": {
+                    "life_payment": 0,
+                    "mana_plan": [],
+                    "payment": null
+                  },
+                  "parameters": {
+                    "x_variables": {
+                      "mapping": [
+                        [
+                          [
+                            "game.enums",
+                            "SAVariableType",
+                            "X"
+                          ],
+                          0
+                        ]
+                      ]
+                    }
+                  },
+                  "targets": {
+                    "mapping": []
+                  }
+                },
+                "effect": {
+                  "effects": [
+                    {
+                      "features": {
+                        "kind": "unknown"
+                      },
+                      "rule": [
+                        "game.game_actions.mana_effects",
+                        "AddManaEffect",
+                        "add_blue"
+                      ],
+                      "slots": []
+                    }
+                  ],
+                  "mana": null,
+                  "parameters": {
+                    "x_variables": {
+                      "mapping": [
+                        [
+                          [
+                            "game.enums",
+                            "SAVariableType",
+                            "X"
+                          ],
+                          0
+                        ]
+                      ]
+                    }
+                  },
+                  "targets": {
+                    "mapping": []
+                  }
+                },
+                "kind": "ManaAbilityAction",
+                "source": {
+                  "card": "c3",
+                  "name": "Island",
+                  "zone_revision": 1
+                },
+                "source_revision": 1,
+                "uses_stack": false
+              }
+            ],
+            "payment": {
+              "mapping": [
+                [
+                  [
+                    "game.enums",
+                    "ManaType",
+                    "BLUE"
+                  ],
+                  2
+                ]
+              ]
+            }
+          },
+          "parameters": {
+            "x_variables": {
+              "mapping": [
+                [
+                  [
+                    "game.enums",
+                    "SAVariableType",
+                    "X"
+                  ],
+                  0
+                ]
+              ]
+            }
+          },
+          "targets": {
+            "mapping": []
+          }
+        },
+        "effect": {
+          "effects": [
+            {
+              "features": {
+                "kind": "counter",
+                "slot": "target"
+              },
+              "rule": [
+                "game.game_actions.control_effects",
+                "CounterSpellEffect",
+                "counterspell"
+              ],
+              "slots": [
+                [
+                  "target",
+                  "target_0"
+                ]
+              ]
+            },
+            {
+              "features": {
+                "destination": "GRAVEYARD",
+                "kind": "move_source"
+              },
+              "rule": [
+                "game.game_actions.card_effects",
+                "MoveSourceEffect",
+                "Counterspell:to_graveyard"
+              ],
+              "slots": []
+            }
+          ],
+          "mana": null,
+          "parameters": {
+            "x_variables": {
+              "mapping": [
+                [
+                  [
+                    "game.enums",
+                    "SAVariableType",
+                    "X"
+                  ],
+                  0
+                ]
+              ]
+            }
+          },
+          "targets": {
+            "mapping": [
+              [
+                "target",
+                {
+                  "mapping": [
+                    [
+                      "target_0",
+                      {
+                        "mapping": [
+                          [
+                            {
+                              "card": "c5",
+                              "name": "Shock",
+                              "zone_revision": 2
+                            },
+                            1
+                          ]
+                        ]
+                      }
+                    ]
+                  ]
+                }
+              ]
+            ]
+          }
+        },
+        "kind": "AbilityAction",
+        "source": {
+          "card": "c7",
+          "name": "Counterspell",
+          "zone_revision": 1
+        },
+        "source_revision": 1,
+        "uses_stack": true
+      },
+      "reason": "no_world_provider_match",
+      "used_search": false,
+      "used_fallback": true,
+      "options": 2,
+      "information_key": "fb7e3ad73d9c431b0f7acafdde3ea22616ff17d04b64b079f334116bdecfcf73",
+      "search": null
+    },
+    {
+      "player": 1,
+      "request": "PriorityDecisionRequest",
+      "action": {
+        "kind": "PassPriorityAction",
+        "player": {
+          "player": 1
+        }
+      },
+      "reason": "forced_choice",
+      "used_search": false,
+      "used_fallback": false,
+      "options": 1,
+      "information_key": "a6b1dc266cef6d9c3200db7d8f9a881d8a530e22712f8edd06915a5250b1ac06",
+      "search": null
+    },
+    {
+      "player": 0,
+      "request": "PriorityDecisionRequest",
+      "action": {
+        "ability_key": "cast:Shock",
+        "action_key": "cast:Shock",
+        "controller": {
+          "player": 0
+        },
+        "cost": {
+          "effects": [
+            {
+              "features": {
+                "destination": "STACK",
+                "kind": "move_source"
+              },
+              "rule": [
+                "game.game_actions.card_effects",
+                "MoveSourceEffect",
+                "Shock:put_on_stack"
+              ],
+              "slots": []
+            }
+          ],
+          "mana": {
+            "life_payment": 0,
+            "mana_plan": [
+              {
+                "ability_key": "mana_red",
+                "action_key": "mana_red",
+                "controller": {
+                  "player": 0
+                },
+                "cost": {
+                  "effects": [
+                    {
+                      "features": {
+                        "kind": "tap_source"
+                      },
+                      "rule": [
+                        "game.game_actions.card_effects",
+                        "TapSourceEffect",
+                        "tap_for_mana"
+                      ],
+                      "slots": []
+                    }
+                  ],
+                  "mana": {
+                    "life_payment": 0,
+                    "mana_plan": [],
+                    "payment": null
+                  },
+                  "parameters": {
+                    "x_variables": {
+                      "mapping": [
+                        [
+                          [
+                            "game.enums",
+                            "SAVariableType",
+                            "X"
+                          ],
+                          0
+                        ]
+                      ]
+                    }
+                  },
+                  "targets": {
+                    "mapping": []
+                  }
+                },
+                "effect": {
+                  "effects": [
+                    {
+                      "features": {
+                        "kind": "unknown"
+                      },
+                      "rule": [
+                        "game.game_actions.mana_effects",
+                        "AddManaEffect",
+                        "add_red"
+                      ],
+                      "slots": []
+                    }
+                  ],
+                  "mana": null,
+                  "parameters": {
+                    "x_variables": {
+                      "mapping": [
+                        [
+                          [
+                            "game.enums",
+                            "SAVariableType",
+                            "X"
+                          ],
+                          0
+                        ]
+                      ]
+                    }
+                  },
+                  "targets": {
+                    "mapping": []
+                  }
+                },
+                "kind": "ManaAbilityAction",
+                "source": {
+                  "card": "c4",
+                  "name": "Mountain",
+                  "zone_revision": 1
+                },
+                "source_revision": 1,
+                "uses_stack": false
+              }
+            ],
+            "payment": {
+              "mapping": [
+                [
+                  [
+                    "game.enums",
+                    "ManaType",
+                    "RED"
+                  ],
+                  1
+                ]
+              ]
+            }
+          },
+          "parameters": {
+            "x_variables": {
+              "mapping": [
+                [
+                  [
+                    "game.enums",
+                    "SAVariableType",
+                    "X"
+                  ],
+                  0
+                ]
+              ]
+            }
+          },
+          "targets": {
+            "mapping": []
+          }
+        },
+        "effect": {
+          "effects": [
+            {
+              "features": {
+                "amount": 2,
+                "kind": "damage",
+                "slot": "target"
+              },
+              "rule": [
+                "game.cards.starter_cards",
+                "DamageTargetEffect",
+                "shock_damage"
+              ],
+              "slots": [
+                [
+                  "target",
+                  "target_0"
+                ]
+              ]
+            },
+            {
+              "features": {
+                "destination": "GRAVEYARD",
+                "kind": "move_source"
+              },
+              "rule": [
+                "game.game_actions.card_effects",
+                "MoveSourceEffect",
+                "Shock:to_graveyard"
+              ],
+              "slots": []
+            }
+          ],
+          "mana": null,
+          "parameters": {
+            "x_variables": {
+              "mapping": [
+                [
+                  [
+                    "game.enums",
+                    "SAVariableType",
+                    "X"
+                  ],
+                  0
+                ]
+              ]
+            }
+          },
+          "targets": {
+            "mapping": [
+              [
+                "target",
+                {
+                  "mapping": [
+                    [
+                      "target_0",
+                      {
+                        "mapping": [
+                          [
+                            {
+                              "player": 1
+                            },
+                            1
+                          ]
+                        ]
+                      }
+                    ]
+                  ]
+                }
+              ]
+            ]
+          }
+        },
+        "kind": "AbilityAction",
+        "source": {
+          "card": "c6",
+          "name": "Shock",
+          "zone_revision": 1
+        },
+        "source_revision": 1,
+        "uses_stack": true
+      },
+      "reason": "searched",
+      "used_search": true,
+      "used_fallback": false,
+      "options": 3,
+      "information_key": "cbb50ea24441c5b851171f44cd12e0f856404a37d81512d9949eaf9d8160ac41",
+      "search": {
+        "choice": {
+          "kind": "AbilityAction",
+          "_json": "{\"ability_key\":\"cast:Shock\",\"action_key\":\"cast:Shock\",\"controller\":{\"player\":0},\"cost\":{\"effects\":[{\"features\":{\"destination\":\"STACK\",\"kind\":\"move_source\"},\"rule\":[\"game.game_actions.card_effects\",\"MoveSourceEffect\",\"Shock:put_on_stack\"],\"slots\":[]}],\"mana\":{\"life_payment\":0,\"mana_plan\":[{\"ability_key\":\"mana_red\",\"action_key\":\"mana_red\",\"controller\":{\"player\":0},\"cost\":{\"effects\":[{\"features\":{\"kind\":\"tap_source\"},\"rule\":[\"game.game_actions.card_effects\",\"TapSourceEffect\",\"tap_for_mana\"],\"slots\":[]}],\"mana\":{\"life_payment\":0,\"mana_plan\":[],\"payment\":null},\"parameters\":{\"x_variables\":{\"mapping\":[[[\"game.enums\",\"SAVariableType\",\"X\"],0]]}},\"targets\":{\"mapping\":[]}},\"effect\":{\"effects\":[{\"features\":{\"kind\":\"unknown\"},\"rule\":[\"game.game_actions.mana_effects\",\"AddManaEffect\",\"add_red\"],\"slots\":[]}],\"mana\":null,\"parameters\":{\"x_variables\":{\"mapping\":[[[\"game.enums\",\"SAVariableType\",\"X\"],0]]}},\"targets\":{\"mapping\":[]}},\"kind\":\"ManaAbilityAction\",\"source\":{\"card\":\"c4\",\"name\":\"Mountain\",\"zone_revision\":1},\"source_revision\":1,\"uses_stack\":false}],\"payment\":{\"mapping\":[[[\"game.enums\",\"ManaType\",\"RED\"],1]]}},\"parameters\":{\"x_variables\":{\"mapping\":[[[\"game.enums\",\"SAVariableType\",\"X\"],0]]}},\"targets\":{\"mapping\":[]}},\"effect\":{\"effects\":[{\"features\":{\"amount\":2,\"kind\":\"damage\",\"slot\":\"target\"},\"rule\":[\"game.cards.starter_cards\",\"DamageTargetEffect\",\"shock_damage\"],\"slots\":[[\"target\",\"target_0\"]]},{\"features\":{\"destination\":\"GRAVEYARD\",\"kind\":\"move_source\"},\"rule\":[\"game.game_actions.card_effects\",\"MoveSourceEffect\",\"Shock:to_graveyard\"],\"slots\":[]}],\"mana\":null,\"parameters\":{\"x_variables\":{\"mapping\":[[[\"game.enums\",\"SAVariableType\",\"X\"],0]]}},\"targets\":{\"mapping\":[[\"target\",{\"mapping\":[[\"target_0\",{\"mapping\":[[{\"player\":1},1]]}]]}]]}},\"kind\":\"AbilityAction\",\"source\":{\"card\":\"c6\",\"name\":\"Shock\",\"zone_revision\":1},\"source_revision\":1,\"uses_stack\":true}"
+        },
+        "value": 1.0,
+        "used_fallback": false,
+        "root_coverage_complete": true,
+        "stop_reason": "iteration_budget",
+        "estimates": [
+          {
+            "action": {
+              "kind": "AbilityAction",
+              "_json": "{\"ability_key\":\"cast:Shock\",\"action_key\":\"cast:Shock\",\"controller\":{\"player\":0},\"cost\":{\"effects\":[{\"features\":{\"destination\":\"STACK\",\"kind\":\"move_source\"},\"rule\":[\"game.game_actions.card_effects\",\"MoveSourceEffect\",\"Shock:put_on_stack\"],\"slots\":[]}],\"mana\":{\"life_payment\":0,\"mana_plan\":[{\"ability_key\":\"mana_red\",\"action_key\":\"mana_red\",\"controller\":{\"player\":0},\"cost\":{\"effects\":[{\"features\":{\"kind\":\"tap_source\"},\"rule\":[\"game.game_actions.card_effects\",\"TapSourceEffect\",\"tap_for_mana\"],\"slots\":[]}],\"mana\":{\"life_payment\":0,\"mana_plan\":[],\"payment\":null},\"parameters\":{\"x_variables\":{\"mapping\":[[[\"game.enums\",\"SAVariableType\",\"X\"],0]]}},\"targets\":{\"mapping\":[]}},\"effect\":{\"effects\":[{\"features\":{\"kind\":\"unknown\"},\"rule\":[\"game.game_actions.mana_effects\",\"AddManaEffect\",\"add_red\"],\"slots\":[]}],\"mana\":null,\"parameters\":{\"x_variables\":{\"mapping\":[[[\"game.enums\",\"SAVariableType\",\"X\"],0]]}},\"targets\":{\"mapping\":[]}},\"kind\":\"ManaAbilityAction\",\"source\":{\"card\":\"c4\",\"name\":\"Mountain\",\"zone_revision\":1},\"source_revision\":1,\"uses_stack\":false}],\"payment\":{\"mapping\":[[[\"game.enums\",\"ManaType\",\"RED\"],1]]}},\"parameters\":{\"x_variables\":{\"mapping\":[[[\"game.enums\",\"SAVariableType\",\"X\"],0]]}},\"targets\":{\"mapping\":[]}},\"effect\":{\"effects\":[{\"features\":{\"amount\":2,\"kind\":\"damage\",\"slot\":\"target\"},\"rule\":[\"game.cards.starter_cards\",\"DamageTargetEffect\",\"shock_damage\"],\"slots\":[[\"target\",\"target_0\"]]},{\"features\":{\"destination\":\"GRAVEYARD\",\"kind\":\"move_source\"},\"rule\":[\"game.game_actions.card_effects\",\"MoveSourceEffect\",\"Shock:to_graveyard\"],\"slots\":[]}],\"mana\":null,\"parameters\":{\"x_variables\":{\"mapping\":[[[\"game.enums\",\"SAVariableType\",\"X\"],0]]}},\"targets\":{\"mapping\":[[\"target\",{\"mapping\":[[\"target_0\",{\"mapping\":[[{\"player\":0},1]]}]]}]]}},\"kind\":\"AbilityAction\",\"source\":{\"card\":\"c6\",\"name\":\"Shock\",\"zone_revision\":1},\"source_revision\":1,\"uses_stack\":true}"
+            },
+            "visits": 2,
+            "mean_value": 0.10626395613790246
+          },
+          {
+            "action": {
+              "kind": "AbilityAction",
+              "_json": "{\"ability_key\":\"cast:Shock\",\"action_key\":\"cast:Shock\",\"controller\":{\"player\":0},\"cost\":{\"effects\":[{\"features\":{\"destination\":\"STACK\",\"kind\":\"move_source\"},\"rule\":[\"game.game_actions.card_effects\",\"MoveSourceEffect\",\"Shock:put_on_stack\"],\"slots\":[]}],\"mana\":{\"life_payment\":0,\"mana_plan\":[{\"ability_key\":\"mana_red\",\"action_key\":\"mana_red\",\"controller\":{\"player\":0},\"cost\":{\"effects\":[{\"features\":{\"kind\":\"tap_source\"},\"rule\":[\"game.game_actions.card_effects\",\"TapSourceEffect\",\"tap_for_mana\"],\"slots\":[]}],\"mana\":{\"life_payment\":0,\"mana_plan\":[],\"payment\":null},\"parameters\":{\"x_variables\":{\"mapping\":[[[\"game.enums\",\"SAVariableType\",\"X\"],0]]}},\"targets\":{\"mapping\":[]}},\"effect\":{\"effects\":[{\"features\":{\"kind\":\"unknown\"},\"rule\":[\"game.game_actions.mana_effects\",\"AddManaEffect\",\"add_red\"],\"slots\":[]}],\"mana\":null,\"parameters\":{\"x_variables\":{\"mapping\":[[[\"game.enums\",\"SAVariableType\",\"X\"],0]]}},\"targets\":{\"mapping\":[]}},\"kind\":\"ManaAbilityAction\",\"source\":{\"card\":\"c4\",\"name\":\"Mountain\",\"zone_revision\":1},\"source_revision\":1,\"uses_stack\":false}],\"payment\":{\"mapping\":[[[\"game.enums\",\"ManaType\",\"RED\"],1]]}},\"parameters\":{\"x_variables\":{\"mapping\":[[[\"game.enums\",\"SAVariableType\",\"X\"],0]]}},\"targets\":{\"mapping\":[]}},\"effect\":{\"effects\":[{\"features\":{\"amount\":2,\"kind\":\"damage\",\"slot\":\"target\"},\"rule\":[\"game.cards.starter_cards\",\"DamageTargetEffect\",\"shock_damage\"],\"slots\":[[\"target\",\"target_0\"]]},{\"features\":{\"destination\":\"GRAVEYARD\",\"kind\":\"move_source\"},\"rule\":[\"game.game_actions.card_effects\",\"MoveSourceEffect\",\"Shock:to_graveyard\"],\"slots\":[]}],\"mana\":null,\"parameters\":{\"x_variables\":{\"mapping\":[[[\"game.enums\",\"SAVariableType\",\"X\"],0]]}},\"targets\":{\"mapping\":[[\"target\",{\"mapping\":[[\"target_0\",{\"mapping\":[[{\"player\":1},1]]}]]}]]}},\"kind\":\"AbilityAction\",\"source\":{\"card\":\"c6\",\"name\":\"Shock\",\"zone_revision\":1},\"source_revision\":1,\"uses_stack\":true}"
+            },
+            "visits": 7,
+            "mean_value": 1.0
+          },
+          {
+            "action": {
+              "kind": "PassPriorityAction",
+              "_json": "{\"kind\":\"PassPriorityAction\",\"player\":{\"player\":0}}"
+            },
+            "visits": 3,
+            "mean_value": 0.42596066642262403
+          }
+        ],
+        "metrics": {
+          "worlds_built": 2,
+          "iterations_started": 12,
+          "iterations_completed": 12,
+          "advance_attempts": 41,
+          "terminal_leaves": 8,
+          "heuristic_leaves": 4,
+          "interrupted_trajectories": 0,
+          "interruption_reasons": [],
+          "information_nodes": 4,
+          "elapsed_ms": 6991.846299963072,
+          "rollout_policy_choices": 0,
+          "rollout_random_choices": 7,
+          "history_sampling_attempts": 12,
+          "history_rejected_samples": 10,
+          "history_prefix_advances": 38
+        }
+      }
+    },
+    {
+      "player": 0,
+      "request": "PriorityDecisionRequest",
+      "action": {
+        "kind": "PassPriorityAction",
+        "player": {
+          "player": 0
+        }
+      },
+      "reason": "forced_choice",
+      "used_search": false,
+      "used_fallback": false,
+      "options": 1,
+      "information_key": "9f6a2ca1bc409e507ef7f66d9cadb4307cd8ef677c42221d23129c859d454ad9",
+      "search": null
+    },
+    {
+      "player": 1,
+      "request": "PriorityDecisionRequest",
+      "action": {
+        "kind": "PassPriorityAction",
+        "player": {
+          "player": 1
+        }
+      },
+      "reason": "forced_choice",
+      "used_search": false,
+      "used_fallback": false,
+      "options": 1,
+      "information_key": "77e8a5c2ec939b2dc5a3e658cc92f34abf3968e5012db38ce45761720d5baa5a",
+      "search": null
+    }
+  ]
+}

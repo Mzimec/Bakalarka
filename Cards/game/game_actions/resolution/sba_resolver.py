@@ -213,47 +213,7 @@ class PlayerLossRule(StateBasedAction):
         @param state Current game state.
         @return Violations marking each newly losing player.
         """
-        from ..data_structs.operation import Operation
-        from ..data_structs.game_action import ResolutionContext
-        from .event_bus import GameEvent
-
-        class LosePlayerOperation(Operation):
-            """!
-            @brief Operation that records a player's game loss.
-            """
-
-            def __init__(self, player: object, reason: str) -> None:
-                """!
-                @brief Create an operation that marks a player as lost.
-                @param player Player losing the game.
-                @param reason Loss reason.
-                """
-                super().__init__(
-                    ResolutionContext(controller=player)
-                )
-                self.player = player
-                self.reason = reason
-
-            def execute(self, state: State) -> list[GameEvent]:
-                """!
-                @brief Mark the player as lost and emit the corresponding event.
-                @param state Current game state.
-                @return A single `player_lost` event.
-                """
-                self.player.has_lost = True
-                self.player.loss_reason = self.reason
-
-                if hasattr(state, "player_register"):
-                    state.player_register.mark_changed(self.player)
-
-                return [
-                    GameEvent(
-                        "player_lost",
-                        None,
-                        self.player,
-                        {"reason": self.reason},
-                    )
-                ]
+        from ...operations.player_operations import LosePlayerOperation
 
         violations = []
 

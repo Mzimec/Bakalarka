@@ -46,21 +46,14 @@ class CombatEvaluator:
         """!
         @brief defenders helper.
         """
-        from helper.query_system.query import EqQuery
-        from game.game_state.registers.card_register import IK_ZONE, IK_TYPE, IK_CONTROLLER, IK_TAPPED
-
-        return state.query_cards(
-            EqQuery(IK_ZONE, ZoneType.BATTLEFIELD) & EqQuery(IK_TYPE, CardType.CREATURE)
-            & EqQuery(IK_CONTROLLER, opponent) & EqQuery(IK_TAPPED, False)
-        )
+        return state.combat.potential_blockers(opponent)
 
     def safe_attacker(self, state: State, attacker: Card, defenders: Iterable[Card]) -> bool:
         """!
         @brief safe_attacker helper.
         """
         return not any(
-            (not attacker.has_keyword(state, "flying")
-             or b.has_keyword(state, "flying") or b.has_keyword(state, "reach"))
+            state.combat.blocker_error(b, attacker, b.get_controller(state), check_assignment=False) is None
             and (b.get_power(state) or 0) >= (attacker.get_toughness(state) or 0)
             for b in defenders
         )

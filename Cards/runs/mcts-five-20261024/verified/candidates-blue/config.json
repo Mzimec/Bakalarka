@@ -1,0 +1,55 @@
+{
+  "seed": 43,
+  "starting_player": 0,
+  "max_turns": 80,
+  "max_decisions": 3000,
+  "players": [
+    {
+      "name": "Search",
+      "deck": "blue",
+      "agent": {
+        "type": "mcts",
+        "mcts": {
+          "deck_knowledge": "both_lists",
+          "selection": "puct",
+          "prior": "heuristic",
+          "search_seed": 7001,
+          "worlds": 2,
+          "iterations": 256,
+          "max_depth": 4,
+          "max_extensions": 8,
+          "max_advances": 4096,
+          "max_options": 4096,
+          "max_simulator_decisions": 2048,
+          "max_phases": 512,
+          "trajectory_mode": "continuous",
+          "compress_forced": true,
+          "force_initial_coverage": false,
+          "require_root_coverage": false,
+          "max_search_ms": 500,
+          "min_trajectories": 1,
+          "simulator_views": "search",
+          "projection_cache_size": 128,
+          "forced_chain_cache": true,
+          "staged_priority": false,
+          "widening_constant": 4,
+          "widening_exponent": 0.5,
+          "tree_reuse_size": 512,
+          "structured_records": true,
+          "native_forced": true,
+          "progressive_candidates": true,
+          "candidate_initial_width": 4,
+          "candidate_beam_width": 32,
+          "staged_ability": false
+        }
+      }
+    },
+    {
+      "name": "Simple",
+      "deck": "black",
+      "agent": {
+        "type": "simple"
+      }
+    }
+  ]
+}

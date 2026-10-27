@@ -229,7 +229,7 @@ def test_parameter_policy_proposes_only_payable_x_values():
 
 
 def test_pool_policy_does_not_activate_lands():
-    from game.ai.mana_solver import PoolManaSolver
+    from game.mana.mana_solver import PoolManaSolver
     from game.enums import ManaType
     state = board()
     add(state, "Island")

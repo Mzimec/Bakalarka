@@ -1,0 +1,485 @@
+{
+  "scope": "Live engine, fixed public recipe and fixed opponent; not general play or a strength benchmark.",
+  "seed": 42,
+  "iterations": 16,
+  "elapsed_ms": 9826.290800003335,
+  "terminal": true,
+  "opponent_lost": true,
+  "searched_decisions": 2,
+  "fallback_decisions": 0,
+  "passed": true,
+  "trace": [
+    {
+      "player": 0,
+      "request": "PriorityDecisionRequest",
+      "action": {
+        "ability_key": "cast:Shock",
+        "action_key": "cast:Shock",
+        "controller": {
+          "player": 0
+        },
+        "cost": {
+          "effects": [
+            {
+              "features": {
+                "destination": "STACK",
+                "kind": "move_source"
+              },
+              "rule": [
+                "game.game_actions.card_effects",
+                "MoveSourceEffect",
+                "Shock:put_on_stack"
+              ],
+              "slots": []
+            }
+          ],
+          "mana": {
+            "life_payment": 0,
+            "mana_plan": [],
+            "payment": {
+              "mapping": [
+                [
+                  [
+                    "game.enums",
+                    "ManaType",
+                    "RED"
+                  ],
+                  1
+                ]
+              ]
+            }
+          },
+          "parameters": {
+            "x_variables": {
+              "mapping": [
+                [
+                  [
+                    "game.enums",
+                    "SAVariableType",
+                    "X"
+                  ],
+                  0
+                ]
+              ]
+            }
+          },
+          "targets": {
+            "mapping": []
+          }
+        },
+        "effect": {
+          "effects": [
+            {
+              "features": {
+                "amount": 2,
+                "kind": "damage",
+                "slot": "target"
+              },
+              "rule": [
+                "game.cards.starter_cards",
+                "DamageTargetEffect",
+                "shock_damage"
+              ],
+              "slots": [
+                [
+                  "target",
+                  "target_0"
+                ]
+              ]
+            },
+            {
+              "features": {
+                "destination": "GRAVEYARD",
+                "kind": "move_source"
+              },
+              "rule": [
+                "game.game_actions.card_effects",
+                "MoveSourceEffect",
+                "Shock:to_graveyard"
+              ],
+              "slots": []
+            }
+          ],
+          "mana": null,
+          "parameters": {
+            "x_variables": {
+              "mapping": [
+                [
+                  [
+                    "game.enums",
+                    "SAVariableType",
+                    "X"
+                  ],
+                  0
+                ]
+              ]
+            }
+          },
+          "targets": {
+            "mapping": [
+              [
+                "target",
+                {
+                  "mapping": [
+                    [
+                      "target_0",
+                      {
+                        "mapping": [
+                          [
+                            {
+                              "player": 1
+                            },
+                            1
+                          ]
+                        ]
+                      }
+                    ]
+                  ]
+                }
+              ]
+            ]
+          }
+        },
+        "kind": "AbilityAction",
+        "source": {
+          "card": "c1",
+          "name": "Shock",
+          "zone_revision": 1
+        },
+        "source_revision": 1,
+        "uses_stack": true
+      },
+      "reason": "searched",
+      "used_search": true,
+      "used_fallback": false,
+      "options": 5,
+      "information_key": "3d0a2fe3a8fa8caacbd4661bb7d3b065668b30d1873f78b51c6e5e6f3dfbccdb",
+      "search": {
+        "choice": {
+          "kind": "AbilityAction",
+          "_json": "{\"ability_key\":\"cast:Shock\",\"action_key\":\"cast:Shock\",\"controller\":{\"player\":0},\"cost\":{\"effects\":[{\"features\":{\"destination\":\"STACK\",\"kind\":\"move_source\"},\"rule\":[\"game.game_actions.card_effects\",\"MoveSourceEffect\",\"Shock:put_on_stack\"],\"slots\":[]}],\"mana\":{\"life_payment\":0,\"mana_plan\":[],\"payment\":{\"mapping\":[[[\"game.enums\",\"ManaType\",\"RED\"],1]]}},\"parameters\":{\"x_variables\":{\"mapping\":[[[\"game.enums\",\"SAVariableType\",\"X\"],0]]}},\"targets\":{\"mapping\":[]}},\"effect\":{\"effects\":[{\"features\":{\"amount\":2,\"kind\":\"damage\",\"slot\":\"target\"},\"rule\":[\"game.cards.starter_cards\",\"DamageTargetEffect\",\"shock_damage\"],\"slots\":[[\"target\",\"target_0\"]]},{\"features\":{\"destination\":\"GRAVEYARD\",\"kind\":\"move_source\"},\"rule\":[\"game.game_actions.card_effects\",\"MoveSourceEffect\",\"Shock:to_graveyard\"],\"slots\":[]}],\"mana\":null,\"parameters\":{\"x_variables\":{\"mapping\":[[[\"game.enums\",\"SAVariableType\",\"X\"],0]]}},\"targets\":{\"mapping\":[[\"target\",{\"mapping\":[[\"target_0\",{\"mapping\":[[{\"player\":1},1]]}]]}]]}},\"kind\":\"AbilityAction\",\"source\":{\"card\":\"c1\",\"name\":\"Shock\",\"zone_revision\":1},\"source_revision\":1,\"uses_stack\":true}"
+        },
+        "value": 0.5694704998169681,
+        "used_fallback": false,
+        "root_coverage_complete": true,
+        "stop_reason": "iteration_budget",
+        "estimates": [
+          {
+            "action": {
+              "kind": "AbilityAction",
+              "_json": "{\"ability_key\":\"cast:Shock\",\"action_key\":\"cast:Shock\",\"controller\":{\"player\":0},\"cost\":{\"effects\":[{\"features\":{\"destination\":\"STACK\",\"kind\":\"move_source\"},\"rule\":[\"game.game_actions.card_effects\",\"MoveSourceEffect\",\"Shock:put_on_stack\"],\"slots\":[]}],\"mana\":{\"life_payment\":0,\"mana_plan\":[],\"payment\":{\"mapping\":[[[\"game.enums\",\"ManaType\",\"RED\"],1]]}},\"parameters\":{\"x_variables\":{\"mapping\":[[[\"game.enums\",\"SAVariableType\",\"X\"],0]]}},\"targets\":{\"mapping\":[]}},\"effect\":{\"effects\":[{\"features\":{\"amount\":2,\"kind\":\"damage\",\"slot\":\"target\"},\"rule\":[\"game.cards.starter_cards\",\"DamageTargetEffect\",\"shock_damage\"],\"slots\":[[\"target\",\"target_0\"]]},{\"features\":{\"destination\":\"GRAVEYARD\",\"kind\":\"move_source\"},\"rule\":[\"game.game_actions.card_effects\",\"MoveSourceEffect\",\"Shock:to_graveyard\"],\"slots\":[]}],\"mana\":null,\"parameters\":{\"x_variables\":{\"mapping\":[[[\"game.enums\",\"SAVariableType\",\"X\"],0]]}},\"targets\":{\"mapping\":[[\"target\",{\"mapping\":[[\"target_0\",{\"mapping\":[[{\"player\":0},1]]}]]}]]}},\"kind\":\"AbilityAction\",\"source\":{\"card\":\"c1\",\"name\":\"Shock\",\"zone_revision\":1},\"source_revision\":1,\"uses_stack\":true}"
+            },
+            "visits": 2,
+            "mean_value": 0.09304686262451693
+          },
+          {
+            "action": {
+              "kind": "AbilityAction",
+              "_json": "{\"ability_key\":\"cast:Shock\",\"action_key\":\"cast:Shock\",\"controller\":{\"player\":0},\"cost\":{\"effects\":[{\"features\":{\"destination\":\"STACK\",\"kind\":\"move_source\"},\"rule\":[\"game.game_actions.card_effects\",\"MoveSourceEffect\",\"Shock:put_on_stack\"],\"slots\":[]}],\"mana\":{\"life_payment\":0,\"mana_plan\":[],\"payment\":{\"mapping\":[[[\"game.enums\",\"ManaType\",\"RED\"],1]]}},\"parameters\":{\"x_variables\":{\"mapping\":[[[\"game.enums\",\"SAVariableType\",\"X\"],0]]}},\"targets\":{\"mapping\":[]}},\"effect\":{\"effects\":[{\"features\":{\"amount\":2,\"kind\":\"damage\",\"slot\":\"target\"},\"rule\":[\"game.cards.starter_cards\",\"DamageTargetEffect\",\"shock_damage\"],\"slots\":[[\"target\",\"target_0\"]]},{\"features\":{\"destination\":\"GRAVEYARD\",\"kind\":\"move_source\"},\"rule\":[\"game.game_actions.card_effects\",\"MoveSourceEffect\",\"Shock:to_graveyard\"],\"slots\":[]}],\"mana\":null,\"parameters\":{\"x_variables\":{\"mapping\":[[[\"game.enums\",\"SAVariableType\",\"X\"],0]]}},\"targets\":{\"mapping\":[[\"target\",{\"mapping\":[[\"target_0\",{\"mapping\":[[{\"player\":0},1]]}]]}]]}},\"kind\":\"AbilityAction\",\"source\":{\"card\":\"c2\",\"name\":\"Shock\",\"zone_revision\":1},\"source_revision\":1,\"uses_stack\":true}"
+            },
+            "visits": 3,
+            "mean_value": 0.11057256946302052
+          },
+          {
+            "action": {
+              "kind": "AbilityAction",
+              "_json": "{\"ability_key\":\"cast:Shock\",\"action_key\":\"cast:Shock\",\"controller\":{\"player\":0},\"cost\":{\"effects\":[{\"features\":{\"destination\":\"STACK\",\"kind\":\"move_source\"},\"rule\":[\"game.game_actions.card_effects\",\"MoveSourceEffect\",\"Shock:put_on_stack\"],\"slots\":[]}],\"mana\":{\"life_payment\":0,\"mana_plan\":[],\"payment\":{\"mapping\":[[[\"game.enums\",\"ManaType\",\"RED\"],1]]}},\"parameters\":{\"x_variables\":{\"mapping\":[[[\"game.enums\",\"SAVariableType\",\"X\"],0]]}},\"targets\":{\"mapping\":[]}},\"effect\":{\"effects\":[{\"features\":{\"amount\":2,\"kind\":\"damage\",\"slot\":\"target\"},\"rule\":[\"game.cards.starter_cards\",\"DamageTargetEffect\",\"shock_damage\"],\"slots\":[[\"target\",\"target_0\"]]},{\"features\":{\"destination\":\"GRAVEYARD\",\"kind\":\"move_source\"},\"rule\":[\"game.game_actions.card_effects\",\"MoveSourceEffect\",\"Shock:to_graveyard\"],\"slots\":[]}],\"mana\":null,\"parameters\":{\"x_variables\":{\"mapping\":[[[\"game.enums\",\"SAVariableType\",\"X\"],0]]}},\"targets\":{\"mapping\":[[\"target\",{\"mapping\":[[\"target_0\",{\"mapping\":[[{\"player\":1},1]]}]]}]]}},\"kind\":\"AbilityAction\",\"source\":{\"card\":\"c1\",\"name\":\"Shock\",\"zone_revision\":1},\"source_revision\":1,\"uses_stack\":true}"
+            },
+            "visits": 4,
+            "mean_value": 0.5694704998169681
+          },
+          {
+            "action": {
+              "kind": "AbilityAction",
+              "_json": "{\"ability_key\":\"cast:Shock\",\"action_key\":\"cast:Shock\",\"controller\":{\"player\":0},\"cost\":{\"effects\":[{\"features\":{\"destination\":\"STACK\",\"kind\":\"move_source\"},\"rule\":[\"game.game_actions.card_effects\",\"MoveSourceEffect\",\"Shock:put_on_stack\"],\"slots\":[]}],\"mana\":{\"life_payment\":0,\"mana_plan\":[],\"payment\":{\"mapping\":[[[\"game.enums\",\"ManaType\",\"RED\"],1]]}},\"parameters\":{\"x_variables\":{\"mapping\":[[[\"game.enums\",\"SAVariableType\",\"X\"],0]]}},\"targets\":{\"mapping\":[]}},\"effect\":{\"effects\":[{\"features\":{\"amount\":2,\"kind\":\"damage\",\"slot\":\"target\"},\"rule\":[\"game.cards.starter_cards\",\"DamageTargetEffect\",\"shock_damage\"],\"slots\":[[\"target\",\"target_0\"]]},{\"features\":{\"destination\":\"GRAVEYARD\",\"kind\":\"move_source\"},\"rule\":[\"game.game_actions.card_effects\",\"MoveSourceEffect\",\"Shock:to_graveyard\"],\"slots\":[]}],\"mana\":null,\"parameters\":{\"x_variables\":{\"mapping\":[[[\"game.enums\",\"SAVariableType\",\"X\"],0]]}},\"targets\":{\"mapping\":[[\"target\",{\"mapping\":[[\"target_0\",{\"mapping\":[[{\"player\":1},1]]}]]}]]}},\"kind\":\"AbilityAction\",\"source\":{\"card\":\"c2\",\"name\":\"Shock\",\"zone_revision\":1},\"source_revision\":1,\"uses_stack\":true}"
+            },
+            "visits": 4,
+            "mean_value": 0.5531319780689512
+          },
+          {
+            "action": {
+              "kind": "PassPriorityAction",
+              "_json": "{\"kind\":\"PassPriorityAction\",\"player\":{\"player\":0}}"
+            },
+            "visits": 3,
+            "mean_value": 0.1586485042974989
+          }
+        ],
+        "metrics": {
+          "worlds_built": 1,
+          "iterations_started": 16,
+          "iterations_completed": 16,
+          "advance_attempts": 96,
+          "terminal_leaves": 4,
+          "heuristic_leaves": 12,
+          "interrupted_trajectories": 0,
+          "interruption_reasons": [],
+          "information_nodes": 7,
+          "elapsed_ms": 4803.543699905276,
+          "rollout_policy_choices": 0,
+          "rollout_random_choices": 31
+        }
+      }
+    },
+    {
+      "player": 0,
+      "request": "PriorityDecisionRequest",
+      "action": {
+        "ability_key": "cast:Shock",
+        "action_key": "cast:Shock",
+        "controller": {
+          "player": 0
+        },
+        "cost": {
+          "effects": [
+            {
+              "features": {
+                "destination": "STACK",
+                "kind": "move_source"
+              },
+              "rule": [
+                "game.game_actions.card_effects",
+                "MoveSourceEffect",
+                "Shock:put_on_stack"
+              ],
+              "slots": []
+            }
+          ],
+          "mana": {
+            "life_payment": 0,
+            "mana_plan": [],
+            "payment": {
+              "mapping": [
+                [
+                  [
+                    "game.enums",
+                    "ManaType",
+                    "RED"
+                  ],
+                  1
+                ]
+              ]
+            }
+          },
+          "parameters": {
+            "x_variables": {
+              "mapping": [
+                [
+                  [
+                    "game.enums",
+                    "SAVariableType",
+                    "X"
+                  ],
+                  0
+                ]
+              ]
+            }
+          },
+          "targets": {
+            "mapping": []
+          }
+        },
+        "effect": {
+          "effects": [
+            {
+              "features": {
+                "amount": 2,
+                "kind": "damage",
+                "slot": "target"
+              },
+              "rule": [
+                "game.cards.starter_cards",
+                "DamageTargetEffect",
+                "shock_damage"
+              ],
+              "slots": [
+                [
+                  "target",
+                  "target_0"
+                ]
+              ]
+            },
+            {
+              "features": {
+                "destination": "GRAVEYARD",
+                "kind": "move_source"
+              },
+              "rule": [
+                "game.game_actions.card_effects",
+                "MoveSourceEffect",
+                "Shock:to_graveyard"
+              ],
+              "slots": []
+            }
+          ],
+          "mana": null,
+          "parameters": {
+            "x_variables": {
+              "mapping": [
+                [
+                  [
+                    "game.enums",
+                    "SAVariableType",
+                    "X"
+                  ],
+                  0
+                ]
+              ]
+            }
+          },
+          "targets": {
+            "mapping": [
+              [
+                "target",
+                {
+                  "mapping": [
+                    [
+                      "target_0",
+                      {
+                        "mapping": [
+                          [
+                            {
+                              "player": 1
+                            },
+                            1
+                          ]
+                        ]
+                      }
+                    ]
+                  ]
+                }
+              ]
+            ]
+          }
+        },
+        "kind": "AbilityAction",
+        "source": {
+          "card": "c2",
+          "name": "Shock",
+          "zone_revision": 1
+        },
+        "source_revision": 1,
+        "uses_stack": true
+      },
+      "reason": "searched",
+      "used_search": true,
+      "used_fallback": false,
+      "options": 3,
+      "information_key": "eb766f4e29c85c251adf863dac7d4728232420c3483c6813f1e5cfd953683007",
+      "search": {
+        "choice": {
+          "kind": "AbilityAction",
+          "_json": "{\"ability_key\":\"cast:Shock\",\"action_key\":\"cast:Shock\",\"controller\":{\"player\":0},\"cost\":{\"effects\":[{\"features\":{\"destination\":\"STACK\",\"kind\":\"move_source\"},\"rule\":[\"game.game_actions.card_effects\",\"MoveSourceEffect\",\"Shock:put_on_stack\"],\"slots\":[]}],\"mana\":{\"life_payment\":0,\"mana_plan\":[],\"payment\":{\"mapping\":[[[\"game.enums\",\"ManaType\",\"RED\"],1]]}},\"parameters\":{\"x_variables\":{\"mapping\":[[[\"game.enums\",\"SAVariableType\",\"X\"],0]]}},\"targets\":{\"mapping\":[]}},\"effect\":{\"effects\":[{\"features\":{\"amount\":2,\"kind\":\"damage\",\"slot\":\"target\"},\"rule\":[\"game.cards.starter_cards\",\"DamageTargetEffect\",\"shock_damage\"],\"slots\":[[\"target\",\"target_0\"]]},{\"features\":{\"destination\":\"GRAVEYARD\",\"kind\":\"move_source\"},\"rule\":[\"game.game_actions.card_effects\",\"MoveSourceEffect\",\"Shock:to_graveyard\"],\"slots\":[]}],\"mana\":null,\"parameters\":{\"x_variables\":{\"mapping\":[[[\"game.enums\",\"SAVariableType\",\"X\"],0]]}},\"targets\":{\"mapping\":[[\"target\",{\"mapping\":[[\"target_0\",{\"mapping\":[[{\"player\":1},1]]}]]}]]}},\"kind\":\"AbilityAction\",\"source\":{\"card\":\"c2\",\"name\":\"Shock\",\"zone_revision\":1},\"source_revision\":1,\"uses_stack\":true}"
+        },
+        "value": 1.0,
+        "used_fallback": false,
+        "root_coverage_complete": true,
+        "stop_reason": "iteration_budget",
+        "estimates": [
+          {
+            "action": {
+              "kind": "AbilityAction",
+              "_json": "{\"ability_key\":\"cast:Shock\",\"action_key\":\"cast:Shock\",\"controller\":{\"player\":0},\"cost\":{\"effects\":[{\"features\":{\"destination\":\"STACK\",\"kind\":\"move_source\"},\"rule\":[\"game.game_actions.card_effects\",\"MoveSourceEffect\",\"Shock:put_on_stack\"],\"slots\":[]}],\"mana\":{\"life_payment\":0,\"mana_plan\":[],\"payment\":{\"mapping\":[[[\"game.enums\",\"ManaType\",\"RED\"],1]]}},\"parameters\":{\"x_variables\":{\"mapping\":[[[\"game.enums\",\"SAVariableType\",\"X\"],0]]}},\"targets\":{\"mapping\":[]}},\"effect\":{\"effects\":[{\"features\":{\"amount\":2,\"kind\":\"damage\",\"slot\":\"target\"},\"rule\":[\"game.cards.starter_cards\",\"DamageTargetEffect\",\"shock_damage\"],\"slots\":[[\"target\",\"target_0\"]]},{\"features\":{\"destination\":\"GRAVEYARD\",\"kind\":\"move_source\"},\"rule\":[\"game.game_actions.card_effects\",\"MoveSourceEffect\",\"Shock:to_graveyard\"],\"slots\":[]}],\"mana\":null,\"parameters\":{\"x_variables\":{\"mapping\":[[[\"game.enums\",\"SAVariableType\",\"X\"],0]]}},\"targets\":{\"mapping\":[[\"target\",{\"mapping\":[[\"target_0\",{\"mapping\":[[{\"player\":0},1]]}]]}]]}},\"kind\":\"AbilityAction\",\"source\":{\"card\":\"c2\",\"name\":\"Shock\",\"zone_revision\":1},\"source_revision\":1,\"uses_stack\":true}"
+            },
+            "visits": 2,
+            "mean_value": 0.10626395613790249
+          },
+          {
+            "action": {
+              "kind": "AbilityAction",
+              "_json": "{\"ability_key\":\"cast:Shock\",\"action_key\":\"cast:Shock\",\"controller\":{\"player\":0},\"cost\":{\"effects\":[{\"features\":{\"destination\":\"STACK\",\"kind\":\"move_source\"},\"rule\":[\"game.game_actions.card_effects\",\"MoveSourceEffect\",\"Shock:put_on_stack\"],\"slots\":[]}],\"mana\":{\"life_payment\":0,\"mana_plan\":[],\"payment\":{\"mapping\":[[[\"game.enums\",\"ManaType\",\"RED\"],1]]}},\"parameters\":{\"x_variables\":{\"mapping\":[[[\"game.enums\",\"SAVariableType\",\"X\"],0]]}},\"targets\":{\"mapping\":[]}},\"effect\":{\"effects\":[{\"features\":{\"amount\":2,\"kind\":\"damage\",\"slot\":\"target\"},\"rule\":[\"game.cards.starter_cards\",\"DamageTargetEffect\",\"shock_damage\"],\"slots\":[[\"target\",\"target_0\"]]},{\"features\":{\"destination\":\"GRAVEYARD\",\"kind\":\"move_source\"},\"rule\":[\"game.game_actions.card_effects\",\"MoveSourceEffect\",\"Shock:to_graveyard\"],\"slots\":[]}],\"mana\":null,\"parameters\":{\"x_variables\":{\"mapping\":[[[\"game.enums\",\"SAVariableType\",\"X\"],0]]}},\"targets\":{\"mapping\":[[\"target\",{\"mapping\":[[\"target_0\",{\"mapping\":[[{\"player\":1},1]]}]]}]]}},\"kind\":\"AbilityAction\",\"source\":{\"card\":\"c2\",\"name\":\"Shock\",\"zone_revision\":1},\"source_revision\":1,\"uses_stack\":true}"
+            },
+            "visits": 10,
+            "mean_value": 1.0
+          },
+          {
+            "action": {
+              "kind": "PassPriorityAction",
+              "_json": "{\"kind\":\"PassPriorityAction\",\"player\":{\"player\":0}}"
+            },
+            "visits": 4,
+            "mean_value": 0.3362796383016685
+          }
+        ],
+        "metrics": {
+          "worlds_built": 1,
+          "iterations_started": 16,
+          "iterations_completed": 16,
+          "advance_attempts": 85,
+          "terminal_leaves": 11,
+          "heuristic_leaves": 5,
+          "interrupted_trajectories": 0,
+          "interruption_reasons": [],
+          "information_nodes": 5,
+          "elapsed_ms": 4929.261600133032,
+          "rollout_policy_choices": 0,
+          "rollout_random_choices": 14
+        }
+      }
+    },
+    {
+      "player": 0,
+      "request": "PriorityDecisionRequest",
+      "action": {
+        "kind": "PassPriorityAction",
+        "player": {
+          "player": 0
+        }
+      },
+      "reason": "forced_choice",
+      "used_search": false,
+      "used_fallback": false,
+      "options": 1,
+      "information_key": "d168dc2551227d0e061393aceb78f97b60f0a9b2b8b06d950cd596e01d5385d8",
+      "search": null
+    },
+    {
+      "player": 1,
+      "request": "PriorityDecisionRequest",
+      "action": {
+        "kind": "PassPriorityAction",
+        "player": {
+          "player": 1
+        }
+      },
+      "reason": "forced_choice",
+      "used_search": false,
+      "used_fallback": false,
+      "options": 1,
+      "information_key": "30619e31f160f5a43c44ff62440aade08ac728a957e30f93b424cd1056649f1f",
+      "search": null
+    },
+    {
+      "player": 0,
+      "request": "PriorityDecisionRequest",
+      "action": {
+        "kind": "PassPriorityAction",
+        "player": {
+          "player": 0
+        }
+      },
+      "reason": "forced_choice",
+      "used_search": false,
+      "used_fallback": false,
+      "options": 1,
+      "information_key": "994d28de7964d222242927924b8d79b259ce3da55628fbe03776366f98fa6c9b",
+      "search": null
+    },
+    {
+      "player": 1,
+      "request": "PriorityDecisionRequest",
+      "action": {
+        "kind": "PassPriorityAction",
+        "player": {
+          "player": 1
+        }
+      },
+      "reason": "forced_choice",
+      "used_search": false,
+      "used_fallback": false,
+      "options": 1,
+      "information_key": "12ba5f79f1a63bee1aecd201dc0c37a050f00c6ac5df725fb6006aebbb9ad09e",
+      "search": null
+    }
+  ]
+}

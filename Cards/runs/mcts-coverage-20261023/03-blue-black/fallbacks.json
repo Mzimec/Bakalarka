@@ -1,0 +1,69 @@
+{
+  "case": {
+    "name": "03-blue-black",
+    "own": "blue",
+    "other": "black",
+    "seed": 103,
+    "search_seed": 7003,
+    "seat": 0,
+    "starting": 1,
+    "selection": "puct"
+  },
+  "status": "error",
+  "error": "UnsupportedPlayerAction: No visible trigger-event adapter for spell_cast",
+  "turns": 22,
+  "elapsed_seconds": 45.60517949995119,
+  "cpu_seconds": 45.28125,
+  "source_unchanged": true,
+  "fingerprint": "8c066b348be83c2aaeb581276109a303dc63c9531f0a7448da7d19ea931bbc26",
+  "search_attempts": 42,
+  "usable_searches": 42,
+  "completed_trajectories": 404,
+  "reasons": {
+    "setup_policy": 1,
+    "forced_choice": 231,
+    "searched": 42
+  },
+  "stops": {
+    "iteration_budget": 1,
+    "time_budget": 41
+  },
+  "trajectory_interruptions": {
+    "time_budget": 32
+  },
+  "requests": {
+    "MulliganRequest": 1,
+    "PriorityDecisionRequest": 237,
+    "DeclareAttackersRequest": 11,
+    "DiscardRequest": 1,
+    "DeclareBlockersRequest": 8,
+    "TriggerOrderRequest": 5,
+    "AbilityDecisionRequest": 8,
+    "ReplacementOrderRequest": 1,
+    "AbilityResolutionRequest": 1,
+    "OptionalEffectRequest": 1
+  },
+  "fallbacks": [
+    {
+      "category": "setup",
+      "line": 3,
+      "turn": 1,
+      "phase": "UNTAP",
+      "request_kind": "MulliganRequest",
+      "reason": "setup_policy",
+      "options": 2,
+      "elapsed_ms": 7.613299996592104,
+      "information_key": "49b6396d52f63d757610bcfb0766675675d1c013fca22a2d53625e703e63b0c8",
+      "world_preparation": null,
+      "unsupported_detail": null,
+      "search": null
+    }
+  ],
+  "exceptions": [
+    {
+      "line": 2307,
+      "traceback": "Traceback (most recent call last):\n  File \"C:\\Users\\stepa\\Documents\\Bakalarka\\Bakalarka\\Cards\\game\\simulation\\match_runner.py\", line 429, in run_match\n    loop.step(state)\n  File \"C:\\Users\\stepa\\Documents\\Bakalarka\\Bakalarka\\Cards\\game\\game_loop\\game_loop.py\", line 856, in step\n    controller.run(\n  File \"C:\\Users\\stepa\\Documents\\Bakalarka\\Bakalarka\\Cards\\game\\game_loop\\game_loop.py\", line 281, in run\n    self._run(state, processor)\n  File \"C:\\Users\\stepa\\Documents\\Bakalarka\\Bakalarka\\Cards\\game\\game_loop\\game_loop.py\", line 310, in _run\n    ).run()\n      ^^^^^\n  File \"C:\\Users\\stepa\\Documents\\Bakalarka\\Bakalarka\\Cards\\game\\game_loop\\game_loop.py\", line 112, in run\n    action = self._get_player_action(player)\n             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"C:\\Users\\stepa\\Documents\\Bakalarka\\Bakalarka\\Cards\\game\\game_loop\\game_loop.py\", line 154, in _get_player_action\n    return player.get_action(self.state)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"C:\\Users\\stepa\\Documents\\Bakalarka\\Bakalarka\\Cards\\game\\game_state\\player.py\", line 368, in get_action\n    return self.controller.decide(PriorityDecisionRequest(state, self)).value\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"C:\\Users\\stepa\\Documents\\Bakalarka\\Bakalarka\\Cards\\game\\ai\\decision_maker.py\", line 66, in decide\n    result = self._validated_decision(request)\n             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"C:\\Users\\stepa\\Documents\\Bakalarka\\Bakalarka\\Cards\\game\\ai\\decision_maker.py\", line 79, in _validated_decision\n    result = self._decide(request)\n             ^^^^^^^^^^^^^^^^^^^^^\n  File \"C:\\Users\\stepa\\Documents\\Bakalarka\\Bakalarka\\Cards\\game\\ai\\mcts_agent.py\", line 166, in _decide\n    self.last_search = self.search.search(factory, info, seed=self._rng.getrandbits(64), fallback=fallback)\n                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"C:\\Users\\stepa\\Documents\\Bakalarka\\Bakalarka\\Cards\\game\\ai\\information_set_search.py\", line 196, in search\n    return _Run(self, player, seed).search(world_factory, root_information, fallback)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"C:\\Users\\stepa\\Documents\\Bakalarka\\Bakalarka\\Cards\\game\\ai\\information_set_search.py\", line 276, in search\n    path, value = self.trajectory(sim, root)\n                  ^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"C:\\Users\\stepa\\Documents\\Bakalarka\\Bakalarka\\Cards\\game\\ai\\information_set_search.py\", line 420, in trajectory\n    return run_trajectory(self, sim, node)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"C:\\Users\\stepa\\Documents\\Bakalarka\\Bakalarka\\Cards\\game\\ai\\search_trajectory.py\", line 23, in run_trajectory\n    return _follow_suffix(run, sim, node, action, choices)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"C:\\Users\\stepa\\Documents\\Bakalarka\\Bakalarka\\Cards\\game\\ai\\search_trajectory.py\", line 80, in _follow_suffix\n    end = sim.follow_actions(choose, node=start)\n          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"C:\\Users\\stepa\\Documents\\Bakalarka\\Bakalarka\\Cards\\game\\ai\\search_simulator.py\", line 284, in follow_actions\n    return self._replay(() if node is None else node.history, follow=choose)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"C:\\Users\\stepa\\Documents\\Bakalarka\\Bakalarka\\Cards\\game\\ai\\search_simulator.py\", line 315, in _replay\n    return self._run_replay(replay, self.factory)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"C:\\Users\\stepa\\Documents\\Bakalarka\\Bakalarka\\Cards\\game\\ai\\search_simulator.py\", line 322, in _run_replay\n    game = factory(controllers)\n           ^^^^^^^^^^^^^^^^^^^^\n  File \"C:\\Users\\stepa\\Documents\\Bakalarka\\Bakalarka\\Cards\\game\\ai\\current_position_worlds.py\", line 298, in __call__\n    return self.snapshot.resume(game)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"C:\\Users\\stepa\\Documents\\Bakalarka\\Bakalarka\\Cards\\game\\ai\\current_position_worlds.py\", line 553, in resume\n    game.loop.resume_priority(game.state)\n  File \"C:\\Users\\stepa\\Documents\\Bakalarka\\Bakalarka\\Cards\\game\\game_loop\\game_loop.py\", line 872, in resume_priority\n    self.processor).run()\n                    ^^^^^\n  File \"C:\\Users\\stepa\\Documents\\Bakalarka\\Bakalarka\\Cards\\game\\game_loop\\game_loop.py\", line 118, in run\n    self._process_action(action)\n  File \"C:\\Users\\stepa\\Documents\\Bakalarka\\Bakalarka\\Cards\\game\\game_loop\\game_loop.py\", line 162, in _process_action\n    results = self.processor.process(self.state, action)\n              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"C:\\Users\\stepa\\Documents\\Bakalarka\\Bakalarka\\Cards\\game\\game_actions\\resolution\\action_processor.py\", line 186, in process\n    self.executor._trigger_resolver.process(state, pending)\n  File \"C:\\Users\\stepa\\Documents\\Bakalarka\\Bakalarka\\Cards\\game\\game_actions\\resolution\\event_bus.py\", line 494, in process\n    self._decide_triggers(\n  File \"C:\\Users\\stepa\\Documents\\Bakalarka\\Bakalarka\\Cards\\game\\game_actions\\resolution\\event_bus.py\", line 524, in _decide_triggers\n    ordered = decision_maker.decide(TriggerOrderRequest(state, controller, triggers)).value.items\n              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"C:\\Users\\stepa\\Documents\\Bakalarka\\Bakalarka\\Cards\\game\\ai\\search_simulator.py\", line 134, in decide\n    return self._validated_decision(request)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"C:\\Users\\stepa\\Documents\\Bakalarka\\Bakalarka\\Cards\\game\\ai\\decision_maker.py\", line 79, in _validated_decision\n    result = self._decide(request)\n             ^^^^^^^^^^^^^^^^^^^^^\n  File \"C:\\Users\\stepa\\Documents\\Bakalarka\\Bakalarka\\Cards\\game\\ai\\search_simulator.py\", line 130, in _decide\n    return self.driver.decide(request)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"C:\\Users\\stepa\\Documents\\Bakalarka\\Bakalarka\\Cards\\game\\ai\\search_simulator.py\", line 195, in decide\n    projected = project_decision(request, options, self.recalls[actor], view=dict(view_data)[actor],\n                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"C:\\Users\\stepa\\Documents\\Bakalarka\\Bakalarka\\Cards\\game\\ai\\search_decision.py\", line 45, in project_decision\n    context = builder.context.request_context()\n              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"C:\\Users\\stepa\\Documents\\Bakalarka\\Bakalarka\\Cards\\game\\ai\\search_context.py\", line 197, in request_context\n    return {\"triggers\": [self.trigger(a) for a in request.candidates]}\n                         ^^^^^^^^^^^^^^^\n  File \"C:\\Users\\stepa\\Documents\\Bakalarka\\Bakalarka\\Cards\\game\\ai\\search_context.py\", line 96, in trigger\n    return self.trigger_parts(ability.source, ability.controller, ability.definition, ability.event,\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"C:\\Users\\stepa\\Documents\\Bakalarka\\Bakalarka\\Cards\\game\\ai\\search_context.py\", line 91, in trigger_parts\n    \"source_revision\": revision, \"last_known\": old, \"event\": self.event(event)}\n                                                             ^^^^^^^^^^^^^^^^^\n  File \"C:\\Users\\stepa\\Documents\\Bakalarka\\Bakalarka\\Cards\\game\\ai\\search_context.py\", line 78, in event\n    raise UnsupportedPlayerAction(f\"No visible trigger-event adapter for {event.key}\")\ngame.ai.search_actions.UnsupportedPlayerAction: No visible trigger-event adapter for spell_cast\n"
+    }
+  ],
+  "worker_exception": null
+}

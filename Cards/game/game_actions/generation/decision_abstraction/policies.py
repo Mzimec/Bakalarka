@@ -72,6 +72,14 @@ class PriorityGenerationPolicy(GenerationPolicy):
     include_concede: bool = True
     collector: PriorityAbilitySource | None = None
     equivalence: EquivalencePolicy | None = field(default_factory=ConservativeEquivalencePolicy)
+    staged_sources: bool = False
+    staged_ability: bool = False
+
+    def __post_init__(self):
+        if type(self.staged_sources) is not bool:
+            raise ValueError("staged_sources must be boolean")
+        if type(self.staged_ability) is not bool or (self.staged_ability and not self.staged_sources):
+            raise ValueError("staged_ability requires staged_sources")
 
 
 @dataclass(frozen=True)

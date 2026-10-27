@@ -15,9 +15,13 @@ from .selection_pipelines import (
 )
 from .auxiliary import *
 from .auxiliary import ObjectPipeline, OrderPipeline, BooleanPipeline, ScryPipeline, CombatDamagePipeline
+from .order_frames import OrderNextRequest, OrderNextPipeline
+from .priority_frames import PriorityAbilityRequest
+from .ability_frames import AbilityConstructionRequest, AbilityConstructionPipeline
 
 
 AUXILIARY_GENERATORS = {
+    OrderNextRequest: (OrderNextPipeline(), SelectionGenerationPolicy),
     StartingPlayerRequest: (ObjectPipeline(StartingPlayerOption), StartingPlayerPolicy),
     TriggerOrderRequest: (OrderPipeline(TriggerOrderOption), TriggerOrderPolicy),
     LegendRequest: (ObjectPipeline(LegendOption), LegendPolicy),
@@ -34,6 +38,8 @@ DECISION_OPTION_GENERATORS = immutabledict({
     **AUXILIARY_GENERATORS,
     PriorityDecisionRequest: (PriorityDecisionGenerationPipeline(), PriorityGenerationPolicy),
     AbilityDecisionRequest: (AbilityDecisionGenerationPipeline(), AbilityGenerationPolicy),
+    PriorityAbilityRequest: (AbilityDecisionGenerationPipeline(), AbilityGenerationPolicy),
+    AbilityConstructionRequest: (AbilityConstructionPipeline(), SelectionGenerationPolicy),
     DeclareAttackersRequest: (DeclareAttackersPipeline(), DeclareAttackersPolicy),
     DeclareBlockersRequest: (DeclareBlockersPipeline(), DeclareBlockersPolicy),
     MulliganRequest: (MulliganPipeline(), MulliganPolicy),

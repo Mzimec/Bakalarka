@@ -278,13 +278,15 @@ class CombatState:
         )
         return events
 
-    def blocker_error(self, blocker, attacker, player):
+    def blocker_error(self, blocker, attacker, player, *, check_assignment=True):
         """!
         @brief Return the first reason a proposed block is illegal.
 
         @param blocker Candidate blocking creature.
         @param attacker Creature it would block.
         @param player Defending player.
+        @param check_assignment False checks a hypothetical pair before attackers
+               are declared. All characteristic restrictions still apply.
         @return Error string, or `None` when the block is legal.
         """
         if not self._creature(blocker, player):
@@ -293,7 +295,7 @@ class CombatState:
         if blocker.is_tapped or self._keyword(blocker, "can't block"):
             return "This creature cannot block."
 
-        if (
+        if check_assignment and (
             attacker not in self.attackers
             or self.defending_player(self.attackers[attacker], declared=True) is not player
         ):
@@ -309,6 +311,13 @@ class CombatState:
 
         return None
 
+    def potential_blockers(self, player):
+        """Untapped creatures able to block, before choosing an attacker."""
+        return tuple(card for card in self.state.query_cards(
+            EqQuery(IK_ZONE, ZoneType.BATTLEFIELD) & EqQuery(IK_TYPE, CardType.CREATURE)
+            & EqQuery(IK_CONTROLLER, player) & EqQuery(IK_TAPPED, False))
+            if not self._keyword(card, "can't block"))
+
     def legal_blockers(self, player, attacker):
         """!
         @brief Return creatures that may currently block one attacker.
@@ -321,9 +330,7 @@ class CombatState:
 
         return tuple(
             card
-            for card in self.state.query_cards(EqQuery(IK_ZONE, ZoneType.BATTLEFIELD)
-                & EqQuery(IK_TYPE, CardType.CREATURE) & EqQuery(IK_CONTROLLER, player)
-                & EqQuery(IK_TAPPED, False))
+            for card in self.potential_blockers(player)
             if self.blocker_error(card, attacker, player) is None
         )
 

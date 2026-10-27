@@ -1,0 +1,2377 @@
+[
+  {
+    "case": "lethal_shock",
+    "passed": true,
+    "options": 3,
+    "repetitions": 100,
+    "mean_policy_ms": 0.2348329999949783,
+    "selected": {
+      "ability_key": "cast:Shock",
+      "action_key": "cast:Shock",
+      "controller": {
+        "player": 0
+      },
+      "cost": {
+        "effects": [
+          {
+            "features": {
+              "destination": "STACK",
+              "kind": "move_source"
+            },
+            "rule": [
+              "game.game_actions.card_effects",
+              "MoveSourceEffect",
+              "Shock:put_on_stack"
+            ],
+            "slots": []
+          }
+        ],
+        "mana": {
+          "life_payment": 0,
+          "mana_plan": [
+            {
+              "ability_key": "mana_red",
+              "action_key": "mana_red",
+              "controller": {
+                "player": 0
+              },
+              "cost": {
+                "effects": [
+                  {
+                    "features": {
+                      "kind": "tap_source"
+                    },
+                    "rule": [
+                      "game.game_actions.card_effects",
+                      "TapSourceEffect",
+                      "tap_for_mana"
+                    ],
+                    "slots": []
+                  }
+                ],
+                "mana": {
+                  "life_payment": 0,
+                  "mana_plan": [],
+                  "payment": null
+                },
+                "parameters": {
+                  "x_variables": {
+                    "mapping": [
+                      [
+                        [
+                          "game.enums",
+                          "SAVariableType",
+                          "X"
+                        ],
+                        0
+                      ]
+                    ]
+                  }
+                },
+                "targets": {
+                  "mapping": []
+                }
+              },
+              "effect": {
+                "effects": [
+                  {
+                    "features": {
+                      "kind": "unknown"
+                    },
+                    "rule": [
+                      "game.game_actions.mana_effects",
+                      "AddManaEffect",
+                      "add_red"
+                    ],
+                    "slots": []
+                  }
+                ],
+                "mana": null,
+                "parameters": {
+                  "x_variables": {
+                    "mapping": [
+                      [
+                        [
+                          "game.enums",
+                          "SAVariableType",
+                          "X"
+                        ],
+                        0
+                      ]
+                    ]
+                  }
+                },
+                "targets": {
+                  "mapping": []
+                }
+              },
+              "kind": "ManaAbilityAction",
+              "source": {
+                "card": "c1",
+                "name": "Mountain",
+                "zone_revision": 1
+              },
+              "source_revision": 1,
+              "uses_stack": false
+            }
+          ],
+          "payment": {
+            "mapping": [
+              [
+                [
+                  "game.enums",
+                  "ManaType",
+                  "RED"
+                ],
+                1
+              ]
+            ]
+          }
+        },
+        "parameters": {
+          "x_variables": {
+            "mapping": [
+              [
+                [
+                  "game.enums",
+                  "SAVariableType",
+                  "X"
+                ],
+                0
+              ]
+            ]
+          }
+        },
+        "targets": {
+          "mapping": []
+        }
+      },
+      "effect": {
+        "effects": [
+          {
+            "features": {
+              "amount": 2,
+              "kind": "damage",
+              "slot": "target"
+            },
+            "rule": [
+              "game.cards.starter_cards",
+              "DamageTargetEffect",
+              "shock_damage"
+            ],
+            "slots": [
+              [
+                "target",
+                "target_0"
+              ]
+            ]
+          },
+          {
+            "features": {
+              "destination": "GRAVEYARD",
+              "kind": "move_source"
+            },
+            "rule": [
+              "game.game_actions.card_effects",
+              "MoveSourceEffect",
+              "Shock:to_graveyard"
+            ],
+            "slots": []
+          }
+        ],
+        "mana": null,
+        "parameters": {
+          "x_variables": {
+            "mapping": [
+              [
+                [
+                  "game.enums",
+                  "SAVariableType",
+                  "X"
+                ],
+                0
+              ]
+            ]
+          }
+        },
+        "targets": {
+          "mapping": [
+            [
+              "target",
+              {
+                "mapping": [
+                  [
+                    "target_0",
+                    {
+                      "mapping": [
+                        [
+                          {
+                            "player": 1
+                          },
+                          1
+                        ]
+                      ]
+                    }
+                  ]
+                ]
+              }
+            ]
+          ]
+        }
+      },
+      "kind": "AbilityAction",
+      "source": {
+        "card": "c2",
+        "name": "Shock",
+        "zone_revision": 1
+      },
+      "source_revision": 1,
+      "uses_stack": true
+    },
+    "ratings": [
+      {
+        "action": {
+          "ability_key": "cast:Shock",
+          "action_key": "cast:Shock",
+          "controller": {
+            "player": 0
+          },
+          "cost": {
+            "effects": [
+              {
+                "features": {
+                  "destination": "STACK",
+                  "kind": "move_source"
+                },
+                "rule": [
+                  "game.game_actions.card_effects",
+                  "MoveSourceEffect",
+                  "Shock:put_on_stack"
+                ],
+                "slots": []
+              }
+            ],
+            "mana": {
+              "life_payment": 0,
+              "mana_plan": [
+                {
+                  "ability_key": "mana_red",
+                  "action_key": "mana_red",
+                  "controller": {
+                    "player": 0
+                  },
+                  "cost": {
+                    "effects": [
+                      {
+                        "features": {
+                          "kind": "tap_source"
+                        },
+                        "rule": [
+                          "game.game_actions.card_effects",
+                          "TapSourceEffect",
+                          "tap_for_mana"
+                        ],
+                        "slots": []
+                      }
+                    ],
+                    "mana": {
+                      "life_payment": 0,
+                      "mana_plan": [],
+                      "payment": null
+                    },
+                    "parameters": {
+                      "x_variables": {
+                        "mapping": [
+                          [
+                            [
+                              "game.enums",
+                              "SAVariableType",
+                              "X"
+                            ],
+                            0
+                          ]
+                        ]
+                      }
+                    },
+                    "targets": {
+                      "mapping": []
+                    }
+                  },
+                  "effect": {
+                    "effects": [
+                      {
+                        "features": {
+                          "kind": "unknown"
+                        },
+                        "rule": [
+                          "game.game_actions.mana_effects",
+                          "AddManaEffect",
+                          "add_red"
+                        ],
+                        "slots": []
+                      }
+                    ],
+                    "mana": null,
+                    "parameters": {
+                      "x_variables": {
+                        "mapping": [
+                          [
+                            [
+                              "game.enums",
+                              "SAVariableType",
+                              "X"
+                            ],
+                            0
+                          ]
+                        ]
+                      }
+                    },
+                    "targets": {
+                      "mapping": []
+                    }
+                  },
+                  "kind": "ManaAbilityAction",
+                  "source": {
+                    "card": "c1",
+                    "name": "Mountain",
+                    "zone_revision": 1
+                  },
+                  "source_revision": 1,
+                  "uses_stack": false
+                }
+              ],
+              "payment": {
+                "mapping": [
+                  [
+                    [
+                      "game.enums",
+                      "ManaType",
+                      "RED"
+                    ],
+                    1
+                  ]
+                ]
+              }
+            },
+            "parameters": {
+              "x_variables": {
+                "mapping": [
+                  [
+                    [
+                      "game.enums",
+                      "SAVariableType",
+                      "X"
+                    ],
+                    0
+                  ]
+                ]
+              }
+            },
+            "targets": {
+              "mapping": []
+            }
+          },
+          "effect": {
+            "effects": [
+              {
+                "features": {
+                  "amount": 2,
+                  "kind": "damage",
+                  "slot": "target"
+                },
+                "rule": [
+                  "game.cards.starter_cards",
+                  "DamageTargetEffect",
+                  "shock_damage"
+                ],
+                "slots": [
+                  [
+                    "target",
+                    "target_0"
+                  ]
+                ]
+              },
+              {
+                "features": {
+                  "destination": "GRAVEYARD",
+                  "kind": "move_source"
+                },
+                "rule": [
+                  "game.game_actions.card_effects",
+                  "MoveSourceEffect",
+                  "Shock:to_graveyard"
+                ],
+                "slots": []
+              }
+            ],
+            "mana": null,
+            "parameters": {
+              "x_variables": {
+                "mapping": [
+                  [
+                    [
+                      "game.enums",
+                      "SAVariableType",
+                      "X"
+                    ],
+                    0
+                  ]
+                ]
+              }
+            },
+            "targets": {
+              "mapping": [
+                [
+                  "target",
+                  {
+                    "mapping": [
+                      [
+                        "target_0",
+                        {
+                          "mapping": [
+                            [
+                              {
+                                "player": 1
+                              },
+                              1
+                            ]
+                          ]
+                        }
+                      ]
+                    ]
+                  }
+                ]
+              ]
+            }
+          },
+          "kind": "AbilityAction",
+          "source": {
+            "card": "c2",
+            "name": "Shock",
+            "zone_revision": 1
+          },
+          "source_revision": 1,
+          "uses_stack": true
+        },
+        "score": 999.0500000000001,
+        "supported": true,
+        "reasons": [
+          "visible_effects"
+        ]
+      },
+      {
+        "action": {
+          "kind": "PassPriorityAction",
+          "player": {
+            "player": 0
+          }
+        },
+        "score": 0.0,
+        "supported": true,
+        "reasons": [
+          "pass"
+        ]
+      },
+      {
+        "action": {
+          "ability_key": "cast:Shock",
+          "action_key": "cast:Shock",
+          "controller": {
+            "player": 0
+          },
+          "cost": {
+            "effects": [
+              {
+                "features": {
+                  "destination": "STACK",
+                  "kind": "move_source"
+                },
+                "rule": [
+                  "game.game_actions.card_effects",
+                  "MoveSourceEffect",
+                  "Shock:put_on_stack"
+                ],
+                "slots": []
+              }
+            ],
+            "mana": {
+              "life_payment": 0,
+              "mana_plan": [
+                {
+                  "ability_key": "mana_red",
+                  "action_key": "mana_red",
+                  "controller": {
+                    "player": 0
+                  },
+                  "cost": {
+                    "effects": [
+                      {
+                        "features": {
+                          "kind": "tap_source"
+                        },
+                        "rule": [
+                          "game.game_actions.card_effects",
+                          "TapSourceEffect",
+                          "tap_for_mana"
+                        ],
+                        "slots": []
+                      }
+                    ],
+                    "mana": {
+                      "life_payment": 0,
+                      "mana_plan": [],
+                      "payment": null
+                    },
+                    "parameters": {
+                      "x_variables": {
+                        "mapping": [
+                          [
+                            [
+                              "game.enums",
+                              "SAVariableType",
+                              "X"
+                            ],
+                            0
+                          ]
+                        ]
+                      }
+                    },
+                    "targets": {
+                      "mapping": []
+                    }
+                  },
+                  "effect": {
+                    "effects": [
+                      {
+                        "features": {
+                          "kind": "unknown"
+                        },
+                        "rule": [
+                          "game.game_actions.mana_effects",
+                          "AddManaEffect",
+                          "add_red"
+                        ],
+                        "slots": []
+                      }
+                    ],
+                    "mana": null,
+                    "parameters": {
+                      "x_variables": {
+                        "mapping": [
+                          [
+                            [
+                              "game.enums",
+                              "SAVariableType",
+                              "X"
+                            ],
+                            0
+                          ]
+                        ]
+                      }
+                    },
+                    "targets": {
+                      "mapping": []
+                    }
+                  },
+                  "kind": "ManaAbilityAction",
+                  "source": {
+                    "card": "c1",
+                    "name": "Mountain",
+                    "zone_revision": 1
+                  },
+                  "source_revision": 1,
+                  "uses_stack": false
+                }
+              ],
+              "payment": {
+                "mapping": [
+                  [
+                    [
+                      "game.enums",
+                      "ManaType",
+                      "RED"
+                    ],
+                    1
+                  ]
+                ]
+              }
+            },
+            "parameters": {
+              "x_variables": {
+                "mapping": [
+                  [
+                    [
+                      "game.enums",
+                      "SAVariableType",
+                      "X"
+                    ],
+                    0
+                  ]
+                ]
+              }
+            },
+            "targets": {
+              "mapping": []
+            }
+          },
+          "effect": {
+            "effects": [
+              {
+                "features": {
+                  "amount": 2,
+                  "kind": "damage",
+                  "slot": "target"
+                },
+                "rule": [
+                  "game.cards.starter_cards",
+                  "DamageTargetEffect",
+                  "shock_damage"
+                ],
+                "slots": [
+                  [
+                    "target",
+                    "target_0"
+                  ]
+                ]
+              },
+              {
+                "features": {
+                  "destination": "GRAVEYARD",
+                  "kind": "move_source"
+                },
+                "rule": [
+                  "game.game_actions.card_effects",
+                  "MoveSourceEffect",
+                  "Shock:to_graveyard"
+                ],
+                "slots": []
+              }
+            ],
+            "mana": null,
+            "parameters": {
+              "x_variables": {
+                "mapping": [
+                  [
+                    [
+                      "game.enums",
+                      "SAVariableType",
+                      "X"
+                    ],
+                    0
+                  ]
+                ]
+              }
+            },
+            "targets": {
+              "mapping": [
+                [
+                  "target",
+                  {
+                    "mapping": [
+                      [
+                        "target_0",
+                        {
+                          "mapping": [
+                            [
+                              {
+                                "player": 0
+                              },
+                              1
+                            ]
+                          ]
+                        }
+                      ]
+                    ]
+                  }
+                ]
+              ]
+            }
+          },
+          "kind": "AbilityAction",
+          "source": {
+            "card": "c2",
+            "name": "Shock",
+            "zone_revision": 1
+          },
+          "source_revision": 1,
+          "uses_stack": true
+        },
+        "score": -1.35,
+        "supported": true,
+        "reasons": [
+          "visible_effects"
+        ]
+      }
+    ],
+    "scope": "Fixed tactical checks, not a playing-strength benchmark. Timing includes input decoding and ranking; excludes engine generation/replay."
+  },
+  {
+    "case": "useful_pacifism",
+    "passed": true,
+    "options": 2,
+    "repetitions": 100,
+    "mean_policy_ms": 0.27114100055769086,
+    "selected": {
+      "ability_key": "cast:aura",
+      "action_key": "cast:aura",
+      "controller": {
+        "player": 0
+      },
+      "cost": {
+        "effects": [
+          {
+            "features": {
+              "destination": "STACK",
+              "kind": "move_source"
+            },
+            "rule": [
+              "game.game_actions.card_effects",
+              "MoveSourceEffect",
+              "aura_to_stack"
+            ],
+            "slots": []
+          }
+        ],
+        "mana": {
+          "life_payment": 0,
+          "mana_plan": [
+            {
+              "ability_key": "mana_white",
+              "action_key": "mana_white",
+              "controller": {
+                "player": 0
+              },
+              "cost": {
+                "effects": [
+                  {
+                    "features": {
+                      "kind": "tap_source"
+                    },
+                    "rule": [
+                      "game.game_actions.card_effects",
+                      "TapSourceEffect",
+                      "tap_for_mana"
+                    ],
+                    "slots": []
+                  }
+                ],
+                "mana": {
+                  "life_payment": 0,
+                  "mana_plan": [],
+                  "payment": null
+                },
+                "parameters": {
+                  "x_variables": {
+                    "mapping": [
+                      [
+                        [
+                          "game.enums",
+                          "SAVariableType",
+                          "X"
+                        ],
+                        0
+                      ]
+                    ]
+                  }
+                },
+                "targets": {
+                  "mapping": []
+                }
+              },
+              "effect": {
+                "effects": [
+                  {
+                    "features": {
+                      "kind": "unknown"
+                    },
+                    "rule": [
+                      "game.game_actions.mana_effects",
+                      "AddManaEffect",
+                      "add_white"
+                    ],
+                    "slots": []
+                  }
+                ],
+                "mana": null,
+                "parameters": {
+                  "x_variables": {
+                    "mapping": [
+                      [
+                        [
+                          "game.enums",
+                          "SAVariableType",
+                          "X"
+                        ],
+                        0
+                      ]
+                    ]
+                  }
+                },
+                "targets": {
+                  "mapping": []
+                }
+              },
+              "kind": "ManaAbilityAction",
+              "source": {
+                "card": "c2",
+                "name": "Plains",
+                "zone_revision": 1
+              },
+              "source_revision": 1,
+              "uses_stack": false
+            },
+            {
+              "ability_key": "mana_white",
+              "action_key": "mana_white",
+              "controller": {
+                "player": 0
+              },
+              "cost": {
+                "effects": [
+                  {
+                    "features": {
+                      "kind": "tap_source"
+                    },
+                    "rule": [
+                      "game.game_actions.card_effects",
+                      "TapSourceEffect",
+                      "tap_for_mana"
+                    ],
+                    "slots": []
+                  }
+                ],
+                "mana": {
+                  "life_payment": 0,
+                  "mana_plan": [],
+                  "payment": null
+                },
+                "parameters": {
+                  "x_variables": {
+                    "mapping": [
+                      [
+                        [
+                          "game.enums",
+                          "SAVariableType",
+                          "X"
+                        ],
+                        0
+                      ]
+                    ]
+                  }
+                },
+                "targets": {
+                  "mapping": []
+                }
+              },
+              "effect": {
+                "effects": [
+                  {
+                    "features": {
+                      "kind": "unknown"
+                    },
+                    "rule": [
+                      "game.game_actions.mana_effects",
+                      "AddManaEffect",
+                      "add_white"
+                    ],
+                    "slots": []
+                  }
+                ],
+                "mana": null,
+                "parameters": {
+                  "x_variables": {
+                    "mapping": [
+                      [
+                        [
+                          "game.enums",
+                          "SAVariableType",
+                          "X"
+                        ],
+                        0
+                      ]
+                    ]
+                  }
+                },
+                "targets": {
+                  "mapping": []
+                }
+              },
+              "kind": "ManaAbilityAction",
+              "source": {
+                "card": "c3",
+                "name": "Plains",
+                "zone_revision": 1
+              },
+              "source_revision": 1,
+              "uses_stack": false
+            }
+          ],
+          "payment": {
+            "mapping": [
+              [
+                [
+                  "game.enums",
+                  "ManaType",
+                  "WHITE"
+                ],
+                2
+              ]
+            ]
+          }
+        },
+        "parameters": {
+          "x_variables": {
+            "mapping": [
+              [
+                [
+                  "game.enums",
+                  "SAVariableType",
+                  "X"
+                ],
+                0
+              ]
+            ]
+          }
+        },
+        "targets": {
+          "mapping": []
+        }
+      },
+      "effect": {
+        "effects": [
+          {
+            "features": {
+              "kind": "attach",
+              "slot": "attach"
+            },
+            "rule": [
+              "game.game_actions.permanent_effects",
+              "AttachSourceEffect",
+              "attach_source"
+            ],
+            "slots": [
+              [
+                "attach",
+                "attach_0"
+              ]
+            ]
+          }
+        ],
+        "mana": null,
+        "parameters": {
+          "x_variables": {
+            "mapping": [
+              [
+                [
+                  "game.enums",
+                  "SAVariableType",
+                  "X"
+                ],
+                0
+              ]
+            ]
+          }
+        },
+        "targets": {
+          "mapping": [
+            [
+              "attach",
+              {
+                "mapping": [
+                  [
+                    "attach_0",
+                    {
+                      "mapping": [
+                        [
+                          {
+                            "card": "c1",
+                            "name": "Serra Angel",
+                            "zone_revision": 1
+                          },
+                          1
+                        ]
+                      ]
+                    }
+                  ]
+                ]
+              }
+            ]
+          ]
+        }
+      },
+      "kind": "AbilityAction",
+      "source": {
+        "card": "c4",
+        "name": "Pacifism",
+        "zone_revision": 1
+      },
+      "source_revision": 1,
+      "uses_stack": true
+    },
+    "ratings": [
+      {
+        "action": {
+          "ability_key": "cast:aura",
+          "action_key": "cast:aura",
+          "controller": {
+            "player": 0
+          },
+          "cost": {
+            "effects": [
+              {
+                "features": {
+                  "destination": "STACK",
+                  "kind": "move_source"
+                },
+                "rule": [
+                  "game.game_actions.card_effects",
+                  "MoveSourceEffect",
+                  "aura_to_stack"
+                ],
+                "slots": []
+              }
+            ],
+            "mana": {
+              "life_payment": 0,
+              "mana_plan": [
+                {
+                  "ability_key": "mana_white",
+                  "action_key": "mana_white",
+                  "controller": {
+                    "player": 0
+                  },
+                  "cost": {
+                    "effects": [
+                      {
+                        "features": {
+                          "kind": "tap_source"
+                        },
+                        "rule": [
+                          "game.game_actions.card_effects",
+                          "TapSourceEffect",
+                          "tap_for_mana"
+                        ],
+                        "slots": []
+                      }
+                    ],
+                    "mana": {
+                      "life_payment": 0,
+                      "mana_plan": [],
+                      "payment": null
+                    },
+                    "parameters": {
+                      "x_variables": {
+                        "mapping": [
+                          [
+                            [
+                              "game.enums",
+                              "SAVariableType",
+                              "X"
+                            ],
+                            0
+                          ]
+                        ]
+                      }
+                    },
+                    "targets": {
+                      "mapping": []
+                    }
+                  },
+                  "effect": {
+                    "effects": [
+                      {
+                        "features": {
+                          "kind": "unknown"
+                        },
+                        "rule": [
+                          "game.game_actions.mana_effects",
+                          "AddManaEffect",
+                          "add_white"
+                        ],
+                        "slots": []
+                      }
+                    ],
+                    "mana": null,
+                    "parameters": {
+                      "x_variables": {
+                        "mapping": [
+                          [
+                            [
+                              "game.enums",
+                              "SAVariableType",
+                              "X"
+                            ],
+                            0
+                          ]
+                        ]
+                      }
+                    },
+                    "targets": {
+                      "mapping": []
+                    }
+                  },
+                  "kind": "ManaAbilityAction",
+                  "source": {
+                    "card": "c2",
+                    "name": "Plains",
+                    "zone_revision": 1
+                  },
+                  "source_revision": 1,
+                  "uses_stack": false
+                },
+                {
+                  "ability_key": "mana_white",
+                  "action_key": "mana_white",
+                  "controller": {
+                    "player": 0
+                  },
+                  "cost": {
+                    "effects": [
+                      {
+                        "features": {
+                          "kind": "tap_source"
+                        },
+                        "rule": [
+                          "game.game_actions.card_effects",
+                          "TapSourceEffect",
+                          "tap_for_mana"
+                        ],
+                        "slots": []
+                      }
+                    ],
+                    "mana": {
+                      "life_payment": 0,
+                      "mana_plan": [],
+                      "payment": null
+                    },
+                    "parameters": {
+                      "x_variables": {
+                        "mapping": [
+                          [
+                            [
+                              "game.enums",
+                              "SAVariableType",
+                              "X"
+                            ],
+                            0
+                          ]
+                        ]
+                      }
+                    },
+                    "targets": {
+                      "mapping": []
+                    }
+                  },
+                  "effect": {
+                    "effects": [
+                      {
+                        "features": {
+                          "kind": "unknown"
+                        },
+                        "rule": [
+                          "game.game_actions.mana_effects",
+                          "AddManaEffect",
+                          "add_white"
+                        ],
+                        "slots": []
+                      }
+                    ],
+                    "mana": null,
+                    "parameters": {
+                      "x_variables": {
+                        "mapping": [
+                          [
+                            [
+                              "game.enums",
+                              "SAVariableType",
+                              "X"
+                            ],
+                            0
+                          ]
+                        ]
+                      }
+                    },
+                    "targets": {
+                      "mapping": []
+                    }
+                  },
+                  "kind": "ManaAbilityAction",
+                  "source": {
+                    "card": "c3",
+                    "name": "Plains",
+                    "zone_revision": 1
+                  },
+                  "source_revision": 1,
+                  "uses_stack": false
+                }
+              ],
+              "payment": {
+                "mapping": [
+                  [
+                    [
+                      "game.enums",
+                      "ManaType",
+                      "WHITE"
+                    ],
+                    2
+                  ]
+                ]
+              }
+            },
+            "parameters": {
+              "x_variables": {
+                "mapping": [
+                  [
+                    [
+                      "game.enums",
+                      "SAVariableType",
+                      "X"
+                    ],
+                    0
+                  ]
+                ]
+              }
+            },
+            "targets": {
+              "mapping": []
+            }
+          },
+          "effect": {
+            "effects": [
+              {
+                "features": {
+                  "kind": "attach",
+                  "slot": "attach"
+                },
+                "rule": [
+                  "game.game_actions.permanent_effects",
+                  "AttachSourceEffect",
+                  "attach_source"
+                ],
+                "slots": [
+                  [
+                    "attach",
+                    "attach_0"
+                  ]
+                ]
+              }
+            ],
+            "mana": null,
+            "parameters": {
+              "x_variables": {
+                "mapping": [
+                  [
+                    [
+                      "game.enums",
+                      "SAVariableType",
+                      "X"
+                    ],
+                    0
+                  ]
+                ]
+              }
+            },
+            "targets": {
+              "mapping": [
+                [
+                  "attach",
+                  {
+                    "mapping": [
+                      [
+                        "attach_0",
+                        {
+                          "mapping": [
+                            [
+                              {
+                                "card": "c1",
+                                "name": "Serra Angel",
+                                "zone_revision": 1
+                              },
+                              1
+                            ]
+                          ]
+                        }
+                      ]
+                    ]
+                  }
+                ]
+              ]
+            }
+          },
+          "kind": "AbilityAction",
+          "source": {
+            "card": "c4",
+            "name": "Pacifism",
+            "zone_revision": 1
+          },
+          "source_revision": 1,
+          "uses_stack": true
+        },
+        "score": 3.7,
+        "supported": true,
+        "reasons": [
+          "visible_effects"
+        ]
+      },
+      {
+        "action": {
+          "kind": "PassPriorityAction",
+          "player": {
+            "player": 0
+          }
+        },
+        "score": 0.0,
+        "supported": true,
+        "reasons": [
+          "pass"
+        ]
+      }
+    ],
+    "scope": "Fixed tactical checks, not a playing-strength benchmark. Timing includes input decoding and ranking; excludes engine generation/replay."
+  },
+  {
+    "case": "redundant_pacifism",
+    "passed": true,
+    "options": 2,
+    "repetitions": 100,
+    "mean_policy_ms": 0.373230999102816,
+    "selected": {
+      "kind": "PassPriorityAction",
+      "player": {
+        "player": 0
+      }
+    },
+    "ratings": [
+      {
+        "action": {
+          "kind": "PassPriorityAction",
+          "player": {
+            "player": 0
+          }
+        },
+        "score": 0.0,
+        "supported": true,
+        "reasons": [
+          "pass"
+        ]
+      },
+      {
+        "action": {
+          "ability_key": "cast:aura",
+          "action_key": "cast:aura",
+          "controller": {
+            "player": 0
+          },
+          "cost": {
+            "effects": [
+              {
+                "features": {
+                  "destination": "STACK",
+                  "kind": "move_source"
+                },
+                "rule": [
+                  "game.game_actions.card_effects",
+                  "MoveSourceEffect",
+                  "aura_to_stack"
+                ],
+                "slots": []
+              }
+            ],
+            "mana": {
+              "life_payment": 0,
+              "mana_plan": [
+                {
+                  "ability_key": "mana_white",
+                  "action_key": "mana_white",
+                  "controller": {
+                    "player": 0
+                  },
+                  "cost": {
+                    "effects": [
+                      {
+                        "features": {
+                          "kind": "tap_source"
+                        },
+                        "rule": [
+                          "game.game_actions.card_effects",
+                          "TapSourceEffect",
+                          "tap_for_mana"
+                        ],
+                        "slots": []
+                      }
+                    ],
+                    "mana": {
+                      "life_payment": 0,
+                      "mana_plan": [],
+                      "payment": null
+                    },
+                    "parameters": {
+                      "x_variables": {
+                        "mapping": [
+                          [
+                            [
+                              "game.enums",
+                              "SAVariableType",
+                              "X"
+                            ],
+                            0
+                          ]
+                        ]
+                      }
+                    },
+                    "targets": {
+                      "mapping": []
+                    }
+                  },
+                  "effect": {
+                    "effects": [
+                      {
+                        "features": {
+                          "kind": "unknown"
+                        },
+                        "rule": [
+                          "game.game_actions.mana_effects",
+                          "AddManaEffect",
+                          "add_white"
+                        ],
+                        "slots": []
+                      }
+                    ],
+                    "mana": null,
+                    "parameters": {
+                      "x_variables": {
+                        "mapping": [
+                          [
+                            [
+                              "game.enums",
+                              "SAVariableType",
+                              "X"
+                            ],
+                            0
+                          ]
+                        ]
+                      }
+                    },
+                    "targets": {
+                      "mapping": []
+                    }
+                  },
+                  "kind": "ManaAbilityAction",
+                  "source": {
+                    "card": "c3",
+                    "name": "Plains",
+                    "zone_revision": 1
+                  },
+                  "source_revision": 1,
+                  "uses_stack": false
+                },
+                {
+                  "ability_key": "mana_white",
+                  "action_key": "mana_white",
+                  "controller": {
+                    "player": 0
+                  },
+                  "cost": {
+                    "effects": [
+                      {
+                        "features": {
+                          "kind": "tap_source"
+                        },
+                        "rule": [
+                          "game.game_actions.card_effects",
+                          "TapSourceEffect",
+                          "tap_for_mana"
+                        ],
+                        "slots": []
+                      }
+                    ],
+                    "mana": {
+                      "life_payment": 0,
+                      "mana_plan": [],
+                      "payment": null
+                    },
+                    "parameters": {
+                      "x_variables": {
+                        "mapping": [
+                          [
+                            [
+                              "game.enums",
+                              "SAVariableType",
+                              "X"
+                            ],
+                            0
+                          ]
+                        ]
+                      }
+                    },
+                    "targets": {
+                      "mapping": []
+                    }
+                  },
+                  "effect": {
+                    "effects": [
+                      {
+                        "features": {
+                          "kind": "unknown"
+                        },
+                        "rule": [
+                          "game.game_actions.mana_effects",
+                          "AddManaEffect",
+                          "add_white"
+                        ],
+                        "slots": []
+                      }
+                    ],
+                    "mana": null,
+                    "parameters": {
+                      "x_variables": {
+                        "mapping": [
+                          [
+                            [
+                              "game.enums",
+                              "SAVariableType",
+                              "X"
+                            ],
+                            0
+                          ]
+                        ]
+                      }
+                    },
+                    "targets": {
+                      "mapping": []
+                    }
+                  },
+                  "kind": "ManaAbilityAction",
+                  "source": {
+                    "card": "c4",
+                    "name": "Plains",
+                    "zone_revision": 1
+                  },
+                  "source_revision": 1,
+                  "uses_stack": false
+                }
+              ],
+              "payment": {
+                "mapping": [
+                  [
+                    [
+                      "game.enums",
+                      "ManaType",
+                      "WHITE"
+                    ],
+                    2
+                  ]
+                ]
+              }
+            },
+            "parameters": {
+              "x_variables": {
+                "mapping": [
+                  [
+                    [
+                      "game.enums",
+                      "SAVariableType",
+                      "X"
+                    ],
+                    0
+                  ]
+                ]
+              }
+            },
+            "targets": {
+              "mapping": []
+            }
+          },
+          "effect": {
+            "effects": [
+              {
+                "features": {
+                  "kind": "attach",
+                  "slot": "attach"
+                },
+                "rule": [
+                  "game.game_actions.permanent_effects",
+                  "AttachSourceEffect",
+                  "attach_source"
+                ],
+                "slots": [
+                  [
+                    "attach",
+                    "attach_0"
+                  ]
+                ]
+              }
+            ],
+            "mana": null,
+            "parameters": {
+              "x_variables": {
+                "mapping": [
+                  [
+                    [
+                      "game.enums",
+                      "SAVariableType",
+                      "X"
+                    ],
+                    0
+                  ]
+                ]
+              }
+            },
+            "targets": {
+              "mapping": [
+                [
+                  "attach",
+                  {
+                    "mapping": [
+                      [
+                        "attach_0",
+                        {
+                          "mapping": [
+                            [
+                              {
+                                "card": "c1",
+                                "name": "Serra Angel",
+                                "zone_revision": 1
+                              },
+                              1
+                            ]
+                          ]
+                        }
+                      ]
+                    ]
+                  }
+                ]
+              ]
+            }
+          },
+          "kind": "AbilityAction",
+          "source": {
+            "card": "c5",
+            "name": "Pacifism",
+            "zone_revision": 1
+          },
+          "source_revision": 1,
+          "uses_stack": true
+        },
+        "score": -1.1,
+        "supported": true,
+        "reasons": [
+          "visible_effects"
+        ]
+      }
+    ],
+    "scope": "Fixed tactical checks, not a playing-strength benchmark. Timing includes input decoding and ranking; excludes engine generation/replay."
+  },
+  {
+    "case": "attack_pacified",
+    "passed": true,
+    "options": 2,
+    "repetitions": 100,
+    "mean_policy_ms": 0.15307100024074316,
+    "selected": {
+      "declarations": {
+        "mapping": [
+          [
+            {
+              "card": "c3",
+              "name": "Impassioned Orator",
+              "zone_revision": 1
+            },
+            {
+              "player": 1
+            }
+          ]
+        ]
+      },
+      "kind": "DeclareAttackersOption"
+    },
+    "ratings": [
+      {
+        "action": {
+          "declarations": {
+            "mapping": [
+              [
+                {
+                  "card": "c3",
+                  "name": "Impassioned Orator",
+                  "zone_revision": 1
+                },
+                {
+                  "player": 1
+                }
+              ]
+            ]
+          },
+          "kind": "DeclareAttackersOption"
+        },
+        "score": 1000.4,
+        "supported": true,
+        "reasons": [
+          "approximate_combat_trade"
+        ]
+      },
+      {
+        "action": {
+          "declarations": {
+            "mapping": []
+          },
+          "kind": "DeclareAttackersOption"
+        },
+        "score": 0.0,
+        "supported": true,
+        "reasons": [
+          "approximate_combat_trade"
+        ]
+      }
+    ],
+    "scope": "Fixed tactical checks, not a playing-strength benchmark. Timing includes input decoding and ranking; excludes engine generation/replay."
+  },
+  {
+    "case": "counter_response",
+    "passed": true,
+    "options": 2,
+    "repetitions": 100,
+    "mean_policy_ms": 0.2818440005648881,
+    "selected": {
+      "ability_key": "cast:Counterspell",
+      "action_key": "cast:Counterspell",
+      "controller": {
+        "player": 1
+      },
+      "cost": {
+        "effects": [
+          {
+            "features": {
+              "destination": "STACK",
+              "kind": "move_source"
+            },
+            "rule": [
+              "game.game_actions.card_effects",
+              "MoveSourceEffect",
+              "Counterspell:put_on_stack"
+            ],
+            "slots": []
+          }
+        ],
+        "mana": {
+          "life_payment": 0,
+          "mana_plan": [
+            {
+              "ability_key": "mana_blue",
+              "action_key": "mana_blue",
+              "controller": {
+                "player": 1
+              },
+              "cost": {
+                "effects": [
+                  {
+                    "features": {
+                      "kind": "tap_source"
+                    },
+                    "rule": [
+                      "game.game_actions.card_effects",
+                      "TapSourceEffect",
+                      "tap_for_mana"
+                    ],
+                    "slots": []
+                  }
+                ],
+                "mana": {
+                  "life_payment": 0,
+                  "mana_plan": [],
+                  "payment": null
+                },
+                "parameters": {
+                  "x_variables": {
+                    "mapping": [
+                      [
+                        [
+                          "game.enums",
+                          "SAVariableType",
+                          "X"
+                        ],
+                        0
+                      ]
+                    ]
+                  }
+                },
+                "targets": {
+                  "mapping": []
+                }
+              },
+              "effect": {
+                "effects": [
+                  {
+                    "features": {
+                      "kind": "unknown"
+                    },
+                    "rule": [
+                      "game.game_actions.mana_effects",
+                      "AddManaEffect",
+                      "add_blue"
+                    ],
+                    "slots": []
+                  }
+                ],
+                "mana": null,
+                "parameters": {
+                  "x_variables": {
+                    "mapping": [
+                      [
+                        [
+                          "game.enums",
+                          "SAVariableType",
+                          "X"
+                        ],
+                        0
+                      ]
+                    ]
+                  }
+                },
+                "targets": {
+                  "mapping": []
+                }
+              },
+              "kind": "ManaAbilityAction",
+              "source": {
+                "card": "c3",
+                "name": "Island",
+                "zone_revision": 1
+              },
+              "source_revision": 1,
+              "uses_stack": false
+            },
+            {
+              "ability_key": "mana_blue",
+              "action_key": "mana_blue",
+              "controller": {
+                "player": 1
+              },
+              "cost": {
+                "effects": [
+                  {
+                    "features": {
+                      "kind": "tap_source"
+                    },
+                    "rule": [
+                      "game.game_actions.card_effects",
+                      "TapSourceEffect",
+                      "tap_for_mana"
+                    ],
+                    "slots": []
+                  }
+                ],
+                "mana": {
+                  "life_payment": 0,
+                  "mana_plan": [],
+                  "payment": null
+                },
+                "parameters": {
+                  "x_variables": {
+                    "mapping": [
+                      [
+                        [
+                          "game.enums",
+                          "SAVariableType",
+                          "X"
+                        ],
+                        0
+                      ]
+                    ]
+                  }
+                },
+                "targets": {
+                  "mapping": []
+                }
+              },
+              "effect": {
+                "effects": [
+                  {
+                    "features": {
+                      "kind": "unknown"
+                    },
+                    "rule": [
+                      "game.game_actions.mana_effects",
+                      "AddManaEffect",
+                      "add_blue"
+                    ],
+                    "slots": []
+                  }
+                ],
+                "mana": null,
+                "parameters": {
+                  "x_variables": {
+                    "mapping": [
+                      [
+                        [
+                          "game.enums",
+                          "SAVariableType",
+                          "X"
+                        ],
+                        0
+                      ]
+                    ]
+                  }
+                },
+                "targets": {
+                  "mapping": []
+                }
+              },
+              "kind": "ManaAbilityAction",
+              "source": {
+                "card": "c4",
+                "name": "Island",
+                "zone_revision": 1
+              },
+              "source_revision": 1,
+              "uses_stack": false
+            }
+          ],
+          "payment": {
+            "mapping": [
+              [
+                [
+                  "game.enums",
+                  "ManaType",
+                  "BLUE"
+                ],
+                2
+              ]
+            ]
+          }
+        },
+        "parameters": {
+          "x_variables": {
+            "mapping": [
+              [
+                [
+                  "game.enums",
+                  "SAVariableType",
+                  "X"
+                ],
+                0
+              ]
+            ]
+          }
+        },
+        "targets": {
+          "mapping": []
+        }
+      },
+      "effect": {
+        "effects": [
+          {
+            "features": {
+              "kind": "counter",
+              "slot": "target"
+            },
+            "rule": [
+              "game.game_actions.control_effects",
+              "CounterSpellEffect",
+              "counterspell"
+            ],
+            "slots": [
+              [
+                "target",
+                "target_0"
+              ]
+            ]
+          },
+          {
+            "features": {
+              "destination": "GRAVEYARD",
+              "kind": "move_source"
+            },
+            "rule": [
+              "game.game_actions.card_effects",
+              "MoveSourceEffect",
+              "Counterspell:to_graveyard"
+            ],
+            "slots": []
+          }
+        ],
+        "mana": null,
+        "parameters": {
+          "x_variables": {
+            "mapping": [
+              [
+                [
+                  "game.enums",
+                  "SAVariableType",
+                  "X"
+                ],
+                0
+              ]
+            ]
+          }
+        },
+        "targets": {
+          "mapping": [
+            [
+              "target",
+              {
+                "mapping": [
+                  [
+                    "target_0",
+                    {
+                      "mapping": [
+                        [
+                          {
+                            "card": "c2",
+                            "name": "Shock",
+                            "zone_revision": 2
+                          },
+                          1
+                        ]
+                      ]
+                    }
+                  ]
+                ]
+              }
+            ]
+          ]
+        }
+      },
+      "kind": "AbilityAction",
+      "source": {
+        "card": "c5",
+        "name": "Counterspell",
+        "zone_revision": 1
+      },
+      "source_revision": 1,
+      "uses_stack": true
+    },
+    "ratings": [
+      {
+        "action": {
+          "ability_key": "cast:Counterspell",
+          "action_key": "cast:Counterspell",
+          "controller": {
+            "player": 1
+          },
+          "cost": {
+            "effects": [
+              {
+                "features": {
+                  "destination": "STACK",
+                  "kind": "move_source"
+                },
+                "rule": [
+                  "game.game_actions.card_effects",
+                  "MoveSourceEffect",
+                  "Counterspell:put_on_stack"
+                ],
+                "slots": []
+              }
+            ],
+            "mana": {
+              "life_payment": 0,
+              "mana_plan": [
+                {
+                  "ability_key": "mana_blue",
+                  "action_key": "mana_blue",
+                  "controller": {
+                    "player": 1
+                  },
+                  "cost": {
+                    "effects": [
+                      {
+                        "features": {
+                          "kind": "tap_source"
+                        },
+                        "rule": [
+                          "game.game_actions.card_effects",
+                          "TapSourceEffect",
+                          "tap_for_mana"
+                        ],
+                        "slots": []
+                      }
+                    ],
+                    "mana": {
+                      "life_payment": 0,
+                      "mana_plan": [],
+                      "payment": null
+                    },
+                    "parameters": {
+                      "x_variables": {
+                        "mapping": [
+                          [
+                            [
+                              "game.enums",
+                              "SAVariableType",
+                              "X"
+                            ],
+                            0
+                          ]
+                        ]
+                      }
+                    },
+                    "targets": {
+                      "mapping": []
+                    }
+                  },
+                  "effect": {
+                    "effects": [
+                      {
+                        "features": {
+                          "kind": "unknown"
+                        },
+                        "rule": [
+                          "game.game_actions.mana_effects",
+                          "AddManaEffect",
+                          "add_blue"
+                        ],
+                        "slots": []
+                      }
+                    ],
+                    "mana": null,
+                    "parameters": {
+                      "x_variables": {
+                        "mapping": [
+                          [
+                            [
+                              "game.enums",
+                              "SAVariableType",
+                              "X"
+                            ],
+                            0
+                          ]
+                        ]
+                      }
+                    },
+                    "targets": {
+                      "mapping": []
+                    }
+                  },
+                  "kind": "ManaAbilityAction",
+                  "source": {
+                    "card": "c3",
+                    "name": "Island",
+                    "zone_revision": 1
+                  },
+                  "source_revision": 1,
+                  "uses_stack": false
+                },
+                {
+                  "ability_key": "mana_blue",
+                  "action_key": "mana_blue",
+                  "controller": {
+                    "player": 1
+                  },
+                  "cost": {
+                    "effects": [
+                      {
+                        "features": {
+                          "kind": "tap_source"
+                        },
+                        "rule": [
+                          "game.game_actions.card_effects",
+                          "TapSourceEffect",
+                          "tap_for_mana"
+                        ],
+                        "slots": []
+                      }
+                    ],
+                    "mana": {
+                      "life_payment": 0,
+                      "mana_plan": [],
+                      "payment": null
+                    },
+                    "parameters": {
+                      "x_variables": {
+                        "mapping": [
+                          [
+                            [
+                              "game.enums",
+                              "SAVariableType",
+                              "X"
+                            ],
+                            0
+                          ]
+                        ]
+                      }
+                    },
+                    "targets": {
+                      "mapping": []
+                    }
+                  },
+                  "effect": {
+                    "effects": [
+                      {
+                        "features": {
+                          "kind": "unknown"
+                        },
+                        "rule": [
+                          "game.game_actions.mana_effects",
+                          "AddManaEffect",
+                          "add_blue"
+                        ],
+                        "slots": []
+                      }
+                    ],
+                    "mana": null,
+                    "parameters": {
+                      "x_variables": {
+                        "mapping": [
+                          [
+                            [
+                              "game.enums",
+                              "SAVariableType",
+                              "X"
+                            ],
+                            0
+                          ]
+                        ]
+                      }
+                    },
+                    "targets": {
+                      "mapping": []
+                    }
+                  },
+                  "kind": "ManaAbilityAction",
+                  "source": {
+                    "card": "c4",
+                    "name": "Island",
+                    "zone_revision": 1
+                  },
+                  "source_revision": 1,
+                  "uses_stack": false
+                }
+              ],
+              "payment": {
+                "mapping": [
+                  [
+                    [
+                      "game.enums",
+                      "ManaType",
+                      "BLUE"
+                    ],
+                    2
+                  ]
+                ]
+              }
+            },
+            "parameters": {
+              "x_variables": {
+                "mapping": [
+                  [
+                    [
+                      "game.enums",
+                      "SAVariableType",
+                      "X"
+                    ],
+                    0
+                  ]
+                ]
+              }
+            },
+            "targets": {
+              "mapping": []
+            }
+          },
+          "effect": {
+            "effects": [
+              {
+                "features": {
+                  "kind": "counter",
+                  "slot": "target"
+                },
+                "rule": [
+                  "game.game_actions.control_effects",
+                  "CounterSpellEffect",
+                  "counterspell"
+                ],
+                "slots": [
+                  [
+                    "target",
+                    "target_0"
+                  ]
+                ]
+              },
+              {
+                "features": {
+                  "destination": "GRAVEYARD",
+                  "kind": "move_source"
+                },
+                "rule": [
+                  "game.game_actions.card_effects",
+                  "MoveSourceEffect",
+                  "Counterspell:to_graveyard"
+                ],
+                "slots": []
+              }
+            ],
+            "mana": null,
+            "parameters": {
+              "x_variables": {
+                "mapping": [
+                  [
+                    [
+                      "game.enums",
+                      "SAVariableType",
+                      "X"
+                    ],
+                    0
+                  ]
+                ]
+              }
+            },
+            "targets": {
+              "mapping": [
+                [
+                  "target",
+                  {
+                    "mapping": [
+                      [
+                        "target_0",
+                        {
+                          "mapping": [
+                            [
+                              {
+                                "card": "c2",
+                                "name": "Shock",
+                                "zone_revision": 2
+                              },
+                              1
+                            ]
+                          ]
+                        }
+                      ]
+                    ]
+                  }
+                ]
+              ]
+            }
+          },
+          "kind": "AbilityAction",
+          "source": {
+            "card": "c5",
+            "name": "Counterspell",
+            "zone_revision": 1
+          },
+          "source_revision": 1,
+          "uses_stack": true
+        },
+        "score": 998.9000000000001,
+        "supported": true,
+        "reasons": [
+          "visible_effects"
+        ]
+      },
+      {
+        "action": {
+          "kind": "PassPriorityAction",
+          "player": {
+            "player": 1
+          }
+        },
+        "score": 0.0,
+        "supported": true,
+        "reasons": [
+          "pass"
+        ]
+      }
+    ],
+    "scope": "Fixed tactical checks, not a playing-strength benchmark. Timing includes input decoding and ranking; excludes engine generation/replay."
+  }
+]

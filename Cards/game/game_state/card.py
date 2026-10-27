@@ -33,6 +33,9 @@ from .modifier import (
     only_empty_builtin_sources,
 )
 from .stat import Stat, HasModifiableStats, ModifiablePrimitiveStat, ModifiableReferenceStat
+from .characteristic_values import read_native_value, SUPPORTED, UNSUPPORTED
+from .ability_definition_cache import native_ability_definitions
+from .native_modifier_plan import read_planned_value, sources_empty, MISSING as NO_PLANNED_VALUE
 from ..enums import *
 from ..stat_type import *
 from helper.mutability_objs import *
@@ -330,9 +333,18 @@ class Card(HasModifiableStats, Attachable):
         # Replacement/copy projections replace whole immutable input tables.
         # Notify only the owning live register; shallow clones are not members.
         if name in {"_stats", "_definition", "_modifier_sources", "_state", "_owner", "zone_revision"}:
+            self._invalidate_modifier_plan()
             state = self.__dict__.get("_game_state")
             if state is not None:
                 state.card_register.invalidate_layer_inputs(self)
+        elif name in {"get_stat", "_get_modifier_pipeline", "modifiers_to_attach",
+                      "get_trigger_defs", "get_controller", "get_zone"}:
+            # Extension/instrumentation readers invalidate derived reuse, but
+            # installing a reader is not itself a rules mutation or layer pass.
+            self._invalidate_modifier_plan()
+            state = self.__dict__.get("_game_state")
+            if state is not None:
+                state._trigger_registry.invalidate(self)
 
     def __init__(
         self,
@@ -481,6 +493,15 @@ class Card(HasModifiableStats, Attachable):
                 self._state.attached
             ),
         )
+        for source in self._modifier_sources:
+            source._native_card = self
+
+    def _invalidate_modifier_plan(self):
+        self.__dict__.pop("_native_modifier_plan", None)
+        self.__dict__.pop("_native_empty_sources", None)
+        runtime = self.__dict__.get("_state")
+        if runtime is not None and runtime.attach_info.attached_to is not None:
+            runtime.attach_info.attached_to.__dict__.pop("_native_modifier_plan", None)
 
     @staticmethod
     def _keyed_definitions(definitions, prefix):
@@ -680,8 +701,33 @@ class Card(HasModifiableStats, Attachable):
         """!
         @brief Notify the owning game state that indexed card data may be stale.
         """
+        self._invalidate_modifier_plan()
         if self._game_state is not None:
             self._game_state.notify_card_changed(self)
+
+    def get_stat(self, stat_t, state):
+        """Share proven native values with index/LKI reads; extensions stay live."""
+        if (type(self) is Card and (not state._refreshing_effects
+                                  or getattr(state, "_reusing_continuous_graph", False))
+                and "_get_modifier_pipeline" not in self.__dict__):
+            empty = sources_empty(self)
+            if not empty:
+                value = read_planned_value(self, stat_t, state)
+                if value is not NO_PLANNED_VALUE:
+                    return value
+            if empty or stat_t in SUPPORTED:
+                try:
+                    stat = self._stats[stat_t]
+                except KeyError:
+                    return None
+                # Avoid Mapping.get's extra Python call and the empty pipeline.
+                if empty and type(stat) in (ModifiablePrimitiveStat, ModifiableReferenceStat):
+                    return stat.base_value
+                if not empty and type(stat) in (ModifiablePrimitiveStat, ModifiableReferenceStat):
+                    value = read_native_value(self, stat_t, stat, state, HasModifiableStats.get_stat)
+                    if value is not UNSUPPORTED:
+                        return value
+        return HasModifiableStats.get_stat(self, stat_t, state)
 
     def _notify_runtime_changed(self, change):
         if type(self) is not Card:
@@ -990,6 +1036,10 @@ class Card(HasModifiableStats, Attachable):
 
     # Abilities methods
     def get_ability_defs(self, state: State) -> AbilityCollection:
+        """Return live definitions, reusing proven native immutable mappings."""
+        return native_ability_definitions(self, state)
+
+    def _build_ability_defs(self, state: State) -> AbilityCollection:
         """!
         @brief Return the card's current printed, granted and intrinsic abilities.
 
@@ -1003,14 +1053,12 @@ class Card(HasModifiableStats, Attachable):
             state,
         )
 
-        intrinsic = (
-            basic_land_abilities(self, state)
-            if self.get_stat(STAT_INTRINSIC_MANA, state)
-            else {}
-        )
+        intrinsic_enabled = self.get_stat(STAT_INTRINSIC_MANA, state)
+        card_types = self.get_types(state)
+        intrinsic = basic_land_abilities(self, state, card_types=card_types) if intrinsic_enabled else {}
 
         # Playing a land is represented explicitly, independently of intrinsic mana.
-        if CardType.LAND in self.get_types(state):
+        if CardType.LAND in card_types:
             from game.rules.lands import PLAY_LAND_DEFINITION
             if PLAY_LAND_DEFINITION.key not in definitions:
                 intrinsic = {PLAY_LAND_DEFINITION.key: PLAY_LAND_DEFINITION, **intrinsic}

@@ -7,6 +7,7 @@ from collections import Counter
 from .event_bus import (
     capture_card_information,
     capture_event,
+    capture_player_events,
     capture_trigger_roster,
 )
 
@@ -141,7 +142,9 @@ class OperationExecutor:
                 if damage:
                     operation._defer_lifelink = previous
 
-            events.extend(generated)
+            # Visibility belongs to this mutation, even if later operations in
+            # the batch change the same card. Publication still waits for commit.
+            events.extend(capture_player_events(state, event, information) for event in generated)
 
             if (
                 damage

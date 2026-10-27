@@ -1,0 +1,2163 @@
+........................................................................ [  2%]
+........................................................................ [  5%]
+........................................................................ [  7%]
+........................................................................ [ 10%]
+........................................................................ [ 13%]
+........................................................................ [ 15%]
+........................................................................ [ 18%]
+........................................................................ [ 21%]
+........................................................................ [ 23%]
+........................................................................ [ 26%]
+........................................................................ [ 29%]
+........................................................................ [ 31%]
+........................................................................ [ 34%]
+........................................................................ [ 36%]
+........................................................................ [ 39%]
+........................................................................ [ 42%]
+........................................................................ [ 44%]
+........................................................................ [ 47%]
+........................................................................ [ 50%]
+........................................................................ [ 52%]
+........................................................................ [ 55%]
+........................................................................ [ 58%]
+........................................................................ [ 60%]
+........................................................................ [ 63%]
+........................................................................ [ 65%]
+........................................................................ [ 68%]
+........................................................................ [ 71%]
+........................................................................ [ 73%]
+........................................................................ [ 76%]
+........................................................................ [ 79%]
+........................................................................ [ 81%]
+........................................................................ [ 84%]
+........................................................................ [ 87%]
+........................................................................ [ 89%]
+.......................................................FFFFFFFFFFFFFFFFF [ 92%]
+FFFFFFFFFFFFFF.FF.FF.................................................... [ 94%]
+........................................................................ [ 97%]
+...................................................................      [100%]
+================================== FAILURES ===================================
+_ test_streamed_search_matches_every_transition_and_policy_input[0-uct-lethal_shock] _
+
+case = 'lethal_shock', selection = 'uct', cache = 0
+
+    @pytest.mark.parametrize("case", ["lethal_shock", "answered_shock", "attack_pacified"])
+    @pytest.mark.parametrize("selection", ["uct", "puct", "hierarchical_puct"])
+    @pytest.mark.parametrize("cache", [0, 1, 256])
+    def test_streamed_search_matches_every_transition_and_policy_input(case, selection, cache):
+        builds = []
+        def factory(seed):
+            def build(controllers):
+                builds.append(1)
+                return tactical_scenario(case)(controllers)
+            return SearchSimulator(build, policy_for=tactical_policy, track_information=True)
+>       a, b = compare(factory, selection=selection, cache=cache)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Cards\tests\test_search_trajectory.py:57: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+factory = <function test_streamed_search_matches_every_transition_and_policy_input.<locals>.factory at 0x0000025DA88C3880>
+selection = 'uct', cache = 0, budget = None
+
+    def compare(factory, *, selection="uct", cache=256, budget=None):
+        info = factory(0).start().player_information()
+        rows, traces, inputs = [], [], []
+        for mode in ("replay", "continuous"):
+            trace, observed = [], []
+            store = _Run.store_transition
+            def record(run, sim, node, action, child):
+                trace.append((node, action, child))
+                store(run, sim, node, action, child)
+            policy = ObservationOpponentPolicy()
+            def choose(info):
+                observed.append(info)
+                return policy(info)
+            search = InformationSetSearch(opponent_policy=choose, rollout_policy=choose,
+                selection=selection, transition_cache_size=cache, trajectory_mode=mode,
+                budget=budget or InformationSearchBudget(worlds=2, iterations=6, max_advances=48, max_depth=3))
+            with patch.object(_Run, "store_transition", record):
+                result = search.search(factory, info, seed=42)
+            rows.append(result)
+            traces.append(trace)
+            inputs.append(observed)
+        a, b = rows
+        assert replace(a, metrics=b.metrics) == b
+        ignored = {"elapsed_ms", "cpu_ms", "world_initialization_ms", "advance_ms", "trajectory_runs",
+                   "checkpoint_hits", "checkpoint_entries", "checkpoint_skipped_decisions",
+                   "world_materializations", "world_restores"}
+>       assert {k: v for k, v in asdict(a.metrics).items() if k not in ignored} == {
+            k: v for k, v in asdict(b.metrics).items() if k not in ignored}
+E       AssertionError: assert {'worlds_buil...pts': 22, ...} == {'worlds_buil...pts': 22, ...}
+E         
+E         Omitting 44 identical items, use -vv to show
+E         Differing items:
+E         {'structured_value_hits': 1579} != {'structured_value_hits': 1435}
+E         Use -v to get more diff
+
+Cards\tests\test_search_trajectory.py:39: AssertionError
+_ test_streamed_search_matches_every_transition_and_policy_input[0-uct-answered_shock] _
+
+case = 'answered_shock', selection = 'uct', cache = 0
+
+    @pytest.mark.parametrize("case", ["lethal_shock", "answered_shock", "attack_pacified"])
+    @pytest.mark.parametrize("selection", ["uct", "puct", "hierarchical_puct"])
+    @pytest.mark.parametrize("cache", [0, 1, 256])
+    def test_streamed_search_matches_every_transition_and_policy_input(case, selection, cache):
+        builds = []
+        def factory(seed):
+            def build(controllers):
+                builds.append(1)
+                return tactical_scenario(case)(controllers)
+            return SearchSimulator(build, policy_for=tactical_policy, track_information=True)
+>       a, b = compare(factory, selection=selection, cache=cache)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Cards\tests\test_search_trajectory.py:57: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+factory = <function test_streamed_search_matches_every_transition_and_policy_input.<locals>.factory at 0x0000025DA88C23E0>
+selection = 'uct', cache = 0, budget = None
+
+    def compare(factory, *, selection="uct", cache=256, budget=None):
+        info = factory(0).start().player_information()
+        rows, traces, inputs = [], [], []
+        for mode in ("replay", "continuous"):
+            trace, observed = [], []
+            store = _Run.store_transition
+            def record(run, sim, node, action, child):
+                trace.append((node, action, child))
+                store(run, sim, node, action, child)
+            policy = ObservationOpponentPolicy()
+            def choose(info):
+                observed.append(info)
+                return policy(info)
+            search = InformationSetSearch(opponent_policy=choose, rollout_policy=choose,
+                selection=selection, transition_cache_size=cache, trajectory_mode=mode,
+                budget=budget or InformationSearchBudget(worlds=2, iterations=6, max_advances=48, max_depth=3))
+            with patch.object(_Run, "store_transition", record):
+                result = search.search(factory, info, seed=42)
+            rows.append(result)
+            traces.append(trace)
+            inputs.append(observed)
+        a, b = rows
+        assert replace(a, metrics=b.metrics) == b
+        ignored = {"elapsed_ms", "cpu_ms", "world_initialization_ms", "advance_ms", "trajectory_runs",
+                   "checkpoint_hits", "checkpoint_entries", "checkpoint_skipped_decisions",
+                   "world_materializations", "world_restores"}
+>       assert {k: v for k, v in asdict(a.metrics).items() if k not in ignored} == {
+            k: v for k, v in asdict(b.metrics).items() if k not in ignored}
+E       AssertionError: assert {'worlds_buil...pts': 28, ...} == {'worlds_buil...pts': 28, ...}
+E         
+E         Omitting 44 identical items, use -vv to show
+E         Differing items:
+E         {'structured_value_hits': 3347} != {'structured_value_hits': 3110}
+E         Use -v to get more diff
+
+Cards\tests\test_search_trajectory.py:39: AssertionError
+_ test_streamed_search_matches_every_transition_and_policy_input[0-uct-attack_pacified] _
+
+case = 'attack_pacified', selection = 'uct', cache = 0
+
+    @pytest.mark.parametrize("case", ["lethal_shock", "answered_shock", "attack_pacified"])
+    @pytest.mark.parametrize("selection", ["uct", "puct", "hierarchical_puct"])
+    @pytest.mark.parametrize("cache", [0, 1, 256])
+    def test_streamed_search_matches_every_transition_and_policy_input(case, selection, cache):
+        builds = []
+        def factory(seed):
+            def build(controllers):
+                builds.append(1)
+                return tactical_scenario(case)(controllers)
+            return SearchSimulator(build, policy_for=tactical_policy, track_information=True)
+>       a, b = compare(factory, selection=selection, cache=cache)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Cards\tests\test_search_trajectory.py:57: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+factory = <function test_streamed_search_matches_every_transition_and_policy_input.<locals>.factory at 0x0000025DA7A66160>
+selection = 'uct', cache = 0, budget = None
+
+    def compare(factory, *, selection="uct", cache=256, budget=None):
+        info = factory(0).start().player_information()
+        rows, traces, inputs = [], [], []
+        for mode in ("replay", "continuous"):
+            trace, observed = [], []
+            store = _Run.store_transition
+            def record(run, sim, node, action, child):
+                trace.append((node, action, child))
+                store(run, sim, node, action, child)
+            policy = ObservationOpponentPolicy()
+            def choose(info):
+                observed.append(info)
+                return policy(info)
+            search = InformationSetSearch(opponent_policy=choose, rollout_policy=choose,
+                selection=selection, transition_cache_size=cache, trajectory_mode=mode,
+                budget=budget or InformationSearchBudget(worlds=2, iterations=6, max_advances=48, max_depth=3))
+            with patch.object(_Run, "store_transition", record):
+                result = search.search(factory, info, seed=42)
+            rows.append(result)
+            traces.append(trace)
+            inputs.append(observed)
+        a, b = rows
+        assert replace(a, metrics=b.metrics) == b
+        ignored = {"elapsed_ms", "cpu_ms", "world_initialization_ms", "advance_ms", "trajectory_runs",
+                   "checkpoint_hits", "checkpoint_entries", "checkpoint_skipped_decisions",
+                   "world_materializations", "world_restores"}
+>       assert {k: v for k, v in asdict(a.metrics).items() if k not in ignored} == {
+            k: v for k, v in asdict(b.metrics).items() if k not in ignored}
+E       AssertionError: assert {'worlds_buil...pts': 30, ...} == {'worlds_buil...pts': 30, ...}
+E         
+E         Omitting 44 identical items, use -vv to show
+E         Differing items:
+E         {'structured_value_hits': 1697} != {'structured_value_hits': 1427}
+E         Use -v to get more diff
+
+Cards\tests\test_search_trajectory.py:39: AssertionError
+_ test_streamed_search_matches_every_transition_and_policy_input[0-puct-lethal_shock] _
+
+case = 'lethal_shock', selection = 'puct', cache = 0
+
+    @pytest.mark.parametrize("case", ["lethal_shock", "answered_shock", "attack_pacified"])
+    @pytest.mark.parametrize("selection", ["uct", "puct", "hierarchical_puct"])
+    @pytest.mark.parametrize("cache", [0, 1, 256])
+    def test_streamed_search_matches_every_transition_and_policy_input(case, selection, cache):
+        builds = []
+        def factory(seed):
+            def build(controllers):
+                builds.append(1)
+                return tactical_scenario(case)(controllers)
+            return SearchSimulator(build, policy_for=tactical_policy, track_information=True)
+>       a, b = compare(factory, selection=selection, cache=cache)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Cards\tests\test_search_trajectory.py:57: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+factory = <function test_streamed_search_matches_every_transition_and_policy_input.<locals>.factory at 0x0000025DA7BB22A0>
+selection = 'puct', cache = 0, budget = None
+
+    def compare(factory, *, selection="uct", cache=256, budget=None):
+        info = factory(0).start().player_information()
+        rows, traces, inputs = [], [], []
+        for mode in ("replay", "continuous"):
+            trace, observed = [], []
+            store = _Run.store_transition
+            def record(run, sim, node, action, child):
+                trace.append((node, action, child))
+                store(run, sim, node, action, child)
+            policy = ObservationOpponentPolicy()
+            def choose(info):
+                observed.append(info)
+                return policy(info)
+            search = InformationSetSearch(opponent_policy=choose, rollout_policy=choose,
+                selection=selection, transition_cache_size=cache, trajectory_mode=mode,
+                budget=budget or InformationSearchBudget(worlds=2, iterations=6, max_advances=48, max_depth=3))
+            with patch.object(_Run, "store_transition", record):
+                result = search.search(factory, info, seed=42)
+            rows.append(result)
+            traces.append(trace)
+            inputs.append(observed)
+        a, b = rows
+        assert replace(a, metrics=b.metrics) == b
+        ignored = {"elapsed_ms", "cpu_ms", "world_initialization_ms", "advance_ms", "trajectory_runs",
+                   "checkpoint_hits", "checkpoint_entries", "checkpoint_skipped_decisions",
+                   "world_materializations", "world_restores"}
+>       assert {k: v for k, v in asdict(a.metrics).items() if k not in ignored} == {
+            k: v for k, v in asdict(b.metrics).items() if k not in ignored}
+E       AssertionError: assert {'worlds_buil...pts': 22, ...} == {'worlds_buil...pts': 22, ...}
+E         
+E         Omitting 44 identical items, use -vv to show
+E         Differing items:
+E         {'structured_value_hits': 1579} != {'structured_value_hits': 1435}
+E         Use -v to get more diff
+
+Cards\tests\test_search_trajectory.py:39: AssertionError
+_ test_streamed_search_matches_every_transition_and_policy_input[0-puct-answered_shock] _
+
+case = 'answered_shock', selection = 'puct', cache = 0
+
+    @pytest.mark.parametrize("case", ["lethal_shock", "answered_shock", "attack_pacified"])
+    @pytest.mark.parametrize("selection", ["uct", "puct", "hierarchical_puct"])
+    @pytest.mark.parametrize("cache", [0, 1, 256])
+    def test_streamed_search_matches_every_transition_and_policy_input(case, selection, cache):
+        builds = []
+        def factory(seed):
+            def build(controllers):
+                builds.append(1)
+                return tactical_scenario(case)(controllers)
+            return SearchSimulator(build, policy_for=tactical_policy, track_information=True)
+>       a, b = compare(factory, selection=selection, cache=cache)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Cards\tests\test_search_trajectory.py:57: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+factory = <function test_streamed_search_matches_every_transition_and_policy_input.<locals>.factory at 0x0000025DA7882AC0>
+selection = 'puct', cache = 0, budget = None
+
+    def compare(factory, *, selection="uct", cache=256, budget=None):
+        info = factory(0).start().player_information()
+        rows, traces, inputs = [], [], []
+        for mode in ("replay", "continuous"):
+            trace, observed = [], []
+            store = _Run.store_transition
+            def record(run, sim, node, action, child):
+                trace.append((node, action, child))
+                store(run, sim, node, action, child)
+            policy = ObservationOpponentPolicy()
+            def choose(info):
+                observed.append(info)
+                return policy(info)
+            search = InformationSetSearch(opponent_policy=choose, rollout_policy=choose,
+                selection=selection, transition_cache_size=cache, trajectory_mode=mode,
+                budget=budget or InformationSearchBudget(worlds=2, iterations=6, max_advances=48, max_depth=3))
+            with patch.object(_Run, "store_transition", record):
+                result = search.search(factory, info, seed=42)
+            rows.append(result)
+            traces.append(trace)
+            inputs.append(observed)
+        a, b = rows
+        assert replace(a, metrics=b.metrics) == b
+        ignored = {"elapsed_ms", "cpu_ms", "world_initialization_ms", "advance_ms", "trajectory_runs",
+                   "checkpoint_hits", "checkpoint_entries", "checkpoint_skipped_decisions",
+                   "world_materializations", "world_restores"}
+>       assert {k: v for k, v in asdict(a.metrics).items() if k not in ignored} == {
+            k: v for k, v in asdict(b.metrics).items() if k not in ignored}
+E       AssertionError: assert {'worlds_buil...pts': 28, ...} == {'worlds_buil...pts': 28, ...}
+E         
+E         Omitting 44 identical items, use -vv to show
+E         Differing items:
+E         {'structured_value_hits': 3347} != {'structured_value_hits': 3110}
+E         Use -v to get more diff
+
+Cards\tests\test_search_trajectory.py:39: AssertionError
+_ test_streamed_search_matches_every_transition_and_policy_input[0-puct-attack_pacified] _
+
+case = 'attack_pacified', selection = 'puct', cache = 0
+
+    @pytest.mark.parametrize("case", ["lethal_shock", "answered_shock", "attack_pacified"])
+    @pytest.mark.parametrize("selection", ["uct", "puct", "hierarchical_puct"])
+    @pytest.mark.parametrize("cache", [0, 1, 256])
+    def test_streamed_search_matches_every_transition_and_policy_input(case, selection, cache):
+        builds = []
+        def factory(seed):
+            def build(controllers):
+                builds.append(1)
+                return tactical_scenario(case)(controllers)
+            return SearchSimulator(build, policy_for=tactical_policy, track_information=True)
+>       a, b = compare(factory, selection=selection, cache=cache)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Cards\tests\test_search_trajectory.py:57: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+factory = <function test_streamed_search_matches_every_transition_and_policy_input.<locals>.factory at 0x0000025DA78819E0>
+selection = 'puct', cache = 0, budget = None
+
+    def compare(factory, *, selection="uct", cache=256, budget=None):
+        info = factory(0).start().player_information()
+        rows, traces, inputs = [], [], []
+        for mode in ("replay", "continuous"):
+            trace, observed = [], []
+            store = _Run.store_transition
+            def record(run, sim, node, action, child):
+                trace.append((node, action, child))
+                store(run, sim, node, action, child)
+            policy = ObservationOpponentPolicy()
+            def choose(info):
+                observed.append(info)
+                return policy(info)
+            search = InformationSetSearch(opponent_policy=choose, rollout_policy=choose,
+                selection=selection, transition_cache_size=cache, trajectory_mode=mode,
+                budget=budget or InformationSearchBudget(worlds=2, iterations=6, max_advances=48, max_depth=3))
+            with patch.object(_Run, "store_transition", record):
+                result = search.search(factory, info, seed=42)
+            rows.append(result)
+            traces.append(trace)
+            inputs.append(observed)
+        a, b = rows
+        assert replace(a, metrics=b.metrics) == b
+        ignored = {"elapsed_ms", "cpu_ms", "world_initialization_ms", "advance_ms", "trajectory_runs",
+                   "checkpoint_hits", "checkpoint_entries", "checkpoint_skipped_decisions",
+                   "world_materializations", "world_restores"}
+>       assert {k: v for k, v in asdict(a.metrics).items() if k not in ignored} == {
+            k: v for k, v in asdict(b.metrics).items() if k not in ignored}
+E       AssertionError: assert {'worlds_buil...pts': 33, ...} == {'worlds_buil...pts': 33, ...}
+E         
+E         Omitting 44 identical items, use -vv to show
+E         Differing items:
+E         {'structured_value_hits': 1748} != {'structured_value_hits': 1433}
+E         Use -v to get more diff
+
+Cards\tests\test_search_trajectory.py:39: AssertionError
+_ test_streamed_search_matches_every_transition_and_policy_input[0-hierarchical_puct-lethal_shock] _
+
+case = 'lethal_shock', selection = 'hierarchical_puct', cache = 0
+
+    @pytest.mark.parametrize("case", ["lethal_shock", "answered_shock", "attack_pacified"])
+    @pytest.mark.parametrize("selection", ["uct", "puct", "hierarchical_puct"])
+    @pytest.mark.parametrize("cache", [0, 1, 256])
+    def test_streamed_search_matches_every_transition_and_policy_input(case, selection, cache):
+        builds = []
+        def factory(seed):
+            def build(controllers):
+                builds.append(1)
+                return tactical_scenario(case)(controllers)
+            return SearchSimulator(build, policy_for=tactical_policy, track_information=True)
+>       a, b = compare(factory, selection=selection, cache=cache)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Cards\tests\test_search_trajectory.py:57: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+factory = <function test_streamed_search_matches_every_transition_and_policy_input.<locals>.factory at 0x0000025DA7980400>
+selection = 'hierarchical_puct', cache = 0, budget = None
+
+    def compare(factory, *, selection="uct", cache=256, budget=None):
+        info = factory(0).start().player_information()
+        rows, traces, inputs = [], [], []
+        for mode in ("replay", "continuous"):
+            trace, observed = [], []
+            store = _Run.store_transition
+            def record(run, sim, node, action, child):
+                trace.append((node, action, child))
+                store(run, sim, node, action, child)
+            policy = ObservationOpponentPolicy()
+            def choose(info):
+                observed.append(info)
+                return policy(info)
+            search = InformationSetSearch(opponent_policy=choose, rollout_policy=choose,
+                selection=selection, transition_cache_size=cache, trajectory_mode=mode,
+                budget=budget or InformationSearchBudget(worlds=2, iterations=6, max_advances=48, max_depth=3))
+            with patch.object(_Run, "store_transition", record):
+                result = search.search(factory, info, seed=42)
+            rows.append(result)
+            traces.append(trace)
+            inputs.append(observed)
+        a, b = rows
+        assert replace(a, metrics=b.metrics) == b
+        ignored = {"elapsed_ms", "cpu_ms", "world_initialization_ms", "advance_ms", "trajectory_runs",
+                   "checkpoint_hits", "checkpoint_entries", "checkpoint_skipped_decisions",
+                   "world_materializations", "world_restores"}
+>       assert {k: v for k, v in asdict(a.metrics).items() if k not in ignored} == {
+            k: v for k, v in asdict(b.metrics).items() if k not in ignored}
+E       AssertionError: assert {'worlds_buil...pts': 22, ...} == {'worlds_buil...pts': 22, ...}
+E         
+E         Omitting 44 identical items, use -vv to show
+E         Differing items:
+E         {'structured_value_hits': 1634} != {'structured_value_hits': 1490}
+E         Use -v to get more diff
+
+Cards\tests\test_search_trajectory.py:39: AssertionError
+_ test_streamed_search_matches_every_transition_and_policy_input[0-hierarchical_puct-answered_shock] _
+
+case = 'answered_shock', selection = 'hierarchical_puct', cache = 0
+
+    @pytest.mark.parametrize("case", ["lethal_shock", "answered_shock", "attack_pacified"])
+    @pytest.mark.parametrize("selection", ["uct", "puct", "hierarchical_puct"])
+    @pytest.mark.parametrize("cache", [0, 1, 256])
+    def test_streamed_search_matches_every_transition_and_policy_input(case, selection, cache):
+        builds = []
+        def factory(seed):
+            def build(controllers):
+                builds.append(1)
+                return tactical_scenario(case)(controllers)
+            return SearchSimulator(build, policy_for=tactical_policy, track_information=True)
+>       a, b = compare(factory, selection=selection, cache=cache)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Cards\tests\test_search_trajectory.py:57: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+factory = <function test_streamed_search_matches_every_transition_and_policy_input.<locals>.factory at 0x0000025DA7A88040>
+selection = 'hierarchical_puct', cache = 0, budget = None
+
+    def compare(factory, *, selection="uct", cache=256, budget=None):
+        info = factory(0).start().player_information()
+        rows, traces, inputs = [], [], []
+        for mode in ("replay", "continuous"):
+            trace, observed = [], []
+            store = _Run.store_transition
+            def record(run, sim, node, action, child):
+                trace.append((node, action, child))
+                store(run, sim, node, action, child)
+            policy = ObservationOpponentPolicy()
+            def choose(info):
+                observed.append(info)
+                return policy(info)
+            search = InformationSetSearch(opponent_policy=choose, rollout_policy=choose,
+                selection=selection, transition_cache_size=cache, trajectory_mode=mode,
+                budget=budget or InformationSearchBudget(worlds=2, iterations=6, max_advances=48, max_depth=3))
+            with patch.object(_Run, "store_transition", record):
+                result = search.search(factory, info, seed=42)
+            rows.append(result)
+            traces.append(trace)
+            inputs.append(observed)
+        a, b = rows
+        assert replace(a, metrics=b.metrics) == b
+        ignored = {"elapsed_ms", "cpu_ms", "world_initialization_ms", "advance_ms", "trajectory_runs",
+                   "checkpoint_hits", "checkpoint_entries", "checkpoint_skipped_decisions",
+                   "world_materializations", "world_restores"}
+>       assert {k: v for k, v in asdict(a.metrics).items() if k not in ignored} == {
+            k: v for k, v in asdict(b.metrics).items() if k not in ignored}
+E       AssertionError: assert {'worlds_buil...pts': 28, ...} == {'worlds_buil...pts': 28, ...}
+E         
+E         Omitting 44 identical items, use -vv to show
+E         Differing items:
+E         {'structured_value_hits': 3801} != {'structured_value_hits': 3564}
+E         Use -v to get more diff
+
+Cards\tests\test_search_trajectory.py:39: AssertionError
+_ test_streamed_search_matches_every_transition_and_policy_input[0-hierarchical_puct-attack_pacified] _
+
+case = 'attack_pacified', selection = 'hierarchical_puct', cache = 0
+
+    @pytest.mark.parametrize("case", ["lethal_shock", "answered_shock", "attack_pacified"])
+    @pytest.mark.parametrize("selection", ["uct", "puct", "hierarchical_puct"])
+    @pytest.mark.parametrize("cache", [0, 1, 256])
+    def test_streamed_search_matches_every_transition_and_policy_input(case, selection, cache):
+        builds = []
+        def factory(seed):
+            def build(controllers):
+                builds.append(1)
+                return tactical_scenario(case)(controllers)
+            return SearchSimulator(build, policy_for=tactical_policy, track_information=True)
+>       a, b = compare(factory, selection=selection, cache=cache)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Cards\tests\test_search_trajectory.py:57: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+factory = <function test_streamed_search_matches_every_transition_and_policy_input.<locals>.factory at 0x0000025DA88DCA40>
+selection = 'hierarchical_puct', cache = 0, budget = None
+
+    def compare(factory, *, selection="uct", cache=256, budget=None):
+        info = factory(0).start().player_information()
+        rows, traces, inputs = [], [], []
+        for mode in ("replay", "continuous"):
+            trace, observed = [], []
+            store = _Run.store_transition
+            def record(run, sim, node, action, child):
+                trace.append((node, action, child))
+                store(run, sim, node, action, child)
+            policy = ObservationOpponentPolicy()
+            def choose(info):
+                observed.append(info)
+                return policy(info)
+            search = InformationSetSearch(opponent_policy=choose, rollout_policy=choose,
+                selection=selection, transition_cache_size=cache, trajectory_mode=mode,
+                budget=budget or InformationSearchBudget(worlds=2, iterations=6, max_advances=48, max_depth=3))
+            with patch.object(_Run, "store_transition", record):
+                result = search.search(factory, info, seed=42)
+            rows.append(result)
+            traces.append(trace)
+            inputs.append(observed)
+        a, b = rows
+        assert replace(a, metrics=b.metrics) == b
+        ignored = {"elapsed_ms", "cpu_ms", "world_initialization_ms", "advance_ms", "trajectory_runs",
+                   "checkpoint_hits", "checkpoint_entries", "checkpoint_skipped_decisions",
+                   "world_materializations", "world_restores"}
+>       assert {k: v for k, v in asdict(a.metrics).items() if k not in ignored} == {
+            k: v for k, v in asdict(b.metrics).items() if k not in ignored}
+E       AssertionError: assert {'worlds_buil...pts': 33, ...} == {'worlds_buil...pts': 33, ...}
+E         
+E         Omitting 44 identical items, use -vv to show
+E         Differing items:
+E         {'structured_value_hits': 1748} != {'structured_value_hits': 1433}
+E         Use -v to get more diff
+
+Cards\tests\test_search_trajectory.py:39: AssertionError
+_ test_streamed_search_matches_every_transition_and_policy_input[1-uct-lethal_shock] _
+
+case = 'lethal_shock', selection = 'uct', cache = 1
+
+    @pytest.mark.parametrize("case", ["lethal_shock", "answered_shock", "attack_pacified"])
+    @pytest.mark.parametrize("selection", ["uct", "puct", "hierarchical_puct"])
+    @pytest.mark.parametrize("cache", [0, 1, 256])
+    def test_streamed_search_matches_every_transition_and_policy_input(case, selection, cache):
+        builds = []
+        def factory(seed):
+            def build(controllers):
+                builds.append(1)
+                return tactical_scenario(case)(controllers)
+            return SearchSimulator(build, policy_for=tactical_policy, track_information=True)
+>       a, b = compare(factory, selection=selection, cache=cache)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Cards\tests\test_search_trajectory.py:57: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+factory = <function test_streamed_search_matches_every_transition_and_policy_input.<locals>.factory at 0x0000025DA88DCD60>
+selection = 'uct', cache = 1, budget = None
+
+    def compare(factory, *, selection="uct", cache=256, budget=None):
+        info = factory(0).start().player_information()
+        rows, traces, inputs = [], [], []
+        for mode in ("replay", "continuous"):
+            trace, observed = [], []
+            store = _Run.store_transition
+            def record(run, sim, node, action, child):
+                trace.append((node, action, child))
+                store(run, sim, node, action, child)
+            policy = ObservationOpponentPolicy()
+            def choose(info):
+                observed.append(info)
+                return policy(info)
+            search = InformationSetSearch(opponent_policy=choose, rollout_policy=choose,
+                selection=selection, transition_cache_size=cache, trajectory_mode=mode,
+                budget=budget or InformationSearchBudget(worlds=2, iterations=6, max_advances=48, max_depth=3))
+            with patch.object(_Run, "store_transition", record):
+                result = search.search(factory, info, seed=42)
+            rows.append(result)
+            traces.append(trace)
+            inputs.append(observed)
+        a, b = rows
+        assert replace(a, metrics=b.metrics) == b
+        ignored = {"elapsed_ms", "cpu_ms", "world_initialization_ms", "advance_ms", "trajectory_runs",
+                   "checkpoint_hits", "checkpoint_entries", "checkpoint_skipped_decisions",
+                   "world_materializations", "world_restores"}
+>       assert {k: v for k, v in asdict(a.metrics).items() if k not in ignored} == {
+            k: v for k, v in asdict(b.metrics).items() if k not in ignored}
+E       AssertionError: assert {'worlds_buil...pts': 22, ...} == {'worlds_buil...pts': 22, ...}
+E         
+E         Omitting 44 identical items, use -vv to show
+E         Differing items:
+E         {'structured_value_hits': 1579} != {'structured_value_hits': 1435}
+E         Use -v to get more diff
+
+Cards\tests\test_search_trajectory.py:39: AssertionError
+_ test_streamed_search_matches_every_transition_and_policy_input[1-uct-answered_shock] _
+
+case = 'answered_shock', selection = 'uct', cache = 1
+
+    @pytest.mark.parametrize("case", ["lethal_shock", "answered_shock", "attack_pacified"])
+    @pytest.mark.parametrize("selection", ["uct", "puct", "hierarchical_puct"])
+    @pytest.mark.parametrize("cache", [0, 1, 256])
+    def test_streamed_search_matches_every_transition_and_policy_input(case, selection, cache):
+        builds = []
+        def factory(seed):
+            def build(controllers):
+                builds.append(1)
+                return tactical_scenario(case)(controllers)
+            return SearchSimulator(build, policy_for=tactical_policy, track_information=True)
+>       a, b = compare(factory, selection=selection, cache=cache)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Cards\tests\test_search_trajectory.py:57: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+factory = <function test_streamed_search_matches_every_transition_and_policy_input.<locals>.factory at 0x0000025DA88127A0>
+selection = 'uct', cache = 1, budget = None
+
+    def compare(factory, *, selection="uct", cache=256, budget=None):
+        info = factory(0).start().player_information()
+        rows, traces, inputs = [], [], []
+        for mode in ("replay", "continuous"):
+            trace, observed = [], []
+            store = _Run.store_transition
+            def record(run, sim, node, action, child):
+                trace.append((node, action, child))
+                store(run, sim, node, action, child)
+            policy = ObservationOpponentPolicy()
+            def choose(info):
+                observed.append(info)
+                return policy(info)
+            search = InformationSetSearch(opponent_policy=choose, rollout_policy=choose,
+                selection=selection, transition_cache_size=cache, trajectory_mode=mode,
+                budget=budget or InformationSearchBudget(worlds=2, iterations=6, max_advances=48, max_depth=3))
+            with patch.object(_Run, "store_transition", record):
+                result = search.search(factory, info, seed=42)
+            rows.append(result)
+            traces.append(trace)
+            inputs.append(observed)
+        a, b = rows
+        assert replace(a, metrics=b.metrics) == b
+        ignored = {"elapsed_ms", "cpu_ms", "world_initialization_ms", "advance_ms", "trajectory_runs",
+                   "checkpoint_hits", "checkpoint_entries", "checkpoint_skipped_decisions",
+                   "world_materializations", "world_restores"}
+>       assert {k: v for k, v in asdict(a.metrics).items() if k not in ignored} == {
+            k: v for k, v in asdict(b.metrics).items() if k not in ignored}
+E       AssertionError: assert {'worlds_buil...pts': 28, ...} == {'worlds_buil...pts': 28, ...}
+E         
+E         Omitting 44 identical items, use -vv to show
+E         Differing items:
+E         {'structured_value_hits': 3347} != {'structured_value_hits': 3110}
+E         Use -v to get more diff
+
+Cards\tests\test_search_trajectory.py:39: AssertionError
+_ test_streamed_search_matches_every_transition_and_policy_input[1-uct-attack_pacified] _
+
+case = 'attack_pacified', selection = 'uct', cache = 1
+
+    @pytest.mark.parametrize("case", ["lethal_shock", "answered_shock", "attack_pacified"])
+    @pytest.mark.parametrize("selection", ["uct", "puct", "hierarchical_puct"])
+    @pytest.mark.parametrize("cache", [0, 1, 256])
+    def test_streamed_search_matches_every_transition_and_policy_input(case, selection, cache):
+        builds = []
+        def factory(seed):
+            def build(controllers):
+                builds.append(1)
+                return tactical_scenario(case)(controllers)
+            return SearchSimulator(build, policy_for=tactical_policy, track_information=True)
+>       a, b = compare(factory, selection=selection, cache=cache)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Cards\tests\test_search_trajectory.py:57: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+factory = <function test_streamed_search_matches_every_transition_and_policy_input.<locals>.factory at 0x0000025DA8812340>
+selection = 'uct', cache = 1, budget = None
+
+    def compare(factory, *, selection="uct", cache=256, budget=None):
+        info = factory(0).start().player_information()
+        rows, traces, inputs = [], [], []
+        for mode in ("replay", "continuous"):
+            trace, observed = [], []
+            store = _Run.store_transition
+            def record(run, sim, node, action, child):
+                trace.append((node, action, child))
+                store(run, sim, node, action, child)
+            policy = ObservationOpponentPolicy()
+            def choose(info):
+                observed.append(info)
+                return policy(info)
+            search = InformationSetSearch(opponent_policy=choose, rollout_policy=choose,
+                selection=selection, transition_cache_size=cache, trajectory_mode=mode,
+                budget=budget or InformationSearchBudget(worlds=2, iterations=6, max_advances=48, max_depth=3))
+            with patch.object(_Run, "store_transition", record):
+                result = search.search(factory, info, seed=42)
+            rows.append(result)
+            traces.append(trace)
+            inputs.append(observed)
+        a, b = rows
+        assert replace(a, metrics=b.metrics) == b
+        ignored = {"elapsed_ms", "cpu_ms", "world_initialization_ms", "advance_ms", "trajectory_runs",
+                   "checkpoint_hits", "checkpoint_entries", "checkpoint_skipped_decisions",
+                   "world_materializations", "world_restores"}
+>       assert {k: v for k, v in asdict(a.metrics).items() if k not in ignored} == {
+            k: v for k, v in asdict(b.metrics).items() if k not in ignored}
+E       AssertionError: assert {'worlds_buil...pts': 30, ...} == {'worlds_buil...pts': 30, ...}
+E         
+E         Omitting 44 identical items, use -vv to show
+E         Differing items:
+E         {'structured_value_hits': 1697} != {'structured_value_hits': 1427}
+E         Use -v to get more diff
+
+Cards\tests\test_search_trajectory.py:39: AssertionError
+_ test_streamed_search_matches_every_transition_and_policy_input[1-puct-lethal_shock] _
+
+case = 'lethal_shock', selection = 'puct', cache = 1
+
+    @pytest.mark.parametrize("case", ["lethal_shock", "answered_shock", "attack_pacified"])
+    @pytest.mark.parametrize("selection", ["uct", "puct", "hierarchical_puct"])
+    @pytest.mark.parametrize("cache", [0, 1, 256])
+    def test_streamed_search_matches_every_transition_and_policy_input(case, selection, cache):
+        builds = []
+        def factory(seed):
+            def build(controllers):
+                builds.append(1)
+                return tactical_scenario(case)(controllers)
+            return SearchSimulator(build, policy_for=tactical_policy, track_information=True)
+>       a, b = compare(factory, selection=selection, cache=cache)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Cards\tests\test_search_trajectory.py:57: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+factory = <function test_streamed_search_matches_every_transition_and_policy_input.<locals>.factory at 0x0000025DA79D0C20>
+selection = 'puct', cache = 1, budget = None
+
+    def compare(factory, *, selection="uct", cache=256, budget=None):
+        info = factory(0).start().player_information()
+        rows, traces, inputs = [], [], []
+        for mode in ("replay", "continuous"):
+            trace, observed = [], []
+            store = _Run.store_transition
+            def record(run, sim, node, action, child):
+                trace.append((node, action, child))
+                store(run, sim, node, action, child)
+            policy = ObservationOpponentPolicy()
+            def choose(info):
+                observed.append(info)
+                return policy(info)
+            search = InformationSetSearch(opponent_policy=choose, rollout_policy=choose,
+                selection=selection, transition_cache_size=cache, trajectory_mode=mode,
+                budget=budget or InformationSearchBudget(worlds=2, iterations=6, max_advances=48, max_depth=3))
+            with patch.object(_Run, "store_transition", record):
+                result = search.search(factory, info, seed=42)
+            rows.append(result)
+            traces.append(trace)
+            inputs.append(observed)
+        a, b = rows
+        assert replace(a, metrics=b.metrics) == b
+        ignored = {"elapsed_ms", "cpu_ms", "world_initialization_ms", "advance_ms", "trajectory_runs",
+                   "checkpoint_hits", "checkpoint_entries", "checkpoint_skipped_decisions",
+                   "world_materializations", "world_restores"}
+>       assert {k: v for k, v in asdict(a.metrics).items() if k not in ignored} == {
+            k: v for k, v in asdict(b.metrics).items() if k not in ignored}
+E       AssertionError: assert {'worlds_buil...pts': 22, ...} == {'worlds_buil...pts': 22, ...}
+E         
+E         Omitting 44 identical items, use -vv to show
+E         Differing items:
+E         {'structured_value_hits': 1579} != {'structured_value_hits': 1435}
+E         Use -v to get more diff
+
+Cards\tests\test_search_trajectory.py:39: AssertionError
+_ test_streamed_search_matches_every_transition_and_policy_input[1-puct-answered_shock] _
+
+case = 'answered_shock', selection = 'puct', cache = 1
+
+    @pytest.mark.parametrize("case", ["lethal_shock", "answered_shock", "attack_pacified"])
+    @pytest.mark.parametrize("selection", ["uct", "puct", "hierarchical_puct"])
+    @pytest.mark.parametrize("cache", [0, 1, 256])
+    def test_streamed_search_matches_every_transition_and_policy_input(case, selection, cache):
+        builds = []
+        def factory(seed):
+            def build(controllers):
+                builds.append(1)
+                return tactical_scenario(case)(controllers)
+            return SearchSimulator(build, policy_for=tactical_policy, track_information=True)
+>       a, b = compare(factory, selection=selection, cache=cache)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Cards\tests\test_search_trajectory.py:57: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+factory = <function test_streamed_search_matches_every_transition_and_policy_input.<locals>.factory at 0x0000025DA7882DE0>
+selection = 'puct', cache = 1, budget = None
+
+    def compare(factory, *, selection="uct", cache=256, budget=None):
+        info = factory(0).start().player_information()
+        rows, traces, inputs = [], [], []
+        for mode in ("replay", "continuous"):
+            trace, observed = [], []
+            store = _Run.store_transition
+            def record(run, sim, node, action, child):
+                trace.append((node, action, child))
+                store(run, sim, node, action, child)
+            policy = ObservationOpponentPolicy()
+            def choose(info):
+                observed.append(info)
+                return policy(info)
+            search = InformationSetSearch(opponent_policy=choose, rollout_policy=choose,
+                selection=selection, transition_cache_size=cache, trajectory_mode=mode,
+                budget=budget or InformationSearchBudget(worlds=2, iterations=6, max_advances=48, max_depth=3))
+            with patch.object(_Run, "store_transition", record):
+                result = search.search(factory, info, seed=42)
+            rows.append(result)
+            traces.append(trace)
+            inputs.append(observed)
+        a, b = rows
+        assert replace(a, metrics=b.metrics) == b
+        ignored = {"elapsed_ms", "cpu_ms", "world_initialization_ms", "advance_ms", "trajectory_runs",
+                   "checkpoint_hits", "checkpoint_entries", "checkpoint_skipped_decisions",
+                   "world_materializations", "world_restores"}
+>       assert {k: v for k, v in asdict(a.metrics).items() if k not in ignored} == {
+            k: v for k, v in asdict(b.metrics).items() if k not in ignored}
+E       AssertionError: assert {'worlds_buil...pts': 28, ...} == {'worlds_buil...pts': 28, ...}
+E         
+E         Omitting 44 identical items, use -vv to show
+E         Differing items:
+E         {'structured_value_hits': 3347} != {'structured_value_hits': 3110}
+E         Use -v to get more diff
+
+Cards\tests\test_search_trajectory.py:39: AssertionError
+_ test_streamed_search_matches_every_transition_and_policy_input[1-puct-attack_pacified] _
+
+case = 'attack_pacified', selection = 'puct', cache = 1
+
+    @pytest.mark.parametrize("case", ["lethal_shock", "answered_shock", "attack_pacified"])
+    @pytest.mark.parametrize("selection", ["uct", "puct", "hierarchical_puct"])
+    @pytest.mark.parametrize("cache", [0, 1, 256])
+    def test_streamed_search_matches_every_transition_and_policy_input(case, selection, cache):
+        builds = []
+        def factory(seed):
+            def build(controllers):
+                builds.append(1)
+                return tactical_scenario(case)(controllers)
+            return SearchSimulator(build, policy_for=tactical_policy, track_information=True)
+>       a, b = compare(factory, selection=selection, cache=cache)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Cards\tests\test_search_trajectory.py:57: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+factory = <function test_streamed_search_matches_every_transition_and_policy_input.<locals>.factory at 0x0000025DA78839C0>
+selection = 'puct', cache = 1, budget = None
+
+    def compare(factory, *, selection="uct", cache=256, budget=None):
+        info = factory(0).start().player_information()
+        rows, traces, inputs = [], [], []
+        for mode in ("replay", "continuous"):
+            trace, observed = [], []
+            store = _Run.store_transition
+            def record(run, sim, node, action, child):
+                trace.append((node, action, child))
+                store(run, sim, node, action, child)
+            policy = ObservationOpponentPolicy()
+            def choose(info):
+                observed.append(info)
+                return policy(info)
+            search = InformationSetSearch(opponent_policy=choose, rollout_policy=choose,
+                selection=selection, transition_cache_size=cache, trajectory_mode=mode,
+                budget=budget or InformationSearchBudget(worlds=2, iterations=6, max_advances=48, max_depth=3))
+            with patch.object(_Run, "store_transition", record):
+                result = search.search(factory, info, seed=42)
+            rows.append(result)
+            traces.append(trace)
+            inputs.append(observed)
+        a, b = rows
+        assert replace(a, metrics=b.metrics) == b
+        ignored = {"elapsed_ms", "cpu_ms", "world_initialization_ms", "advance_ms", "trajectory_runs",
+                   "checkpoint_hits", "checkpoint_entries", "checkpoint_skipped_decisions",
+                   "world_materializations", "world_restores"}
+>       assert {k: v for k, v in asdict(a.metrics).items() if k not in ignored} == {
+            k: v for k, v in asdict(b.metrics).items() if k not in ignored}
+E       AssertionError: assert {'worlds_buil...pts': 33, ...} == {'worlds_buil...pts': 33, ...}
+E         
+E         Omitting 44 identical items, use -vv to show
+E         Differing items:
+E         {'structured_value_hits': 1748} != {'structured_value_hits': 1433}
+E         Use -v to get more diff
+
+Cards\tests\test_search_trajectory.py:39: AssertionError
+_ test_streamed_search_matches_every_transition_and_policy_input[1-hierarchical_puct-lethal_shock] _
+
+case = 'lethal_shock', selection = 'hierarchical_puct', cache = 1
+
+    @pytest.mark.parametrize("case", ["lethal_shock", "answered_shock", "attack_pacified"])
+    @pytest.mark.parametrize("selection", ["uct", "puct", "hierarchical_puct"])
+    @pytest.mark.parametrize("cache", [0, 1, 256])
+    def test_streamed_search_matches_every_transition_and_policy_input(case, selection, cache):
+        builds = []
+        def factory(seed):
+            def build(controllers):
+                builds.append(1)
+                return tactical_scenario(case)(controllers)
+            return SearchSimulator(build, policy_for=tactical_policy, track_information=True)
+>       a, b = compare(factory, selection=selection, cache=cache)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Cards\tests\test_search_trajectory.py:57: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+factory = <function test_streamed_search_matches_every_transition_and_policy_input.<locals>.factory at 0x0000025DAA68FC40>
+selection = 'hierarchical_puct', cache = 1, budget = None
+
+    def compare(factory, *, selection="uct", cache=256, budget=None):
+        info = factory(0).start().player_information()
+        rows, traces, inputs = [], [], []
+        for mode in ("replay", "continuous"):
+            trace, observed = [], []
+            store = _Run.store_transition
+            def record(run, sim, node, action, child):
+                trace.append((node, action, child))
+                store(run, sim, node, action, child)
+            policy = ObservationOpponentPolicy()
+            def choose(info):
+                observed.append(info)
+                return policy(info)
+            search = InformationSetSearch(opponent_policy=choose, rollout_policy=choose,
+                selection=selection, transition_cache_size=cache, trajectory_mode=mode,
+                budget=budget or InformationSearchBudget(worlds=2, iterations=6, max_advances=48, max_depth=3))
+            with patch.object(_Run, "store_transition", record):
+                result = search.search(factory, info, seed=42)
+            rows.append(result)
+            traces.append(trace)
+            inputs.append(observed)
+        a, b = rows
+        assert replace(a, metrics=b.metrics) == b
+        ignored = {"elapsed_ms", "cpu_ms", "world_initialization_ms", "advance_ms", "trajectory_runs",
+                   "checkpoint_hits", "checkpoint_entries", "checkpoint_skipped_decisions",
+                   "world_materializations", "world_restores"}
+>       assert {k: v for k, v in asdict(a.metrics).items() if k not in ignored} == {
+            k: v for k, v in asdict(b.metrics).items() if k not in ignored}
+E       AssertionError: assert {'worlds_buil...pts': 22, ...} == {'worlds_buil...pts': 22, ...}
+E         
+E         Omitting 44 identical items, use -vv to show
+E         Differing items:
+E         {'structured_value_hits': 1634} != {'structured_value_hits': 1490}
+E         Use -v to get more diff
+
+Cards\tests\test_search_trajectory.py:39: AssertionError
+_ test_streamed_search_matches_every_transition_and_policy_input[1-hierarchical_puct-answered_shock] _
+
+case = 'answered_shock', selection = 'hierarchical_puct', cache = 1
+
+    @pytest.mark.parametrize("case", ["lethal_shock", "answered_shock", "attack_pacified"])
+    @pytest.mark.parametrize("selection", ["uct", "puct", "hierarchical_puct"])
+    @pytest.mark.parametrize("cache", [0, 1, 256])
+    def test_streamed_search_matches_every_transition_and_policy_input(case, selection, cache):
+        builds = []
+        def factory(seed):
+            def build(controllers):
+                builds.append(1)
+                return tactical_scenario(case)(controllers)
+            return SearchSimulator(build, policy_for=tactical_policy, track_information=True)
+>       a, b = compare(factory, selection=selection, cache=cache)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Cards\tests\test_search_trajectory.py:57: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+factory = <function test_streamed_search_matches_every_transition_and_policy_input.<locals>.factory at 0x0000025DA8BDBC40>
+selection = 'hierarchical_puct', cache = 1, budget = None
+
+    def compare(factory, *, selection="uct", cache=256, budget=None):
+        info = factory(0).start().player_information()
+        rows, traces, inputs = [], [], []
+        for mode in ("replay", "continuous"):
+            trace, observed = [], []
+            store = _Run.store_transition
+            def record(run, sim, node, action, child):
+                trace.append((node, action, child))
+                store(run, sim, node, action, child)
+            policy = ObservationOpponentPolicy()
+            def choose(info):
+                observed.append(info)
+                return policy(info)
+            search = InformationSetSearch(opponent_policy=choose, rollout_policy=choose,
+                selection=selection, transition_cache_size=cache, trajectory_mode=mode,
+                budget=budget or InformationSearchBudget(worlds=2, iterations=6, max_advances=48, max_depth=3))
+            with patch.object(_Run, "store_transition", record):
+                result = search.search(factory, info, seed=42)
+            rows.append(result)
+            traces.append(trace)
+            inputs.append(observed)
+        a, b = rows
+        assert replace(a, metrics=b.metrics) == b
+        ignored = {"elapsed_ms", "cpu_ms", "world_initialization_ms", "advance_ms", "trajectory_runs",
+                   "checkpoint_hits", "checkpoint_entries", "checkpoint_skipped_decisions",
+                   "world_materializations", "world_restores"}
+>       assert {k: v for k, v in asdict(a.metrics).items() if k not in ignored} == {
+            k: v for k, v in asdict(b.metrics).items() if k not in ignored}
+E       AssertionError: assert {'worlds_buil...pts': 28, ...} == {'worlds_buil...pts': 28, ...}
+E         
+E         Omitting 44 identical items, use -vv to show
+E         Differing items:
+E         {'structured_value_hits': 3801} != {'structured_value_hits': 3564}
+E         Use -v to get more diff
+
+Cards\tests\test_search_trajectory.py:39: AssertionError
+_ test_streamed_search_matches_every_transition_and_policy_input[1-hierarchical_puct-attack_pacified] _
+
+case = 'attack_pacified', selection = 'hierarchical_puct', cache = 1
+
+    @pytest.mark.parametrize("case", ["lethal_shock", "answered_shock", "attack_pacified"])
+    @pytest.mark.parametrize("selection", ["uct", "puct", "hierarchical_puct"])
+    @pytest.mark.parametrize("cache", [0, 1, 256])
+    def test_streamed_search_matches_every_transition_and_policy_input(case, selection, cache):
+        builds = []
+        def factory(seed):
+            def build(controllers):
+                builds.append(1)
+                return tactical_scenario(case)(controllers)
+            return SearchSimulator(build, policy_for=tactical_policy, track_information=True)
+>       a, b = compare(factory, selection=selection, cache=cache)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Cards\tests\test_search_trajectory.py:57: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+factory = <function test_streamed_search_matches_every_transition_and_policy_input.<locals>.factory at 0x0000025DA8BDB6A0>
+selection = 'hierarchical_puct', cache = 1, budget = None
+
+    def compare(factory, *, selection="uct", cache=256, budget=None):
+        info = factory(0).start().player_information()
+        rows, traces, inputs = [], [], []
+        for mode in ("replay", "continuous"):
+            trace, observed = [], []
+            store = _Run.store_transition
+            def record(run, sim, node, action, child):
+                trace.append((node, action, child))
+                store(run, sim, node, action, child)
+            policy = ObservationOpponentPolicy()
+            def choose(info):
+                observed.append(info)
+                return policy(info)
+            search = InformationSetSearch(opponent_policy=choose, rollout_policy=choose,
+                selection=selection, transition_cache_size=cache, trajectory_mode=mode,
+                budget=budget or InformationSearchBudget(worlds=2, iterations=6, max_advances=48, max_depth=3))
+            with patch.object(_Run, "store_transition", record):
+                result = search.search(factory, info, seed=42)
+            rows.append(result)
+            traces.append(trace)
+            inputs.append(observed)
+        a, b = rows
+        assert replace(a, metrics=b.metrics) == b
+        ignored = {"elapsed_ms", "cpu_ms", "world_initialization_ms", "advance_ms", "trajectory_runs",
+                   "checkpoint_hits", "checkpoint_entries", "checkpoint_skipped_decisions",
+                   "world_materializations", "world_restores"}
+>       assert {k: v for k, v in asdict(a.metrics).items() if k not in ignored} == {
+            k: v for k, v in asdict(b.metrics).items() if k not in ignored}
+E       AssertionError: assert {'worlds_buil...pts': 33, ...} == {'worlds_buil...pts': 33, ...}
+E         
+E         Omitting 44 identical items, use -vv to show
+E         Differing items:
+E         {'structured_value_hits': 1748} != {'structured_value_hits': 1433}
+E         Use -v to get more diff
+
+Cards\tests\test_search_trajectory.py:39: AssertionError
+_ test_streamed_search_matches_every_transition_and_policy_input[256-uct-lethal_shock] _
+
+case = 'lethal_shock', selection = 'uct', cache = 256
+
+    @pytest.mark.parametrize("case", ["lethal_shock", "answered_shock", "attack_pacified"])
+    @pytest.mark.parametrize("selection", ["uct", "puct", "hierarchical_puct"])
+    @pytest.mark.parametrize("cache", [0, 1, 256])
+    def test_streamed_search_matches_every_transition_and_policy_input(case, selection, cache):
+        builds = []
+        def factory(seed):
+            def build(controllers):
+                builds.append(1)
+                return tactical_scenario(case)(controllers)
+            return SearchSimulator(build, policy_for=tactical_policy, track_information=True)
+>       a, b = compare(factory, selection=selection, cache=cache)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Cards\tests\test_search_trajectory.py:57: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+factory = <function test_streamed_search_matches_every_transition_and_policy_input.<locals>.factory at 0x0000025DA7F31DA0>
+selection = 'uct', cache = 256, budget = None
+
+    def compare(factory, *, selection="uct", cache=256, budget=None):
+        info = factory(0).start().player_information()
+        rows, traces, inputs = [], [], []
+        for mode in ("replay", "continuous"):
+            trace, observed = [], []
+            store = _Run.store_transition
+            def record(run, sim, node, action, child):
+                trace.append((node, action, child))
+                store(run, sim, node, action, child)
+            policy = ObservationOpponentPolicy()
+            def choose(info):
+                observed.append(info)
+                return policy(info)
+            search = InformationSetSearch(opponent_policy=choose, rollout_policy=choose,
+                selection=selection, transition_cache_size=cache, trajectory_mode=mode,
+                budget=budget or InformationSearchBudget(worlds=2, iterations=6, max_advances=48, max_depth=3))
+            with patch.object(_Run, "store_transition", record):
+                result = search.search(factory, info, seed=42)
+            rows.append(result)
+            traces.append(trace)
+            inputs.append(observed)
+        a, b = rows
+        assert replace(a, metrics=b.metrics) == b
+        ignored = {"elapsed_ms", "cpu_ms", "world_initialization_ms", "advance_ms", "trajectory_runs",
+                   "checkpoint_hits", "checkpoint_entries", "checkpoint_skipped_decisions",
+                   "world_materializations", "world_restores"}
+>       assert {k: v for k, v in asdict(a.metrics).items() if k not in ignored} == {
+            k: v for k, v in asdict(b.metrics).items() if k not in ignored}
+E       AssertionError: assert {'worlds_buil...pts': 22, ...} == {'worlds_buil...pts': 22, ...}
+E         
+E         Omitting 44 identical items, use -vv to show
+E         Differing items:
+E         {'structured_value_hits': 1516} != {'structured_value_hits': 1417}
+E         Use -v to get more diff
+
+Cards\tests\test_search_trajectory.py:39: AssertionError
+_ test_streamed_search_matches_every_transition_and_policy_input[256-uct-answered_shock] _
+
+case = 'answered_shock', selection = 'uct', cache = 256
+
+    @pytest.mark.parametrize("case", ["lethal_shock", "answered_shock", "attack_pacified"])
+    @pytest.mark.parametrize("selection", ["uct", "puct", "hierarchical_puct"])
+    @pytest.mark.parametrize("cache", [0, 1, 256])
+    def test_streamed_search_matches_every_transition_and_policy_input(case, selection, cache):
+        builds = []
+        def factory(seed):
+            def build(controllers):
+                builds.append(1)
+                return tactical_scenario(case)(controllers)
+            return SearchSimulator(build, policy_for=tactical_policy, track_information=True)
+>       a, b = compare(factory, selection=selection, cache=cache)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Cards\tests\test_search_trajectory.py:57: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+factory = <function test_streamed_search_matches_every_transition_and_policy_input.<locals>.factory at 0x0000025DA7A88360>
+selection = 'uct', cache = 256, budget = None
+
+    def compare(factory, *, selection="uct", cache=256, budget=None):
+        info = factory(0).start().player_information()
+        rows, traces, inputs = [], [], []
+        for mode in ("replay", "continuous"):
+            trace, observed = [], []
+            store = _Run.store_transition
+            def record(run, sim, node, action, child):
+                trace.append((node, action, child))
+                store(run, sim, node, action, child)
+            policy = ObservationOpponentPolicy()
+            def choose(info):
+                observed.append(info)
+                return policy(info)
+            search = InformationSetSearch(opponent_policy=choose, rollout_policy=choose,
+                selection=selection, transition_cache_size=cache, trajectory_mode=mode,
+                budget=budget or InformationSearchBudget(worlds=2, iterations=6, max_advances=48, max_depth=3))
+            with patch.object(_Run, "store_transition", record):
+                result = search.search(factory, info, seed=42)
+            rows.append(result)
+            traces.append(trace)
+            inputs.append(observed)
+        a, b = rows
+        assert replace(a, metrics=b.metrics) == b
+        ignored = {"elapsed_ms", "cpu_ms", "world_initialization_ms", "advance_ms", "trajectory_runs",
+                   "checkpoint_hits", "checkpoint_entries", "checkpoint_skipped_decisions",
+                   "world_materializations", "world_restores"}
+>       assert {k: v for k, v in asdict(a.metrics).items() if k not in ignored} == {
+            k: v for k, v in asdict(b.metrics).items() if k not in ignored}
+E       AssertionError: assert {'worlds_buil...pts': 28, ...} == {'worlds_buil...pts': 28, ...}
+E         
+E         Omitting 44 identical items, use -vv to show
+E         Differing items:
+E         {'structured_value_hits': 3272} != {'structured_value_hits': 3092}
+E         Use -v to get more diff
+
+Cards\tests\test_search_trajectory.py:39: AssertionError
+_ test_streamed_search_matches_every_transition_and_policy_input[256-uct-attack_pacified] _
+
+case = 'attack_pacified', selection = 'uct', cache = 256
+
+    @pytest.mark.parametrize("case", ["lethal_shock", "answered_shock", "attack_pacified"])
+    @pytest.mark.parametrize("selection", ["uct", "puct", "hierarchical_puct"])
+    @pytest.mark.parametrize("cache", [0, 1, 256])
+    def test_streamed_search_matches_every_transition_and_policy_input(case, selection, cache):
+        builds = []
+        def factory(seed):
+            def build(controllers):
+                builds.append(1)
+                return tactical_scenario(case)(controllers)
+            return SearchSimulator(build, policy_for=tactical_policy, track_information=True)
+>       a, b = compare(factory, selection=selection, cache=cache)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Cards\tests\test_search_trajectory.py:57: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+factory = <function test_streamed_search_matches_every_transition_and_policy_input.<locals>.factory at 0x0000025DA7A8B6A0>
+selection = 'uct', cache = 256, budget = None
+
+    def compare(factory, *, selection="uct", cache=256, budget=None):
+        info = factory(0).start().player_information()
+        rows, traces, inputs = [], [], []
+        for mode in ("replay", "continuous"):
+            trace, observed = [], []
+            store = _Run.store_transition
+            def record(run, sim, node, action, child):
+                trace.append((node, action, child))
+                store(run, sim, node, action, child)
+            policy = ObservationOpponentPolicy()
+            def choose(info):
+                observed.append(info)
+                return policy(info)
+            search = InformationSetSearch(opponent_policy=choose, rollout_policy=choose,
+                selection=selection, transition_cache_size=cache, trajectory_mode=mode,
+                budget=budget or InformationSearchBudget(worlds=2, iterations=6, max_advances=48, max_depth=3))
+            with patch.object(_Run, "store_transition", record):
+                result = search.search(factory, info, seed=42)
+            rows.append(result)
+            traces.append(trace)
+            inputs.append(observed)
+        a, b = rows
+        assert replace(a, metrics=b.metrics) == b
+        ignored = {"elapsed_ms", "cpu_ms", "world_initialization_ms", "advance_ms", "trajectory_runs",
+                   "checkpoint_hits", "checkpoint_entries", "checkpoint_skipped_decisions",
+                   "world_materializations", "world_restores"}
+>       assert {k: v for k, v in asdict(a.metrics).items() if k not in ignored} == {
+            k: v for k, v in asdict(b.metrics).items() if k not in ignored}
+E       AssertionError: assert {'worlds_buil...pts': 30, ...} == {'worlds_buil...pts': 30, ...}
+E         
+E         Omitting 44 identical items, use -vv to show
+E         Differing items:
+E         {'structured_value_hits': 1514} != {'structured_value_hits': 1379}
+E         Use -v to get more diff
+
+Cards\tests\test_search_trajectory.py:39: AssertionError
+_ test_streamed_search_matches_every_transition_and_policy_input[256-puct-lethal_shock] _
+
+case = 'lethal_shock', selection = 'puct', cache = 256
+
+    @pytest.mark.parametrize("case", ["lethal_shock", "answered_shock", "attack_pacified"])
+    @pytest.mark.parametrize("selection", ["uct", "puct", "hierarchical_puct"])
+    @pytest.mark.parametrize("cache", [0, 1, 256])
+    def test_streamed_search_matches_every_transition_and_policy_input(case, selection, cache):
+        builds = []
+        def factory(seed):
+            def build(controllers):
+                builds.append(1)
+                return tactical_scenario(case)(controllers)
+            return SearchSimulator(build, policy_for=tactical_policy, track_information=True)
+>       a, b = compare(factory, selection=selection, cache=cache)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Cards\tests\test_search_trajectory.py:57: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+factory = <function test_streamed_search_matches_every_transition_and_policy_input.<locals>.factory at 0x0000025DA88C0720>
+selection = 'puct', cache = 256, budget = None
+
+    def compare(factory, *, selection="uct", cache=256, budget=None):
+        info = factory(0).start().player_information()
+        rows, traces, inputs = [], [], []
+        for mode in ("replay", "continuous"):
+            trace, observed = [], []
+            store = _Run.store_transition
+            def record(run, sim, node, action, child):
+                trace.append((node, action, child))
+                store(run, sim, node, action, child)
+            policy = ObservationOpponentPolicy()
+            def choose(info):
+                observed.append(info)
+                return policy(info)
+            search = InformationSetSearch(opponent_policy=choose, rollout_policy=choose,
+                selection=selection, transition_cache_size=cache, trajectory_mode=mode,
+                budget=budget or InformationSearchBudget(worlds=2, iterations=6, max_advances=48, max_depth=3))
+            with patch.object(_Run, "store_transition", record):
+                result = search.search(factory, info, seed=42)
+            rows.append(result)
+            traces.append(trace)
+            inputs.append(observed)
+        a, b = rows
+        assert replace(a, metrics=b.metrics) == b
+        ignored = {"elapsed_ms", "cpu_ms", "world_initialization_ms", "advance_ms", "trajectory_runs",
+                   "checkpoint_hits", "checkpoint_entries", "checkpoint_skipped_decisions",
+                   "world_materializations", "world_restores"}
+>       assert {k: v for k, v in asdict(a.metrics).items() if k not in ignored} == {
+            k: v for k, v in asdict(b.metrics).items() if k not in ignored}
+E       AssertionError: assert {'worlds_buil...pts': 22, ...} == {'worlds_buil...pts': 22, ...}
+E         
+E         Omitting 44 identical items, use -vv to show
+E         Differing items:
+E         {'structured_value_hits': 1516} != {'structured_value_hits': 1417}
+E         Use -v to get more diff
+
+Cards\tests\test_search_trajectory.py:39: AssertionError
+_ test_streamed_search_matches_every_transition_and_policy_input[256-puct-answered_shock] _
+
+case = 'answered_shock', selection = 'puct', cache = 256
+
+    @pytest.mark.parametrize("case", ["lethal_shock", "answered_shock", "attack_pacified"])
+    @pytest.mark.parametrize("selection", ["uct", "puct", "hierarchical_puct"])
+    @pytest.mark.parametrize("cache", [0, 1, 256])
+    def test_streamed_search_matches_every_transition_and_policy_input(case, selection, cache):
+        builds = []
+        def factory(seed):
+            def build(controllers):
+                builds.append(1)
+                return tactical_scenario(case)(controllers)
+            return SearchSimulator(build, policy_for=tactical_policy, track_information=True)
+>       a, b = compare(factory, selection=selection, cache=cache)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Cards\tests\test_search_trajectory.py:57: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+factory = <function test_streamed_search_matches_every_transition_and_policy_input.<locals>.factory at 0x0000025DA7881940>
+selection = 'puct', cache = 256, budget = None
+
+    def compare(factory, *, selection="uct", cache=256, budget=None):
+        info = factory(0).start().player_information()
+        rows, traces, inputs = [], [], []
+        for mode in ("replay", "continuous"):
+            trace, observed = [], []
+            store = _Run.store_transition
+            def record(run, sim, node, action, child):
+                trace.append((node, action, child))
+                store(run, sim, node, action, child)
+            policy = ObservationOpponentPolicy()
+            def choose(info):
+                observed.append(info)
+                return policy(info)
+            search = InformationSetSearch(opponent_policy=choose, rollout_policy=choose,
+                selection=selection, transition_cache_size=cache, trajectory_mode=mode,
+                budget=budget or InformationSearchBudget(worlds=2, iterations=6, max_advances=48, max_depth=3))
+            with patch.object(_Run, "store_transition", record):
+                result = search.search(factory, info, seed=42)
+            rows.append(result)
+            traces.append(trace)
+            inputs.append(observed)
+        a, b = rows
+        assert replace(a, metrics=b.metrics) == b
+        ignored = {"elapsed_ms", "cpu_ms", "world_initialization_ms", "advance_ms", "trajectory_runs",
+                   "checkpoint_hits", "checkpoint_entries", "checkpoint_skipped_decisions",
+                   "world_materializations", "world_restores"}
+>       assert {k: v for k, v in asdict(a.metrics).items() if k not in ignored} == {
+            k: v for k, v in asdict(b.metrics).items() if k not in ignored}
+E       AssertionError: assert {'worlds_buil...pts': 28, ...} == {'worlds_buil...pts': 28, ...}
+E         
+E         Omitting 44 identical items, use -vv to show
+E         Differing items:
+E         {'structured_value_hits': 3272} != {'structured_value_hits': 3092}
+E         Use -v to get more diff
+
+Cards\tests\test_search_trajectory.py:39: AssertionError
+_ test_streamed_search_matches_every_transition_and_policy_input[256-puct-attack_pacified] _
+
+case = 'attack_pacified', selection = 'puct', cache = 256
+
+    @pytest.mark.parametrize("case", ["lethal_shock", "answered_shock", "attack_pacified"])
+    @pytest.mark.parametrize("selection", ["uct", "puct", "hierarchical_puct"])
+    @pytest.mark.parametrize("cache", [0, 1, 256])
+    def test_streamed_search_matches_every_transition_and_policy_input(case, selection, cache):
+        builds = []
+        def factory(seed):
+            def build(controllers):
+                builds.append(1)
+                return tactical_scenario(case)(controllers)
+            return SearchSimulator(build, policy_for=tactical_policy, track_information=True)
+>       a, b = compare(factory, selection=selection, cache=cache)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Cards\tests\test_search_trajectory.py:57: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+factory = <function test_streamed_search_matches_every_transition_and_policy_input.<locals>.factory at 0x0000025DA728FCE0>
+selection = 'puct', cache = 256, budget = None
+
+    def compare(factory, *, selection="uct", cache=256, budget=None):
+        info = factory(0).start().player_information()
+        rows, traces, inputs = [], [], []
+        for mode in ("replay", "continuous"):
+            trace, observed = [], []
+            store = _Run.store_transition
+            def record(run, sim, node, action, child):
+                trace.append((node, action, child))
+                store(run, sim, node, action, child)
+            policy = ObservationOpponentPolicy()
+            def choose(info):
+                observed.append(info)
+                return policy(info)
+            search = InformationSetSearch(opponent_policy=choose, rollout_policy=choose,
+                selection=selection, transition_cache_size=cache, trajectory_mode=mode,
+                budget=budget or InformationSearchBudget(worlds=2, iterations=6, max_advances=48, max_depth=3))
+            with patch.object(_Run, "store_transition", record):
+                result = search.search(factory, info, seed=42)
+            rows.append(result)
+            traces.append(trace)
+            inputs.append(observed)
+        a, b = rows
+        assert replace(a, metrics=b.metrics) == b
+        ignored = {"elapsed_ms", "cpu_ms", "world_initialization_ms", "advance_ms", "trajectory_runs",
+                   "checkpoint_hits", "checkpoint_entries", "checkpoint_skipped_decisions",
+                   "world_materializations", "world_restores"}
+>       assert {k: v for k, v in asdict(a.metrics).items() if k not in ignored} == {
+            k: v for k, v in asdict(b.metrics).items() if k not in ignored}
+E       AssertionError: assert {'worlds_buil...pts': 33, ...} == {'worlds_buil...pts': 33, ...}
+E         
+E         Omitting 44 identical items, use -vv to show
+E         Differing items:
+E         {'structured_value_hits': 1514} != {'structured_value_hits': 1379}
+E         Use -v to get more diff
+
+Cards\tests\test_search_trajectory.py:39: AssertionError
+_ test_streamed_search_matches_every_transition_and_policy_input[256-hierarchical_puct-lethal_shock] _
+
+case = 'lethal_shock', selection = 'hierarchical_puct', cache = 256
+
+    @pytest.mark.parametrize("case", ["lethal_shock", "answered_shock", "attack_pacified"])
+    @pytest.mark.parametrize("selection", ["uct", "puct", "hierarchical_puct"])
+    @pytest.mark.parametrize("cache", [0, 1, 256])
+    def test_streamed_search_matches_every_transition_and_policy_input(case, selection, cache):
+        builds = []
+        def factory(seed):
+            def build(controllers):
+                builds.append(1)
+                return tactical_scenario(case)(controllers)
+            return SearchSimulator(build, policy_for=tactical_policy, track_information=True)
+>       a, b = compare(factory, selection=selection, cache=cache)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Cards\tests\test_search_trajectory.py:57: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+factory = <function test_streamed_search_matches_every_transition_and_policy_input.<locals>.factory at 0x0000025DA7A8B420>
+selection = 'hierarchical_puct', cache = 256, budget = None
+
+    def compare(factory, *, selection="uct", cache=256, budget=None):
+        info = factory(0).start().player_information()
+        rows, traces, inputs = [], [], []
+        for mode in ("replay", "continuous"):
+            trace, observed = [], []
+            store = _Run.store_transition
+            def record(run, sim, node, action, child):
+                trace.append((node, action, child))
+                store(run, sim, node, action, child)
+            policy = ObservationOpponentPolicy()
+            def choose(info):
+                observed.append(info)
+                return policy(info)
+            search = InformationSetSearch(opponent_policy=choose, rollout_policy=choose,
+                selection=selection, transition_cache_size=cache, trajectory_mode=mode,
+                budget=budget or InformationSearchBudget(worlds=2, iterations=6, max_advances=48, max_depth=3))
+            with patch.object(_Run, "store_transition", record):
+                result = search.search(factory, info, seed=42)
+            rows.append(result)
+            traces.append(trace)
+            inputs.append(observed)
+        a, b = rows
+        assert replace(a, metrics=b.metrics) == b
+        ignored = {"elapsed_ms", "cpu_ms", "world_initialization_ms", "advance_ms", "trajectory_runs",
+                   "checkpoint_hits", "checkpoint_entries", "checkpoint_skipped_decisions",
+                   "world_materializations", "world_restores"}
+>       assert {k: v for k, v in asdict(a.metrics).items() if k not in ignored} == {
+            k: v for k, v in asdict(b.metrics).items() if k not in ignored}
+E       AssertionError: assert {'worlds_buil...pts': 22, ...} == {'worlds_buil...pts': 22, ...}
+E         
+E         Omitting 44 identical items, use -vv to show
+E         Differing items:
+E         {'structured_value_hits': 1595} != {'structured_value_hits': 1481}
+E         Use -v to get more diff
+
+Cards\tests\test_search_trajectory.py:39: AssertionError
+_ test_streamed_search_matches_every_transition_and_policy_input[256-hierarchical_puct-answered_shock] _
+
+case = 'answered_shock', selection = 'hierarchical_puct', cache = 256
+
+    @pytest.mark.parametrize("case", ["lethal_shock", "answered_shock", "attack_pacified"])
+    @pytest.mark.parametrize("selection", ["uct", "puct", "hierarchical_puct"])
+    @pytest.mark.parametrize("cache", [0, 1, 256])
+    def test_streamed_search_matches_every_transition_and_policy_input(case, selection, cache):
+        builds = []
+        def factory(seed):
+            def build(controllers):
+                builds.append(1)
+                return tactical_scenario(case)(controllers)
+            return SearchSimulator(build, policy_for=tactical_policy, track_information=True)
+>       a, b = compare(factory, selection=selection, cache=cache)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Cards\tests\test_search_trajectory.py:57: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+factory = <function test_streamed_search_matches_every_transition_and_policy_input.<locals>.factory at 0x0000025DA7A8A2A0>
+selection = 'hierarchical_puct', cache = 256, budget = None
+
+    def compare(factory, *, selection="uct", cache=256, budget=None):
+        info = factory(0).start().player_information()
+        rows, traces, inputs = [], [], []
+        for mode in ("replay", "continuous"):
+            trace, observed = [], []
+            store = _Run.store_transition
+            def record(run, sim, node, action, child):
+                trace.append((node, action, child))
+                store(run, sim, node, action, child)
+            policy = ObservationOpponentPolicy()
+            def choose(info):
+                observed.append(info)
+                return policy(info)
+            search = InformationSetSearch(opponent_policy=choose, rollout_policy=choose,
+                selection=selection, transition_cache_size=cache, trajectory_mode=mode,
+                budget=budget or InformationSearchBudget(worlds=2, iterations=6, max_advances=48, max_depth=3))
+            with patch.object(_Run, "store_transition", record):
+                result = search.search(factory, info, seed=42)
+            rows.append(result)
+            traces.append(trace)
+            inputs.append(observed)
+        a, b = rows
+        assert replace(a, metrics=b.metrics) == b
+        ignored = {"elapsed_ms", "cpu_ms", "world_initialization_ms", "advance_ms", "trajectory_runs",
+                   "checkpoint_hits", "checkpoint_entries", "checkpoint_skipped_decisions",
+                   "world_materializations", "world_restores"}
+>       assert {k: v for k, v in asdict(a.metrics).items() if k not in ignored} == {
+            k: v for k, v in asdict(b.metrics).items() if k not in ignored}
+E       AssertionError: assert {'worlds_buil...pts': 28, ...} == {'worlds_buil...pts': 28, ...}
+E         
+E         Omitting 44 identical items, use -vv to show
+E         Differing items:
+E         {'structured_value_hits': 3759} != {'structured_value_hits': 3552}
+E         Use -v to get more diff
+
+Cards\tests\test_search_trajectory.py:39: AssertionError
+_ test_streamed_search_matches_every_transition_and_policy_input[256-hierarchical_puct-attack_pacified] _
+
+case = 'attack_pacified', selection = 'hierarchical_puct', cache = 256
+
+    @pytest.mark.parametrize("case", ["lethal_shock", "answered_shock", "attack_pacified"])
+    @pytest.mark.parametrize("selection", ["uct", "puct", "hierarchical_puct"])
+    @pytest.mark.parametrize("cache", [0, 1, 256])
+    def test_streamed_search_matches_every_transition_and_policy_input(case, selection, cache):
+        builds = []
+        def factory(seed):
+            def build(controllers):
+                builds.append(1)
+                return tactical_scenario(case)(controllers)
+            return SearchSimulator(build, policy_for=tactical_policy, track_information=True)
+>       a, b = compare(factory, selection=selection, cache=cache)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Cards\tests\test_search_trajectory.py:57: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+factory = <function test_streamed_search_matches_every_transition_and_policy_input.<locals>.factory at 0x0000025DA815FCE0>
+selection = 'hierarchical_puct', cache = 256, budget = None
+
+    def compare(factory, *, selection="uct", cache=256, budget=None):
+        info = factory(0).start().player_information()
+        rows, traces, inputs = [], [], []
+        for mode in ("replay", "continuous"):
+            trace, observed = [], []
+            store = _Run.store_transition
+            def record(run, sim, node, action, child):
+                trace.append((node, action, child))
+                store(run, sim, node, action, child)
+            policy = ObservationOpponentPolicy()
+            def choose(info):
+                observed.append(info)
+                return policy(info)
+            search = InformationSetSearch(opponent_policy=choose, rollout_policy=choose,
+                selection=selection, transition_cache_size=cache, trajectory_mode=mode,
+                budget=budget or InformationSearchBudget(worlds=2, iterations=6, max_advances=48, max_depth=3))
+            with patch.object(_Run, "store_transition", record):
+                result = search.search(factory, info, seed=42)
+            rows.append(result)
+            traces.append(trace)
+            inputs.append(observed)
+        a, b = rows
+        assert replace(a, metrics=b.metrics) == b
+        ignored = {"elapsed_ms", "cpu_ms", "world_initialization_ms", "advance_ms", "trajectory_runs",
+                   "checkpoint_hits", "checkpoint_entries", "checkpoint_skipped_decisions",
+                   "world_materializations", "world_restores"}
+>       assert {k: v for k, v in asdict(a.metrics).items() if k not in ignored} == {
+            k: v for k, v in asdict(b.metrics).items() if k not in ignored}
+E       AssertionError: assert {'worlds_buil...pts': 33, ...} == {'worlds_buil...pts': 33, ...}
+E         
+E         Omitting 44 identical items, use -vv to show
+E         Differing items:
+E         {'structured_value_hits': 1514} != {'structured_value_hits': 1379}
+E         Use -v to get more diff
+
+Cards\tests\test_search_trajectory.py:39: AssertionError
+____ test_sampled_worlds_and_checkpoints_preserve_hidden_history[0-False] _____
+
+reuse = False, checkpoints = 0
+
+    @pytest.mark.parametrize("reuse", [False, True])
+    @pytest.mark.parametrize("checkpoints", [0, 8])
+    def test_sampled_worlds_and_checkpoints_preserve_hidden_history(reuse, checkpoints):
+        from test_current_position_worlds import position, prepare
+        from game.ai.current_position_worlds import _PreparedWorld
+        from game.ai.checkpoint_simulator import CheckpointSimulator
+        origin, game = position()
+        _, _, snapshot = prepare(origin, game)
+        initial_rng = game.state.rng.getstate()
+        def factory(seed):
+            template = _PreparedWorld(snapshot, seed, reuse=reuse)
+            options = dict(track_information=True, policy_for=tactical_policy, max_phases=12)
+            return (CheckpointSimulator(template, checkpoint_limit=checkpoints, checkpoint_interval=1, **options)
+                    if checkpoints else SearchSimulator(template, **options))
+>       a, b = compare(factory)
+               ^^^^^^^^^^^^^^^^
+
+Cards\tests\test_search_trajectory.py:75: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+factory = <function test_sampled_worlds_and_checkpoints_preserve_hidden_history.<locals>.factory at 0x0000025DAA68FF60>
+selection = 'uct', cache = 256, budget = None
+
+    def compare(factory, *, selection="uct", cache=256, budget=None):
+        info = factory(0).start().player_information()
+        rows, traces, inputs = [], [], []
+        for mode in ("replay", "continuous"):
+            trace, observed = [], []
+            store = _Run.store_transition
+            def record(run, sim, node, action, child):
+                trace.append((node, action, child))
+                store(run, sim, node, action, child)
+            policy = ObservationOpponentPolicy()
+            def choose(info):
+                observed.append(info)
+                return policy(info)
+            search = InformationSetSearch(opponent_policy=choose, rollout_policy=choose,
+                selection=selection, transition_cache_size=cache, trajectory_mode=mode,
+                budget=budget or InformationSearchBudget(worlds=2, iterations=6, max_advances=48, max_depth=3))
+            with patch.object(_Run, "store_transition", record):
+                result = search.search(factory, info, seed=42)
+            rows.append(result)
+            traces.append(trace)
+            inputs.append(observed)
+        a, b = rows
+        assert replace(a, metrics=b.metrics) == b
+        ignored = {"elapsed_ms", "cpu_ms", "world_initialization_ms", "advance_ms", "trajectory_runs",
+                   "checkpoint_hits", "checkpoint_entries", "checkpoint_skipped_decisions",
+                   "world_materializations", "world_restores"}
+>       assert {k: v for k, v in asdict(a.metrics).items() if k not in ignored} == {
+            k: v for k, v in asdict(b.metrics).items() if k not in ignored}
+E       AssertionError: assert {'worlds_buil...pts': 18, ...} == {'worlds_buil...pts': 18, ...}
+E         
+E         Omitting 44 identical items, use -vv to show
+E         Differing items:
+E         {'structured_value_hits': 1122} != {'structured_value_hits': 1077}
+E         Use -v to get more diff
+
+Cards\tests\test_search_trajectory.py:39: AssertionError
+_____ test_sampled_worlds_and_checkpoints_preserve_hidden_history[0-True] _____
+
+reuse = True, checkpoints = 0
+
+    @pytest.mark.parametrize("reuse", [False, True])
+    @pytest.mark.parametrize("checkpoints", [0, 8])
+    def test_sampled_worlds_and_checkpoints_preserve_hidden_history(reuse, checkpoints):
+        from test_current_position_worlds import position, prepare
+        from game.ai.current_position_worlds import _PreparedWorld
+        from game.ai.checkpoint_simulator import CheckpointSimulator
+        origin, game = position()
+        _, _, snapshot = prepare(origin, game)
+        initial_rng = game.state.rng.getstate()
+        def factory(seed):
+            template = _PreparedWorld(snapshot, seed, reuse=reuse)
+            options = dict(track_information=True, policy_for=tactical_policy, max_phases=12)
+            return (CheckpointSimulator(template, checkpoint_limit=checkpoints, checkpoint_interval=1, **options)
+                    if checkpoints else SearchSimulator(template, **options))
+>       a, b = compare(factory)
+               ^^^^^^^^^^^^^^^^
+
+Cards\tests\test_search_trajectory.py:75: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+factory = <function test_sampled_worlds_and_checkpoints_preserve_hidden_history.<locals>.factory at 0x0000025DA7BB2840>
+selection = 'uct', cache = 256, budget = None
+
+    def compare(factory, *, selection="uct", cache=256, budget=None):
+        info = factory(0).start().player_information()
+        rows, traces, inputs = [], [], []
+        for mode in ("replay", "continuous"):
+            trace, observed = [], []
+            store = _Run.store_transition
+            def record(run, sim, node, action, child):
+                trace.append((node, action, child))
+                store(run, sim, node, action, child)
+            policy = ObservationOpponentPolicy()
+            def choose(info):
+                observed.append(info)
+                return policy(info)
+            search = InformationSetSearch(opponent_policy=choose, rollout_policy=choose,
+                selection=selection, transition_cache_size=cache, trajectory_mode=mode,
+                budget=budget or InformationSearchBudget(worlds=2, iterations=6, max_advances=48, max_depth=3))
+            with patch.object(_Run, "store_transition", record):
+                result = search.search(factory, info, seed=42)
+            rows.append(result)
+            traces.append(trace)
+            inputs.append(observed)
+        a, b = rows
+        assert replace(a, metrics=b.metrics) == b
+        ignored = {"elapsed_ms", "cpu_ms", "world_initialization_ms", "advance_ms", "trajectory_runs",
+                   "checkpoint_hits", "checkpoint_entries", "checkpoint_skipped_decisions",
+                   "world_materializations", "world_restores"}
+>       assert {k: v for k, v in asdict(a.metrics).items() if k not in ignored} == {
+            k: v for k, v in asdict(b.metrics).items() if k not in ignored}
+E       AssertionError: assert {'worlds_buil...pts': 18, ...} == {'worlds_buil...pts': 18, ...}
+E         
+E         Omitting 44 identical items, use -vv to show
+E         Differing items:
+E         {'structured_value_hits': 1122} != {'structured_value_hits': 1077}
+E         Use -v to get more diff
+
+Cards\tests\test_search_trajectory.py:39: AssertionError
+____ test_sampled_worlds_and_checkpoints_preserve_hidden_history[8-False] _____
+
+reuse = False, checkpoints = 8
+
+    @pytest.mark.parametrize("reuse", [False, True])
+    @pytest.mark.parametrize("checkpoints", [0, 8])
+    def test_sampled_worlds_and_checkpoints_preserve_hidden_history(reuse, checkpoints):
+        from test_current_position_worlds import position, prepare
+        from game.ai.current_position_worlds import _PreparedWorld
+        from game.ai.checkpoint_simulator import CheckpointSimulator
+        origin, game = position()
+        _, _, snapshot = prepare(origin, game)
+        initial_rng = game.state.rng.getstate()
+        def factory(seed):
+            template = _PreparedWorld(snapshot, seed, reuse=reuse)
+            options = dict(track_information=True, policy_for=tactical_policy, max_phases=12)
+            return (CheckpointSimulator(template, checkpoint_limit=checkpoints, checkpoint_interval=1, **options)
+                    if checkpoints else SearchSimulator(template, **options))
+>       a, b = compare(factory)
+               ^^^^^^^^^^^^^^^^
+
+Cards\tests\test_search_trajectory.py:75: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+factory = <function test_sampled_worlds_and_checkpoints_preserve_hidden_history.<locals>.factory at 0x0000025DA7A88CC0>
+selection = 'uct', cache = 256, budget = None
+
+    def compare(factory, *, selection="uct", cache=256, budget=None):
+        info = factory(0).start().player_information()
+        rows, traces, inputs = [], [], []
+        for mode in ("replay", "continuous"):
+            trace, observed = [], []
+            store = _Run.store_transition
+            def record(run, sim, node, action, child):
+                trace.append((node, action, child))
+                store(run, sim, node, action, child)
+            policy = ObservationOpponentPolicy()
+            def choose(info):
+                observed.append(info)
+                return policy(info)
+            search = InformationSetSearch(opponent_policy=choose, rollout_policy=choose,
+                selection=selection, transition_cache_size=cache, trajectory_mode=mode,
+                budget=budget or InformationSearchBudget(worlds=2, iterations=6, max_advances=48, max_depth=3))
+            with patch.object(_Run, "store_transition", record):
+                result = search.search(factory, info, seed=42)
+            rows.append(result)
+            traces.append(trace)
+            inputs.append(observed)
+        a, b = rows
+        assert replace(a, metrics=b.metrics) == b
+        ignored = {"elapsed_ms", "cpu_ms", "world_initialization_ms", "advance_ms", "trajectory_runs",
+                   "checkpoint_hits", "checkpoint_entries", "checkpoint_skipped_decisions",
+                   "world_materializations", "world_restores"}
+>       assert {k: v for k, v in asdict(a.metrics).items() if k not in ignored} == {
+            k: v for k, v in asdict(b.metrics).items() if k not in ignored}
+E       AssertionError: assert {'worlds_buil...pts': 18, ...} == {'worlds_buil...pts': 18, ...}
+E         
+E         Omitting 44 identical items, use -vv to show
+E         Differing items:
+E         {'structured_value_hits': 1095} != {'structured_value_hits': 1077}
+E         Use -v to get more diff
+
+Cards\tests\test_search_trajectory.py:39: AssertionError
+_____ test_sampled_worlds_and_checkpoints_preserve_hidden_history[8-True] _____
+
+reuse = True, checkpoints = 8
+
+    @pytest.mark.parametrize("reuse", [False, True])
+    @pytest.mark.parametrize("checkpoints", [0, 8])
+    def test_sampled_worlds_and_checkpoints_preserve_hidden_history(reuse, checkpoints):
+        from test_current_position_worlds import position, prepare
+        from game.ai.current_position_worlds import _PreparedWorld
+        from game.ai.checkpoint_simulator import CheckpointSimulator
+        origin, game = position()
+        _, _, snapshot = prepare(origin, game)
+        initial_rng = game.state.rng.getstate()
+        def factory(seed):
+            template = _PreparedWorld(snapshot, seed, reuse=reuse)
+            options = dict(track_information=True, policy_for=tactical_policy, max_phases=12)
+            return (CheckpointSimulator(template, checkpoint_limit=checkpoints, checkpoint_interval=1, **options)
+                    if checkpoints else SearchSimulator(template, **options))
+>       a, b = compare(factory)
+               ^^^^^^^^^^^^^^^^
+
+Cards\tests\test_search_trajectory.py:75: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+factory = <function test_sampled_worlds_and_checkpoints_preserve_hidden_history.<locals>.factory at 0x0000025DA7F313A0>
+selection = 'uct', cache = 256, budget = None
+
+    def compare(factory, *, selection="uct", cache=256, budget=None):
+        info = factory(0).start().player_information()
+        rows, traces, inputs = [], [], []
+        for mode in ("replay", "continuous"):
+            trace, observed = [], []
+            store = _Run.store_transition
+            def record(run, sim, node, action, child):
+                trace.append((node, action, child))
+                store(run, sim, node, action, child)
+            policy = ObservationOpponentPolicy()
+            def choose(info):
+                observed.append(info)
+                return policy(info)
+            search = InformationSetSearch(opponent_policy=choose, rollout_policy=choose,
+                selection=selection, transition_cache_size=cache, trajectory_mode=mode,
+                budget=budget or InformationSearchBudget(worlds=2, iterations=6, max_advances=48, max_depth=3))
+            with patch.object(_Run, "store_transition", record):
+                result = search.search(factory, info, seed=42)
+            rows.append(result)
+            traces.append(trace)
+            inputs.append(observed)
+        a, b = rows
+        assert replace(a, metrics=b.metrics) == b
+        ignored = {"elapsed_ms", "cpu_ms", "world_initialization_ms", "advance_ms", "trajectory_runs",
+                   "checkpoint_hits", "checkpoint_entries", "checkpoint_skipped_decisions",
+                   "world_materializations", "world_restores"}
+>       assert {k: v for k, v in asdict(a.metrics).items() if k not in ignored} == {
+            k: v for k, v in asdict(b.metrics).items() if k not in ignored}
+E       AssertionError: assert {'worlds_buil...pts': 18, ...} == {'worlds_buil...pts': 18, ...}
+E         
+E         Omitting 44 identical items, use -vv to show
+E         Differing items:
+E         {'structured_value_hits': 1095} != {'structured_value_hits': 1077}
+E         Use -v to get more diff
+
+Cards\tests\test_search_trajectory.py:39: AssertionError
+_ test_limits_interrupt_identically_without_backpropagating_partial_paths[limits1-budget1] _
+
+limits = {'max_phases': 1}
+budget = InformationSearchBudget(worlds=1, iterations=4, max_advances=2048, max_depth=20, max_extensions=8)
+
+    @pytest.mark.parametrize("limits,budget", [
+        ({"max_decisions": 1}, InformationSearchBudget(worlds=1, iterations=4, max_depth=8)),
+        ({"max_phases": 1}, InformationSearchBudget(worlds=1, iterations=4, max_depth=20)),
+        ({}, InformationSearchBudget(worlds=1, iterations=4, max_depth=8, max_advances=3)),
+        ({}, InformationSearchBudget(worlds=1, iterations=4, max_depth=1, max_extensions=0)),
+    ])
+    def test_limits_interrupt_identically_without_backpropagating_partial_paths(limits, budget):
+        def factory(seed):
+            return SearchSimulator(tactical_scenario("answered_shock"), track_information=True,
+                                   policy_for=tactical_policy, **limits)
+>       compare(factory, budget=budget)
+
+Cards\tests\test_search_trajectory.py:92: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+factory = <function test_limits_interrupt_identically_without_backpropagating_partial_paths.<locals>.factory at 0x0000025DAA68C0E0>
+selection = 'uct', cache = 256
+budget = InformationSearchBudget(worlds=1, iterations=4, max_advances=2048, max_depth=20, max_extensions=8)
+
+    def compare(factory, *, selection="uct", cache=256, budget=None):
+        info = factory(0).start().player_information()
+        rows, traces, inputs = [], [], []
+        for mode in ("replay", "continuous"):
+            trace, observed = [], []
+            store = _Run.store_transition
+            def record(run, sim, node, action, child):
+                trace.append((node, action, child))
+                store(run, sim, node, action, child)
+            policy = ObservationOpponentPolicy()
+            def choose(info):
+                observed.append(info)
+                return policy(info)
+            search = InformationSetSearch(opponent_policy=choose, rollout_policy=choose,
+                selection=selection, transition_cache_size=cache, trajectory_mode=mode,
+                budget=budget or InformationSearchBudget(worlds=2, iterations=6, max_advances=48, max_depth=3))
+            with patch.object(_Run, "store_transition", record):
+                result = search.search(factory, info, seed=42)
+            rows.append(result)
+            traces.append(trace)
+            inputs.append(observed)
+        a, b = rows
+        assert replace(a, metrics=b.metrics) == b
+        ignored = {"elapsed_ms", "cpu_ms", "world_initialization_ms", "advance_ms", "trajectory_runs",
+                   "checkpoint_hits", "checkpoint_entries", "checkpoint_skipped_decisions",
+                   "world_materializations", "world_restores"}
+>       assert {k: v for k, v in asdict(a.metrics).items() if k not in ignored} == {
+            k: v for k, v in asdict(b.metrics).items() if k not in ignored}
+E       AssertionError: assert {'worlds_buil...pts': 14, ...} == {'worlds_buil...pts': 14, ...}
+E         
+E         Omitting 44 identical items, use -vv to show
+E         Differing items:
+E         {'structured_value_hits': 949} != {'structured_value_hits': 901}
+E         Use -v to get more diff
+
+Cards\tests\test_search_trajectory.py:39: AssertionError
+_ test_limits_interrupt_identically_without_backpropagating_partial_paths[limits2-budget2] _
+
+limits = {}
+budget = InformationSearchBudget(worlds=1, iterations=4, max_advances=3, max_depth=8, max_extensions=8)
+
+    @pytest.mark.parametrize("limits,budget", [
+        ({"max_decisions": 1}, InformationSearchBudget(worlds=1, iterations=4, max_depth=8)),
+        ({"max_phases": 1}, InformationSearchBudget(worlds=1, iterations=4, max_depth=20)),
+        ({}, InformationSearchBudget(worlds=1, iterations=4, max_depth=8, max_advances=3)),
+        ({}, InformationSearchBudget(worlds=1, iterations=4, max_depth=1, max_extensions=0)),
+    ])
+    def test_limits_interrupt_identically_without_backpropagating_partial_paths(limits, budget):
+        def factory(seed):
+            return SearchSimulator(tactical_scenario("answered_shock"), track_information=True,
+                                   policy_for=tactical_policy, **limits)
+>       compare(factory, budget=budget)
+
+Cards\tests\test_search_trajectory.py:92: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+factory = <function test_limits_interrupt_identically_without_backpropagating_partial_paths.<locals>.factory at 0x0000025DA79D1760>
+selection = 'uct', cache = 256
+budget = InformationSearchBudget(worlds=1, iterations=4, max_advances=3, max_depth=8, max_extensions=8)
+
+    def compare(factory, *, selection="uct", cache=256, budget=None):
+        info = factory(0).start().player_information()
+        rows, traces, inputs = [], [], []
+        for mode in ("replay", "continuous"):
+            trace, observed = [], []
+            store = _Run.store_transition
+            def record(run, sim, node, action, child):
+                trace.append((node, action, child))
+                store(run, sim, node, action, child)
+            policy = ObservationOpponentPolicy()
+            def choose(info):
+                observed.append(info)
+                return policy(info)
+            search = InformationSetSearch(opponent_policy=choose, rollout_policy=choose,
+                selection=selection, transition_cache_size=cache, trajectory_mode=mode,
+                budget=budget or InformationSearchBudget(worlds=2, iterations=6, max_advances=48, max_depth=3))
+            with patch.object(_Run, "store_transition", record):
+                result = search.search(factory, info, seed=42)
+            rows.append(result)
+            traces.append(trace)
+            inputs.append(observed)
+        a, b = rows
+        assert replace(a, metrics=b.metrics) == b
+        ignored = {"elapsed_ms", "cpu_ms", "world_initialization_ms", "advance_ms", "trajectory_runs",
+                   "checkpoint_hits", "checkpoint_entries", "checkpoint_skipped_decisions",
+                   "world_materializations", "world_restores"}
+>       assert {k: v for k, v in asdict(a.metrics).items() if k not in ignored} == {
+            k: v for k, v in asdict(b.metrics).items() if k not in ignored}
+E       AssertionError: assert {'worlds_buil...mpts': 3, ...} == {'worlds_buil...mpts': 3, ...}
+E         
+E         Omitting 44 identical items, use -vv to show
+E         Differing items:
+E         {'structured_value_hits': 764} != {'structured_value_hits': 749}
+E         Use -v to get more diff
+
+Cards\tests\test_search_trajectory.py:39: AssertionError
+___ test_policy_error_is_propagated_outside_engine_and_next_search_is_clean ___
+
+    def test_policy_error_is_propagated_outside_engine_and_next_search_is_clean():
+        def factory(seed):
+            return SearchSimulator(tactical_scenario("answered_shock"), track_information=True,
+                                   policy_for=tactical_policy)
+        info = factory(0).start().player_information()
+        def broken(info):
+            raise ValueError("policy failed deliberately")
+        search = InformationSetSearch(opponent_policy=broken,
+            budget=InformationSearchBudget(worlds=1, iterations=4, max_depth=8))
+        with pytest.raises(ValueError, match="policy failed deliberately"):
+            search.search(factory, info, seed=42)
+>       compare(factory)
+
+Cards\tests\test_search_trajectory.py:106: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+factory = <function test_policy_error_is_propagated_outside_engine_and_next_search_is_clean.<locals>.factory at 0x0000025DAA610FE0>
+selection = 'uct', cache = 256, budget = None
+
+    def compare(factory, *, selection="uct", cache=256, budget=None):
+        info = factory(0).start().player_information()
+        rows, traces, inputs = [], [], []
+        for mode in ("replay", "continuous"):
+            trace, observed = [], []
+            store = _Run.store_transition
+            def record(run, sim, node, action, child):
+                trace.append((node, action, child))
+                store(run, sim, node, action, child)
+            policy = ObservationOpponentPolicy()
+            def choose(info):
+                observed.append(info)
+                return policy(info)
+            search = InformationSetSearch(opponent_policy=choose, rollout_policy=choose,
+                selection=selection, transition_cache_size=cache, trajectory_mode=mode,
+                budget=budget or InformationSearchBudget(worlds=2, iterations=6, max_advances=48, max_depth=3))
+            with patch.object(_Run, "store_transition", record):
+                result = search.search(factory, info, seed=42)
+            rows.append(result)
+            traces.append(trace)
+            inputs.append(observed)
+        a, b = rows
+        assert replace(a, metrics=b.metrics) == b
+        ignored = {"elapsed_ms", "cpu_ms", "world_initialization_ms", "advance_ms", "trajectory_runs",
+                   "checkpoint_hits", "checkpoint_entries", "checkpoint_skipped_decisions",
+                   "world_materializations", "world_restores"}
+>       assert {k: v for k, v in asdict(a.metrics).items() if k not in ignored} == {
+            k: v for k, v in asdict(b.metrics).items() if k not in ignored}
+E       AssertionError: assert {'worlds_buil...pts': 28, ...} == {'worlds_buil...pts': 28, ...}
+E         
+E         Omitting 44 identical items, use -vv to show
+E         Differing items:
+E         {'structured_value_hits': 3272} != {'structured_value_hits': 3092}
+E         Use -v to get more diff
+
+Cards\tests\test_search_trajectory.py:39: AssertionError
+_ test_nested_resolution_choices_continue_without_replaying_operation_prefix __
+
+    def test_nested_resolution_choices_continue_without_replaying_operation_prefix():
+        from benchmarks.search_hidden_worlds import public_position, catalog
+        from game.cards.starter_support import ScryOperation
+        from game.game_actions.data_structs.game_action import ResolutionContext, FixedExecutionPlan, ScheduledResolution
+        from game.game_state import Card
+        from game.enums import ZoneType
+        def recipe(controllers):
+            game = public_position(controllers)
+            owner = game.state.players[0]
+            for name in ("Shock", "Island"):
+                owner.add_card(Card(catalog()[name], owner), ZoneType.DECK)
+            context = ResolutionContext(controller=owner)
+            game.loop.processor.executor.resolve(game.state,
+                ScheduledResolution(FixedExecutionPlan([ScryOperation(context, 2)]), context))
+            return game
+        def factory(seed):
+            return SearchSimulator(recipe, track_information=True, policy_for=tactical_policy)
+        assert factory(0).start().decision.kind == "ScryRequest"
+>       compare(factory, budget=InformationSearchBudget(worlds=1, iterations=4, max_depth=3, max_advances=32))
+
+Cards\tests\test_search_trajectory.py:127: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+factory = <function test_nested_resolution_choices_continue_without_replaying_operation_prefix.<locals>.factory at 0x0000025DAA611F80>
+selection = 'uct', cache = 256
+budget = InformationSearchBudget(worlds=1, iterations=4, max_advances=32, max_depth=3, max_extensions=8)
+
+    def compare(factory, *, selection="uct", cache=256, budget=None):
+        info = factory(0).start().player_information()
+        rows, traces, inputs = [], [], []
+        for mode in ("replay", "continuous"):
+            trace, observed = [], []
+            store = _Run.store_transition
+            def record(run, sim, node, action, child):
+                trace.append((node, action, child))
+                store(run, sim, node, action, child)
+            policy = ObservationOpponentPolicy()
+            def choose(info):
+                observed.append(info)
+                return policy(info)
+            search = InformationSetSearch(opponent_policy=choose, rollout_policy=choose,
+                selection=selection, transition_cache_size=cache, trajectory_mode=mode,
+                budget=budget or InformationSearchBudget(worlds=2, iterations=6, max_advances=48, max_depth=3))
+            with patch.object(_Run, "store_transition", record):
+                result = search.search(factory, info, seed=42)
+            rows.append(result)
+            traces.append(trace)
+            inputs.append(observed)
+        a, b = rows
+        assert replace(a, metrics=b.metrics) == b
+        ignored = {"elapsed_ms", "cpu_ms", "world_initialization_ms", "advance_ms", "trajectory_runs",
+                   "checkpoint_hits", "checkpoint_entries", "checkpoint_skipped_decisions",
+                   "world_materializations", "world_restores"}
+>       assert {k: v for k, v in asdict(a.metrics).items() if k not in ignored} == {
+            k: v for k, v in asdict(b.metrics).items() if k not in ignored}
+E       AssertionError: assert {'worlds_buil...pts': 12, ...} == {'worlds_buil...pts': 12, ...}
+E         
+E         Omitting 44 identical items, use -vv to show
+E         Differing items:
+E         {'structured_value_hits': 577} != {'structured_value_hits': 517}
+E         Use -v to get more diff
+
+Cards\tests\test_search_trajectory.py:39: AssertionError
+=========================== short test summary info ===========================
+FAILED Cards\tests\test_search_trajectory.py::test_streamed_search_matches_every_transition_and_policy_input[0-uct-lethal_shock]
+FAILED Cards\tests\test_search_trajectory.py::test_streamed_search_matches_every_transition_and_policy_input[0-uct-answered_shock]
+FAILED Cards\tests\test_search_trajectory.py::test_streamed_search_matches_every_transition_and_policy_input[0-uct-attack_pacified]
+FAILED Cards\tests\test_search_trajectory.py::test_streamed_search_matches_every_transition_and_policy_input[0-puct-lethal_shock]
+FAILED Cards\tests\test_search_trajectory.py::test_streamed_search_matches_every_transition_and_policy_input[0-puct-answered_shock]
+FAILED Cards\tests\test_search_trajectory.py::test_streamed_search_matches_every_transition_and_policy_input[0-puct-attack_pacified]
+FAILED Cards\tests\test_search_trajectory.py::test_streamed_search_matches_every_transition_and_policy_input[0-hierarchical_puct-lethal_shock]
+FAILED Cards\tests\test_search_trajectory.py::test_streamed_search_matches_every_transition_and_policy_input[0-hierarchical_puct-answered_shock]
+FAILED Cards\tests\test_search_trajectory.py::test_streamed_search_matches_every_transition_and_policy_input[0-hierarchical_puct-attack_pacified]
+FAILED Cards\tests\test_search_trajectory.py::test_streamed_search_matches_every_transition_and_policy_input[1-uct-lethal_shock]
+FAILED Cards\tests\test_search_trajectory.py::test_streamed_search_matches_every_transition_and_policy_input[1-uct-answered_shock]
+FAILED Cards\tests\test_search_trajectory.py::test_streamed_search_matches_every_transition_and_policy_input[1-uct-attack_pacified]
+FAILED Cards\tests\test_search_trajectory.py::test_streamed_search_matches_every_transition_and_policy_input[1-puct-lethal_shock]
+FAILED Cards\tests\test_search_trajectory.py::test_streamed_search_matches_every_transition_and_policy_input[1-puct-answered_shock]
+FAILED Cards\tests\test_search_trajectory.py::test_streamed_search_matches_every_transition_and_policy_input[1-puct-attack_pacified]
+FAILED Cards\tests\test_search_trajectory.py::test_streamed_search_matches_every_transition_and_policy_input[1-hierarchical_puct-lethal_shock]
+FAILED Cards\tests\test_search_trajectory.py::test_streamed_search_matches_every_transition_and_policy_input[1-hierarchical_puct-answered_shock]
+FAILED Cards\tests\test_search_trajectory.py::test_streamed_search_matches_every_transition_and_policy_input[1-hierarchical_puct-attack_pacified]
+FAILED Cards\tests\test_search_trajectory.py::test_streamed_search_matches_every_transition_and_policy_input[256-uct-lethal_shock]
+FAILED Cards\tests\test_search_trajectory.py::test_streamed_search_matches_every_transition_and_policy_input[256-uct-answered_shock]
+FAILED Cards\tests\test_search_trajectory.py::test_streamed_search_matches_every_transition_and_policy_input[256-uct-attack_pacified]
+FAILED Cards\tests\test_search_trajectory.py::test_streamed_search_matches_every_transition_and_policy_input[256-puct-lethal_shock]
+FAILED Cards\tests\test_search_trajectory.py::test_streamed_search_matches_every_transition_and_policy_input[256-puct-answered_shock]
+FAILED Cards\tests\test_search_trajectory.py::test_streamed_search_matches_every_transition_and_policy_input[256-puct-attack_pacified]
+FAILED Cards\tests\test_search_trajectory.py::test_streamed_search_matches_every_transition_and_policy_input[256-hierarchical_puct-lethal_shock]
+FAILED Cards\tests\test_search_trajectory.py::test_streamed_search_matches_every_transition_and_policy_input[256-hierarchical_puct-answered_shock]
+FAILED Cards\tests\test_search_trajectory.py::test_streamed_search_matches_every_transition_and_policy_input[256-hierarchical_puct-attack_pacified]
+FAILED Cards\tests\test_search_trajectory.py::test_sampled_worlds_and_checkpoints_preserve_hidden_history[0-False]
+FAILED Cards\tests\test_search_trajectory.py::test_sampled_worlds_and_checkpoints_preserve_hidden_history[0-True]
+FAILED Cards\tests\test_search_trajectory.py::test_sampled_worlds_and_checkpoints_preserve_hidden_history[8-False]
+FAILED Cards\tests\test_search_trajectory.py::test_sampled_worlds_and_checkpoints_preserve_hidden_history[8-True]
+FAILED Cards\tests\test_search_trajectory.py::test_limits_interrupt_identically_without_backpropagating_partial_paths[limits1-budget1]
+FAILED Cards\tests\test_search_trajectory.py::test_limits_interrupt_identically_without_backpropagating_partial_paths[limits2-budget2]
+FAILED Cards\tests\test_search_trajectory.py::test_policy_error_is_propagated_outside_engine_and_next_search_is_clean
+FAILED Cards\tests\test_search_trajectory.py::test_nested_resolution_choices_continue_without_replaying_operation_prefix
+35 failed, 2696 passed in 32896.72s (9:08:16)

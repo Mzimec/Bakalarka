@@ -47,6 +47,43 @@ class CardCollection(KeyedCollection[Card]):
 
         self[card.key] = card
 
+    def _before_write(self):
+        hook = self.__dict__.get("_cost_before_write")
+        if hook is not None:
+            hook()
+
+    def __setitem__(self, key, value):
+        self._before_write()
+        dict.__setitem__(self, key, value)
+
+    def __delitem__(self, key):
+        self._before_write()
+        dict.__delitem__(self, key)
+
+    def pop(self, *args):
+        self._before_write()
+        return dict.pop(self, *args)
+
+    def popitem(self):
+        self._before_write()
+        return dict.popitem(self)
+
+    def clear(self):
+        self._before_write()
+        dict.clear(self)
+
+    def update(self, *args, **kwargs):
+        self._before_write()
+        dict.update(self, *args, **kwargs)
+
+    def setdefault(self, *args):
+        self._before_write()
+        return dict.setdefault(self, *args)
+
+    def __ior__(self, other):
+        self.update(other)
+        return self
+
 
 class Battlefield(CardCollection):
     """!

@@ -26,7 +26,7 @@ def state():
 
 def test_partial_iteration_is_not_exhausted_to_measure_size(state, monkeypatch):
     from game.game_actions.generation.decision_abstraction import measurement
-    ticks = iter((100, 300))
+    ticks = iter((100, 120, 170, 300))
     monkeypatch.setattr(measurement, "perf_counter_ns", lambda: next(ticks))
 
     class Lazy:
@@ -41,6 +41,8 @@ def test_partial_iteration_is_not_exhausted_to_measure_size(state, monkeypatch):
     result = First().decide(MulliganRequest(state, state.active_player))
     metrics = result.info["decision_metrics"]
     assert metrics["elapsed_ns"] == result.info["elapsed_time"] == 200
+    assert metrics["generation_elapsed_ns"] == 50
+    assert metrics["other_decision_elapsed_ns"] == 150
     assert metrics["options_observed"] == 1 and metrics["option_space_size"] is None
     assert metrics["option_spaces"][0]["exhausted"] is False
 
@@ -59,6 +61,65 @@ def test_nested_generation_is_not_counted_as_extra_priority_options(state):
     assert metrics["options_observed"] == metrics["option_space_size"] == 3
     assert len(metrics["option_spaces"]) == 1
     assert not card.is_tapped and state.stack.is_empty()
+
+
+def test_generation_timing_excludes_suspension_and_does_not_double_count_nested_streams(state, monkeypatch):
+    from game.game_actions.generation.decision_abstraction import measurement
+    clock = [0]
+    monkeypatch.setattr(measurement, "perf_counter_ns", lambda: clock[0])
+    request = MulliganRequest(state, state.active_player)
+
+    def inner():
+        clock[0] += 7
+        yield MulliganOption(False)
+
+    def outer():
+        yield from measurement.measure_options(request, None, inner())
+        clock[0] += 5
+
+    with measurement.DecisionMeasurement(request) as sample:
+        options = measurement.measure_options(request, None, outer())
+        next(options)
+        clock[0] += 100  # policy time while the generator is suspended
+        assert list(options) == []
+    assert len(sample.streams) == 1
+    assert sample.metrics["generation_elapsed_ns"] == 12
+    assert sample.metrics["other_decision_elapsed_ns"] == 100
+    assert sample.metrics["elapsed_ns"] == 112
+
+
+def test_generation_failure_is_included_in_active_time(state, monkeypatch):
+    from game.game_actions.generation.decision_abstraction import measurement
+    clock = [0]
+    monkeypatch.setattr(measurement, "perf_counter_ns", lambda: clock[0])
+    request = MulliganRequest(state, state.active_player)
+
+    def broken():
+        clock[0] += 9
+        raise RuntimeError("generation failed")
+        yield
+
+    with pytest.raises(RuntimeError), measurement.DecisionMeasurement(request) as sample:
+        list(measurement.measure_options(request, None, broken()))
+    assert sample.metrics["generation_elapsed_ns"] == 9
+    assert sample.metrics["other_decision_elapsed_ns"] == 0
+    assert sample.metrics["status"] == "error"
+
+
+def test_generation_split_merges_with_legacy_reports_without_inventing_coverage():
+    stats = DecisionStatistics()
+    legacy = {"status": "success", "elapsed_ns": 100, "options_observed": 1,
+              "option_space_size": None, "request_type": "MulliganRequest"}
+    stats.record(0, "A", "Agent", "agent", legacy)
+    stats.record(0, "A", "Agent", "agent", {
+        **legacy, "generation_elapsed_ns": 30, "other_decision_elapsed_ns": 70})
+    merged = DecisionStatistics()
+    merged.merge(stats.summary())
+    overall = merged.summary()[0]["overall"]
+    assert overall["count"] == 2 and overall["generation_timed_count"] == 1
+    assert overall["total_generation_ns"] == 30
+    assert overall["total_other_decision_ns"] == 70
+    assert overall["total_elapsed_ns"] == 200
 
 
 @pytest.mark.parametrize("repeats,limit,count,size", [(1, None, 2, 2), (2, None, 4, None), (1, 1, 1, 1)])

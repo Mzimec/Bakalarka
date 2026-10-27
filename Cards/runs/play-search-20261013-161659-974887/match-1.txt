@@ -1,0 +1,700 @@
+Goblins Everywhere! (Goblins Everywhere!) vs Keep the Peace (Keep the Peace)
+Result: win | Winner: Simple | Player turn: 11
+Elapsed wall time: 18.943 s
+Seed: 43 | Starting player: 1
+Player turns are numbered individually. Interactive time includes waiting for input.
+
+Decision timing (wall time; includes option generation and input/model waits):
+  Simple [SimpleAgent, agent]: 157 decisions, average 0.314 ms, total 0.049 s, errors 0, auto-passes 118
+    AbilityDecisionRequest: n=11, average 0.075 ms; observed options 1.00; space size 1.00 (known for 11 decisions)
+      1 observed options: n=11, average 0.075 ms
+    DeclareAttackersRequest: n=6, average 0.224 ms; observed options 1.00; space size unknown
+      1 observed options: n=6, average 0.224 ms
+    DeclareBlockersRequest: n=1, average 0.399 ms; observed options 1.00; space size unknown
+      1 observed options: n=1, average 0.399 ms
+    MulliganRequest: n=1, average 0.027 ms; observed options 0.00; space size unknown
+      0 observed options: n=1, average 0.027 ms
+    PriorityDecisionRequest: n=129, average 0.360 ms; observed options 0.28; space size 1.26 (known for 19 decisions)
+      0 observed options: n=104, average 0.147 ms
+      1 observed options: n=14, average 0.961 ms
+      2-10 observed options: n=11, average 1.603 ms
+    ReplacementOrderRequest: n=2, average 0.039 ms; observed options 1.00; space size unknown
+      1 observed options: n=2, average 0.039 ms
+    TriggerOrderRequest: n=7, average 0.038 ms; observed options 1.00; space size unknown
+      1 observed options: n=7, average 0.038 ms
+  MCTS [MCTSAgent, agent]: 144 decisions, average 128.902 ms, total 18.562 s, errors 0, auto-passes 0
+    DeclareAttackersRequest: n=5, average 484.701 ms; observed options 19.60; space size 1.00 (known for 4 decisions)
+      1 observed options: n=4, average 4.918 ms
+      11-100 observed options: n=1, average 2403.832 ms
+    DeclareBlockersRequest: n=4, average 634.390 ms; observed options 173.00; space size 1.00 (known for 3 decisions)
+      1 observed options: n=3, average 6.455 ms
+      101-1000 observed options: n=1, average 2518.195 ms
+    MulliganRequest: n=1, average 2.591 ms; observed options 2.00; space size 2.00 (known for 1 decisions)
+      2-10 observed options: n=1, average 2.591 ms
+    PriorityDecisionRequest: n=132, average 101.178 ms; observed options 6.25; space size 1.00 (known for 116 decisions)
+      1 observed options: n=116, average 7.447 ms
+      101-1000 observed options: n=1, average 2255.500 ms
+      11-100 observed options: n=15, average 682.409 ms
+    ReplacementOrderRequest: n=2, average 121.368 ms; observed options 372.00; space size 372.00 (known for 2 decisions)
+      101-1000 observed options: n=1, average 231.643 ms
+      11-100 observed options: n=1, average 11.093 ms
+  Observed options are consumed yields, not unique actions. Size refers to the policy-filtered space.
+
+
+Turn 1
+  [untap] Simple decides MulliganRequest: 0.027 ms; observed options: 0; space size: unknown; success
+  [untap] MCTS decides MulliganRequest: 2.591 ms; observed options: 2; space size: 2; success
+  [upkeep] Simple decides PriorityDecisionRequest: 0.194 ms; observed options: 0; space size: unknown; success
+  [upkeep] MCTS decides PriorityDecisionRequest: 2.845 ms; observed options: 1; space size: 1; success
+  [precombat main] Simple chooses land: source: Plains [c105]
+  [precombat main] Simple decides PriorityDecisionRequest: 1.259 ms; observed options: 2; space size: unknown; success
+  [precombat main] Card moved: Simple; Plains [c105] — card: Plains [c105]; from: HAND; last known: kind: CardLastKnownInformation; previous controller: Simple; to: BATTLEFIELD
+  [precombat main] Simple plays land Plains [c105] — lands played: 1; last known: kind: CardLastKnownInformation
+  [precombat main] Resolution: Simple; Plains [c105]; play_land; success: True
+  [precombat main] Simple chooses action: ability: cast:Charmed Stray; source: Charmed Stray [c63]; targets: none
+  [precombat main] Simple decides PriorityDecisionRequest: 2.241 ms; observed options: 2; space size: 2; success
+  [precombat main] Card tapped: Simple; Plains [c105] — last known: kind: CardLastKnownInformation
+  [precombat main] Mana added: Simple; Plains [c105] — amount: 1; last known: kind: CardLastKnownInformation; mana: WHITE
+  [precombat main] Simple activates Plains [c105] — ability: mana_white; last known: kind: CardLastKnownInformation
+  [precombat main] Mana paid: Simple; Charmed Stray [c63] — last known: kind: CardLastKnownInformation; payment: WHITE: 1
+  [precombat main] Card moved: Simple; Charmed Stray [c63] — card: Charmed Stray [c63]; from: HAND; last known: kind: CardLastKnownInformation; previous controller: Simple; to: STACK
+  [precombat main] Simple casts Charmed Stray [c63] — ability: cast:Charmed Stray
+  [precombat main] Simple decides PriorityDecisionRequest: 0.147 ms; observed options: 0; space size: unknown; success
+  [precombat main] MCTS decides PriorityDecisionRequest: 3.317 ms; observed options: 1; space size: 1; success
+  [precombat main] Card moved: Simple; Charmed Stray [c63] — card: Charmed Stray [c63]; from: STACK; last known: kind: CardLastKnownInformation; previous controller: Simple; to: BATTLEFIELD
+  [precombat main] Trigger detected: Simple; Charmed Stray [c63]; charmed_stray_etb
+  [precombat main] Simple decides TriggerOrderRequest: 0.032 ms; observed options: 1; space size: unknown; success
+  [precombat main] Simple chooses trigger: ability: charmed_stray_etb; source: Charmed Stray [c63]; targets: none
+  [precombat main] Simple decides AbilityDecisionRequest: 0.069 ms; observed options: 1; space size: 1; success
+  [precombat main] Resolution: Simple; Charmed Stray [c63]; cast:Charmed Stray; success: True
+  [precombat main] Simple decides PriorityDecisionRequest: 0.146 ms; observed options: 0; space size: unknown; success
+  [precombat main] MCTS decides PriorityDecisionRequest: 4.296 ms; observed options: 1; space size: 1; success
+  [precombat main] Resolution: Simple; Charmed Stray [c63]; charmed_stray_etb; success: True
+  [precombat main] Simple decides PriorityDecisionRequest: 1.159 ms; observed options: 1; space size: 1; success
+  [precombat main] MCTS decides PriorityDecisionRequest: 3.038 ms; observed options: 1; space size: 1; success
+  [begin combat] Simple decides PriorityDecisionRequest: 0.136 ms; observed options: 0; space size: unknown; success
+  [begin combat] MCTS decides PriorityDecisionRequest: 2.968 ms; observed options: 1; space size: 1; success
+  [declare attackers] Simple chooses attack: attackers: none
+  [declare attackers] Simple decides DeclareAttackersRequest: 0.129 ms; observed options: 1; space size: unknown; success
+  [declare attackers] Simple decides PriorityDecisionRequest: 0.130 ms; observed options: 0; space size: unknown; success
+  [declare attackers] MCTS decides PriorityDecisionRequest: 2.992 ms; observed options: 1; space size: 1; success
+  [end combat] Simple decides PriorityDecisionRequest: 0.136 ms; observed options: 0; space size: unknown; success
+  [end combat] MCTS decides PriorityDecisionRequest: 2.993 ms; observed options: 1; space size: 1; success
+  [postcombat main] Simple decides PriorityDecisionRequest: 0.930 ms; observed options: 1; space size: 1; success
+  [postcombat main] MCTS decides PriorityDecisionRequest: 2.951 ms; observed options: 1; space size: 1; success
+  [end step] Simple decides PriorityDecisionRequest: 0.132 ms; observed options: 0; space size: unknown; success
+  [end step] MCTS decides PriorityDecisionRequest: 2.958 ms; observed options: 1; space size: 1; success
+
+Turn 2
+  [upkeep] MCTS decides PriorityDecisionRequest: 2.945 ms; observed options: 1; space size: 1; success
+  [upkeep] Simple decides PriorityDecisionRequest: 0.134 ms; observed options: 0; space size: unknown; success
+  [draw] Card moved: MCTS; Mountain [c43] — card: Mountain [c43]; from: DECK; last known: kind: CardLastKnownInformation; previous controller: MCTS; to: HAND
+  [draw] Card drawn: MCTS; Mountain [c43] — card: Mountain [c43]; last known: kind: CardLastKnownInformation
+  [draw] Resolution: -; -; -; success: True
+  [draw] MCTS decides PriorityDecisionRequest: 3.824 ms; observed options: 1; space size: 1; success
+  [draw] Simple decides PriorityDecisionRequest: 0.168 ms; observed options: 0; space size: unknown; success
+  [precombat main] MCTS decides PriorityDecisionRequest: 257.238 ms; observed options: 58; space size: unknown; success
+  [precombat main] Card moved: MCTS; Mountain [c42] — card: Mountain [c42]; from: HAND; last known: kind: CardLastKnownInformation; previous controller: MCTS; to: BATTLEFIELD
+  [precombat main] MCTS plays land Mountain [c42] — lands played: 1; last known: kind: CardLastKnownInformation
+  [precombat main] Resolution: MCTS; Mountain [c42]; play_land; success: True
+  [precombat main] MCTS decides PriorityDecisionRequest: 228.733 ms; observed options: 37; space size: unknown; success
+  [precombat main] Card tapped: MCTS; Mountain [c42] — last known: kind: CardLastKnownInformation
+  [precombat main] Mana added: MCTS; Mountain [c42] — amount: 1; last known: kind: CardLastKnownInformation; mana: RED
+  [precombat main] MCTS activates Mountain [c42] — ability: mana_red; last known: kind: CardLastKnownInformation
+  [precombat main] Mana paid: MCTS; Shock [c22] — last known: kind: CardLastKnownInformation; payment: RED: 1
+  [precombat main] Card moved: MCTS; Shock [c22] — card: Shock [c22]; from: HAND; last known: kind: CardLastKnownInformation; previous controller: MCTS; to: STACK
+  [precombat main] MCTS casts Shock [c22] — ability: cast:Shock
+  [precombat main] MCTS decides PriorityDecisionRequest: 4.083 ms; observed options: 1; space size: 1; success
+  [precombat main] Simple decides PriorityDecisionRequest: 0.203 ms; observed options: 0; space size: unknown; success
+  [precombat main] Damage dealt: MCTS; Shock [c22] — amount: 2; combat: False; last known: kind: CardLastKnownInformation; life loss: 0; source revision: 2; target: Charmed Stray; target object: Charmed Stray [c63]; target revision: 3
+  [precombat main] Card moved: MCTS; Shock [c22] — card: Shock [c22]; from: STACK; last known: kind: CardLastKnownInformation; previous controller: MCTS; to: GRAVEYARD
+  [precombat main] Card moved: Simple; Charmed Stray [c63] — card: Charmed Stray [c63]; from: BATTLEFIELD; last known: kind: CardLastKnownInformation; previous controller: Simple; to: GRAVEYARD
+  [precombat main] Resolution: MCTS; Shock [c22]; cast:Shock; success: True
+  [precombat main] MCTS decides PriorityDecisionRequest: 4.288 ms; observed options: 1; space size: 1; success
+  [precombat main] Simple decides PriorityDecisionRequest: 0.188 ms; observed options: 0; space size: unknown; success
+  [begin combat] MCTS decides PriorityDecisionRequest: 3.250 ms; observed options: 1; space size: 1; success
+  [begin combat] Simple decides PriorityDecisionRequest: 0.162 ms; observed options: 0; space size: unknown; success
+  [declare attackers] MCTS decides DeclareAttackersRequest: 3.500 ms; observed options: 1; space size: 1; success
+  [declare attackers] MCTS decides PriorityDecisionRequest: 47.181 ms; observed options: 1; space size: 1; success
+  [declare attackers] Simple decides PriorityDecisionRequest: 0.211 ms; observed options: 0; space size: unknown; success
+  [end combat] MCTS decides PriorityDecisionRequest: 3.342 ms; observed options: 1; space size: 1; success
+  [end combat] Simple decides PriorityDecisionRequest: 0.170 ms; observed options: 0; space size: unknown; success
+  [postcombat main] MCTS decides PriorityDecisionRequest: 3.666 ms; observed options: 1; space size: 1; success
+  [postcombat main] Simple decides PriorityDecisionRequest: 0.152 ms; observed options: 0; space size: unknown; success
+  [end step] MCTS decides PriorityDecisionRequest: 2.977 ms; observed options: 1; space size: 1; success
+  [end step] Simple decides PriorityDecisionRequest: 0.138 ms; observed options: 0; space size: unknown; success
+
+Turn 3
+  [upkeep] Simple decides PriorityDecisionRequest: 0.128 ms; observed options: 0; space size: unknown; success
+  [upkeep] MCTS decides PriorityDecisionRequest: 2.966 ms; observed options: 1; space size: 1; success
+  [draw] Card moved: Simple; Plains [c103] — card: Plains [c103]; from: DECK; last known: kind: CardLastKnownInformation; previous controller: Simple; to: HAND
+  [draw] Card drawn: Simple; Plains [c103] — card: Plains [c103]; last known: kind: CardLastKnownInformation
+  [draw] Resolution: -; -; -; success: True
+  [draw] Simple decides PriorityDecisionRequest: 0.131 ms; observed options: 0; space size: unknown; success
+  [draw] MCTS decides PriorityDecisionRequest: 3.113 ms; observed options: 1; space size: 1; success
+  [precombat main] Simple chooses land: source: Plains [c103]
+  [precombat main] Simple decides PriorityDecisionRequest: 1.286 ms; observed options: 2; space size: unknown; success
+  [precombat main] Card moved: Simple; Plains [c103] — card: Plains [c103]; from: HAND; last known: kind: CardLastKnownInformation; previous controller: Simple; to: BATTLEFIELD
+  [precombat main] Simple plays land Plains [c103] — lands played: 1; last known: kind: CardLastKnownInformation
+  [precombat main] Resolution: Simple; Plains [c103]; play_land; success: True
+  [precombat main] Simple chooses action: ability: cast:Hallowed Priest; source: Hallowed Priest [c70]; targets: none
+  [precombat main] Simple decides PriorityDecisionRequest: 1.896 ms; observed options: 2; space size: 2; success
+  [precombat main] Card tapped: Simple; Plains [c103] — last known: kind: CardLastKnownInformation
+  [precombat main] Mana added: Simple; Plains [c103] — amount: 1; last known: kind: CardLastKnownInformation; mana: WHITE
+  [precombat main] Simple activates Plains [c103] — ability: mana_white; last known: kind: CardLastKnownInformation
+  [precombat main] Card tapped: Simple; Plains [c105] — last known: kind: CardLastKnownInformation
+  [precombat main] Mana added: Simple; Plains [c105] — amount: 1; last known: kind: CardLastKnownInformation; mana: WHITE
+  [precombat main] Simple activates Plains [c105] — ability: mana_white; last known: kind: CardLastKnownInformation
+  [precombat main] Mana paid: Simple; Hallowed Priest [c70] — last known: kind: CardLastKnownInformation; payment: WHITE: 2
+  [precombat main] Card moved: Simple; Hallowed Priest [c70] — card: Hallowed Priest [c70]; from: HAND; last known: kind: CardLastKnownInformation; previous controller: Simple; to: STACK
+  [precombat main] Simple casts Hallowed Priest [c70] — ability: cast:Hallowed Priest
+  [precombat main] Simple decides PriorityDecisionRequest: 0.127 ms; observed options: 0; space size: unknown; success
+  [precombat main] MCTS decides PriorityDecisionRequest: 3.959 ms; observed options: 1; space size: 1; success
+  [precombat main] Card moved: Simple; Hallowed Priest [c70] — card: Hallowed Priest [c70]; from: STACK; last known: kind: CardLastKnownInformation; previous controller: Simple; to: BATTLEFIELD
+  [precombat main] Resolution: Simple; Hallowed Priest [c70]; cast:Hallowed Priest; success: True
+  [precombat main] Simple decides PriorityDecisionRequest: 1.161 ms; observed options: 1; space size: 1; success
+  [precombat main] MCTS decides PriorityDecisionRequest: 4.400 ms; observed options: 1; space size: 1; success
+  [begin combat] Simple decides PriorityDecisionRequest: 0.164 ms; observed options: 0; space size: unknown; success
+  [begin combat] MCTS decides PriorityDecisionRequest: 3.939 ms; observed options: 1; space size: 1; success
+  [declare attackers] Simple chooses attack: attackers: none
+  [declare attackers] Simple decides DeclareAttackersRequest: 0.142 ms; observed options: 1; space size: unknown; success
+  [declare attackers] Simple decides PriorityDecisionRequest: 0.132 ms; observed options: 0; space size: unknown; success
+  [declare attackers] MCTS decides PriorityDecisionRequest: 3.612 ms; observed options: 1; space size: 1; success
+  [end combat] Simple decides PriorityDecisionRequest: 0.124 ms; observed options: 0; space size: unknown; success
+  [end combat] MCTS decides PriorityDecisionRequest: 3.647 ms; observed options: 1; space size: 1; success
+  [postcombat main] Simple decides PriorityDecisionRequest: 0.945 ms; observed options: 1; space size: 1; success
+  [postcombat main] MCTS decides PriorityDecisionRequest: 3.720 ms; observed options: 1; space size: 1; success
+  [end step] Simple decides PriorityDecisionRequest: 0.124 ms; observed options: 0; space size: unknown; success
+  [end step] MCTS decides PriorityDecisionRequest: 3.599 ms; observed options: 1; space size: 1; success
+
+Turn 4
+  [upkeep] MCTS decides PriorityDecisionRequest: 3.911 ms; observed options: 1; space size: 1; success
+  [upkeep] Simple decides PriorityDecisionRequest: 0.130 ms; observed options: 0; space size: unknown; success
+  [draw] Card moved: MCTS; Mountain [c45] — card: Mountain [c45]; from: DECK; last known: kind: CardLastKnownInformation; previous controller: MCTS; to: HAND
+  [draw] Card drawn: MCTS; Mountain [c45] — card: Mountain [c45]; last known: kind: CardLastKnownInformation
+  [draw] Resolution: -; -; -; success: True
+  [draw] MCTS decides PriorityDecisionRequest: 3.852 ms; observed options: 1; space size: 1; success
+  [draw] Simple decides PriorityDecisionRequest: 0.138 ms; observed options: 0; space size: unknown; success
+  [precombat main] MCTS decides PriorityDecisionRequest: 231.824 ms; observed options: 46; space size: unknown; success
+  [precombat main] Card moved: MCTS; Mountain [c43] — card: Mountain [c43]; from: HAND; last known: kind: CardLastKnownInformation; previous controller: MCTS; to: BATTLEFIELD
+  [precombat main] MCTS plays land Mountain [c43] — lands played: 1; last known: kind: CardLastKnownInformation
+  [precombat main] Resolution: MCTS; Mountain [c43]; play_land; success: True
+  [precombat main] MCTS decides PriorityDecisionRequest: 4.824 ms; observed options: 1; space size: 1; success
+  [precombat main] Simple decides PriorityDecisionRequest: 0.151 ms; observed options: 0; space size: unknown; success
+  [begin combat] MCTS decides PriorityDecisionRequest: 5.230 ms; observed options: 1; space size: 1; success
+  [begin combat] Simple decides PriorityDecisionRequest: 0.160 ms; observed options: 0; space size: unknown; success
+  [declare attackers] MCTS decides DeclareAttackersRequest: 4.043 ms; observed options: 1; space size: 1; success
+  [declare attackers] MCTS decides PriorityDecisionRequest: 3.906 ms; observed options: 1; space size: 1; success
+  [declare attackers] Simple decides PriorityDecisionRequest: 0.141 ms; observed options: 0; space size: unknown; success
+  [end combat] MCTS decides PriorityDecisionRequest: 4.099 ms; observed options: 1; space size: 1; success
+  [end combat] Simple decides PriorityDecisionRequest: 0.143 ms; observed options: 0; space size: unknown; success
+  [postcombat main] MCTS decides PriorityDecisionRequest: 4.284 ms; observed options: 1; space size: 1; success
+  [postcombat main] Simple decides PriorityDecisionRequest: 0.126 ms; observed options: 0; space size: unknown; success
+  [end step] MCTS decides PriorityDecisionRequest: 4.029 ms; observed options: 1; space size: 1; success
+  [end step] Simple decides PriorityDecisionRequest: 0.147 ms; observed options: 0; space size: unknown; success
+
+Turn 5
+  [upkeep] Simple decides PriorityDecisionRequest: 0.118 ms; observed options: 0; space size: unknown; success
+  [upkeep] MCTS decides PriorityDecisionRequest: 4.006 ms; observed options: 1; space size: 1; success
+  [draw] Card moved: Simple; Plains [c118] — card: Plains [c118]; from: DECK; last known: kind: CardLastKnownInformation; previous controller: Simple; to: HAND
+  [draw] Card drawn: Simple; Plains [c118] — card: Plains [c118]; last known: kind: CardLastKnownInformation
+  [draw] Resolution: -; -; -; success: True
+  [draw] Simple decides PriorityDecisionRequest: 0.121 ms; observed options: 0; space size: unknown; success
+  [draw] MCTS decides PriorityDecisionRequest: 3.873 ms; observed options: 1; space size: 1; success
+  [precombat main] Simple chooses land: source: Plains [c109]
+  [precombat main] Simple decides PriorityDecisionRequest: 0.983 ms; observed options: 2; space size: unknown; success
+  [precombat main] Card moved: Simple; Plains [c109] — card: Plains [c109]; from: HAND; last known: kind: CardLastKnownInformation; previous controller: Simple; to: BATTLEFIELD
+  [precombat main] Simple plays land Plains [c109] — lands played: 1; last known: kind: CardLastKnownInformation
+  [precombat main] Resolution: Simple; Plains [c109]; play_land; success: True
+  [precombat main] Simple decides PriorityDecisionRequest: 1.110 ms; observed options: 1; space size: 1; success
+  [precombat main] MCTS decides PriorityDecisionRequest: 4.364 ms; observed options: 1; space size: 1; success
+  [begin combat] Simple decides PriorityDecisionRequest: 0.174 ms; observed options: 0; space size: unknown; success
+  [begin combat] MCTS decides PriorityDecisionRequest: 6.234 ms; observed options: 1; space size: 1; success
+  [declare attackers] Simple chooses attack: attackers: Hallowed Priest [c70]
+  [declare attackers] Simple decides DeclareAttackersRequest: 0.204 ms; observed options: 1; space size: unknown; success
+  [declare attackers] Card tapped: Simple; Hallowed Priest [c70]
+  [declare attackers] Simple attacks with Hallowed Priest [c70] — attacker: Hallowed Priest [c70]; defender: MCTS
+  [declare attackers] Attackers declared: Simple; - — attackers: Hallowed Priest [c70]
+  [declare attackers] Simple decides PriorityDecisionRequest: 0.130 ms; observed options: 0; space size: unknown; success
+  [declare attackers] MCTS decides PriorityDecisionRequest: 4.259 ms; observed options: 1; space size: 1; success
+  [declare blockers] MCTS decides DeclareBlockersRequest: 4.823 ms; observed options: 1; space size: 1; success
+  [declare blockers] Simple decides PriorityDecisionRequest: 0.159 ms; observed options: 0; space size: unknown; success
+  [declare blockers] MCTS decides PriorityDecisionRequest: 4.324 ms; observed options: 1; space size: 1; success
+  [second combat damage] Damage dealt: Simple; Hallowed Priest [c70] — amount: 1; combat: True; last known: kind: CardLastKnownInformation; life loss: 1; source revision: 3; target: MCTS; target object: MCTS; target revision: -
+  [second combat damage] Simple decides PriorityDecisionRequest: 0.128 ms; observed options: 0; space size: unknown; success
+  [second combat damage] MCTS decides PriorityDecisionRequest: 61.596 ms; observed options: 1; space size: 1; success
+  [end combat] Simple decides PriorityDecisionRequest: 0.164 ms; observed options: 0; space size: unknown; success
+  [end combat] MCTS decides PriorityDecisionRequest: 4.443 ms; observed options: 1; space size: 1; success
+  [postcombat main] Simple decides PriorityDecisionRequest: 1.168 ms; observed options: 1; space size: 1; success
+  [postcombat main] MCTS decides PriorityDecisionRequest: 6.306 ms; observed options: 1; space size: 1; success
+  [end step] Simple decides PriorityDecisionRequest: 0.170 ms; observed options: 0; space size: unknown; success
+  [end step] MCTS decides PriorityDecisionRequest: 4.466 ms; observed options: 1; space size: 1; success
+
+Turn 6
+  [upkeep] MCTS decides PriorityDecisionRequest: 4.349 ms; observed options: 1; space size: 1; success
+  [upkeep] Simple decides PriorityDecisionRequest: 0.162 ms; observed options: 0; space size: unknown; success
+  [draw] Card moved: MCTS; Inescapable Blaze [c29] — card: Inescapable Blaze [c29]; from: DECK; last known: kind: CardLastKnownInformation; previous controller: MCTS; to: HAND
+  [draw] Card drawn: MCTS; Inescapable Blaze [c29] — card: Inescapable Blaze [c29]; last known: kind: CardLastKnownInformation
+  [draw] Resolution: -; -; -; success: True
+  [draw] MCTS decides PriorityDecisionRequest: 5.750 ms; observed options: 1; space size: 1; success
+  [draw] Simple decides PriorityDecisionRequest: 0.161 ms; observed options: 0; space size: unknown; success
+  [precombat main] MCTS decides PriorityDecisionRequest: 272.685 ms; observed options: 44; space size: unknown; success
+  [precombat main] Card moved: MCTS; Mountain [c45] — card: Mountain [c45]; from: HAND; last known: kind: CardLastKnownInformation; previous controller: MCTS; to: BATTLEFIELD
+  [precombat main] MCTS plays land Mountain [c45] — lands played: 1; last known: kind: CardLastKnownInformation
+  [precombat main] Resolution: MCTS; Mountain [c45]; play_land; success: True
+  [precombat main] MCTS decides PriorityDecisionRequest: 319.189 ms; observed options: 18; space size: unknown; success
+  [precombat main] Card tapped: MCTS; Mountain [c42] — last known: kind: CardLastKnownInformation
+  [precombat main] Mana added: MCTS; Mountain [c42] — amount: 1; last known: kind: CardLastKnownInformation; mana: RED
+  [precombat main] MCTS activates Mountain [c42] — ability: mana_red; last known: kind: CardLastKnownInformation
+  [precombat main] Card tapped: MCTS; Mountain [c43] — last known: kind: CardLastKnownInformation
+  [precombat main] Mana added: MCTS; Mountain [c43] — amount: 1; last known: kind: CardLastKnownInformation; mana: RED
+  [precombat main] MCTS activates Mountain [c43] — ability: mana_red; last known: kind: CardLastKnownInformation
+  [precombat main] Card tapped: MCTS; Mountain [c45] — last known: kind: CardLastKnownInformation
+  [precombat main] Mana added: MCTS; Mountain [c45] — amount: 1; last known: kind: CardLastKnownInformation; mana: RED
+  [precombat main] MCTS activates Mountain [c45] — ability: mana_red; last known: kind: CardLastKnownInformation
+  [precombat main] Mana paid: MCTS; Raid Bombardment [c34] — last known: kind: CardLastKnownInformation; payment: RED: 3
+  [precombat main] Card moved: MCTS; Raid Bombardment [c34] — card: Raid Bombardment [c34]; from: HAND; last known: kind: CardLastKnownInformation; previous controller: MCTS; to: STACK
+  [precombat main] MCTS casts Raid Bombardment [c34] — ability: cast:Raid Bombardment
+  [precombat main] MCTS decides PriorityDecisionRequest: 5.451 ms; observed options: 1; space size: 1; success
+  [precombat main] Simple decides PriorityDecisionRequest: 0.153 ms; observed options: 0; space size: unknown; success
+  [precombat main] Card moved: MCTS; Raid Bombardment [c34] — card: Raid Bombardment [c34]; from: STACK; last known: kind: CardLastKnownInformation; previous controller: MCTS; to: BATTLEFIELD
+  [precombat main] Resolution: MCTS; Raid Bombardment [c34]; cast:Raid Bombardment; success: True
+  [precombat main] MCTS decides PriorityDecisionRequest: 5.024 ms; observed options: 1; space size: 1; success
+  [precombat main] Simple decides PriorityDecisionRequest: 0.130 ms; observed options: 0; space size: unknown; success
+  [begin combat] MCTS decides PriorityDecisionRequest: 5.006 ms; observed options: 1; space size: 1; success
+  [begin combat] Simple decides PriorityDecisionRequest: 0.135 ms; observed options: 0; space size: unknown; success
+  [declare attackers] MCTS decides DeclareAttackersRequest: 4.558 ms; observed options: 1; space size: 1; success
+  [declare attackers] MCTS decides PriorityDecisionRequest: 4.866 ms; observed options: 1; space size: 1; success
+  [declare attackers] Simple decides PriorityDecisionRequest: 0.151 ms; observed options: 0; space size: unknown; success
+  [end combat] MCTS decides PriorityDecisionRequest: 5.089 ms; observed options: 1; space size: 1; success
+  [end combat] Simple decides PriorityDecisionRequest: 0.145 ms; observed options: 0; space size: unknown; success
+  [postcombat main] MCTS decides PriorityDecisionRequest: 4.888 ms; observed options: 1; space size: 1; success
+  [postcombat main] Simple decides PriorityDecisionRequest: 0.129 ms; observed options: 0; space size: unknown; success
+  [end step] MCTS decides PriorityDecisionRequest: 4.896 ms; observed options: 1; space size: 1; success
+  [end step] Simple decides PriorityDecisionRequest: 0.129 ms; observed options: 0; space size: unknown; success
+
+Turn 7
+  [upkeep] Simple decides PriorityDecisionRequest: 0.123 ms; observed options: 0; space size: unknown; success
+  [upkeep] MCTS decides PriorityDecisionRequest: 5.821 ms; observed options: 1; space size: 1; success
+  [draw] Card moved: Simple; Plains [c111] — card: Plains [c111]; from: DECK; last known: kind: CardLastKnownInformation; previous controller: Simple; to: HAND
+  [draw] Card drawn: Simple; Plains [c111] — card: Plains [c111]; last known: kind: CardLastKnownInformation
+  [draw] Resolution: -; -; -; success: True
+  [draw] Simple decides PriorityDecisionRequest: 0.205 ms; observed options: 0; space size: unknown; success
+  [draw] MCTS decides PriorityDecisionRequest: 5.437 ms; observed options: 1; space size: 1; success
+  [precombat main] Simple chooses land: source: Plains [c111]
+  [precombat main] Simple decides PriorityDecisionRequest: 1.125 ms; observed options: 2; space size: unknown; success
+  [precombat main] Card moved: Simple; Plains [c111] — card: Plains [c111]; from: HAND; last known: kind: CardLastKnownInformation; previous controller: Simple; to: BATTLEFIELD
+  [precombat main] Simple plays land Plains [c111] — lands played: 1; last known: kind: CardLastKnownInformation
+  [precombat main] Resolution: Simple; Plains [c111]; play_land; success: True
+  [precombat main] Simple chooses action: ability: cast:Leonin Warleader; source: Leonin Warleader [c79]; targets: none
+  [precombat main] Simple decides PriorityDecisionRequest: 2.101 ms; observed options: 2; space size: 2; success
+  [precombat main] Card tapped: Simple; Plains [c103] — last known: kind: CardLastKnownInformation
+  [precombat main] Mana added: Simple; Plains [c103] — amount: 1; last known: kind: CardLastKnownInformation; mana: WHITE
+  [precombat main] Simple activates Plains [c103] — ability: mana_white; last known: kind: CardLastKnownInformation
+  [precombat main] Card tapped: Simple; Plains [c105] — last known: kind: CardLastKnownInformation
+  [precombat main] Mana added: Simple; Plains [c105] — amount: 1; last known: kind: CardLastKnownInformation; mana: WHITE
+  [precombat main] Simple activates Plains [c105] — ability: mana_white; last known: kind: CardLastKnownInformation
+  [precombat main] Card tapped: Simple; Plains [c109] — last known: kind: CardLastKnownInformation
+  [precombat main] Mana added: Simple; Plains [c109] — amount: 1; last known: kind: CardLastKnownInformation; mana: WHITE
+  [precombat main] Simple activates Plains [c109] — ability: mana_white; last known: kind: CardLastKnownInformation
+  [precombat main] Card tapped: Simple; Plains [c111] — last known: kind: CardLastKnownInformation
+  [precombat main] Mana added: Simple; Plains [c111] — amount: 1; last known: kind: CardLastKnownInformation; mana: WHITE
+  [precombat main] Simple activates Plains [c111] — ability: mana_white; last known: kind: CardLastKnownInformation
+  [precombat main] Mana paid: Simple; Leonin Warleader [c79] — last known: kind: CardLastKnownInformation; payment: WHITE: 4
+  [precombat main] Card moved: Simple; Leonin Warleader [c79] — card: Leonin Warleader [c79]; from: HAND; last known: kind: CardLastKnownInformation; previous controller: Simple; to: STACK
+  [precombat main] Simple casts Leonin Warleader [c79] — ability: cast:Leonin Warleader
+  [precombat main] Simple decides PriorityDecisionRequest: 0.121 ms; observed options: 0; space size: unknown; success
+  [precombat main] MCTS decides PriorityDecisionRequest: 5.972 ms; observed options: 1; space size: 1; success
+  [precombat main] Card moved: Simple; Leonin Warleader [c79] — card: Leonin Warleader [c79]; from: STACK; last known: kind: CardLastKnownInformation; previous controller: Simple; to: BATTLEFIELD
+  [precombat main] Resolution: Simple; Leonin Warleader [c79]; cast:Leonin Warleader; success: True
+  [precombat main] Simple decides PriorityDecisionRequest: 0.771 ms; observed options: 1; space size: 1; success
+  [precombat main] MCTS decides PriorityDecisionRequest: 5.671 ms; observed options: 1; space size: 1; success
+  [begin combat] Simple decides PriorityDecisionRequest: 0.115 ms; observed options: 0; space size: unknown; success
+  [begin combat] MCTS decides PriorityDecisionRequest: 5.392 ms; observed options: 1; space size: 1; success
+  [declare attackers] Simple chooses attack: attackers: Hallowed Priest [c70]
+  [declare attackers] Simple decides DeclareAttackersRequest: 0.183 ms; observed options: 1; space size: unknown; success
+  [declare attackers] Card tapped: Simple; Hallowed Priest [c70]
+  [declare attackers] Simple attacks with Hallowed Priest [c70] — attacker: Hallowed Priest [c70]; defender: MCTS
+  [declare attackers] Attackers declared: Simple; - — attackers: Hallowed Priest [c70]
+  [declare attackers] Simple decides PriorityDecisionRequest: 0.108 ms; observed options: 0; space size: unknown; success
+  [declare attackers] MCTS decides PriorityDecisionRequest: 5.596 ms; observed options: 1; space size: 1; success
+  [declare blockers] MCTS decides DeclareBlockersRequest: 5.273 ms; observed options: 1; space size: 1; success
+  [declare blockers] Simple decides PriorityDecisionRequest: 0.182 ms; observed options: 0; space size: unknown; success
+  [declare blockers] MCTS decides PriorityDecisionRequest: 44.706 ms; observed options: 1; space size: 1; success
+  [second combat damage] Damage dealt: Simple; Hallowed Priest [c70] — amount: 1; combat: True; last known: kind: CardLastKnownInformation; life loss: 1; source revision: 3; target: MCTS; target object: MCTS; target revision: -
+  [second combat damage] Simple decides PriorityDecisionRequest: 0.132 ms; observed options: 0; space size: unknown; success
+  [second combat damage] MCTS decides PriorityDecisionRequest: 5.911 ms; observed options: 1; space size: 1; success
+  [end combat] Simple decides PriorityDecisionRequest: 0.121 ms; observed options: 0; space size: unknown; success
+  [end combat] MCTS decides PriorityDecisionRequest: 5.415 ms; observed options: 1; space size: 1; success
+  [postcombat main] Simple decides PriorityDecisionRequest: 0.656 ms; observed options: 1; space size: 1; success
+  [postcombat main] MCTS decides PriorityDecisionRequest: 5.616 ms; observed options: 1; space size: 1; success
+  [end step] Simple decides PriorityDecisionRequest: 0.148 ms; observed options: 0; space size: unknown; success
+  [end step] MCTS decides PriorityDecisionRequest: 5.830 ms; observed options: 1; space size: 1; success
+
+Turn 8
+  [upkeep] MCTS decides PriorityDecisionRequest: 5.669 ms; observed options: 1; space size: 1; success
+  [upkeep] Simple decides PriorityDecisionRequest: 0.149 ms; observed options: 0; space size: unknown; success
+  [draw] Card moved: MCTS; Molten Ravager [c11] — card: Molten Ravager [c11]; from: DECK; last known: kind: CardLastKnownInformation; previous controller: MCTS; to: HAND
+  [draw] Card drawn: MCTS; Molten Ravager [c11] — card: Molten Ravager [c11]; last known: kind: CardLastKnownInformation
+  [draw] Resolution: -; -; -; success: True
+  [draw] MCTS decides PriorityDecisionRequest: 6.405 ms; observed options: 1; space size: 1; success
+  [draw] Simple decides PriorityDecisionRequest: 0.129 ms; observed options: 0; space size: unknown; success
+  [precombat main] MCTS decides PriorityDecisionRequest: 388.511 ms; observed options: 44; space size: unknown; success
+  [precombat main] Card moved: MCTS; Mountain [c47] — card: Mountain [c47]; from: HAND; last known: kind: CardLastKnownInformation; previous controller: MCTS; to: BATTLEFIELD
+  [precombat main] MCTS plays land Mountain [c47] — lands played: 1; last known: kind: CardLastKnownInformation
+  [precombat main] Resolution: MCTS; Mountain [c47]; play_land; success: True
+  [precombat main] MCTS decides PriorityDecisionRequest: 377.312 ms; observed options: 19; space size: unknown; success
+  [precombat main] Card tapped: MCTS; Mountain [c42] — last known: kind: CardLastKnownInformation
+  [precombat main] Mana added: MCTS; Mountain [c42] — amount: 1; last known: kind: CardLastKnownInformation; mana: RED
+  [precombat main] MCTS activates Mountain [c42] — ability: mana_red; last known: kind: CardLastKnownInformation
+  [precombat main] Card tapped: MCTS; Mountain [c43] — last known: kind: CardLastKnownInformation
+  [precombat main] Mana added: MCTS; Mountain [c43] — amount: 1; last known: kind: CardLastKnownInformation; mana: RED
+  [precombat main] MCTS activates Mountain [c43] — ability: mana_red; last known: kind: CardLastKnownInformation
+  [precombat main] Card tapped: MCTS; Mountain [c45] — last known: kind: CardLastKnownInformation
+  [precombat main] Mana added: MCTS; Mountain [c45] — amount: 1; last known: kind: CardLastKnownInformation; mana: RED
+  [precombat main] MCTS activates Mountain [c45] — ability: mana_red; last known: kind: CardLastKnownInformation
+  [precombat main] Mana paid: MCTS; Molten Ravager [c11] — last known: kind: CardLastKnownInformation; payment: RED: 3
+  [precombat main] Card moved: MCTS; Molten Ravager [c11] — card: Molten Ravager [c11]; from: HAND; last known: kind: CardLastKnownInformation; previous controller: MCTS; to: STACK
+  [precombat main] MCTS casts Molten Ravager [c11] — ability: cast:Molten Ravager
+  [precombat main] MCTS decides PriorityDecisionRequest: 6.399 ms; observed options: 1; space size: 1; success
+  [precombat main] Simple decides PriorityDecisionRequest: 0.155 ms; observed options: 0; space size: unknown; success
+  [precombat main] Card moved: MCTS; Molten Ravager [c11] — card: Molten Ravager [c11]; from: STACK; last known: kind: CardLastKnownInformation; previous controller: MCTS; to: BATTLEFIELD
+  [precombat main] Resolution: MCTS; Molten Ravager [c11]; cast:Molten Ravager; success: True
+  [precombat main] MCTS decides PriorityDecisionRequest: 460.189 ms; observed options: 18; space size: unknown; success
+  [precombat main] Card tapped: MCTS; Mountain [c47] — last known: kind: CardLastKnownInformation
+  [precombat main] Mana added: MCTS; Mountain [c47] — amount: 1; last known: kind: CardLastKnownInformation; mana: RED
+  [precombat main] MCTS activates Mountain [c47] — ability: mana_red; last known: kind: CardLastKnownInformation
+  [precombat main] Mana paid: MCTS; Molten Ravager [c11] — last known: kind: CardLastKnownInformation; payment: RED: 1
+  [precombat main] MCTS activates Molten Ravager [c11] — ability: power_up
+  [precombat main] MCTS decides PriorityDecisionRequest: 6.926 ms; observed options: 1; space size: 1; success
+  [precombat main] Simple decides PriorityDecisionRequest: 0.139 ms; observed options: 0; space size: unknown; success
+  [precombat main] Temporary effect applied: MCTS; Molten Ravager [c11] — last known: kind: CardLastKnownInformation; targets: Molten Ravager [c11]
+  [precombat main] Resolution: MCTS; Molten Ravager [c11]; power_up; success: True
+  [precombat main] MCTS decides PriorityDecisionRequest: 11.799 ms; observed options: 1; space size: 1; success
+  [precombat main] Simple decides PriorityDecisionRequest: 0.177 ms; observed options: 0; space size: unknown; success
+  [begin combat] MCTS decides PriorityDecisionRequest: 10.056 ms; observed options: 1; space size: 1; success
+  [begin combat] Simple decides PriorityDecisionRequest: 0.190 ms; observed options: 0; space size: unknown; success
+  [declare attackers] MCTS decides DeclareAttackersRequest: 7.571 ms; observed options: 1; space size: 1; success
+  [declare attackers] MCTS decides PriorityDecisionRequest: 7.190 ms; observed options: 1; space size: 1; success
+  [declare attackers] Simple decides PriorityDecisionRequest: 0.150 ms; observed options: 0; space size: unknown; success
+  [end combat] MCTS decides PriorityDecisionRequest: 7.532 ms; observed options: 1; space size: 1; success
+  [end combat] Simple decides PriorityDecisionRequest: 0.159 ms; observed options: 0; space size: unknown; success
+  [postcombat main] MCTS decides PriorityDecisionRequest: 7.344 ms; observed options: 1; space size: 1; success
+  [postcombat main] Simple decides PriorityDecisionRequest: 0.136 ms; observed options: 0; space size: unknown; success
+  [end step] MCTS decides PriorityDecisionRequest: 7.835 ms; observed options: 1; space size: 1; success
+  [end step] Simple decides PriorityDecisionRequest: 0.153 ms; observed options: 0; space size: unknown; success
+
+Turn 9
+  [upkeep] Simple decides PriorityDecisionRequest: 0.124 ms; observed options: 0; space size: unknown; success
+  [upkeep] MCTS decides PriorityDecisionRequest: 6.780 ms; observed options: 1; space size: 1; success
+  [draw] Card moved: Simple; Hallowed Priest [c67] — card: Hallowed Priest [c67]; from: DECK; last known: kind: CardLastKnownInformation; previous controller: Simple; to: HAND
+  [draw] Card drawn: Simple; Hallowed Priest [c67] — card: Hallowed Priest [c67]; last known: kind: CardLastKnownInformation
+  [draw] Resolution: -; -; -; success: True
+  [draw] Simple decides PriorityDecisionRequest: 0.156 ms; observed options: 0; space size: unknown; success
+  [draw] MCTS decides PriorityDecisionRequest: 8.019 ms; observed options: 1; space size: 1; success
+  [precombat main] Simple chooses land: source: Plains [c118]
+  [precombat main] Simple decides PriorityDecisionRequest: 1.225 ms; observed options: 2; space size: unknown; success
+  [precombat main] Card moved: Simple; Plains [c118] — card: Plains [c118]; from: HAND; last known: kind: CardLastKnownInformation; previous controller: Simple; to: BATTLEFIELD
+  [precombat main] Simple plays land Plains [c118] — lands played: 1; last known: kind: CardLastKnownInformation
+  [precombat main] Resolution: Simple; Plains [c118]; play_land; success: True
+  [precombat main] Simple chooses action: ability: cast:Hallowed Priest; source: Hallowed Priest [c67]; targets: none
+  [precombat main] Simple decides PriorityDecisionRequest: 1.843 ms; observed options: 2; space size: 2; success
+  [precombat main] Card tapped: Simple; Plains [c103] — last known: kind: CardLastKnownInformation
+  [precombat main] Mana added: Simple; Plains [c103] — amount: 1; last known: kind: CardLastKnownInformation; mana: WHITE
+  [precombat main] Simple activates Plains [c103] — ability: mana_white; last known: kind: CardLastKnownInformation
+  [precombat main] Card tapped: Simple; Plains [c105] — last known: kind: CardLastKnownInformation
+  [precombat main] Mana added: Simple; Plains [c105] — amount: 1; last known: kind: CardLastKnownInformation; mana: WHITE
+  [precombat main] Simple activates Plains [c105] — ability: mana_white; last known: kind: CardLastKnownInformation
+  [precombat main] Mana paid: Simple; Hallowed Priest [c67] — last known: kind: CardLastKnownInformation; payment: WHITE: 2
+  [precombat main] Card moved: Simple; Hallowed Priest [c67] — card: Hallowed Priest [c67]; from: HAND; last known: kind: CardLastKnownInformation; previous controller: Simple; to: STACK
+  [precombat main] Simple casts Hallowed Priest [c67] — ability: cast:Hallowed Priest
+  [precombat main] Simple decides PriorityDecisionRequest: 0.146 ms; observed options: 0; space size: unknown; success
+  [precombat main] MCTS decides PriorityDecisionRequest: 8.167 ms; observed options: 1; space size: 1; success
+  [precombat main] Card moved: Simple; Hallowed Priest [c67] — card: Hallowed Priest [c67]; from: STACK; last known: kind: CardLastKnownInformation; previous controller: Simple; to: BATTLEFIELD
+  [precombat main] Resolution: Simple; Hallowed Priest [c67]; cast:Hallowed Priest; success: True
+  [precombat main] Simple decides PriorityDecisionRequest: 1.023 ms; observed options: 1; space size: 1; success
+  [precombat main] MCTS decides PriorityDecisionRequest: 8.639 ms; observed options: 1; space size: 1; success
+  [begin combat] Simple decides PriorityDecisionRequest: 0.145 ms; observed options: 0; space size: unknown; success
+  [begin combat] MCTS decides PriorityDecisionRequest: 8.785 ms; observed options: 1; space size: 1; success
+  [declare attackers] Simple chooses attack: attackers: Hallowed Priest [c70], Leonin Warleader [c79]
+  [declare attackers] Simple decides DeclareAttackersRequest: 0.296 ms; observed options: 1; space size: unknown; success
+  [declare attackers] Card tapped: Simple; Hallowed Priest [c70]
+  [declare attackers] Simple attacks with Hallowed Priest [c70] — attacker: Hallowed Priest [c70]; defender: MCTS
+  [declare attackers] Card tapped: Simple; Leonin Warleader [c79]
+  [declare attackers] Simple attacks with Leonin Warleader [c79] — attacker: Leonin Warleader [c79]; defender: MCTS
+  [declare attackers] Attackers declared: Simple; - — attackers: Hallowed Priest [c70], Leonin Warleader [c79]
+  [declare attackers] Trigger detected: Simple; Leonin Warleader [c79]; warleader_attack
+  [declare attackers] Simple decides TriggerOrderRequest: 0.042 ms; observed options: 1; space size: unknown; success
+  [declare attackers] Simple chooses trigger: ability: warleader_attack; source: Leonin Warleader [c79]; targets: none
+  [declare attackers] Simple decides AbilityDecisionRequest: 0.086 ms; observed options: 1; space size: 1; success
+  [declare attackers] Simple decides PriorityDecisionRequest: 0.148 ms; observed options: 0; space size: unknown; success
+  [declare attackers] MCTS decides PriorityDecisionRequest: 8.018 ms; observed options: 1; space size: 1; success
+  [declare attackers] Simple decides ReplacementOrderRequest: 0.041 ms; observed options: 1; space size: unknown; success
+  [declare attackers] Card moved: Simple; Cat [c121] — card: Cat [c121]; created token: True; from: -; previous controller: Simple; to: BATTLEFIELD
+  [declare attackers] Card moved: Simple; Cat [c122] — card: Cat [c122]; created token: True; from: -; previous controller: Simple; to: BATTLEFIELD
+  [declare attackers] Resolution: Simple; Leonin Warleader [c79]; warleader_attack; success: True
+  [declare attackers] Simple decides PriorityDecisionRequest: 0.136 ms; observed options: 0; space size: unknown; success
+  [declare attackers] MCTS decides PriorityDecisionRequest: 8.981 ms; observed options: 1; space size: 1; success
+  [declare blockers] MCTS decides DeclareBlockersRequest: 2518.195 ms; observed options: 689; space size: unknown; success
+  [declare blockers] MCTS blocks with Molten Ravager [c11] — attacker: Cat [c121]; blocker: Molten Ravager [c11]
+  [declare blockers] Attacker blocked: Simple; Cat [c121] — blockers: Molten Ravager [c11]
+  [declare blockers] Blockers declared: MCTS; - — blockers: Molten Ravager [c11], Cat [c121]
+  [declare blockers] Simple decides PriorityDecisionRequest: 0.144 ms; observed options: 0; space size: unknown; success
+  [declare blockers] MCTS decides PriorityDecisionRequest: 7.975 ms; observed options: 1; space size: 1; success
+  [second combat damage] MCTS decides ReplacementOrderRequest: 11.093 ms; observed options: 24; space size: 24; success
+  [second combat damage] Damage dealt: Simple; Cat [c121] — amount: 1; combat: True; last known: kind: CardLastKnownInformation; life loss: 0; source revision: 1; target: Molten Ravager; target object: Molten Ravager [c11]; target revision: 3
+  [second combat damage] Damage dealt: Simple; Cat [c122] — amount: 1; combat: True; last known: kind: CardLastKnownInformation; life loss: 1; source revision: 1; target: MCTS; target object: MCTS; target revision: -
+  [second combat damage] Damage dealt: Simple; Hallowed Priest [c70] — amount: 1; combat: True; last known: kind: CardLastKnownInformation; life loss: 1; source revision: 3; target: MCTS; target object: MCTS; target revision: -
+  [second combat damage] Damage dealt: Simple; Leonin Warleader [c79] — amount: 4; combat: True; last known: kind: CardLastKnownInformation; life loss: 4; source revision: 3; target: MCTS; target object: MCTS; target revision: -
+  [second combat damage] Life gained: Simple; Cat [c121] — amount: 1; last known: kind: CardLastKnownInformation; player: Simple
+  [second combat damage] Life gained: Simple; Cat [c122] — amount: 1; last known: kind: CardLastKnownInformation; player: Simple
+  [second combat damage] Trigger detected: Simple; Hallowed Priest [c67]; hallowed_priest_life
+  [second combat damage] Trigger detected: Simple; Hallowed Priest [c70]; hallowed_priest_life
+  [second combat damage] Trigger detected: Simple; Hallowed Priest [c67]; hallowed_priest_life
+  [second combat damage] Trigger detected: Simple; Hallowed Priest [c70]; hallowed_priest_life
+  [second combat damage] Simple decides TriggerOrderRequest: 0.037 ms; observed options: 1; space size: unknown; success
+  [second combat damage] Simple chooses trigger: ability: hallowed_priest_life; source: Hallowed Priest [c67]; targets: none
+  [second combat damage] Simple decides AbilityDecisionRequest: 0.074 ms; observed options: 1; space size: 1; success
+  [second combat damage] Simple chooses trigger: ability: hallowed_priest_life; source: Hallowed Priest [c70]; targets: none
+  [second combat damage] Simple decides AbilityDecisionRequest: 0.089 ms; observed options: 1; space size: 1; success
+  [second combat damage] Simple chooses trigger: ability: hallowed_priest_life; source: Hallowed Priest [c67]; targets: none
+  [second combat damage] Simple decides AbilityDecisionRequest: 0.061 ms; observed options: 1; space size: 1; success
+  [second combat damage] Simple chooses trigger: ability: hallowed_priest_life; source: Hallowed Priest [c70]; targets: none
+  [second combat damage] Simple decides AbilityDecisionRequest: 0.057 ms; observed options: 1; space size: 1; success
+  [second combat damage] Simple decides PriorityDecisionRequest: 0.144 ms; observed options: 0; space size: unknown; success
+  [second combat damage] MCTS decides PriorityDecisionRequest: 7.976 ms; observed options: 1; space size: 1; success
+  [second combat damage] Counter placed: Simple; Hallowed Priest [c70] — amount: 1; counter: PLUS_ONE; last known: kind: CardLastKnownInformation
+  [second combat damage] Resolution: Simple; Hallowed Priest [c70]; hallowed_priest_life; success: True
+  [second combat damage] Simple decides PriorityDecisionRequest: 0.118 ms; observed options: 0; space size: unknown; success
+  [second combat damage] MCTS decides PriorityDecisionRequest: 7.750 ms; observed options: 1; space size: 1; success
+  [second combat damage] Counter placed: Simple; Hallowed Priest [c67] — amount: 1; counter: PLUS_ONE; last known: kind: CardLastKnownInformation
+  [second combat damage] Resolution: Simple; Hallowed Priest [c67]; hallowed_priest_life; success: True
+  [second combat damage] Simple decides PriorityDecisionRequest: 0.130 ms; observed options: 0; space size: unknown; success
+  [second combat damage] MCTS decides PriorityDecisionRequest: 7.416 ms; observed options: 1; space size: 1; success
+  [second combat damage] Counter placed: Simple; Hallowed Priest [c70] — amount: 1; counter: PLUS_ONE; last known: kind: CardLastKnownInformation
+  [second combat damage] Resolution: Simple; Hallowed Priest [c70]; hallowed_priest_life; success: True
+  [second combat damage] Simple decides PriorityDecisionRequest: 0.110 ms; observed options: 0; space size: unknown; success
+  [second combat damage] MCTS decides PriorityDecisionRequest: 7.458 ms; observed options: 1; space size: 1; success
+  [second combat damage] Counter placed: Simple; Hallowed Priest [c67] — amount: 1; counter: PLUS_ONE; last known: kind: CardLastKnownInformation
+  [second combat damage] Resolution: Simple; Hallowed Priest [c67]; hallowed_priest_life; success: True
+  [second combat damage] Simple decides PriorityDecisionRequest: 0.120 ms; observed options: 0; space size: unknown; success
+  [second combat damage] MCTS decides PriorityDecisionRequest: 7.377 ms; observed options: 1; space size: 1; success
+  [end combat] Simple decides PriorityDecisionRequest: 0.111 ms; observed options: 0; space size: unknown; success
+  [end combat] MCTS decides PriorityDecisionRequest: 7.172 ms; observed options: 1; space size: 1; success
+  [postcombat main] Simple decides PriorityDecisionRequest: 0.815 ms; observed options: 1; space size: 1; success
+  [postcombat main] MCTS decides PriorityDecisionRequest: 7.162 ms; observed options: 1; space size: 1; success
+  [end step] Simple decides PriorityDecisionRequest: 0.111 ms; observed options: 0; space size: unknown; success
+  [end step] MCTS decides PriorityDecisionRequest: 7.186 ms; observed options: 1; space size: 1; success
+
+Turn 10
+  [upkeep] MCTS decides PriorityDecisionRequest: 411.892 ms; observed options: 18; space size: unknown; success
+  [upkeep] Card tapped: MCTS; Mountain [c42] — last known: kind: CardLastKnownInformation
+  [upkeep] Mana added: MCTS; Mountain [c42] — amount: 1; last known: kind: CardLastKnownInformation; mana: RED
+  [upkeep] MCTS activates Mountain [c42] — ability: mana_red; last known: kind: CardLastKnownInformation
+  [upkeep] Mana paid: MCTS; Molten Ravager [c11] — last known: kind: CardLastKnownInformation; payment: RED: 1
+  [upkeep] MCTS activates Molten Ravager [c11] — ability: power_up
+  [upkeep] MCTS decides PriorityDecisionRequest: 1088.095 ms; observed options: 52; space size: unknown; success
+  [upkeep] Card tapped: MCTS; Mountain [c43] — last known: kind: CardLastKnownInformation
+  [upkeep] Mana added: MCTS; Mountain [c43] — amount: 1; last known: kind: CardLastKnownInformation; mana: RED
+  [upkeep] MCTS activates Mountain [c43] — ability: mana_red; last known: kind: CardLastKnownInformation
+  [upkeep] Mana paid: MCTS; Molten Ravager [c11] — last known: kind: CardLastKnownInformation; payment: RED: 1
+  [upkeep] MCTS activates Molten Ravager [c11] — ability: power_up
+  [upkeep] MCTS decides PriorityDecisionRequest: 2255.500 ms; observed options: 104; space size: unknown; success
+  [upkeep] Simple decides PriorityDecisionRequest: 0.186 ms; observed options: 0; space size: unknown; success
+  [upkeep] Temporary effect applied: MCTS; Molten Ravager [c11] — last known: kind: CardLastKnownInformation; targets: Molten Ravager [c11]
+  [upkeep] Resolution: MCTS; Molten Ravager [c11]; power_up; success: True
+  [upkeep] MCTS decides PriorityDecisionRequest: 1323.940 ms; observed options: 52; space size: unknown; success
+  [upkeep] Card tapped: MCTS; Mountain [c45] — last known: kind: CardLastKnownInformation
+  [upkeep] Mana added: MCTS; Mountain [c45] — amount: 1; last known: kind: CardLastKnownInformation; mana: RED
+  [upkeep] MCTS activates Mountain [c45] — ability: mana_red; last known: kind: CardLastKnownInformation
+  [upkeep] Mana paid: MCTS; Molten Ravager [c11] — last known: kind: CardLastKnownInformation; payment: RED: 1
+  [upkeep] MCTS activates Molten Ravager [c11] — ability: power_up
+  [upkeep] MCTS decides PriorityDecisionRequest: 2328.963 ms; observed options: 98; space size: unknown; success
+  [upkeep] Simple decides PriorityDecisionRequest: 0.193 ms; observed options: 0; space size: unknown; success
+  [upkeep] Temporary effect applied: MCTS; Molten Ravager [c11] — last known: kind: CardLastKnownInformation; targets: Molten Ravager [c11]
+  [upkeep] Resolution: MCTS; Molten Ravager [c11]; power_up; success: True
+  [upkeep] MCTS decides PriorityDecisionRequest: 1312.443 ms; observed options: 52; space size: unknown; success
+  [upkeep] Card tapped: MCTS; Mountain [c47] — last known: kind: CardLastKnownInformation
+  [upkeep] Mana added: MCTS; Mountain [c47] — amount: 1; last known: kind: CardLastKnownInformation; mana: RED
+  [upkeep] MCTS activates Mountain [c47] — ability: mana_red; last known: kind: CardLastKnownInformation
+  [upkeep] Mana paid: MCTS; Molten Ravager [c11] — last known: kind: CardLastKnownInformation; payment: RED: 1
+  [upkeep] MCTS activates Molten Ravager [c11] — ability: power_up
+  [upkeep] MCTS decides PriorityDecisionRequest: 9.427 ms; observed options: 1; space size: 1; success
+  [upkeep] Simple decides PriorityDecisionRequest: 0.215 ms; observed options: 0; space size: unknown; success
+  [upkeep] Temporary effect applied: MCTS; Molten Ravager [c11] — last known: kind: CardLastKnownInformation; targets: Molten Ravager [c11]
+  [upkeep] Resolution: MCTS; Molten Ravager [c11]; power_up; success: True
+  [upkeep] MCTS decides PriorityDecisionRequest: 11.528 ms; observed options: 1; space size: 1; success
+  [upkeep] Simple decides PriorityDecisionRequest: 0.256 ms; observed options: 0; space size: unknown; success
+  [upkeep] Temporary effect applied: MCTS; Molten Ravager [c11] — last known: kind: CardLastKnownInformation; targets: Molten Ravager [c11]
+  [upkeep] Resolution: MCTS; Molten Ravager [c11]; power_up; success: True
+  [upkeep] MCTS decides PriorityDecisionRequest: 10.001 ms; observed options: 1; space size: 1; success
+  [upkeep] Simple decides PriorityDecisionRequest: 0.168 ms; observed options: 0; space size: unknown; success
+  [draw] Card moved: MCTS; Nest Robber [c9] — card: Nest Robber [c9]; from: DECK; last known: kind: CardLastKnownInformation; previous controller: MCTS; to: HAND
+  [draw] Card drawn: MCTS; Nest Robber [c9] — card: Nest Robber [c9]; last known: kind: CardLastKnownInformation
+  [draw] Resolution: -; -; -; success: True
+  [draw] MCTS decides PriorityDecisionRequest: 11.776 ms; observed options: 1; space size: 1; success
+  [draw] Simple decides PriorityDecisionRequest: 0.181 ms; observed options: 0; space size: unknown; success
+  [precombat main] MCTS decides PriorityDecisionRequest: 634.010 ms; observed options: 31; space size: unknown; success
+  [precombat main] Card moved: MCTS; Mountain [c51] — card: Mountain [c51]; from: HAND; last known: kind: CardLastKnownInformation; previous controller: MCTS; to: BATTLEFIELD
+  [precombat main] MCTS plays land Mountain [c51] — lands played: 1; last known: kind: CardLastKnownInformation
+  [precombat main] Resolution: MCTS; Mountain [c51]; play_land; success: True
+  [precombat main] MCTS decides PriorityDecisionRequest: 601.108 ms; observed options: 18; space size: unknown; success
+  [precombat main] Card tapped: MCTS; Mountain [c51] — last known: kind: CardLastKnownInformation
+  [precombat main] Mana added: MCTS; Mountain [c51] — amount: 1; last known: kind: CardLastKnownInformation; mana: RED
+  [precombat main] MCTS activates Mountain [c51] — ability: mana_red; last known: kind: CardLastKnownInformation
+  [precombat main] Mana paid: MCTS; Molten Ravager [c11] — last known: kind: CardLastKnownInformation; payment: RED: 1
+  [precombat main] MCTS activates Molten Ravager [c11] — ability: power_up
+  [precombat main] MCTS decides PriorityDecisionRequest: 8.421 ms; observed options: 1; space size: 1; success
+  [precombat main] Simple decides PriorityDecisionRequest: 0.131 ms; observed options: 0; space size: unknown; success
+  [precombat main] Temporary effect applied: MCTS; Molten Ravager [c11] — last known: kind: CardLastKnownInformation; targets: Molten Ravager [c11]
+  [precombat main] Resolution: MCTS; Molten Ravager [c11]; power_up; success: True
+  [precombat main] MCTS decides PriorityDecisionRequest: 8.905 ms; observed options: 1; space size: 1; success
+  [precombat main] Simple decides PriorityDecisionRequest: 0.154 ms; observed options: 0; space size: unknown; success
+  [begin combat] MCTS decides PriorityDecisionRequest: 8.494 ms; observed options: 1; space size: 1; success
+  [begin combat] Simple decides PriorityDecisionRequest: 0.130 ms; observed options: 0; space size: unknown; success
+  [declare attackers] MCTS decides DeclareAttackersRequest: 2403.832 ms; observed options: 94; space size: unknown; success
+  [declare attackers] Card tapped: MCTS; Molten Ravager [c11]
+  [declare attackers] MCTS attacks with Molten Ravager [c11] — attacker: Molten Ravager [c11]; defender: Simple
+  [declare attackers] Attackers declared: MCTS; - — attackers: Molten Ravager [c11]
+  [declare attackers] MCTS decides PriorityDecisionRequest: 9.352 ms; observed options: 1; space size: 1; success
+  [declare attackers] Simple decides PriorityDecisionRequest: 1.041 ms; observed options: 1; space size: 1; success
+  [declare blockers] Simple chooses block: blockers: Hallowed Priest [c67], Molten Ravager [c11]
+  [declare blockers] Simple decides DeclareBlockersRequest: 0.399 ms; observed options: 1; space size: unknown; success
+  [declare blockers] Simple blocks with Hallowed Priest [c67] — attacker: Molten Ravager [c11]; blocker: Hallowed Priest [c67]
+  [declare blockers] Attacker blocked: MCTS; Molten Ravager [c11] — blockers: Hallowed Priest [c67]
+  [declare blockers] Blockers declared: Simple; - — blockers: Hallowed Priest [c67], Molten Ravager [c11]
+  [declare blockers] MCTS decides PriorityDecisionRequest: 8.928 ms; observed options: 1; space size: 1; success
+  [declare blockers] Simple decides PriorityDecisionRequest: 0.904 ms; observed options: 1; space size: 1; success
+  [second combat damage] Damage dealt: Simple; Hallowed Priest [c67] — amount: 3; combat: True; last known: kind: CardLastKnownInformation; life loss: 0; source revision: 3; target: Molten Ravager; target object: Molten Ravager [c11]; target revision: 3
+  [second combat damage] Damage dealt: MCTS; Molten Ravager [c11] — amount: 5; combat: True; last known: kind: CardLastKnownInformation; life loss: 0; source revision: 3; target: Hallowed Priest; target object: Hallowed Priest [c67]; target revision: 3
+  [second combat damage] Card moved: Simple; Hallowed Priest [c67] — card: Hallowed Priest [c67]; from: BATTLEFIELD; last known: kind: CardLastKnownInformation; previous controller: Simple; to: GRAVEYARD
+  [second combat damage] MCTS decides PriorityDecisionRequest: 9.186 ms; observed options: 1; space size: 1; success
+  [second combat damage] Simple decides PriorityDecisionRequest: 1.098 ms; observed options: 1; space size: 1; success
+  [end combat] MCTS decides PriorityDecisionRequest: 8.325 ms; observed options: 1; space size: 1; success
+  [end combat] Simple decides PriorityDecisionRequest: 0.670 ms; observed options: 1; space size: 1; success
+  [postcombat main] MCTS decides PriorityDecisionRequest: 9.229 ms; observed options: 1; space size: 1; success
+  [postcombat main] Simple decides PriorityDecisionRequest: 0.175 ms; observed options: 0; space size: unknown; success
+  [end step] MCTS decides PriorityDecisionRequest: 9.163 ms; observed options: 1; space size: 1; success
+  [end step] Simple decides PriorityDecisionRequest: 0.180 ms; observed options: 0; space size: unknown; success
+
+Turn 11
+  [upkeep] Simple decides PriorityDecisionRequest: 0.145 ms; observed options: 0; space size: unknown; success
+  [upkeep] MCTS decides PriorityDecisionRequest: 8.775 ms; observed options: 1; space size: 1; success
+  [draw] Card moved: Simple; Plains [c115] — card: Plains [c115]; from: DECK; last known: kind: CardLastKnownInformation; previous controller: Simple; to: HAND
+  [draw] Card drawn: Simple; Plains [c115] — card: Plains [c115]; last known: kind: CardLastKnownInformation
+  [draw] Resolution: -; -; -; success: True
+  [draw] Simple decides PriorityDecisionRequest: 0.146 ms; observed options: 0; space size: unknown; success
+  [draw] MCTS decides PriorityDecisionRequest: 9.757 ms; observed options: 1; space size: 1; success
+  [precombat main] Simple chooses land: source: Plains [c115]
+  [precombat main] Simple decides PriorityDecisionRequest: 1.280 ms; observed options: 2; space size: unknown; success
+  [precombat main] Card moved: Simple; Plains [c115] — card: Plains [c115]; from: HAND; last known: kind: CardLastKnownInformation; previous controller: Simple; to: BATTLEFIELD
+  [precombat main] Simple plays land Plains [c115] — lands played: 1; last known: kind: CardLastKnownInformation
+  [precombat main] Resolution: Simple; Plains [c115]; play_land; success: True
+  [precombat main] Simple chooses action: ability: cast:Inspiring Commander; source: Inspiring Commander [c84]; targets: none
+  [precombat main] Simple decides PriorityDecisionRequest: 2.394 ms; observed options: 2; space size: 2; success
+  [precombat main] Card tapped: Simple; Plains [c103] — last known: kind: CardLastKnownInformation
+  [precombat main] Mana added: Simple; Plains [c103] — amount: 1; last known: kind: CardLastKnownInformation; mana: WHITE
+  [precombat main] Simple activates Plains [c103] — ability: mana_white; last known: kind: CardLastKnownInformation
+  [precombat main] Card tapped: Simple; Plains [c105] — last known: kind: CardLastKnownInformation
+  [precombat main] Mana added: Simple; Plains [c105] — amount: 1; last known: kind: CardLastKnownInformation; mana: WHITE
+  [precombat main] Simple activates Plains [c105] — ability: mana_white; last known: kind: CardLastKnownInformation
+  [precombat main] Card tapped: Simple; Plains [c109] — last known: kind: CardLastKnownInformation
+  [precombat main] Mana added: Simple; Plains [c109] — amount: 1; last known: kind: CardLastKnownInformation; mana: WHITE
+  [precombat main] Simple activates Plains [c109] — ability: mana_white; last known: kind: CardLastKnownInformation
+  [precombat main] Card tapped: Simple; Plains [c111] — last known: kind: CardLastKnownInformation
+  [precombat main] Mana added: Simple; Plains [c111] — amount: 1; last known: kind: CardLastKnownInformation; mana: WHITE
+  [precombat main] Simple activates Plains [c111] — ability: mana_white; last known: kind: CardLastKnownInformation
+  [precombat main] Card tapped: Simple; Plains [c115] — last known: kind: CardLastKnownInformation
+  [precombat main] Mana added: Simple; Plains [c115] — amount: 1; last known: kind: CardLastKnownInformation; mana: WHITE
+  [precombat main] Simple activates Plains [c115] — ability: mana_white; last known: kind: CardLastKnownInformation
+  [precombat main] Card tapped: Simple; Plains [c118] — last known: kind: CardLastKnownInformation
+  [precombat main] Mana added: Simple; Plains [c118] — amount: 1; last known: kind: CardLastKnownInformation; mana: WHITE
+  [precombat main] Simple activates Plains [c118] — ability: mana_white; last known: kind: CardLastKnownInformation
+  [precombat main] Mana paid: Simple; Inspiring Commander [c84] — last known: kind: CardLastKnownInformation; payment: WHITE: 6
+  [precombat main] Card moved: Simple; Inspiring Commander [c84] — card: Inspiring Commander [c84]; from: HAND; last known: kind: CardLastKnownInformation; previous controller: Simple; to: STACK
+  [precombat main] Simple casts Inspiring Commander [c84] — ability: cast:Inspiring Commander
+  [precombat main] Simple decides PriorityDecisionRequest: 0.222 ms; observed options: 0; space size: unknown; success
+  [precombat main] MCTS decides PriorityDecisionRequest: 10.371 ms; observed options: 1; space size: 1; success
+  [precombat main] Card moved: Simple; Inspiring Commander [c84] — card: Inspiring Commander [c84]; from: STACK; last known: kind: CardLastKnownInformation; previous controller: Simple; to: BATTLEFIELD
+  [precombat main] Resolution: Simple; Inspiring Commander [c84]; cast:Inspiring Commander; success: True
+  [precombat main] Simple decides PriorityDecisionRequest: 0.115 ms; observed options: 0; space size: unknown; success
+  [precombat main] MCTS decides PriorityDecisionRequest: 10.282 ms; observed options: 1; space size: 1; success
+  [begin combat] Simple decides PriorityDecisionRequest: 0.118 ms; observed options: 0; space size: unknown; success
+  [begin combat] MCTS decides PriorityDecisionRequest: 8.815 ms; observed options: 1; space size: 1; success
+  [declare attackers] Simple chooses attack: attackers: Hallowed Priest [c70], Leonin Warleader [c79], Cat [c121], Cat [c122]
+  [declare attackers] Simple decides DeclareAttackersRequest: 0.391 ms; observed options: 1; space size: unknown; success
+  [declare attackers] Card tapped: Simple; Hallowed Priest [c70]
+  [declare attackers] Simple attacks with Hallowed Priest [c70] — attacker: Hallowed Priest [c70]; defender: MCTS
+  [declare attackers] Card tapped: Simple; Leonin Warleader [c79]
+  [declare attackers] Simple attacks with Leonin Warleader [c79] — attacker: Leonin Warleader [c79]; defender: MCTS
+  [declare attackers] Card tapped: Simple; Cat [c121]
+  [declare attackers] Simple attacks with Cat [c121] — attacker: Cat [c121]; defender: MCTS
+  [declare attackers] Card tapped: Simple; Cat [c122]
+  [declare attackers] Simple attacks with Cat [c122] — attacker: Cat [c122]; defender: MCTS
+  [declare attackers] Attackers declared: Simple; - — attackers: Hallowed Priest [c70], Leonin Warleader [c79], Cat [c121], Cat [c122]
+  [declare attackers] Trigger detected: Simple; Leonin Warleader [c79]; warleader_attack
+  [declare attackers] Simple decides TriggerOrderRequest: 0.042 ms; observed options: 1; space size: unknown; success
+  [declare attackers] Simple chooses trigger: ability: warleader_attack; source: Leonin Warleader [c79]; targets: none
+  [declare attackers] Simple decides AbilityDecisionRequest: 0.087 ms; observed options: 1; space size: 1; success
+  [declare attackers] Simple decides PriorityDecisionRequest: 0.120 ms; observed options: 0; space size: unknown; success
+  [declare attackers] MCTS decides PriorityDecisionRequest: 9.603 ms; observed options: 1; space size: 1; success
+  [declare attackers] Simple decides ReplacementOrderRequest: 0.038 ms; observed options: 1; space size: unknown; success
+  [declare attackers] Card moved: Simple; Cat [c123] — card: Cat [c123]; created token: True; from: -; previous controller: Simple; to: BATTLEFIELD
+  [declare attackers] Card moved: Simple; Cat [c124] — card: Cat [c124]; created token: True; from: -; previous controller: Simple; to: BATTLEFIELD
+  [declare attackers] Trigger detected: Simple; Inspiring Commander [c84]; commander_small_etb
+  [declare attackers] Trigger detected: Simple; Inspiring Commander [c84]; commander_small_etb
+  [declare attackers] Simple decides TriggerOrderRequest: 0.031 ms; observed options: 1; space size: unknown; success
+  [declare attackers] Simple chooses trigger: ability: commander_small_etb; source: Inspiring Commander [c84]; targets: none
+  [declare attackers] Simple decides AbilityDecisionRequest: 0.080 ms; observed options: 1; space size: 1; success
+  [declare attackers] Simple chooses trigger: ability: commander_small_etb; source: Inspiring Commander [c84]; targets: none
+  [declare attackers] Simple decides AbilityDecisionRequest: 0.065 ms; observed options: 1; space size: 1; success
+  [declare attackers] Resolution: Simple; Leonin Warleader [c79]; warleader_attack; success: True
+  [declare attackers] Simple decides PriorityDecisionRequest: 0.102 ms; observed options: 0; space size: unknown; success
+  [declare attackers] MCTS decides PriorityDecisionRequest: 10.283 ms; observed options: 1; space size: 1; success
+  [declare attackers] Life gained: Simple; Inspiring Commander [c84] — amount: 1; last known: kind: CardLastKnownInformation; player: Simple
+  [declare attackers] Card moved: Simple; Plains [c99] — card: Plains [c99]; from: DECK; last known: kind: CardLastKnownInformation; previous controller: Simple; to: HAND
+  [declare attackers] Card drawn: Simple; Plains [c99] — card: Plains [c99]; last known: kind: CardLastKnownInformation
+  [declare attackers] Trigger detected: Simple; Hallowed Priest [c70]; hallowed_priest_life
+  [declare attackers] Simple decides TriggerOrderRequest: 0.041 ms; observed options: 1; space size: unknown; success
+  [declare attackers] Simple chooses trigger: ability: hallowed_priest_life; source: Hallowed Priest [c70]; targets: none
+  [declare attackers] Simple decides AbilityDecisionRequest: 0.082 ms; observed options: 1; space size: 1; success
+  [declare attackers] Resolution: Simple; Inspiring Commander [c84]; commander_small_etb; success: True
+  [declare attackers] Simple decides PriorityDecisionRequest: 0.143 ms; observed options: 0; space size: unknown; success
+  [declare attackers] MCTS decides PriorityDecisionRequest: 9.801 ms; observed options: 1; space size: 1; success
+  [declare attackers] Counter placed: Simple; Hallowed Priest [c70] — amount: 1; counter: PLUS_ONE; last known: kind: CardLastKnownInformation
+  [declare attackers] Resolution: Simple; Hallowed Priest [c70]; hallowed_priest_life; success: True
+  [declare attackers] Simple decides PriorityDecisionRequest: 0.109 ms; observed options: 0; space size: unknown; success
+  [declare attackers] MCTS decides PriorityDecisionRequest: 9.423 ms; observed options: 1; space size: 1; success
+  [declare attackers] Life gained: Simple; Inspiring Commander [c84] — amount: 1; last known: kind: CardLastKnownInformation; player: Simple
+  [declare attackers] Card moved: Simple; Pacifism [c92] — card: Pacifism [c92]; from: DECK; last known: kind: CardLastKnownInformation; previous controller: Simple; to: HAND
+  [declare attackers] Card drawn: Simple; Pacifism [c92] — card: Pacifism [c92]; last known: kind: CardLastKnownInformation
+  [declare attackers] Trigger detected: Simple; Hallowed Priest [c70]; hallowed_priest_life
+  [declare attackers] Simple decides TriggerOrderRequest: 0.040 ms; observed options: 1; space size: unknown; success
+  [declare attackers] Simple chooses trigger: ability: hallowed_priest_life; source: Hallowed Priest [c70]; targets: none
+  [declare attackers] Simple decides AbilityDecisionRequest: 0.080 ms; observed options: 1; space size: 1; success
+  [declare attackers] Resolution: Simple; Inspiring Commander [c84]; commander_small_etb; success: True
+  [declare attackers] Simple decides PriorityDecisionRequest: 0.143 ms; observed options: 0; space size: unknown; success
+  [declare attackers] MCTS decides PriorityDecisionRequest: 10.075 ms; observed options: 1; space size: 1; success
+  [declare attackers] Counter placed: Simple; Hallowed Priest [c70] — amount: 1; counter: PLUS_ONE; last known: kind: CardLastKnownInformation
+  [declare attackers] Resolution: Simple; Hallowed Priest [c70]; hallowed_priest_life; success: True
+  [declare attackers] Simple decides PriorityDecisionRequest: 0.128 ms; observed options: 0; space size: unknown; success
+  [declare attackers] MCTS decides PriorityDecisionRequest: 10.507 ms; observed options: 1; space size: 1; success
+  [declare blockers] MCTS decides DeclareBlockersRequest: 9.267 ms; observed options: 1; space size: 1; success
+  [declare blockers] Simple decides PriorityDecisionRequest: 0.149 ms; observed options: 0; space size: unknown; success
+  [declare blockers] MCTS decides PriorityDecisionRequest: 9.867 ms; observed options: 1; space size: 1; success
+  [second combat damage] MCTS decides ReplacementOrderRequest: 231.643 ms; observed options: 720; space size: 720; success
+  [second combat damage] Damage dealt: Simple; Cat [c121] — amount: 1; combat: True; last known: kind: CardLastKnownInformation; life loss: 1; source revision: 1; target: MCTS; target object: MCTS; target revision: -
+  [second combat damage] Damage dealt: Simple; Cat [c122] — amount: 1; combat: True; last known: kind: CardLastKnownInformation; life loss: 1; source revision: 1; target: MCTS; target object: MCTS; target revision: -
+  [second combat damage] Damage dealt: Simple; Cat [c123] — amount: 1; combat: True; last known: kind: CardLastKnownInformation; life loss: 1; source revision: 1; target: MCTS; target object: MCTS; target revision: -
+  [second combat damage] Damage dealt: Simple; Cat [c124] — amount: 1; combat: True; last known: kind: CardLastKnownInformation; life loss: 1; source revision: 1; target: MCTS; target object: MCTS; target revision: -
+  [second combat damage] Damage dealt: Simple; Leonin Warleader [c79] — amount: 4; combat: True; last known: kind: CardLastKnownInformation; life loss: 4; source revision: 3; target: MCTS; target object: MCTS; target revision: -
+  [second combat damage] Damage dealt: Simple; Hallowed Priest [c70] — amount: 5; combat: True; last known: kind: CardLastKnownInformation; life loss: 5; source revision: 3; target: MCTS; target object: MCTS; target revision: -
+  [second combat damage] Life gained: Simple; Cat [c121] — amount: 1; last known: kind: CardLastKnownInformation; player: Simple
+  [second combat damage] Life gained: Simple; Cat [c122] — amount: 1; last known: kind: CardLastKnownInformation; player: Simple
+  [second combat damage] Life gained: Simple; Cat [c123] — amount: 1; last known: kind: CardLastKnownInformation; player: Simple
+  [second combat damage] Life gained: Simple; Cat [c124] — amount: 1; last known: kind: CardLastKnownInformation; player: Simple
+  [second combat damage] Trigger detected: Simple; Hallowed Priest [c70]; hallowed_priest_life
+  [second combat damage] Trigger detected: Simple; Hallowed Priest [c70]; hallowed_priest_life
+  [second combat damage] Trigger detected: Simple; Hallowed Priest [c70]; hallowed_priest_life
+  [second combat damage] Trigger detected: Simple; Hallowed Priest [c70]; hallowed_priest_life
+  [second combat damage] Player lost: MCTS; - — reason: life

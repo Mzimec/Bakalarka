@@ -206,7 +206,7 @@ def mana_ability(mana):
     )
 
 
-def basic_land_abilities(card, state):
+def basic_land_abilities(card, state, *, card_types=None):
     """!
     @brief Derive intrinsic mana abilities from a land's current basic land subtypes.
 
@@ -218,7 +218,9 @@ def basic_land_abilities(card, state):
     @param state Current game state.
     @return Mapping from generated ability keys to intrinsic ability definitions.
     """
-    if CardType.LAND not in card.get_types(state):
+    if card_types is None:
+        card_types = card.get_types(state)
+    if CardType.LAND not in card_types:
         return {}
 
     result = {}
@@ -231,6 +233,11 @@ def basic_land_abilities(card, state):
             result[definition.key] = definition
 
     return result
+
+
+# Only these native builders have the immutable-input contract used by the
+# short-lived generation read cache. Replaced extension functions stay live.
+_NATIVE_ABILITY_BUILDERS = (basic_land_abilities, mana_ability)
 
 
 def basic_land(name):

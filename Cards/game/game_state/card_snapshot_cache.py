@@ -3,7 +3,7 @@ from dataclasses import dataclass
 from immutabledict import immutabledict
 from helper.mutability_objs import ImmutableSet
 from helper.runtime_object import ImmutableKeyedCollection
-from .modifier import only_empty_builtin_sources
+from .native_modifier_plan import live_sources_empty
 from .stat import Stat, ModifiablePrimitiveStat, ModifiableReferenceStat
 from .card import Card, CardDefinition
 from .lki_signature import local_lki_signature
@@ -22,6 +22,7 @@ class _Entry:
     revision: int
     snapshot: object
     signature: object = None
+    face_down: bool = False
 
 
 class CardSnapshotCache:
@@ -125,14 +126,14 @@ class CardSnapshotCache:
     def _eligible(state, card):
         return (type(card) is Card and type(card.definition) is CardDefinition
                 and state.card_register.get_by_key(card.key) is card
-                and only_empty_builtin_sources(card.modifier_sources)
+                and live_sources_empty(card)
                 and not card.state.counters)
 
     @staticmethod
     def _matches(entry, card):
         return (entry is not None and entry.card is card and entry.stats is card.stats
                 and entry.definition is card.definition and entry.zone == card.get_zone()
-                and entry.revision == card.zone_revision)
+                and entry.revision == card.zone_revision and entry.face_down == card.state.face_down)
 
     def has_current_index_projection(self, state, card, validation_cache=None):
         entry = self._index_entries.get(id(card))
@@ -155,7 +156,7 @@ class CardSnapshotCache:
         signature = signature_reader(card) if immutable and signature_reader else None
         if immutable and (signature_reader is None or signature is not None):
             entries[identity] = _Entry(card, card.stats, card.definition,
-                                      card.get_zone(), card.zone_revision, snapshot, signature)
+                                      card.get_zone(), card.zone_revision, snapshot, signature, card.state.face_down)
         else:
             entries.pop(identity, None)
         return snapshot
@@ -175,7 +176,7 @@ class CardSnapshotCache:
         if self.has_immutable_inputs(card):
             self._entries[identity] = _Entry(
                 card, card.stats, card.definition, card.get_zone(),
-                card.zone_revision, snapshot, signature,
+                card.zone_revision, snapshot, signature, card.state.face_down,
             )
         else:
             self._entries.pop(identity, None)

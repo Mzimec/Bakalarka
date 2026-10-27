@@ -40,3 +40,14 @@ class AbilityParameterStrategy(Protocol):
         @return Iterable of parameter proposals.
         """
         ...
+
+
+def ability_parameters(ability, policy, state):
+    """Single parameter proposal/type contract for flat and staged generation."""
+    parameters = (policy.parameter_strategy.generate(ability, state)
+                  if policy.parameter_strategy is not None
+                  else (AbilityParameters(policy.x_value, policy.life_payment),))
+    for selected in parameters:
+        if not isinstance(selected, AbilityParameters):
+            raise TypeError("Parameter strategies must yield AbilityParameters.")
+        yield selected

@@ -20,6 +20,12 @@ class TokenEntryOperation(MoveCardOperation):
     @brief Battlefield entry operation for a newly created token.
     """
 
+    def __init__(self, context, card, destination, *, creation_index=0):
+        super().__init__(context, card, destination)
+        # Stable within this simultaneous creation batch, before registration
+        # assigns a command ID. Distinguishes replacement-order choices in replay.
+        self.creation_index = creation_index
+
     def _move(self, state):
         """!
         @brief Insert the new token into its owner's zone collection.
@@ -76,7 +82,8 @@ class CreateTokenOperation(Operation):
         from game.game_actions.resolution.replacement_effects import ReplacementResolver
 
         entries = tuple(
-            TokenEntryOperation(self.context, card, ZoneType.BATTLEFIELD) for card in cards
+            TokenEntryOperation(self.context, card, ZoneType.BATTLEFIELD, creation_index=index)
+            for index, card in enumerate(cards)
         )
 
         # Choose every entry replacement before any member enters. The outer

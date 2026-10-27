@@ -1,13 +1,11 @@
 """Validated JSON match configuration shared by scripts and console entry points."""
 
-from datetime import datetime
 import json
 from pathlib import Path
 
 from game.ai.simple_agent import SimpleAgent
 from game.ai.modular_agent import ModularAgent, CandidateGenerator, CombatPolicy, ParameterPolicy
 from game.cards.decks import load_arena_starter, DeckList
-from game.paths import RUNS_DIR
 from game.simulation.match_runner import run_match
 
 
@@ -19,16 +17,23 @@ def known_keys(data, allowed, label):
         raise ValueError(f"Invalid fields in {label}; allowed: {', '.join(allowed)}.")
 
 
-def make_controller(config, *, seed, max_decisions):
+def make_controller(config, *, seed, max_decisions, search_origin=None):
     """!
     @brief Compose a player controller and its bounded decision policies.
     """
-    known_keys(config, ("type", "candidates", "combat", "llm", "parameters", "payment", "candidate_limit", "auto_pass"), "agent")
+    known_keys(config, ("type", "candidates", "combat", "llm", "parameters", "payment", "candidate_limit", "auto_pass", "mcts"), "agent")
+    kind = config.get("type", "modular")
+    if kind == "mcts":
+        known_keys(config, ("type", "mcts"), "MCTS agent")
+        from game.simulation.search_config import make_search_controller
+        return make_search_controller(config.get("mcts", {}), search_origin, max_decisions=max_decisions)
+    if "mcts" in config:
+        raise ValueError("MCTS settings require agent type mcts.")
     auto_pass = config.get("auto_pass", True)
     if type(auto_pass) is not bool:
         raise ValueError("auto_pass must be a boolean.")
     kind = config.get("type", "modular")
-    if kind in ("human", "simple") and set(config) - {"type", "auto_pass"}:
+    if kind in ("human", "simple", "trivial") and set(config) - {"type", "auto_pass"}:
         raise ValueError("Auxiliary policies require a modular or LLM agent.")
     if kind != "llm" and "llm" in config:
         raise ValueError("LLM settings require agent type llm.")
@@ -37,6 +42,9 @@ def make_controller(config, *, seed, max_decisions):
         return ConsoleDecisionMaker(auto_pass=auto_pass)
     if kind == "simple":
         return SimpleAgent(max_decisions=max_decisions, auto_pass=auto_pass)
+    if kind == "trivial":
+        from game.ai.trivial_agent import TrivialAgent
+        return TrivialAgent(max_decisions=max_decisions, auto_pass=auto_pass)
     if kind not in ("modular", "llm"):
         raise ValueError(f"Unknown agent type: {kind}.")
     proposal = config.get("candidates", {})
@@ -54,7 +62,7 @@ def make_controller(config, *, seed, max_decisions):
     if kind == "llm":
         from game.ai.llm_policy import OllamaSelector
         llm = config.get("llm", {})
-        known_keys(llm, ("model", "endpoint", "timeout", "max_requests"), "llm")
+        known_keys(llm, ("model", "endpoint", "timeout", "max_requests", "include_priors"), "llm")
         if "model" not in llm:
             raise ValueError("LLM agent requires llm.model.")
         selector = OllamaSelector(**llm, seed=seed)
@@ -107,21 +115,23 @@ def run_config(path, *, output=None, seed=None):
         names.append(player.get("name", f"Player {index + 1}"))
         if not isinstance(names[-1], str) or not names[-1].strip():
             raise ValueError("Player names must be nonempty strings.")
-        controllers.append(make_controller(
-            player.get("agent", {}), seed=seed + index,
-            max_decisions=limits["max_decisions"],
-        ))
     if len(set(names)) != 2:
         raise ValueError("Player names must be distinct.")
     # Validate deck content before opening any experiment output.
     from game.cards.catalog import game_catalog
     for deck in decks:
         deck.resolve(game_catalog())
+    # Only agents explicitly declaring both_lists receive this recipe. It
+    # contains declared composition/settings, never a match seed or live State.
+    from game.ai.game_origin import GameOrigin
+    origin = GameOrigin(tuple(decks), game_catalog, names=tuple(names), starting_player_idx=starting)
+    controllers = [make_controller(player.get("agent", {}), seed=seed + index,
+                   max_decisions=limits["max_decisions"], search_origin=origin)
+                   for index, player in enumerate(players)]
     if output is None:
-        output = (path.parent / config["output"] if "output" in config
-                  else RUNS_DIR / datetime.now().strftime("configured-%Y%m%d-%H%M%S-%f.jsonl"))
-    output = Path(output)
-    output.parent.mkdir(parents=True, exist_ok=True)
+        output = path.parent / config["output"] if config.get("output") is not None else None
+    if output is not None:
+        output = Path(output)
     return run_match(
         tuple(deck.name for deck in decks), output, seed=seed,
         starting_player=starting, controllers=tuple(controllers),

@@ -158,6 +158,8 @@ class ActionProcessor:
             raise
 
         finally:
+            if transaction is not None:
+                transaction.close()
             pending = self.executor._pending_triggers
             self.executor._pending_triggers = previous
             self.executor._cost_transaction = previous_transaction

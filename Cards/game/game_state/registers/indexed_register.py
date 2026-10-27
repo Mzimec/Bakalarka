@@ -170,6 +170,8 @@ class IndexedRegister(InMemoryObjectRegister):
         if self._synchronising:
             return
         self.state.refresh_continuous_effects()
+        if not self._dirty:
+            return
         self._synchronising = True
         try:
 

@@ -1,0 +1,42 @@
+{
+  "seed": 106,
+  "starting_player": 0,
+  "max_turns": 80,
+  "max_decisions": 3000,
+  "players": [
+    {
+      "name": "Simple",
+      "deck": "green",
+      "agent": {
+        "type": "simple"
+      }
+    },
+    {
+      "name": "Search",
+      "deck": "black",
+      "agent": {
+        "type": "mcts",
+        "mcts": {
+          "selection": "puct",
+          "prior": "heuristic",
+          "compress_forced": true,
+          "force_initial_coverage": false,
+          "require_root_coverage": false,
+          "max_search_ms": 500,
+          "min_trajectories": 1,
+          "search_seed": 7006,
+          "worlds": 2,
+          "iterations": 256,
+          "max_depth": 4,
+          "max_extensions": 8,
+          "max_advances": 4096,
+          "max_options": 4096,
+          "max_simulator_decisions": 2048,
+          "max_phases": 512,
+          "trajectory_mode": "continuous",
+          "deck_knowledge": "both_lists"
+        }
+      }
+    }
+  ]
+}

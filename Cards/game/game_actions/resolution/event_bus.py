@@ -63,6 +63,7 @@ class CardLastKnownInformation:
     toughness: int | None = None
     counters: Mapping = field(default_factory=dict)
     subtypes: frozenset = frozenset()
+    face_down: bool = False
 
     def __post_init__(self) -> None:
         """!
@@ -98,6 +99,7 @@ class GameEvent:
     controller: Any | None = None
     payload: Mapping[str, Any] = field(default_factory=dict)
     triggered_abilities: tuple | None = field(default=None, repr=False, compare=False)
+    player_events: tuple | None = field(default=None, repr=False, compare=False)
 
     def __post_init__(self) -> None:
         """!
@@ -110,20 +112,52 @@ class GameEvent:
         )
 
 
+_UNCHANGED = object()
+
+
+def _with_event_data(event, *, payload=_UNCHANGED, triggered_abilities=_UNCHANGED,
+                     player_events=_UNCHANGED):
+    """Copy native event fields without dataclass reflection; preserve extensions.
+
+    Construction still freezes a fresh payload, exactly as replace() does.
+    Subclasses retain their constructor, additional fields and post-init hooks.
+    """
+    if type(event) is GameEvent:
+        return GameEvent(
+            event.key, event.source, event.controller,
+            event.payload if payload is _UNCHANGED else payload,
+            event.triggered_abilities if triggered_abilities is _UNCHANGED else triggered_abilities,
+            event.player_events if player_events is _UNCHANGED else player_events,
+        )
+    changes = {key: value for key, value in (
+        ("payload", payload), ("triggered_abilities", triggered_abilities), ("player_events", player_events)
+    ) if value is not _UNCHANGED}
+    return replace(event, **changes)
+
+
 def capture_trigger_roster(state: object) -> tuple:
     """!
-    @brief Snapshot all currently available triggered abilities.
+    @brief Snapshot source/controller bindings for currently available triggers.
     @param state Current game state.
-    @return Tuple of triggered abilities visible at capture time.
+    @return Lightweight bindings, or runtime abilities from custom getters/factories.
     """
     getter = getattr(state, "get_triggered_abilities", None)
+    from ..triggers.trigger_roster import capture_native_roster
+    # Respect external states and either compatibility getter override.
+    from ...game_state.state import State
+    if (getattr(getter, "__func__", None) is State.get_triggered_abilities
+            and getattr(getattr(state, "get_trigger_abilities", None), "__func__", None)
+            is State.get_trigger_abilities
+            and getattr(getattr(state, "query_cards", None), "__func__", None) is State.query_cards):
+        return capture_native_roster(state)
     return tuple(getter(None)) if getter is not None else ()
 
 
 def capture_card_information(state: object, cards: object | None = None) -> dict[int, CardLastKnownInformation]:
     """!
-    @brief Capture last-known information for every card in the game state.
+    @brief Capture last-known information for selected cards, or the full fallback.
     @param state Current game state.
+    @param cards Explicit dependency set; None requests every live card.
     @return Mapping from card identity to its current LKI snapshot.
     """
     if cards is None:
@@ -172,7 +206,30 @@ def _capture_single_card(state: object, card: object) -> CardLastKnownInformatio
         triggers=tuple(card.get_trigger_defs(state).values()),
         power=card.get_power(state), toughness=card.get_toughness(state),
         counters=card.state.counters, subtypes=frozenset(card.get_subtypes(state)),
+        face_down=card.state.face_down,
     )
+
+
+def capture_player_events(state, event, information=None):
+    """Freeze visibility at event time; deliver only when the event commits."""
+    if event.player_events is not None:
+        return event
+    projections = []
+    from .event_definitions import EVENT_DEFINITIONS
+    definition = EVENT_DEFINITIONS.get(event.key)
+    if definition is not None and definition.frozen_zone_projection:
+        from ...ai.knowledge import project_player_event
+        projection_source = event
+        if information and id(event.source) in information:
+                projection_source = _with_event_data(event, payload={**event.payload, "last_known": information[id(event.source)]})
+        for player in getattr(state, "players", ()):
+            # Capture is a rule/visibility operation. Delivery is conditional on
+            # controller hooks, capture is not: a simulated opponent may later
+            # need its own event-time view even if the live controller was Simple.
+            projected = project_player_event(projection_source, state, player)
+            if projected is not None:
+                projections.append((player.idx, projected))
+    return _with_event_data(event, player_events=tuple(projections))
 
 
 def capture_event(state: object, event: GameEvent, before: object | None = None, information: object | None = None, after: object | None = None) -> GameEvent:
@@ -191,20 +248,26 @@ def capture_event(state: object, event: GameEvent, before: object | None = None,
     @return Event with `triggered_abilities` populated.
     """
     if event.triggered_abilities is not None:
-        return event
+        return capture_player_events(state, event)
 
-    from ..data_structs.ability import TriggerAbility
+    from ..triggers.trigger_roster import event_key_possible
 
-    # Attach source LKI directly to zone-change events when available.
-    if information and id(event.source) in information:
-        event = replace(
-            event,
-            payload={
-                **event.payload,
-                "last_known": information[id(event.source)],
-            },
-        )
-
+    # Player projections see source LKI before any later batch mutation.
+    # Build the final trigger payload once, rather than copying first for LKI
+    # and again for incarnation references. Already captured player events stay
+    # attached to the original mutation, as before.
+    if type(event) is GameEvent:
+        payload = dict(event.payload)
+        if information and id(event.source) in information:
+            payload["last_known"] = information[id(event.source)]
+        event = capture_player_events(state, event, information)
+    else:
+        # An extension's post-init may have observable behavior. Retain the
+        # original sequence of LKI, observation and incarnation copies.
+        if information and id(event.source) in information:
+            event = replace(event, payload={**event.payload, "last_known": information[id(event.source)]})
+        event = capture_player_events(state, event)
+        payload = dict(event.payload)
     references = {}
     def remember(value: object) -> None:
         """!
@@ -217,9 +280,10 @@ def capture_event(state: object, event: GameEvent, before: object | None = None,
             for item in value:
                 remember(item)
     remember(event.source)
-    for value in event.payload.values():
+    for value in payload.values():
         remember(value)
-    event = replace(event, payload={**event.payload, "object_revisions": MappingProxyType(references)})
+    payload["object_revisions"] = MappingProxyType(references)
+    event = _with_event_data(event, payload=payload)
 
     after = capture_trigger_roster(state) if after is None else after
     before = after if before is None else before
@@ -244,7 +308,8 @@ def capture_event(state: object, event: GameEvent, before: object | None = None,
     # Evaluate look-back triggers against the pre-event roster and ordinary
     # triggers against the post-event roster.
     for roster, is_before in ((before, True), (after, False)):
-        for ability in roster:
+        select = getattr(roster, "for_event", None)
+        for ability in select(event) if select is not None else roster:
             definition = ability.definition
             look_back = getattr(
                 definition.condition,
@@ -255,6 +320,9 @@ def capture_event(state: object, event: GameEvent, before: object | None = None,
             use_before = leaves if look_back is None else look_back
 
             if use_before != is_before:
+                continue
+
+            if not event_key_possible(definition, event):
                 continue
 
             trigger = definition.to_ability(
@@ -276,7 +344,7 @@ def capture_event(state: object, event: GameEvent, before: object | None = None,
 
     from ..triggers.runtime_triggers import collect_runtime
     triggers.extend(collect_runtime(state, event))
-    return replace(
+    return _with_event_data(
         event,
         triggered_abilities=tuple(triggers),
     )
@@ -309,18 +377,30 @@ class EventBus:
         @param state Optional current game state.
         @return The published event, possibly replaced by a captured version.
         """
-        if state is not None and event.triggered_abilities is None:
+        if state is not None and (event.triggered_abilities is None or event.player_events is None):
             event = capture_event(state, event)
 
         self.emitted_events.append(event)
 
         if state is not None and hasattr(state, "turn"):
             # Reset turn-local event history when entering a new turn.
-            if getattr(state, "_history_turn", None) != state.turn.number:
-                state._history_turn = state.turn.number
-                state.turn_events = []
+            record = getattr(state, "record_turn_event", None)
+            if record is not None:
+                record(event)
+            else:
+                if getattr(state, "_history_turn", None) != state.turn.number:
+                    state._history_turn = state.turn.number
+                    state.turn_events = []
+                state.turn_events.append(event)
 
-            state.turn_events.append(event)
+        if state is not None:
+            # Publication happens after successful cost transactions. Observers
+            # receive copied, viewer-filtered evidence, never raw engine events.
+            projections = dict(event.player_events or ())
+            for player in getattr(state, "players", ()):
+                receive = getattr(getattr(player, "controller", None), "receive_player_event", None)
+                if receive is not None and player.idx in projections:
+                    receive(projections[player.idx], game_token=state.knowledge_token, player=player.idx)
 
         return event
 

@@ -8,6 +8,11 @@ boundary. Custom costs must use engine runtime state and pure reserve_cost hooks
 from __future__ import annotations
 from collections import deque
 from random import Random
+from enum import Enum
+from helper.runtime_object import ImmutableKeyedCollection
+from .cost_index_checkpoint import defer_index_groups, close_index_groups
+from .cost_runtime_journal import defer_runtime_contents, close_runtime_contents, unchanged_register_structure
+from ...game_state.native_modifier_plan import NativeModifierPlan
 
 
 class CostPaymentError(ValueError):
@@ -29,7 +34,7 @@ class RuntimeCheckpoint:
     mutable state stored in their `state` attribute.
     """
 
-    def __init__(self, state: object, *, card_scope: object | None = None, shallow_roots: object | None = None) -> None:
+    def __init__(self, state: object, *, card_scope: object | None = None, shallow_roots: object | None = None, defer_indexes: bool = False, native_payment: bool = False) -> None:
         """!
         @brief Create a checkpoint rooted at the supplied game state.
         @param state Root runtime state whose mutable object graph should
@@ -39,8 +44,22 @@ class RuntimeCheckpoint:
                Supplied only by the empty-trigger-cost planner.
         """
         self._seen = set()
+        # A type's traversal contract is stable during a checkpoint. Reuse
+        # classification when later operations/index writes extend its graph.
+        self._kinds = {int: "ignore", float: "ignore", bool: "ignore", str: "ignore",
+                       bytes: "ignore", complex: "ignore", type(None): "ignore",
+                       object: "ignore", dict: "dict", list: "list", set: "set",
+                       deque: "deque", tuple: "tuple", frozenset: "frozenset"}
         self._restore = []
+        self._index_hooks = []
+        self._runtime_hooks = []
+        self._defer_indexes = defer_indexes and card_scope is not None
         self.card_scope = card_scope
+        self._native_values = False
+        if native_payment and card_scope is not None:
+            stable_roots = unchanged_register_structure(state)
+            self._native_values = bool(stable_roots)
+            self._seen.update(id(value) for value in stable_roots)
         self.skipped_cards = 0
         self.mode = (
             "stack" if shallow_roots is not None
@@ -63,7 +82,17 @@ class RuntimeCheckpoint:
                 rows = register._snapshots
                 self._seen.add(id(rows))
                 self._restore.append(("dict", rows, rows.copy()))
-        self.watch(state, root=True)
+        try:
+            self.watch(state, root=True)
+            # Deferred zone dictionaries no longer discover their contents.
+            # The write-scope proof already identifies every mutable card.
+            if self._defer_indexes:
+                for card in card_scope:
+                    if id(card) not in self._seen:
+                        self.watch(card, root=True)
+        except BaseException:
+            self.close()
+            raise
 
     def watch(self, value: object, *, root: bool = False) -> None:
         """!
@@ -78,26 +107,36 @@ class RuntimeCheckpoint:
         # Classify once per type in this traversal. In particular, scalar index
         # values need no snapshot or repeated isinstance checks.
         # Exact types only: subclasses may own mutable runtime attributes.
-        kinds = {int: "ignore", float: "ignore", bool: "ignore", str: "ignore",
-                 bytes: "ignore", complex: "ignore", type(None): "ignore",
-                 object: "ignore", dict: "dict", list: "list", set: "set",
-                 deque: "deque", tuple: "tuple", frozenset: "frozenset"}
+        if id(value) in self._seen:
+            return
+        kinds = self._kinds
         pending = [value]
         seen = self._seen
         restore = self._restore
         from ...game_state.card import Card
         card_scope = self.card_scope
         excluded = {"_controller", "definition", "_definition", "_stats",
-                    "_modifier_sources"}
+                    "_modifier_sources", "_native_card"}
         while pending:
             value = pending.pop()
             force_root, root = root, False
+            cls = type(value)
+            # Plans describe immutable inputs. Payment writes replace/discard
+            # the owning card's plan; reads only memoize immutable results for
+            # those same inputs. Rolling back the card restores its old plan,
+            # so traversing this derived memo adds no restoration coverage.
+            if cls is NativeModifierPlan and not force_root:
+                continue
+            kind = kinds.get(cls)
+            # Exact immutable leaves cannot contain anything to restore. Do
+            # not populate the identity set with every number/string in index
+            # rows and runtime records. Subclasses retain graph traversal.
+            if kind == "ignore" and not force_root:
+                continue
             identity = id(value)
             if identity in seen:
                 continue
             seen.add(identity)
-            cls = type(value)
-            kind = kinds.get(cls)
             if kind is None:
                 if issubclass(cls, Random):
                     kind = "rng"
@@ -113,6 +152,10 @@ class RuntimeCheckpoint:
                     kind = "tuple"
                 elif issubclass(cls, frozenset):
                     kind = "frozenset"
+                elif self._native_values and cls is ImmutableKeyedCollection:
+                    kind = "immutable_mapping"
+                elif self._native_values and cls.__module__ == "game.enums" and issubclass(cls, Enum):
+                    kind = "native_enum"
                 else:
                     kind = "object" if cls.__module__.startswith(("game.", "helper.")) else "ignore"
                 kinds[cls] = kind
@@ -121,8 +164,26 @@ class RuntimeCheckpoint:
             if kind == "ignore":
                 continue
 
+            if kind == "native_enum":
+                # Native payment operations cannot write enum metadata. An
+                # extended member with runtime attributes keeps full capture.
+                if (not force_root
+                        and vars(value).keys() <= {"_value_", "_name_", "__objclass__", "_sort_order_"}
+                        and type(value.value) in (int, str, bool)):
+                    continue
+                kind = "object"
+            elif kind == "immutable_mapping":
+                # Membership is immutable, but values may be mutable runtime
+                # objects. Do not snapshot the private implementation dict;
+                # continue through its children. Extra attributes retain the
+                # original generic object snapshot contract.
+                if not force_root and vars(value).keys() <= {"_dict", "_hash"}:
+                    pending.extend(reversed(tuple(value.values())))
+                    continue
+                kind = "object"
+
             if kind == "tuple" or kind == "frozenset":
-                pending.extend(reversed(tuple(value)))
+                pending.extend(reversed(value if cls is tuple else tuple(value)))
             elif kind == "object":
                 if card_scope is not None:
                     if type(value) is Card and value not in card_scope:
@@ -137,11 +198,16 @@ class RuntimeCheckpoint:
                     continue
                 saved = attributes.copy()
                 restore.append(("object", value, saved))
+                deferred = self._defer_indexes and defer_index_groups(self, value)
+                runtime_field = defer_runtime_contents(self, value) if self._defer_indexes else None
                 # Reverse the work stack to retain the previous depth-first
                 # discovery order and corresponding reverse restoration order.
                 pending.extend([child for key, child in reversed(saved.items())
-                                if key not in excluded])
+                                if key not in excluded and key != runtime_field
+                                and not (deferred and key == "_data")])
             elif kind == "dict":
+                if self._defer_indexes and defer_runtime_contents(self, value) is not None:
+                    continue
                 saved = dict(value)
                 restore.append((kind, value, saved))
                 pending.extend(reversed(saved.values()))
@@ -166,6 +232,7 @@ class RuntimeCheckpoint:
         Restoration runs in reverse discovery order so nested mutations are
         undone before their containing objects.
         """
+        self.close()
         for kind, value, saved in reversed(self._restore):
             if kind == "object":
                 value.__dict__.clear()
@@ -188,6 +255,11 @@ class RuntimeCheckpoint:
 
             else:
                 value.setstate(saved)
+
+    def close(self):
+        """Release provider hooks on commit/rollback; safe to call repeatedly."""
+        close_index_groups(self)
+        close_runtime_contents(self)
 
 
 class CostTransaction:
@@ -221,8 +293,12 @@ class CostTransaction:
             card_write_scope(state, resolutions)
             if shallow is None and resolutions is not None else None
         )
-        self.checkpoint = RuntimeCheckpoint(state, card_scope=scope, shallow_roots=shallow)
+        self.checkpoint = RuntimeCheckpoint(state, card_scope=scope, shallow_roots=shallow,
+                                            defer_indexes=True, native_payment=scope is not None)
         self.events = []
+
+    def close(self):
+        self.checkpoint.close()
 
     def watch_operations(self, operations: object) -> None:
         """!

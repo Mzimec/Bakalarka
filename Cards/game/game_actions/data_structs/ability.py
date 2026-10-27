@@ -1138,6 +1138,9 @@ class TriggerCondition(ABC):
     # None preserves generic event conditions; zone-aware conditions explicitly
     # distinguish leaves-the-battlefield from "from anywhere" triggers.
     looks_back_in_time: bool | None = None
+    # Optional conservative event dispatch contract. Declare on each concrete
+    # condition class; inherited declarations do not constrain custom matching.
+    event_keys = None
 
     @abstractmethod
     def matches(self, state: State, event: GameEvent) -> bool:

@@ -4,7 +4,7 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 from collections.abc import Iterator
 from abc import ABC, abstractmethod
-from dataclasses import replace
+from dataclasses import dataclass, replace
 from immutabledict import immutabledict
 
 from ..data_structs.game_action import AbilityExecutionPlan
@@ -26,6 +26,19 @@ if TYPE_CHECKING:
 _EMPTY_EFFECTS = EffectSequence(())
 _EMPTY_OPTIONS = (ActionNodeOption(ImmutableEffectToSlotMap(), ImmutableManaRequirement()),)
 _ZERO_X = immutabledict({SAVariableType.X: 0})
+
+
+@dataclass(frozen=True)
+class PreparedExecutionPlan:
+    """One structural mode/payment, before its target combinations are built."""
+    option: ActionNodeOption
+    effects: EffectSequence
+    used_slots: frozenset
+    param_context: ParameterContext
+    mana_solver_result: object
+
+    def bind(self, binding):
+        return AbilityExecutionPlan(self.effects, binding, self.param_context, self.mana_solver_result)
 
 
 class ExecutionPlanPipelineBase(ABC):
@@ -66,6 +79,18 @@ class ExecutionPlanPipeline(ExecutionPlanPipelineBase):
         @throws ValueError If mana must be paid but no mana solver is
                 available.
         """
+        for prepared in self.prepare(ctx, subability, strategy, state):
+            from game.ai.generation_candidates import target_preferences
+            with target_preferences(prepared.effects):
+                for binding in strategy.target_gen.generate(ctx, prepared.used_slots, state):
+                    yield prepared.bind(binding)
+
+    def prepare(self, ctx, subability, strategy, state, *, reuse=None):
+        """Compile modes and mana once, shared by flat and staged generation.
+
+        A staged frame can reuse its proven mode within the same unchanged
+        owned context. This never shares a payment across states or abilities.
+        """
         # Missing sub-abilities and sub-abilities without an action node
         # still produce one empty option so the rest of the pipeline can
         # treat them uniformly.
@@ -89,6 +114,9 @@ class ExecutionPlanPipeline(ExecutionPlanPipelineBase):
         )
 
         for option in options:
+            if reuse is not None and option == reuse.option:
+                yield reuse
+                continue
             effects, used_slots = ((_EMPTY_EFFECTS, frozenset()) if empty
                                    else prepared_effects(subability, option.effects))
 
@@ -164,11 +192,5 @@ class ExecutionPlanPipeline(ExecutionPlanPipelineBase):
             # by the selected action-node option.
             if used_slots is None:
                 used_slots = subability.get_used_slots_in_esmap(option.effects)
-            for binding in strategy.target_gen.generate(ctx, used_slots, state):
-                yield AbilityExecutionPlan(
-                    effects=effects,
-                    binding=binding,
-                    param_context=param_context,
-                    mana_solver_result=mana_solver_result,
-                )
+            yield PreparedExecutionPlan(option, effects, frozenset(used_slots), param_context, mana_solver_result)
 

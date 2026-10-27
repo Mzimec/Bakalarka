@@ -1,0 +1,354 @@
+{
+  "case": {
+    "name": "09-green-white",
+    "own": "green",
+    "other": "white",
+    "seed": 109,
+    "search_seed": 7009,
+    "seat": 0,
+    "starting": 0,
+    "selection": "puct"
+  },
+  "status": "win",
+  "error": null,
+  "turns": 19,
+  "elapsed_seconds": 38.8943063999759,
+  "cpu_seconds": 38.78125,
+  "source_unchanged": true,
+  "fingerprint": "8c066b348be83c2aaeb581276109a303dc63c9531f0a7448da7d19ea931bbc26",
+  "search_attempts": 54,
+  "usable_searches": 52,
+  "completed_trajectories": 1384,
+  "reasons": {
+    "setup_policy": 1,
+    "forced_choice": 168,
+    "searched": 52,
+    "simulator_budget": 2
+  },
+  "stops": {
+    "iteration_budget": 2,
+    "time_budget": 50,
+    "simulator_budget": 2
+  },
+  "trajectory_interruptions": {
+    "time_budget": 36,
+    "simulator_budget": 2
+  },
+  "requests": {
+    "MulliganRequest": 1,
+    "PriorityDecisionRequest": 203,
+    "DeclareAttackersRequest": 10,
+    "DeclareBlockersRequest": 4,
+    "ReplacementOrderRequest": 2,
+    "TriggerOrderRequest": 1,
+    "AbilityDecisionRequest": 1,
+    "CombatDamageRequest": 1
+  },
+  "fallbacks": [
+    {
+      "category": "setup",
+      "line": 2,
+      "turn": 1,
+      "phase": "UNTAP",
+      "request_kind": "MulliganRequest",
+      "reason": "setup_policy",
+      "options": 2,
+      "elapsed_ms": 8.027500007301569,
+      "information_key": "9a3c21aa8a2cd7ed4f0e0a3eae541fafde20ef3886e7a06586b49649f404ee5a",
+      "world_preparation": null,
+      "unsupported_detail": null,
+      "search": null
+    },
+    {
+      "category": "budget",
+      "line": 1962,
+      "turn": 19,
+      "phase": "SECOND_COMBAT_DAMAGE",
+      "request_kind": "CombatDamageRequest",
+      "reason": "simulator_budget",
+      "options": 7,
+      "elapsed_ms": 317.918699933216,
+      "information_key": "aa0a29e103736feca395c822e6e52f4212c09156abb6f63259bab013643ce18d",
+      "world_preparation": {
+        "anchor_phase": "DECLARE_BLOCKERS",
+        "anchor_turn": 19,
+        "cause": "unsupported_root_continuation",
+        "detail": {
+          "phase": "SECOND_COMBAT_DAMAGE",
+          "request": "CombatDamageRequest"
+        },
+        "route": "continuation"
+      },
+      "unsupported_detail": null,
+      "search": {
+        "choice": {
+          "_json": "{\"assignments\":{\"mapping\":[[{\"card\":\"c121\",\"name\":\"Spirit\",\"zone_revision\":1},1],[{\"card\":\"c122\",\"name\":\"Spirit\",\"zone_revision\":1},1],[{\"card\":\"c123\",\"name\":\"Spirit\",\"zone_revision\":1},0]]},\"kind\":\"CombatDamageOption\"}",
+          "kind": "CombatDamageOption"
+        },
+        "estimates": [
+          {
+            "action": {
+              "_json": "{\"assignments\":{\"mapping\":[[{\"card\":\"c121\",\"name\":\"Spirit\",\"zone_revision\":1},0],[{\"card\":\"c122\",\"name\":\"Spirit\",\"zone_revision\":1},0],[{\"card\":\"c123\",\"name\":\"Spirit\",\"zone_revision\":1},2]]},\"kind\":\"CombatDamageOption\"}",
+              "kind": "CombatDamageOption"
+            },
+            "mean_value": null,
+            "prior_probability": 0.045301903261293894,
+            "visits": 0
+          },
+          {
+            "action": {
+              "_json": "{\"assignments\":{\"mapping\":[[{\"card\":\"c121\",\"name\":\"Spirit\",\"zone_revision\":1},0],[{\"card\":\"c122\",\"name\":\"Spirit\",\"zone_revision\":1},1],[{\"card\":\"c123\",\"name\":\"Spirit\",\"zone_revision\":1},1]]},\"kind\":\"CombatDamageOption\"}",
+              "kind": "CombatDamageOption"
+            },
+            "mean_value": null,
+            "prior_probability": 0.21602346811367187,
+            "visits": 0
+          },
+          {
+            "action": {
+              "_json": "{\"assignments\":{\"mapping\":[[{\"card\":\"c121\",\"name\":\"Spirit\",\"zone_revision\":1},0],[{\"card\":\"c122\",\"name\":\"Spirit\",\"zone_revision\":1},2],[{\"card\":\"c123\",\"name\":\"Spirit\",\"zone_revision\":1},0]]},\"kind\":\"CombatDamageOption\"}",
+              "kind": "CombatDamageOption"
+            },
+            "mean_value": null,
+            "prior_probability": 0.045301903261293894,
+            "visits": 0
+          },
+          {
+            "action": {
+              "_json": "{\"assignments\":{\"mapping\":[[{\"card\":\"c121\",\"name\":\"Spirit\",\"zone_revision\":1},1],[{\"card\":\"c122\",\"name\":\"Spirit\",\"zone_revision\":1},0],[{\"card\":\"c123\",\"name\":\"Spirit\",\"zone_revision\":1},1]]},\"kind\":\"CombatDamageOption\"}",
+              "kind": "CombatDamageOption"
+            },
+            "mean_value": null,
+            "prior_probability": 0.21602346811367187,
+            "visits": 0
+          },
+          {
+            "action": {
+              "_json": "{\"assignments\":{\"mapping\":[[{\"card\":\"c121\",\"name\":\"Spirit\",\"zone_revision\":1},1],[{\"card\":\"c122\",\"name\":\"Spirit\",\"zone_revision\":1},1],[{\"card\":\"c123\",\"name\":\"Spirit\",\"zone_revision\":1},0]]},\"kind\":\"CombatDamageOption\"}",
+              "kind": "CombatDamageOption"
+            },
+            "mean_value": null,
+            "prior_probability": 0.21602367699438732,
+            "visits": 0
+          },
+          {
+            "action": {
+              "_json": "{\"assignments\":{\"mapping\":[[{\"card\":\"c121\",\"name\":\"Spirit\",\"zone_revision\":1},1],[{\"card\":\"c122\",\"name\":\"Spirit\",\"zone_revision\":1},1]]},\"kind\":\"CombatDamageOption\"}",
+              "kind": "CombatDamageOption"
+            },
+            "mean_value": null,
+            "prior_probability": 0.21602367699438732,
+            "visits": 0
+          },
+          {
+            "action": {
+              "_json": "{\"assignments\":{\"mapping\":[[{\"card\":\"c121\",\"name\":\"Spirit\",\"zone_revision\":1},2],[{\"card\":\"c122\",\"name\":\"Spirit\",\"zone_revision\":1},0],[{\"card\":\"c123\",\"name\":\"Spirit\",\"zone_revision\":1},0]]},\"kind\":\"CombatDamageOption\"}",
+              "kind": "CombatDamageOption"
+            },
+            "mean_value": null,
+            "prior_probability": 0.045301903261293894,
+            "visits": 0
+          }
+        ],
+        "fallback_reason": "simulator_budget",
+        "metrics": {
+          "advance_attempts": 2,
+          "advance_ms": 101.09410004224628,
+          "checkpoint_entries": 0,
+          "checkpoint_hits": 0,
+          "checkpoint_skipped_decisions": 0,
+          "cpu_ms": 296.875,
+          "elapsed_ms": 305.81170006189495,
+          "forced_initial_coverage": false,
+          "forced_transitions": 0,
+          "heuristic_leaves": 0,
+          "hierarchy_nodes": 0,
+          "hierarchy_selection_steps": 0,
+          "history_mismatch_reasons": [],
+          "history_prefix_advances": 4,
+          "history_rejected_samples": 0,
+          "history_sampling_attempts": 2,
+          "information_nodes": 1,
+          "interrupted_trajectories": 1,
+          "interruption_reasons": [
+            [
+              "simulator_budget",
+              1
+            ]
+          ],
+          "iterations_completed": 0,
+          "iterations_started": 1,
+          "minimum_trajectories": 1,
+          "population_distinct_origins": 0,
+          "population_refreshes": 0,
+          "population_size": 0,
+          "population_survivors": 0,
+          "population_updates": 0,
+          "prior_evaluations": 1,
+          "rollout_policy_choices": 0,
+          "rollout_random_choices": 1,
+          "root_actions": 7,
+          "root_actions_visited": 0,
+          "root_coverage_required": false,
+          "selection": "puct",
+          "simulator_advance_calls": 2,
+          "terminal_leaves": 0,
+          "time_limit_ms": 500,
+          "trajectory_runs": 1,
+          "transition_cache_entries": 1,
+          "transition_cache_hits": 0,
+          "world_initialization_ms": 200.54650004021823,
+          "world_materializations": 3,
+          "world_restores": 0,
+          "worlds_built": 2
+        },
+        "root_coverage_complete": false,
+        "stop_reason": "simulator_budget",
+        "used_fallback": true,
+        "value": null
+      }
+    },
+    {
+      "category": "budget",
+      "line": 1964,
+      "turn": 19,
+      "phase": "SECOND_COMBAT_DAMAGE",
+      "request_kind": "ReplacementOrderRequest",
+      "reason": "simulator_budget",
+      "options": 6,
+      "elapsed_ms": 362.456800066866,
+      "information_key": "78e976712f14b3c4e0d7767259f7e5a989060d3763f7a906da3bcd57c3781eee",
+      "world_preparation": {
+        "anchor_phase": "DECLARE_BLOCKERS",
+        "anchor_turn": 19,
+        "cause": "unsupported_root_continuation",
+        "detail": {
+          "phase": "SECOND_COMBAT_DAMAGE",
+          "request": "ReplacementOrderRequest"
+        },
+        "route": "continuation"
+      },
+      "unsupported_detail": null,
+      "search": {
+        "choice": {
+          "_json": "{\"items\":[{\"amount\":1,\"combat\":true,\"context\":{\"ability\":null,\"action_key\":\"combat_damage\",\"controller\":{\"player\":1},\"effects\":null,\"is_cost\":false,\"last_known\":null,\"parameters\":{\"x_variables\":{\"mapping\":[]}},\"source\":{\"card\":\"c121\",\"name\":\"Spirit\",\"zone_revision\":1},\"source_revision\":null,\"subability\":null,\"targets\":null,\"trigger_event\":null,\"uses_stack\":false},\"damage_controller\":{\"player\":1},\"deathtouch\":false,\"defer_lifelink\":false,\"infect\":false,\"kind\":\"DamageCreatureOperation\",\"lifelink\":false,\"source_revision\":1,\"target\":{\"card\":\"c16\",\"name\":\"Prized Unicorn\",\"zone_revision\":3},\"unpreventable\":false,\"wither\":false},{\"amount\":1,\"combat\":true,\"context\":{\"ability\":null,\"action_key\":\"combat_damage\",\"controller\":{\"player\":1},\"effects\":null,\"is_cost\":false,\"last_known\":null,\"parameters\":{\"x_variables\":{\"mapping\":[]}},\"source\":{\"card\":\"c122\",\"name\":\"Spirit\",\"zone_revision\":1},\"source_revision\":null,\"subability\":null,\"targets\":null,\"trigger_event\":null,\"uses_stack\":false},\"damage_controller\":{\"player\":1},\"deathtouch\":false,\"defer_lifelink\":false,\"infect\":false,\"kind\":\"DamageCreatureOperation\",\"lifelink\":false,\"source_revision\":1,\"target\":{\"card\":\"c16\",\"name\":\"Prized Unicorn\",\"zone_revision\":3},\"unpreventable\":false,\"wither\":false},{\"amount\":1,\"combat\":true,\"context\":{\"ability\":null,\"action_key\":\"combat_damage\",\"controller\":{\"player\":1},\"effects\":null,\"is_cost\":false,\"last_known\":null,\"parameters\":{\"x_variables\":{\"mapping\":[]}},\"source\":{\"card\":\"c123\",\"name\":\"Spirit\",\"zone_revision\":1},\"source_revision\":null,\"subability\":null,\"targets\":null,\"trigger_event\":null,\"uses_stack\":false},\"damage_controller\":{\"player\":1},\"deathtouch\":false,\"defer_lifelink\":false,\"infect\":false,\"kind\":\"DamageCreatureOperation\",\"lifelink\":false,\"source_revision\":1,\"target\":{\"card\":\"c16\",\"name\":\"Prized Unicorn\",\"zone_revision\":3},\"unpreventable\":false,\"wither\":false}],\"kind\":\"ReplacementOrderOption\"}",
+          "kind": "ReplacementOrderOption"
+        },
+        "estimates": [
+          {
+            "action": {
+              "_json": "{\"items\":[{\"amount\":1,\"combat\":true,\"context\":{\"ability\":null,\"action_key\":\"combat_damage\",\"controller\":{\"player\":1},\"effects\":null,\"is_cost\":false,\"last_known\":null,\"parameters\":{\"x_variables\":{\"mapping\":[]}},\"source\":{\"card\":\"c121\",\"name\":\"Spirit\",\"zone_revision\":1},\"source_revision\":null,\"subability\":null,\"targets\":null,\"trigger_event\":null,\"uses_stack\":false},\"damage_controller\":{\"player\":1},\"deathtouch\":false,\"defer_lifelink\":false,\"infect\":false,\"kind\":\"DamageCreatureOperation\",\"lifelink\":false,\"source_revision\":1,\"target\":{\"card\":\"c16\",\"name\":\"Prized Unicorn\",\"zone_revision\":3},\"unpreventable\":false,\"wither\":false},{\"amount\":1,\"combat\":true,\"context\":{\"ability\":null,\"action_key\":\"combat_damage\",\"controller\":{\"player\":1},\"effects\":null,\"is_cost\":false,\"last_known\":null,\"parameters\":{\"x_variables\":{\"mapping\":[]}},\"source\":{\"card\":\"c122\",\"name\":\"Spirit\",\"zone_revision\":1},\"source_revision\":null,\"subability\":null,\"targets\":null,\"trigger_event\":null,\"uses_stack\":false},\"damage_controller\":{\"player\":1},\"deathtouch\":false,\"defer_lifelink\":false,\"infect\":false,\"kind\":\"DamageCreatureOperation\",\"lifelink\":false,\"source_revision\":1,\"target\":{\"card\":\"c16\",\"name\":\"Prized Unicorn\",\"zone_revision\":3},\"unpreventable\":false,\"wither\":false},{\"amount\":1,\"combat\":true,\"context\":{\"ability\":null,\"action_key\":\"combat_damage\",\"controller\":{\"player\":1},\"effects\":null,\"is_cost\":false,\"last_known\":null,\"parameters\":{\"x_variables\":{\"mapping\":[]}},\"source\":{\"card\":\"c123\",\"name\":\"Spirit\",\"zone_revision\":1},\"source_revision\":null,\"subability\":null,\"targets\":null,\"trigger_event\":null,\"uses_stack\":false},\"damage_controller\":{\"player\":1},\"deathtouch\":false,\"defer_lifelink\":false,\"infect\":false,\"kind\":\"DamageCreatureOperation\",\"lifelink\":false,\"source_revision\":1,\"target\":{\"card\":\"c16\",\"name\":\"Prized Unicorn\",\"zone_revision\":3},\"unpreventable\":false,\"wither\":false}],\"kind\":\"ReplacementOrderOption\"}",
+              "kind": "ReplacementOrderOption"
+            },
+            "mean_value": null,
+            "prior_probability": 0.16666666666666666,
+            "visits": 0
+          },
+          {
+            "action": {
+              "_json": "{\"items\":[{\"amount\":1,\"combat\":true,\"context\":{\"ability\":null,\"action_key\":\"combat_damage\",\"controller\":{\"player\":1},\"effects\":null,\"is_cost\":false,\"last_known\":null,\"parameters\":{\"x_variables\":{\"mapping\":[]}},\"source\":{\"card\":\"c121\",\"name\":\"Spirit\",\"zone_revision\":1},\"source_revision\":null,\"subability\":null,\"targets\":null,\"trigger_event\":null,\"uses_stack\":false},\"damage_controller\":{\"player\":1},\"deathtouch\":false,\"defer_lifelink\":false,\"infect\":false,\"kind\":\"DamageCreatureOperation\",\"lifelink\":false,\"source_revision\":1,\"target\":{\"card\":\"c16\",\"name\":\"Prized Unicorn\",\"zone_revision\":3},\"unpreventable\":false,\"wither\":false},{\"amount\":1,\"combat\":true,\"context\":{\"ability\":null,\"action_key\":\"combat_damage\",\"controller\":{\"player\":1},\"effects\":null,\"is_cost\":false,\"last_known\":null,\"parameters\":{\"x_variables\":{\"mapping\":[]}},\"source\":{\"card\":\"c123\",\"name\":\"Spirit\",\"zone_revision\":1},\"source_revision\":null,\"subability\":null,\"targets\":null,\"trigger_event\":null,\"uses_stack\":false},\"damage_controller\":{\"player\":1},\"deathtouch\":false,\"defer_lifelink\":false,\"infect\":false,\"kind\":\"DamageCreatureOperation\",\"lifelink\":false,\"source_revision\":1,\"target\":{\"card\":\"c16\",\"name\":\"Prized Unicorn\",\"zone_revision\":3},\"unpreventable\":false,\"wither\":false},{\"amount\":1,\"combat\":true,\"context\":{\"ability\":null,\"action_key\":\"combat_damage\",\"controller\":{\"player\":1},\"effects\":null,\"is_cost\":false,\"last_known\":null,\"parameters\":{\"x_variables\":{\"mapping\":[]}},\"source\":{\"card\":\"c122\",\"name\":\"Spirit\",\"zone_revision\":1},\"source_revision\":null,\"subability\":null,\"targets\":null,\"trigger_event\":null,\"uses_stack\":false},\"damage_controller\":{\"player\":1},\"deathtouch\":false,\"defer_lifelink\":false,\"infect\":false,\"kind\":\"DamageCreatureOperation\",\"lifelink\":false,\"source_revision\":1,\"target\":{\"card\":\"c16\",\"name\":\"Prized Unicorn\",\"zone_revision\":3},\"unpreventable\":false,\"wither\":false}],\"kind\":\"ReplacementOrderOption\"}",
+              "kind": "ReplacementOrderOption"
+            },
+            "mean_value": null,
+            "prior_probability": 0.16666666666666666,
+            "visits": 0
+          },
+          {
+            "action": {
+              "_json": "{\"items\":[{\"amount\":1,\"combat\":true,\"context\":{\"ability\":null,\"action_key\":\"combat_damage\",\"controller\":{\"player\":1},\"effects\":null,\"is_cost\":false,\"last_known\":null,\"parameters\":{\"x_variables\":{\"mapping\":[]}},\"source\":{\"card\":\"c122\",\"name\":\"Spirit\",\"zone_revision\":1},\"source_revision\":null,\"subability\":null,\"targets\":null,\"trigger_event\":null,\"uses_stack\":false},\"damage_controller\":{\"player\":1},\"deathtouch\":false,\"defer_lifelink\":false,\"infect\":false,\"kind\":\"DamageCreatureOperation\",\"lifelink\":false,\"source_revision\":1,\"target\":{\"card\":\"c16\",\"name\":\"Prized Unicorn\",\"zone_revision\":3},\"unpreventable\":false,\"wither\":false},{\"amount\":1,\"combat\":true,\"context\":{\"ability\":null,\"action_key\":\"combat_damage\",\"controller\":{\"player\":1},\"effects\":null,\"is_cost\":false,\"last_known\":null,\"parameters\":{\"x_variables\":{\"mapping\":[]}},\"source\":{\"card\":\"c121\",\"name\":\"Spirit\",\"zone_revision\":1},\"source_revision\":null,\"subability\":null,\"targets\":null,\"trigger_event\":null,\"uses_stack\":false},\"damage_controller\":{\"player\":1},\"deathtouch\":false,\"defer_lifelink\":false,\"infect\":false,\"kind\":\"DamageCreatureOperation\",\"lifelink\":false,\"source_revision\":1,\"target\":{\"card\":\"c16\",\"name\":\"Prized Unicorn\",\"zone_revision\":3},\"unpreventable\":false,\"wither\":false},{\"amount\":1,\"combat\":true,\"context\":{\"ability\":null,\"action_key\":\"combat_damage\",\"controller\":{\"player\":1},\"effects\":null,\"is_cost\":false,\"last_known\":null,\"parameters\":{\"x_variables\":{\"mapping\":[]}},\"source\":{\"card\":\"c123\",\"name\":\"Spirit\",\"zone_revision\":1},\"source_revision\":null,\"subability\":null,\"targets\":null,\"trigger_event\":null,\"uses_stack\":false},\"damage_controller\":{\"player\":1},\"deathtouch\":false,\"defer_lifelink\":false,\"infect\":false,\"kind\":\"DamageCreatureOperation\",\"lifelink\":false,\"source_revision\":1,\"target\":{\"card\":\"c16\",\"name\":\"Prized Unicorn\",\"zone_revision\":3},\"unpreventable\":false,\"wither\":false}],\"kind\":\"ReplacementOrderOption\"}",
+              "kind": "ReplacementOrderOption"
+            },
+            "mean_value": null,
+            "prior_probability": 0.16666666666666666,
+            "visits": 0
+          },
+          {
+            "action": {
+              "_json": "{\"items\":[{\"amount\":1,\"combat\":true,\"context\":{\"ability\":null,\"action_key\":\"combat_damage\",\"controller\":{\"player\":1},\"effects\":null,\"is_cost\":false,\"last_known\":null,\"parameters\":{\"x_variables\":{\"mapping\":[]}},\"source\":{\"card\":\"c122\",\"name\":\"Spirit\",\"zone_revision\":1},\"source_revision\":null,\"subability\":null,\"targets\":null,\"trigger_event\":null,\"uses_stack\":false},\"damage_controller\":{\"player\":1},\"deathtouch\":false,\"defer_lifelink\":false,\"infect\":false,\"kind\":\"DamageCreatureOperation\",\"lifelink\":false,\"source_revision\":1,\"target\":{\"card\":\"c16\",\"name\":\"Prized Unicorn\",\"zone_revision\":3},\"unpreventable\":false,\"wither\":false},{\"amount\":1,\"combat\":true,\"context\":{\"ability\":null,\"action_key\":\"combat_damage\",\"controller\":{\"player\":1},\"effects\":null,\"is_cost\":false,\"last_known\":null,\"parameters\":{\"x_variables\":{\"mapping\":[]}},\"source\":{\"card\":\"c123\",\"name\":\"Spirit\",\"zone_revision\":1},\"source_revision\":null,\"subability\":null,\"targets\":null,\"trigger_event\":null,\"uses_stack\":false},\"damage_controller\":{\"player\":1},\"deathtouch\":false,\"defer_lifelink\":false,\"infect\":false,\"kind\":\"DamageCreatureOperation\",\"lifelink\":false,\"source_revision\":1,\"target\":{\"card\":\"c16\",\"name\":\"Prized Unicorn\",\"zone_revision\":3},\"unpreventable\":false,\"wither\":false},{\"amount\":1,\"combat\":true,\"context\":{\"ability\":null,\"action_key\":\"combat_damage\",\"controller\":{\"player\":1},\"effects\":null,\"is_cost\":false,\"last_known\":null,\"parameters\":{\"x_variables\":{\"mapping\":[]}},\"source\":{\"card\":\"c121\",\"name\":\"Spirit\",\"zone_revision\":1},\"source_revision\":null,\"subability\":null,\"targets\":null,\"trigger_event\":null,\"uses_stack\":false},\"damage_controller\":{\"player\":1},\"deathtouch\":false,\"defer_lifelink\":false,\"infect\":false,\"kind\":\"DamageCreatureOperation\",\"lifelink\":false,\"source_revision\":1,\"target\":{\"card\":\"c16\",\"name\":\"Prized Unicorn\",\"zone_revision\":3},\"unpreventable\":false,\"wither\":false}],\"kind\":\"ReplacementOrderOption\"}",
+              "kind": "ReplacementOrderOption"
+            },
+            "mean_value": null,
+            "prior_probability": 0.16666666666666666,
+            "visits": 0
+          },
+          {
+            "action": {
+              "_json": "{\"items\":[{\"amount\":1,\"combat\":true,\"context\":{\"ability\":null,\"action_key\":\"combat_damage\",\"controller\":{\"player\":1},\"effects\":null,\"is_cost\":false,\"last_known\":null,\"parameters\":{\"x_variables\":{\"mapping\":[]}},\"source\":{\"card\":\"c123\",\"name\":\"Spirit\",\"zone_revision\":1},\"source_revision\":null,\"subability\":null,\"targets\":null,\"trigger_event\":null,\"uses_stack\":false},\"damage_controller\":{\"player\":1},\"deathtouch\":false,\"defer_lifelink\":false,\"infect\":false,\"kind\":\"DamageCreatureOperation\",\"lifelink\":false,\"source_revision\":1,\"target\":{\"card\":\"c16\",\"name\":\"Prized Unicorn\",\"zone_revision\":3},\"unpreventable\":false,\"wither\":false},{\"amount\":1,\"combat\":true,\"context\":{\"ability\":null,\"action_key\":\"combat_damage\",\"controller\":{\"player\":1},\"effects\":null,\"is_cost\":false,\"last_known\":null,\"parameters\":{\"x_variables\":{\"mapping\":[]}},\"source\":{\"card\":\"c121\",\"name\":\"Spirit\",\"zone_revision\":1},\"source_revision\":null,\"subability\":null,\"targets\":null,\"trigger_event\":null,\"uses_stack\":false},\"damage_controller\":{\"player\":1},\"deathtouch\":false,\"defer_lifelink\":false,\"infect\":false,\"kind\":\"DamageCreatureOperation\",\"lifelink\":false,\"source_revision\":1,\"target\":{\"card\":\"c16\",\"name\":\"Prized Unicorn\",\"zone_revision\":3},\"unpreventable\":false,\"wither\":false},{\"amount\":1,\"combat\":true,\"context\":{\"ability\":null,\"action_key\":\"combat_damage\",\"controller\":{\"player\":1},\"effects\":null,\"is_cost\":false,\"last_known\":null,\"parameters\":{\"x_variables\":{\"mapping\":[]}},\"source\":{\"card\":\"c122\",\"name\":\"Spirit\",\"zone_revision\":1},\"source_revision\":null,\"subability\":null,\"targets\":null,\"trigger_event\":null,\"uses_stack\":false},\"damage_controller\":{\"player\":1},\"deathtouch\":false,\"defer_lifelink\":false,\"infect\":false,\"kind\":\"DamageCreatureOperation\",\"lifelink\":false,\"source_revision\":1,\"target\":{\"card\":\"c16\",\"name\":\"Prized Unicorn\",\"zone_revision\":3},\"unpreventable\":false,\"wither\":false}],\"kind\":\"ReplacementOrderOption\"}",
+              "kind": "ReplacementOrderOption"
+            },
+            "mean_value": null,
+            "prior_probability": 0.16666666666666666,
+            "visits": 0
+          },
+          {
+            "action": {
+              "_json": "{\"items\":[{\"amount\":1,\"combat\":true,\"context\":{\"ability\":null,\"action_key\":\"combat_damage\",\"controller\":{\"player\":1},\"effects\":null,\"is_cost\":false,\"last_known\":null,\"parameters\":{\"x_variables\":{\"mapping\":[]}},\"source\":{\"card\":\"c123\",\"name\":\"Spirit\",\"zone_revision\":1},\"source_revision\":null,\"subability\":null,\"targets\":null,\"trigger_event\":null,\"uses_stack\":false},\"damage_controller\":{\"player\":1},\"deathtouch\":false,\"defer_lifelink\":false,\"infect\":false,\"kind\":\"DamageCreatureOperation\",\"lifelink\":false,\"source_revision\":1,\"target\":{\"card\":\"c16\",\"name\":\"Prized Unicorn\",\"zone_revision\":3},\"unpreventable\":false,\"wither\":false},{\"amount\":1,\"combat\":true,\"context\":{\"ability\":null,\"action_key\":\"combat_damage\",\"controller\":{\"player\":1},\"effects\":null,\"is_cost\":false,\"last_known\":null,\"parameters\":{\"x_variables\":{\"mapping\":[]}},\"source\":{\"card\":\"c122\",\"name\":\"Spirit\",\"zone_revision\":1},\"source_revision\":null,\"subability\":null,\"targets\":null,\"trigger_event\":null,\"uses_stack\":false},\"damage_controller\":{\"player\":1},\"deathtouch\":false,\"defer_lifelink\":false,\"infect\":false,\"kind\":\"DamageCreatureOperation\",\"lifelink\":false,\"source_revision\":1,\"target\":{\"card\":\"c16\",\"name\":\"Prized Unicorn\",\"zone_revision\":3},\"unpreventable\":false,\"wither\":false},{\"amount\":1,\"combat\":true,\"context\":{\"ability\":null,\"action_key\":\"combat_damage\",\"controller\":{\"player\":1},\"effects\":null,\"is_cost\":false,\"last_known\":null,\"parameters\":{\"x_variables\":{\"mapping\":[]}},\"source\":{\"card\":\"c121\",\"name\":\"Spirit\",\"zone_revision\":1},\"source_revision\":null,\"subability\":null,\"targets\":null,\"trigger_event\":null,\"uses_stack\":false},\"damage_controller\":{\"player\":1},\"deathtouch\":false,\"defer_lifelink\":false,\"infect\":false,\"kind\":\"DamageCreatureOperation\",\"lifelink\":false,\"source_revision\":1,\"target\":{\"card\":\"c16\",\"name\":\"Prized Unicorn\",\"zone_revision\":3},\"unpreventable\":false,\"wither\":false}],\"kind\":\"ReplacementOrderOption\"}",
+              "kind": "ReplacementOrderOption"
+            },
+            "mean_value": null,
+            "prior_probability": 0.16666666666666666,
+            "visits": 0
+          }
+        ],
+        "fallback_reason": "simulator_budget",
+        "metrics": {
+          "advance_attempts": 1,
+          "advance_ms": 100.47269996721298,
+          "checkpoint_entries": 0,
+          "checkpoint_hits": 0,
+          "checkpoint_skipped_decisions": 0,
+          "cpu_ms": 328.125,
+          "elapsed_ms": 351.2117000063881,
+          "forced_initial_coverage": false,
+          "forced_transitions": 0,
+          "heuristic_leaves": 0,
+          "hierarchy_nodes": 0,
+          "hierarchy_selection_steps": 0,
+          "history_mismatch_reasons": [],
+          "history_prefix_advances": 6,
+          "history_rejected_samples": 0,
+          "history_sampling_attempts": 2,
+          "information_nodes": 1,
+          "interrupted_trajectories": 1,
+          "interruption_reasons": [
+            [
+              "simulator_budget",
+              1
+            ]
+          ],
+          "iterations_completed": 0,
+          "iterations_started": 1,
+          "minimum_trajectories": 1,
+          "population_distinct_origins": 0,
+          "population_refreshes": 0,
+          "population_size": 0,
+          "population_survivors": 0,
+          "population_updates": 0,
+          "prior_evaluations": 1,
+          "rollout_policy_choices": 0,
+          "rollout_random_choices": 0,
+          "root_actions": 6,
+          "root_actions_visited": 0,
+          "root_coverage_required": false,
+          "selection": "puct",
+          "simulator_advance_calls": 1,
+          "terminal_leaves": 0,
+          "time_limit_ms": 500,
+          "trajectory_runs": 1,
+          "transition_cache_entries": 0,
+          "transition_cache_hits": 0,
+          "world_initialization_ms": 248.40190005488694,
+          "world_materializations": 3,
+          "world_restores": 0,
+          "worlds_built": 2
+        },
+        "root_coverage_complete": false,
+        "stop_reason": "simulator_budget",
+        "used_fallback": true,
+        "value": null
+      }
+    }
+  ],
+  "exceptions": [],
+  "worker_exception": null
+}

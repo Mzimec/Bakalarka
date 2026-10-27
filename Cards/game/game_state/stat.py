@@ -285,7 +285,10 @@ class HasModifiableStats(HasStats, HasModifiers, ABC):
         if stat is None:
             return None
 
-        if not isinstance(stat, ModifiableStatBase):
+        # Most reads use one of the two native stat implementations. Avoid
+        # ABC subclass dispatch for those; extensions retain the general check.
+        if (type(stat) not in (ModifiablePrimitiveStat, ModifiableReferenceStat)
+                and not isinstance(stat, ModifiableStatBase)):
             return stat.base_value
 
         pipeline = self._get_modifier_pipeline(stat_t, state)

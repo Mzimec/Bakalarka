@@ -247,6 +247,7 @@ class TargetResolver:
         controller: Player,
         state: State,
         reserved: Set[RuntimeObject] | None = None,
+        *, selection_prefix=(),
     ) -> Iterator[TargetOption]:
         """!
         @brief Generate legal target groups for this resolver.
@@ -260,12 +261,23 @@ class TargetResolver:
         @param reserved Objects excluded by other target slots.
         @return Iterator of legal target options.
         """
+        candidates = self.candidates(source, controller, state, reserved)
+        if not selection_prefix:
+            from ..ai.generation_candidates import target_order
+            candidates = target_order(candidates, source, controller, state, self)
+        if selection_prefix:
+            yield from self.target_selector.generate_completions(candidates, selection_prefix)
+        else:
+            yield from self.target_selector.generate_target_options(candidates)
+
+    def candidates(self, source, controller, state, reserved=None):
+        """The common legality gate for full groups and construction prefixes."""
         candidates = (
             target
             for target in self.target_spec.generate_candidates(source, controller, state, reserved)
             if self.is_valid_target(target, source, controller, state, reserved)
         )
-        yield from self.target_selector.generate_target_options(candidates)
+        return candidates
 
     def count_options(
         self,
@@ -283,9 +295,5 @@ class TargetResolver:
         @param reserved Objects excluded by other target slots.
         @return Number of legal target options.
         """
-        candidates = (
-            target
-            for target in self.target_spec.generate_candidates(source, controller, state, reserved)
-            if self.is_valid_target(target, source, controller, state, reserved)
-        )
+        candidates = self.candidates(source, controller, state, reserved)
         return self.target_selector.count_options(candidates)

@@ -1,0 +1,1207 @@
+Keep the Peace (Keep the Peace) vs Keep the Peace (Keep the Peace)
+Result: win | Winner: modular | Player turn: 17
+Elapsed wall time: 0.808 s
+Seed: 1776377093 | Starting player: 0
+Player turns are numbered individually. Interactive time includes waiting for input.
+
+Decision timing (wall time; includes option generation and input/model waits):
+  modular [ModularAgent, agent]: 281 decisions, average 0.802 ms, total 0.225 s, errors 0, auto-passes 195
+    AbilityDecisionRequest: n=29, average 0.105 ms; observed options 1.00; space size 1.00 (known for 29 decisions)
+      1 observed options: n=29, average 0.105 ms
+    DeclareAttackersRequest: n=9, average 0.596 ms; observed options 3.00; space size 3.00 (known for 9 decisions)
+      2-10 observed options: n=9, average 0.596 ms
+    DeclareBlockersRequest: n=2, average 42.006 ms; observed options 124.50; space size 124.50 (known for 2 decisions)
+      101-1000 observed options: n=1, average 82.840 ms
+      2-10 observed options: n=1, average 1.171 ms
+    MulliganRequest: n=1, average 0.039 ms; observed options 0.00; space size unknown
+      0 observed options: n=1, average 0.039 ms
+    PriorityDecisionRequest: n=210, average 0.628 ms; observed options 0.36; space size 1.42 (known for 53 decisions)
+      0 observed options: n=157, average 0.122 ms
+      1 observed options: n=38, average 1.352 ms
+      2-10 observed options: n=15, average 4.093 ms
+    ReplacementOrderRequest: n=7, average 0.044 ms; observed options 1.00; space size unknown
+      1 observed options: n=7, average 0.044 ms
+    TriggerOrderRequest: n=23, average 0.037 ms; observed options 1.00; space size unknown
+      1 observed options: n=23, average 0.037 ms
+  simple [SimpleAgent, agent]: 243 decisions, average 0.264 ms, total 0.064 s, errors 0, auto-passes 196
+    AbilityDecisionRequest: n=5, average 0.093 ms; observed options 1.00; space size 1.00 (known for 5 decisions)
+      1 observed options: n=5, average 0.093 ms
+    CombatDamageRequest: n=1, average 0.163 ms; observed options 1.00; space size unknown
+      1 observed options: n=1, average 0.163 ms
+    DeclareAttackersRequest: n=8, average 0.173 ms; observed options 1.00; space size unknown
+      1 observed options: n=8, average 0.173 ms
+    DeclareBlockersRequest: n=4, average 0.731 ms; observed options 1.00; space size unknown
+      1 observed options: n=4, average 0.731 ms
+    MulliganBottomRequest: n=1, average 0.056 ms; observed options 0.00; space size unknown
+      0 observed options: n=1, average 0.056 ms
+    MulliganRequest: n=2, average 0.026 ms; observed options 0.00; space size unknown
+      0 observed options: n=2, average 0.026 ms
+    PriorityDecisionRequest: n=210, average 0.279 ms; observed options 0.20; space size 1.86 (known for 14 decisions)
+      0 observed options: n=188, average 0.102 ms
+      1 observed options: n=8, average 1.509 ms
+      2-10 observed options: n=14, average 1.957 ms
+    ReplacementOrderRequest: n=8, average 0.038 ms; observed options 1.00; space size unknown
+      1 observed options: n=8, average 0.038 ms
+    TriggerOrderRequest: n=4, average 0.038 ms; observed options 1.00; space size unknown
+      1 observed options: n=4, average 0.038 ms
+  Observed options are consumed yields, not unique actions. Size refers to the policy-filtered space.
+
+
+Turn 1
+  [untap] modular decides MulliganRequest: 0.039 ms; observed options: 0; space size: unknown; success
+  [untap] simple decides MulliganRequest: 0.026 ms; observed options: 0; space size: unknown; success
+  [untap] simple decides MulliganBottomRequest: 0.056 ms; observed options: 0; space size: unknown; success
+  [untap] simple decides MulliganRequest: 0.025 ms; observed options: 0; space size: unknown; success
+  [upkeep] modular decides PriorityDecisionRequest: 0.248 ms; observed options: 0; space size: unknown; success
+  [upkeep] simple decides PriorityDecisionRequest: 0.204 ms; observed options: 0; space size: unknown; success
+  [precombat main] modular chooses policy_choice: candidate: 1; choice: kind: land; source: c45; fallback: -; score: 100
+  [precombat main] modular decides PriorityDecisionRequest: 18.616 ms; observed options: 2; space size: 2; success
+  [precombat main] Card moved: modular; Plains [c45] — card: Plains [c45]; from: HAND; last known: kind: CardLastKnownInformation; previous controller: modular; to: BATTLEFIELD
+  [precombat main] modular plays land Plains [c45] — lands played: 1; last known: kind: CardLastKnownInformation
+  [precombat main] Resolution: modular; Plains [c45]; play_land; success: True
+  [precombat main] modular decides PriorityDecisionRequest: 1.478 ms; observed options: 1; space size: 1; success
+  [precombat main] simple decides PriorityDecisionRequest: 0.156 ms; observed options: 0; space size: unknown; success
+  [begin combat] modular decides PriorityDecisionRequest: 0.126 ms; observed options: 0; space size: unknown; success
+  [begin combat] simple decides PriorityDecisionRequest: 0.118 ms; observed options: 0; space size: unknown; success
+  [declare attackers] modular chooses policy_choice: candidate: 0; choice: attackers: none; kind: attack; fallback: -; score: 0
+  [declare attackers] modular decides DeclareAttackersRequest: 0.268 ms; observed options: 3; space size: 3; success
+  [declare attackers] modular decides PriorityDecisionRequest: 0.123 ms; observed options: 0; space size: unknown; success
+  [declare attackers] simple decides PriorityDecisionRequest: 0.121 ms; observed options: 0; space size: unknown; success
+  [end combat] modular decides PriorityDecisionRequest: 0.113 ms; observed options: 0; space size: unknown; success
+  [end combat] simple decides PriorityDecisionRequest: 0.111 ms; observed options: 0; space size: unknown; success
+  [postcombat main] modular decides PriorityDecisionRequest: 1.049 ms; observed options: 1; space size: 1; success
+  [postcombat main] simple decides PriorityDecisionRequest: 0.128 ms; observed options: 0; space size: unknown; success
+  [end step] modular decides PriorityDecisionRequest: 0.119 ms; observed options: 0; space size: unknown; success
+  [end step] simple decides PriorityDecisionRequest: 0.109 ms; observed options: 0; space size: unknown; success
+
+Turn 2
+  [upkeep] simple decides PriorityDecisionRequest: 0.125 ms; observed options: 0; space size: unknown; success
+  [upkeep] modular decides PriorityDecisionRequest: 0.121 ms; observed options: 0; space size: unknown; success
+  [draw] Card moved: simple; Plains [c119] — card: Plains [c119]; from: DECK; last known: kind: CardLastKnownInformation; previous controller: simple; to: HAND
+  [draw] Card drawn: simple; Plains [c119] — card: Plains [c119]; last known: kind: CardLastKnownInformation
+  [draw] Resolution: -; -; -; success: True
+  [draw] simple decides PriorityDecisionRequest: 0.158 ms; observed options: 0; space size: unknown; success
+  [draw] modular decides PriorityDecisionRequest: 0.126 ms; observed options: 0; space size: unknown; success
+  [precombat main] simple chooses land: source: Plains [c99]
+  [precombat main] simple decides PriorityDecisionRequest: 1.675 ms; observed options: 2; space size: unknown; success
+  [precombat main] Card moved: simple; Plains [c99] — card: Plains [c99]; from: HAND; last known: kind: CardLastKnownInformation; previous controller: simple; to: BATTLEFIELD
+  [precombat main] simple plays land Plains [c99] — lands played: 1; last known: kind: CardLastKnownInformation
+  [precombat main] Resolution: simple; Plains [c99]; play_land; success: True
+  [precombat main] simple decides PriorityDecisionRequest: 2.490 ms; observed options: 1; space size: 1; success
+  [precombat main] modular decides PriorityDecisionRequest: 0.255 ms; observed options: 0; space size: unknown; success
+  [begin combat] simple decides PriorityDecisionRequest: 0.187 ms; observed options: 0; space size: unknown; success
+  [begin combat] modular decides PriorityDecisionRequest: 0.226 ms; observed options: 0; space size: unknown; success
+  [declare attackers] simple chooses attack: attackers: none
+  [declare attackers] simple decides DeclareAttackersRequest: 0.132 ms; observed options: 1; space size: unknown; success
+  [declare attackers] simple decides PriorityDecisionRequest: 0.135 ms; observed options: 0; space size: unknown; success
+  [declare attackers] modular decides PriorityDecisionRequest: 0.125 ms; observed options: 0; space size: unknown; success
+  [end combat] simple decides PriorityDecisionRequest: 0.127 ms; observed options: 0; space size: unknown; success
+  [end combat] modular decides PriorityDecisionRequest: 0.127 ms; observed options: 0; space size: unknown; success
+  [postcombat main] simple decides PriorityDecisionRequest: 2.022 ms; observed options: 1; space size: 1; success
+  [postcombat main] modular decides PriorityDecisionRequest: 0.174 ms; observed options: 0; space size: unknown; success
+  [end step] simple decides PriorityDecisionRequest: 0.137 ms; observed options: 0; space size: unknown; success
+  [end step] modular decides PriorityDecisionRequest: 0.123 ms; observed options: 0; space size: unknown; success
+
+Turn 3
+  [upkeep] modular decides PriorityDecisionRequest: 0.128 ms; observed options: 0; space size: unknown; success
+  [upkeep] simple decides PriorityDecisionRequest: 0.116 ms; observed options: 0; space size: unknown; success
+  [draw] Card moved: modular; Fencing Ace [c6] — card: Fencing Ace [c6]; from: DECK; last known: kind: CardLastKnownInformation; previous controller: modular; to: HAND
+  [draw] Card drawn: modular; Fencing Ace [c6] — card: Fencing Ace [c6]; last known: kind: CardLastKnownInformation
+  [draw] Resolution: -; -; -; success: True
+  [draw] modular decides PriorityDecisionRequest: 0.227 ms; observed options: 0; space size: unknown; success
+  [draw] simple decides PriorityDecisionRequest: 0.142 ms; observed options: 0; space size: unknown; success
+  [precombat main] modular chooses policy_choice: candidate: 1; choice: kind: land; source: c47; fallback: -; score: 100
+  [precombat main] modular decides PriorityDecisionRequest: 5.568 ms; observed options: 2; space size: 2; success
+  [precombat main] Card moved: modular; Plains [c47] — card: Plains [c47]; from: HAND; last known: kind: CardLastKnownInformation; previous controller: modular; to: BATTLEFIELD
+  [precombat main] modular plays land Plains [c47] — lands played: 1; last known: kind: CardLastKnownInformation
+  [precombat main] Resolution: modular; Plains [c47]; play_land; success: True
+  [precombat main] modular chooses policy_choice: candidate: 1; choice: ability: cast:Impassioned Orator; cost targets: none; kind: action; payment: activate: c45, c47; life: 0; mana: WHITE: 2; source: c12; targets: none; x: 0; fallback: -; score: 39.0
+  [precombat main] modular decides PriorityDecisionRequest: 4.259 ms; observed options: 4; space size: 4; success
+  [precombat main] Card tapped: modular; Plains [c45] — last known: kind: CardLastKnownInformation
+  [precombat main] Mana added: modular; Plains [c45] — amount: 1; last known: kind: CardLastKnownInformation; mana: WHITE
+  [precombat main] modular activates Plains [c45] — ability: mana_white; last known: kind: CardLastKnownInformation
+  [precombat main] Card tapped: modular; Plains [c47] — last known: kind: CardLastKnownInformation
+  [precombat main] Mana added: modular; Plains [c47] — amount: 1; last known: kind: CardLastKnownInformation; mana: WHITE
+  [precombat main] modular activates Plains [c47] — ability: mana_white; last known: kind: CardLastKnownInformation
+  [precombat main] Mana paid: modular; Impassioned Orator [c12] — last known: kind: CardLastKnownInformation; payment: WHITE: 2
+  [precombat main] Card moved: modular; Impassioned Orator [c12] — card: Impassioned Orator [c12]; from: HAND; last known: kind: CardLastKnownInformation; previous controller: modular; to: STACK
+  [precombat main] modular casts Impassioned Orator [c12] — ability: cast:Impassioned Orator
+  [precombat main] modular decides PriorityDecisionRequest: 0.171 ms; observed options: 0; space size: unknown; success
+  [precombat main] simple decides PriorityDecisionRequest: 0.140 ms; observed options: 0; space size: unknown; success
+  [precombat main] Card moved: modular; Impassioned Orator [c12] — card: Impassioned Orator [c12]; from: STACK; last known: kind: CardLastKnownInformation; previous controller: modular; to: BATTLEFIELD
+  [precombat main] Resolution: modular; Impassioned Orator [c12]; cast:Impassioned Orator; success: True
+  [precombat main] modular decides PriorityDecisionRequest: 1.274 ms; observed options: 1; space size: 1; success
+  [precombat main] simple decides PriorityDecisionRequest: 0.168 ms; observed options: 0; space size: unknown; success
+  [begin combat] modular decides PriorityDecisionRequest: 0.132 ms; observed options: 0; space size: unknown; success
+  [begin combat] simple decides PriorityDecisionRequest: 0.123 ms; observed options: 0; space size: unknown; success
+  [declare attackers] modular chooses policy_choice: candidate: 0; choice: attackers: none; kind: attack; fallback: -; score: 0
+  [declare attackers] modular decides DeclareAttackersRequest: 0.290 ms; observed options: 3; space size: 3; success
+  [declare attackers] modular decides PriorityDecisionRequest: 0.135 ms; observed options: 0; space size: unknown; success
+  [declare attackers] simple decides PriorityDecisionRequest: 0.125 ms; observed options: 0; space size: unknown; success
+  [end combat] modular decides PriorityDecisionRequest: 0.135 ms; observed options: 0; space size: unknown; success
+  [end combat] simple decides PriorityDecisionRequest: 0.135 ms; observed options: 0; space size: unknown; success
+  [postcombat main] modular decides PriorityDecisionRequest: 1.098 ms; observed options: 1; space size: 1; success
+  [postcombat main] simple decides PriorityDecisionRequest: 0.122 ms; observed options: 0; space size: unknown; success
+  [end step] modular decides PriorityDecisionRequest: 0.138 ms; observed options: 0; space size: unknown; success
+  [end step] simple decides PriorityDecisionRequest: 0.117 ms; observed options: 0; space size: unknown; success
+
+Turn 4
+  [upkeep] simple decides PriorityDecisionRequest: 0.118 ms; observed options: 0; space size: unknown; success
+  [upkeep] modular decides PriorityDecisionRequest: 0.126 ms; observed options: 0; space size: unknown; success
+  [draw] Card moved: simple; Hallowed Priest [c70] — card: Hallowed Priest [c70]; from: DECK; last known: kind: CardLastKnownInformation; previous controller: simple; to: HAND
+  [draw] Card drawn: simple; Hallowed Priest [c70] — card: Hallowed Priest [c70]; last known: kind: CardLastKnownInformation
+  [draw] Resolution: -; -; -; success: True
+  [draw] simple decides PriorityDecisionRequest: 0.137 ms; observed options: 0; space size: unknown; success
+  [draw] modular decides PriorityDecisionRequest: 0.117 ms; observed options: 0; space size: unknown; success
+  [precombat main] simple chooses land: source: Plains [c105]
+  [precombat main] simple decides PriorityDecisionRequest: 1.238 ms; observed options: 2; space size: unknown; success
+  [precombat main] Card moved: simple; Plains [c105] — card: Plains [c105]; from: HAND; last known: kind: CardLastKnownInformation; previous controller: simple; to: BATTLEFIELD
+  [precombat main] simple plays land Plains [c105] — lands played: 1; last known: kind: CardLastKnownInformation
+  [precombat main] Resolution: simple; Plains [c105]; play_land; success: True
+  [precombat main] simple chooses action: ability: cast:aura; source: Pacifism [c92]; targets: Impassioned Orator [c12]
+  [precombat main] simple decides PriorityDecisionRequest: 4.550 ms; observed options: 5; space size: 5; success
+  [precombat main] Card tapped: simple; Plains [c99] — last known: kind: CardLastKnownInformation
+  [precombat main] Mana added: simple; Plains [c99] — amount: 1; last known: kind: CardLastKnownInformation; mana: WHITE
+  [precombat main] simple activates Plains [c99] — ability: mana_white; last known: kind: CardLastKnownInformation
+  [precombat main] Card tapped: simple; Plains [c105] — last known: kind: CardLastKnownInformation
+  [precombat main] Mana added: simple; Plains [c105] — amount: 1; last known: kind: CardLastKnownInformation; mana: WHITE
+  [precombat main] simple activates Plains [c105] — ability: mana_white; last known: kind: CardLastKnownInformation
+  [precombat main] Mana paid: simple; Pacifism [c92] — last known: kind: CardLastKnownInformation; payment: WHITE: 2
+  [precombat main] Card moved: simple; Pacifism [c92] — card: Pacifism [c92]; from: HAND; last known: kind: CardLastKnownInformation; previous controller: simple; to: STACK
+  [precombat main] simple casts Pacifism [c92] — ability: cast:aura
+  [precombat main] simple decides PriorityDecisionRequest: 0.161 ms; observed options: 0; space size: unknown; success
+  [precombat main] modular decides PriorityDecisionRequest: 0.151 ms; observed options: 0; space size: unknown; success
+  [precombat main] Card moved: simple; Pacifism [c92] — card: Pacifism [c92]; from: STACK; last known: kind: CardLastKnownInformation; previous controller: simple; to: BATTLEFIELD
+  [precombat main] Attached: simple; Pacifism [c92] — host: Impassioned Orator [c12]; last known: kind: CardLastKnownInformation
+  [precombat main] Resolution: simple; Pacifism [c92]; cast:aura; success: True
+  [precombat main] simple decides PriorityDecisionRequest: 1.563 ms; observed options: 1; space size: 1; success
+  [precombat main] modular decides PriorityDecisionRequest: 0.149 ms; observed options: 0; space size: unknown; success
+  [begin combat] simple decides PriorityDecisionRequest: 0.130 ms; observed options: 0; space size: unknown; success
+  [begin combat] modular decides PriorityDecisionRequest: 0.140 ms; observed options: 0; space size: unknown; success
+  [declare attackers] simple chooses attack: attackers: none
+  [declare attackers] simple decides DeclareAttackersRequest: 0.110 ms; observed options: 1; space size: unknown; success
+  [declare attackers] simple decides PriorityDecisionRequest: 0.121 ms; observed options: 0; space size: unknown; success
+  [declare attackers] modular decides PriorityDecisionRequest: 0.119 ms; observed options: 0; space size: unknown; success
+  [end combat] simple decides PriorityDecisionRequest: 0.119 ms; observed options: 0; space size: unknown; success
+  [end combat] modular decides PriorityDecisionRequest: 0.130 ms; observed options: 0; space size: unknown; success
+  [postcombat main] simple decides PriorityDecisionRequest: 1.164 ms; observed options: 1; space size: 1; success
+  [postcombat main] modular decides PriorityDecisionRequest: 0.128 ms; observed options: 0; space size: unknown; success
+  [end step] simple decides PriorityDecisionRequest: 0.118 ms; observed options: 0; space size: unknown; success
+  [end step] modular decides PriorityDecisionRequest: 0.115 ms; observed options: 0; space size: unknown; success
+
+Turn 5
+  [upkeep] modular decides PriorityDecisionRequest: 0.126 ms; observed options: 0; space size: unknown; success
+  [upkeep] simple decides PriorityDecisionRequest: 0.113 ms; observed options: 0; space size: unknown; success
+  [draw] Card moved: modular; Goring Ceratops [c25] — card: Goring Ceratops [c25]; from: DECK; last known: kind: CardLastKnownInformation; previous controller: modular; to: HAND
+  [draw] Card drawn: modular; Goring Ceratops [c25] — card: Goring Ceratops [c25]; last known: kind: CardLastKnownInformation
+  [draw] Resolution: -; -; -; success: True
+  [draw] modular decides PriorityDecisionRequest: 0.214 ms; observed options: 0; space size: unknown; success
+  [draw] simple decides PriorityDecisionRequest: 0.182 ms; observed options: 0; space size: unknown; success
+  [precombat main] modular chooses policy_choice: candidate: 1; choice: kind: land; source: c53; fallback: -; score: 100
+  [precombat main] modular decides PriorityDecisionRequest: 3.780 ms; observed options: 5; space size: 5; success
+  [precombat main] Card moved: modular; Plains [c53] — card: Plains [c53]; from: HAND; last known: kind: CardLastKnownInformation; previous controller: modular; to: BATTLEFIELD
+  [precombat main] modular plays land Plains [c53] — lands played: 1; last known: kind: CardLastKnownInformation
+  [precombat main] Resolution: modular; Plains [c53]; play_land; success: True
+  [precombat main] modular chooses policy_choice: candidate: 1; choice: ability: cast:Fencing Ace; cost targets: none; kind: action; payment: activate: c45, c47; life: 0; mana: WHITE: 2; source: c6; targets: none; x: 0; fallback: -; score: 37.0
+  [precombat main] modular decides PriorityDecisionRequest: 2.402 ms; observed options: 3; space size: 3; success
+  [precombat main] Card tapped: modular; Plains [c45] — last known: kind: CardLastKnownInformation
+  [precombat main] Mana added: modular; Plains [c45] — amount: 1; last known: kind: CardLastKnownInformation; mana: WHITE
+  [precombat main] modular activates Plains [c45] — ability: mana_white; last known: kind: CardLastKnownInformation
+  [precombat main] Card tapped: modular; Plains [c47] — last known: kind: CardLastKnownInformation
+  [precombat main] Mana added: modular; Plains [c47] — amount: 1; last known: kind: CardLastKnownInformation; mana: WHITE
+  [precombat main] modular activates Plains [c47] — ability: mana_white; last known: kind: CardLastKnownInformation
+  [precombat main] Mana paid: modular; Fencing Ace [c6] — last known: kind: CardLastKnownInformation; payment: WHITE: 2
+  [precombat main] Card moved: modular; Fencing Ace [c6] — card: Fencing Ace [c6]; from: HAND; last known: kind: CardLastKnownInformation; previous controller: modular; to: STACK
+  [precombat main] modular casts Fencing Ace [c6] — ability: cast:Fencing Ace
+  [precombat main] modular decides PriorityDecisionRequest: 0.144 ms; observed options: 0; space size: unknown; success
+  [precombat main] simple decides PriorityDecisionRequest: 0.124 ms; observed options: 0; space size: unknown; success
+  [precombat main] Card moved: modular; Fencing Ace [c6] — card: Fencing Ace [c6]; from: STACK; last known: kind: CardLastKnownInformation; previous controller: modular; to: BATTLEFIELD
+  [precombat main] Trigger detected: modular; Impassioned Orator [c12]; impassioned_orator_etb
+  [precombat main] modular decides TriggerOrderRequest: 0.046 ms; observed options: 1; space size: unknown; success
+  [precombat main] modular chooses policy_choice: candidate: 0; choice: ability: impassioned_orator_etb; kind: trigger; targets: none; fallback: -; score: 5.0
+  [precombat main] modular decides AbilityDecisionRequest: 0.104 ms; observed options: 1; space size: 1; success
+  [precombat main] Resolution: modular; Fencing Ace [c6]; cast:Fencing Ace; success: True
+  [precombat main] modular decides PriorityDecisionRequest: 0.135 ms; observed options: 0; space size: unknown; success
+  [precombat main] simple decides PriorityDecisionRequest: 0.120 ms; observed options: 0; space size: unknown; success
+  [precombat main] Life gained: modular; Impassioned Orator [c12] — amount: 1; last known: kind: CardLastKnownInformation; player: modular
+  [precombat main] Resolution: modular; Impassioned Orator [c12]; impassioned_orator_etb; success: True
+  [precombat main] modular decides PriorityDecisionRequest: 1.114 ms; observed options: 1; space size: 1; success
+  [precombat main] simple decides PriorityDecisionRequest: 0.123 ms; observed options: 0; space size: unknown; success
+  [begin combat] modular decides PriorityDecisionRequest: 0.152 ms; observed options: 0; space size: unknown; success
+  [begin combat] simple decides PriorityDecisionRequest: 0.131 ms; observed options: 0; space size: unknown; success
+  [declare attackers] modular chooses policy_choice: candidate: 0; choice: attackers: none; kind: attack; fallback: -; score: 0
+  [declare attackers] modular decides DeclareAttackersRequest: 0.366 ms; observed options: 3; space size: 3; success
+  [declare attackers] modular decides PriorityDecisionRequest: 0.126 ms; observed options: 0; space size: unknown; success
+  [declare attackers] simple decides PriorityDecisionRequest: 0.118 ms; observed options: 0; space size: unknown; success
+  [end combat] modular decides PriorityDecisionRequest: 0.118 ms; observed options: 0; space size: unknown; success
+  [end combat] simple decides PriorityDecisionRequest: 0.111 ms; observed options: 0; space size: unknown; success
+  [postcombat main] modular decides PriorityDecisionRequest: 1.092 ms; observed options: 1; space size: 1; success
+  [postcombat main] simple decides PriorityDecisionRequest: 0.123 ms; observed options: 0; space size: unknown; success
+  [end step] modular decides PriorityDecisionRequest: 0.120 ms; observed options: 0; space size: unknown; success
+  [end step] simple decides PriorityDecisionRequest: 0.110 ms; observed options: 0; space size: unknown; success
+
+Turn 6
+  [upkeep] simple decides PriorityDecisionRequest: 0.126 ms; observed options: 0; space size: unknown; success
+  [upkeep] modular decides PriorityDecisionRequest: 0.120 ms; observed options: 0; space size: unknown; success
+  [draw] Card moved: simple; Serra Angel [c80] — card: Serra Angel [c80]; from: DECK; last known: kind: CardLastKnownInformation; previous controller: simple; to: HAND
+  [draw] Card drawn: simple; Serra Angel [c80] — card: Serra Angel [c80]; last known: kind: CardLastKnownInformation
+  [draw] Resolution: -; -; -; success: True
+  [draw] simple decides PriorityDecisionRequest: 0.135 ms; observed options: 0; space size: unknown; success
+  [draw] modular decides PriorityDecisionRequest: 0.123 ms; observed options: 0; space size: unknown; success
+  [precombat main] simple chooses land: source: Plains [c108]
+  [precombat main] simple decides PriorityDecisionRequest: 1.058 ms; observed options: 2; space size: unknown; success
+  [precombat main] Card moved: simple; Plains [c108] — card: Plains [c108]; from: HAND; last known: kind: CardLastKnownInformation; previous controller: simple; to: BATTLEFIELD
+  [precombat main] simple plays land Plains [c108] — lands played: 1; last known: kind: CardLastKnownInformation
+  [precombat main] Resolution: simple; Plains [c108]; play_land; success: True
+  [precombat main] simple chooses action: ability: cast:Impassioned Orator; source: Impassioned Orator [c71]; targets: none
+  [precombat main] simple decides PriorityDecisionRequest: 3.463 ms; observed options: 4; space size: 4; success
+  [precombat main] Card tapped: simple; Plains [c99] — last known: kind: CardLastKnownInformation
+  [precombat main] Mana added: simple; Plains [c99] — amount: 1; last known: kind: CardLastKnownInformation; mana: WHITE
+  [precombat main] simple activates Plains [c99] — ability: mana_white; last known: kind: CardLastKnownInformation
+  [precombat main] Card tapped: simple; Plains [c105] — last known: kind: CardLastKnownInformation
+  [precombat main] Mana added: simple; Plains [c105] — amount: 1; last known: kind: CardLastKnownInformation; mana: WHITE
+  [precombat main] simple activates Plains [c105] — ability: mana_white; last known: kind: CardLastKnownInformation
+  [precombat main] Mana paid: simple; Impassioned Orator [c71] — last known: kind: CardLastKnownInformation; payment: WHITE: 2
+  [precombat main] Card moved: simple; Impassioned Orator [c71] — card: Impassioned Orator [c71]; from: HAND; last known: kind: CardLastKnownInformation; previous controller: simple; to: STACK
+  [precombat main] simple casts Impassioned Orator [c71] — ability: cast:Impassioned Orator
+  [precombat main] simple decides PriorityDecisionRequest: 0.168 ms; observed options: 0; space size: unknown; success
+  [precombat main] modular decides PriorityDecisionRequest: 0.140 ms; observed options: 0; space size: unknown; success
+  [precombat main] Card moved: simple; Impassioned Orator [c71] — card: Impassioned Orator [c71]; from: STACK; last known: kind: CardLastKnownInformation; previous controller: simple; to: BATTLEFIELD
+  [precombat main] Resolution: simple; Impassioned Orator [c71]; cast:Impassioned Orator; success: True
+  [precombat main] simple decides PriorityDecisionRequest: 1.528 ms; observed options: 1; space size: 1; success
+  [precombat main] modular decides PriorityDecisionRequest: 0.131 ms; observed options: 0; space size: unknown; success
+  [begin combat] simple decides PriorityDecisionRequest: 0.127 ms; observed options: 0; space size: unknown; success
+  [begin combat] modular decides PriorityDecisionRequest: 0.135 ms; observed options: 0; space size: unknown; success
+  [declare attackers] simple chooses attack: attackers: none
+  [declare attackers] simple decides DeclareAttackersRequest: 0.132 ms; observed options: 1; space size: unknown; success
+  [declare attackers] simple decides PriorityDecisionRequest: 0.132 ms; observed options: 0; space size: unknown; success
+  [declare attackers] modular decides PriorityDecisionRequest: 0.131 ms; observed options: 0; space size: unknown; success
+  [end combat] simple decides PriorityDecisionRequest: 0.181 ms; observed options: 0; space size: unknown; success
+  [end combat] modular decides PriorityDecisionRequest: 0.127 ms; observed options: 0; space size: unknown; success
+  [postcombat main] simple decides PriorityDecisionRequest: 1.277 ms; observed options: 1; space size: 1; success
+  [postcombat main] modular decides PriorityDecisionRequest: 0.121 ms; observed options: 0; space size: unknown; success
+  [end step] simple decides PriorityDecisionRequest: 0.115 ms; observed options: 0; space size: unknown; success
+  [end step] modular decides PriorityDecisionRequest: 0.115 ms; observed options: 0; space size: unknown; success
+
+Turn 7
+  [upkeep] modular decides PriorityDecisionRequest: 0.116 ms; observed options: 0; space size: unknown; success
+  [upkeep] simple decides PriorityDecisionRequest: 0.110 ms; observed options: 0; space size: unknown; success
+  [draw] Card moved: modular; Tactical Advantage [c28] — card: Tactical Advantage [c28]; from: DECK; last known: kind: CardLastKnownInformation; previous controller: modular; to: HAND
+  [draw] Card drawn: modular; Tactical Advantage [c28] — card: Tactical Advantage [c28]; last known: kind: CardLastKnownInformation
+  [draw] Resolution: -; -; -; success: True
+  [draw] modular decides PriorityDecisionRequest: 1.298 ms; observed options: 1; space size: 1; success
+  [draw] simple decides PriorityDecisionRequest: 0.122 ms; observed options: 0; space size: unknown; success
+  [precombat main] modular chooses policy_choice: candidate: 1; choice: kind: land; source: c55; fallback: -; score: 100
+  [precombat main] modular decides PriorityDecisionRequest: 3.124 ms; observed options: 3; space size: 3; success
+  [precombat main] Card moved: modular; Plains [c55] — card: Plains [c55]; from: HAND; last known: kind: CardLastKnownInformation; previous controller: modular; to: BATTLEFIELD
+  [precombat main] modular plays land Plains [c55] — lands played: 1; last known: kind: CardLastKnownInformation
+  [precombat main] Resolution: modular; Plains [c55]; play_land; success: True
+  [precombat main] modular chooses policy_choice: candidate: 1; choice: ability: cast:Hallowed Priest; cost targets: none; kind: action; payment: activate: c45, c47; life: 0; mana: WHITE: 2; source: c10; targets: none; x: 0; fallback: -; score: 37.0
+  [precombat main] modular decides PriorityDecisionRequest: 2.349 ms; observed options: 2; space size: 2; success
+  [precombat main] Card tapped: modular; Plains [c45] — last known: kind: CardLastKnownInformation
+  [precombat main] Mana added: modular; Plains [c45] — amount: 1; last known: kind: CardLastKnownInformation; mana: WHITE
+  [precombat main] modular activates Plains [c45] — ability: mana_white; last known: kind: CardLastKnownInformation
+  [precombat main] Card tapped: modular; Plains [c47] — last known: kind: CardLastKnownInformation
+  [precombat main] Mana added: modular; Plains [c47] — amount: 1; last known: kind: CardLastKnownInformation; mana: WHITE
+  [precombat main] modular activates Plains [c47] — ability: mana_white; last known: kind: CardLastKnownInformation
+  [precombat main] Mana paid: modular; Hallowed Priest [c10] — last known: kind: CardLastKnownInformation; payment: WHITE: 2
+  [precombat main] Card moved: modular; Hallowed Priest [c10] — card: Hallowed Priest [c10]; from: HAND; last known: kind: CardLastKnownInformation; previous controller: modular; to: STACK
+  [precombat main] modular casts Hallowed Priest [c10] — ability: cast:Hallowed Priest
+  [precombat main] modular decides PriorityDecisionRequest: 1.251 ms; observed options: 1; space size: 1; success
+  [precombat main] simple decides PriorityDecisionRequest: 0.133 ms; observed options: 0; space size: unknown; success
+  [precombat main] Card moved: modular; Hallowed Priest [c10] — card: Hallowed Priest [c10]; from: STACK; last known: kind: CardLastKnownInformation; previous controller: modular; to: BATTLEFIELD
+  [precombat main] Trigger detected: modular; Impassioned Orator [c12]; impassioned_orator_etb
+  [precombat main] modular decides TriggerOrderRequest: 0.038 ms; observed options: 1; space size: unknown; success
+  [precombat main] modular chooses policy_choice: candidate: 0; choice: ability: impassioned_orator_etb; kind: trigger; targets: none; fallback: -; score: 5.0
+  [precombat main] modular decides AbilityDecisionRequest: 0.096 ms; observed options: 1; space size: 1; success
+  [precombat main] Resolution: modular; Hallowed Priest [c10]; cast:Hallowed Priest; success: True
+  [precombat main] modular decides PriorityDecisionRequest: 1.165 ms; observed options: 1; space size: 1; success
+  [precombat main] simple decides PriorityDecisionRequest: 0.131 ms; observed options: 0; space size: unknown; success
+  [precombat main] Life gained: modular; Impassioned Orator [c12] — amount: 1; last known: kind: CardLastKnownInformation; player: modular
+  [precombat main] Trigger detected: modular; Hallowed Priest [c10]; hallowed_priest_life
+  [precombat main] modular decides TriggerOrderRequest: 0.034 ms; observed options: 1; space size: unknown; success
+  [precombat main] modular chooses policy_choice: candidate: 0; choice: ability: hallowed_priest_life; kind: trigger; targets: none; fallback: -; score: 5.0
+  [precombat main] modular decides AbilityDecisionRequest: 0.084 ms; observed options: 1; space size: 1; success
+  [precombat main] Resolution: modular; Impassioned Orator [c12]; impassioned_orator_etb; success: True
+  [precombat main] modular decides PriorityDecisionRequest: 1.001 ms; observed options: 1; space size: 1; success
+  [precombat main] simple decides PriorityDecisionRequest: 0.131 ms; observed options: 0; space size: unknown; success
+  [precombat main] Counter placed: modular; Hallowed Priest [c10] — amount: 1; counter: PLUS_ONE; last known: kind: CardLastKnownInformation
+  [precombat main] Resolution: modular; Hallowed Priest [c10]; hallowed_priest_life; success: True
+  [precombat main] modular decides PriorityDecisionRequest: 1.393 ms; observed options: 1; space size: 1; success
+  [precombat main] simple decides PriorityDecisionRequest: 0.126 ms; observed options: 0; space size: unknown; success
+  [begin combat] modular decides PriorityDecisionRequest: 0.913 ms; observed options: 1; space size: 1; success
+  [begin combat] simple decides PriorityDecisionRequest: 0.118 ms; observed options: 0; space size: unknown; success
+  [declare attackers] modular chooses policy_choice: candidate: 0; choice: attackers: none; kind: attack; fallback: -; score: 0
+  [declare attackers] modular decides DeclareAttackersRequest: 0.427 ms; observed options: 3; space size: 3; success
+  [declare attackers] modular decides PriorityDecisionRequest: 0.944 ms; observed options: 1; space size: 1; success
+  [declare attackers] simple decides PriorityDecisionRequest: 0.120 ms; observed options: 0; space size: unknown; success
+  [end combat] modular decides PriorityDecisionRequest: 1.127 ms; observed options: 1; space size: 1; success
+  [end combat] simple decides PriorityDecisionRequest: 0.127 ms; observed options: 0; space size: unknown; success
+  [postcombat main] modular decides PriorityDecisionRequest: 1.363 ms; observed options: 1; space size: 1; success
+  [postcombat main] simple decides PriorityDecisionRequest: 0.126 ms; observed options: 0; space size: unknown; success
+  [end step] modular decides PriorityDecisionRequest: 0.957 ms; observed options: 1; space size: 1; success
+  [end step] simple decides PriorityDecisionRequest: 0.124 ms; observed options: 0; space size: unknown; success
+
+Turn 8
+  [upkeep] simple decides PriorityDecisionRequest: 0.146 ms; observed options: 0; space size: unknown; success
+  [upkeep] modular decides PriorityDecisionRequest: 1.207 ms; observed options: 1; space size: 1; success
+  [draw] Card moved: simple; Plains [c112] — card: Plains [c112]; from: DECK; last known: kind: CardLastKnownInformation; previous controller: simple; to: HAND
+  [draw] Card drawn: simple; Plains [c112] — card: Plains [c112]; last known: kind: CardLastKnownInformation
+  [draw] Resolution: -; -; -; success: True
+  [draw] simple decides PriorityDecisionRequest: 0.132 ms; observed options: 0; space size: unknown; success
+  [draw] modular decides PriorityDecisionRequest: 1.186 ms; observed options: 1; space size: 1; success
+  [precombat main] simple chooses land: source: Plains [c112]
+  [precombat main] simple decides PriorityDecisionRequest: 1.108 ms; observed options: 2; space size: unknown; success
+  [precombat main] Card moved: simple; Plains [c112] — card: Plains [c112]; from: HAND; last known: kind: CardLastKnownInformation; previous controller: simple; to: BATTLEFIELD
+  [precombat main] simple plays land Plains [c112] — lands played: 1; last known: kind: CardLastKnownInformation
+  [precombat main] Resolution: simple; Plains [c112]; play_land; success: True
+  [precombat main] simple chooses action: ability: cast:Hallowed Priest; source: Hallowed Priest [c67]; targets: none
+  [precombat main] simple decides PriorityDecisionRequest: 2.561 ms; observed options: 3; space size: 3; success
+  [precombat main] Card tapped: simple; Plains [c99] — last known: kind: CardLastKnownInformation
+  [precombat main] Mana added: simple; Plains [c99] — amount: 1; last known: kind: CardLastKnownInformation; mana: WHITE
+  [precombat main] simple activates Plains [c99] — ability: mana_white; last known: kind: CardLastKnownInformation
+  [precombat main] Card tapped: simple; Plains [c105] — last known: kind: CardLastKnownInformation
+  [precombat main] Mana added: simple; Plains [c105] — amount: 1; last known: kind: CardLastKnownInformation; mana: WHITE
+  [precombat main] simple activates Plains [c105] — ability: mana_white; last known: kind: CardLastKnownInformation
+  [precombat main] Mana paid: simple; Hallowed Priest [c67] — last known: kind: CardLastKnownInformation; payment: WHITE: 2
+  [precombat main] Card moved: simple; Hallowed Priest [c67] — card: Hallowed Priest [c67]; from: HAND; last known: kind: CardLastKnownInformation; previous controller: simple; to: STACK
+  [precombat main] simple casts Hallowed Priest [c67] — ability: cast:Hallowed Priest
+  [precombat main] simple decides PriorityDecisionRequest: 0.144 ms; observed options: 0; space size: unknown; success
+  [precombat main] modular decides PriorityDecisionRequest: 1.238 ms; observed options: 1; space size: 1; success
+  [precombat main] Card moved: simple; Hallowed Priest [c67] — card: Hallowed Priest [c67]; from: STACK; last known: kind: CardLastKnownInformation; previous controller: simple; to: BATTLEFIELD
+  [precombat main] Trigger detected: simple; Impassioned Orator [c71]; impassioned_orator_etb
+  [precombat main] simple decides TriggerOrderRequest: 0.042 ms; observed options: 1; space size: unknown; success
+  [precombat main] simple chooses trigger: ability: impassioned_orator_etb; source: Impassioned Orator [c71]; targets: none
+  [precombat main] simple decides AbilityDecisionRequest: 0.085 ms; observed options: 1; space size: 1; success
+  [precombat main] Resolution: simple; Hallowed Priest [c67]; cast:Hallowed Priest; success: True
+  [precombat main] simple decides PriorityDecisionRequest: 0.123 ms; observed options: 0; space size: unknown; success
+  [precombat main] modular decides PriorityDecisionRequest: 1.266 ms; observed options: 1; space size: 1; success
+  [precombat main] Life gained: simple; Impassioned Orator [c71] — amount: 1; last known: kind: CardLastKnownInformation; player: simple
+  [precombat main] Trigger detected: simple; Hallowed Priest [c67]; hallowed_priest_life
+  [precombat main] simple decides TriggerOrderRequest: 0.030 ms; observed options: 1; space size: unknown; success
+  [precombat main] simple chooses trigger: ability: hallowed_priest_life; source: Hallowed Priest [c67]; targets: none
+  [precombat main] simple decides AbilityDecisionRequest: 0.078 ms; observed options: 1; space size: 1; success
+  [precombat main] Resolution: simple; Impassioned Orator [c71]; impassioned_orator_etb; success: True
+  [precombat main] simple decides PriorityDecisionRequest: 0.125 ms; observed options: 0; space size: unknown; success
+  [precombat main] modular decides PriorityDecisionRequest: 0.945 ms; observed options: 1; space size: 1; success
+  [precombat main] Counter placed: simple; Hallowed Priest [c67] — amount: 1; counter: PLUS_ONE; last known: kind: CardLastKnownInformation
+  [precombat main] Resolution: simple; Hallowed Priest [c67]; hallowed_priest_life; success: True
+  [precombat main] simple chooses action: ability: cast:Hallowed Priest; source: Hallowed Priest [c70]; targets: none
+  [precombat main] simple decides PriorityDecisionRequest: 2.503 ms; observed options: 2; space size: 2; success
+  [precombat main] Card tapped: simple; Plains [c108] — last known: kind: CardLastKnownInformation
+  [precombat main] Mana added: simple; Plains [c108] — amount: 1; last known: kind: CardLastKnownInformation; mana: WHITE
+  [precombat main] simple activates Plains [c108] — ability: mana_white; last known: kind: CardLastKnownInformation
+  [precombat main] Card tapped: simple; Plains [c112] — last known: kind: CardLastKnownInformation
+  [precombat main] Mana added: simple; Plains [c112] — amount: 1; last known: kind: CardLastKnownInformation; mana: WHITE
+  [precombat main] simple activates Plains [c112] — ability: mana_white; last known: kind: CardLastKnownInformation
+  [precombat main] Mana paid: simple; Hallowed Priest [c70] — last known: kind: CardLastKnownInformation; payment: WHITE: 2
+  [precombat main] Card moved: simple; Hallowed Priest [c70] — card: Hallowed Priest [c70]; from: HAND; last known: kind: CardLastKnownInformation; previous controller: simple; to: STACK
+  [precombat main] simple casts Hallowed Priest [c70] — ability: cast:Hallowed Priest
+  [precombat main] simple decides PriorityDecisionRequest: 0.120 ms; observed options: 0; space size: unknown; success
+  [precombat main] modular decides PriorityDecisionRequest: 1.598 ms; observed options: 1; space size: 1; success
+  [precombat main] Card moved: simple; Hallowed Priest [c70] — card: Hallowed Priest [c70]; from: STACK; last known: kind: CardLastKnownInformation; previous controller: simple; to: BATTLEFIELD
+  [precombat main] Trigger detected: simple; Impassioned Orator [c71]; impassioned_orator_etb
+  [precombat main] simple decides TriggerOrderRequest: 0.041 ms; observed options: 1; space size: unknown; success
+  [precombat main] simple chooses trigger: ability: impassioned_orator_etb; source: Impassioned Orator [c71]; targets: none
+  [precombat main] simple decides AbilityDecisionRequest: 0.087 ms; observed options: 1; space size: 1; success
+  [precombat main] Resolution: simple; Hallowed Priest [c70]; cast:Hallowed Priest; success: True
+  [precombat main] simple decides PriorityDecisionRequest: 0.132 ms; observed options: 0; space size: unknown; success
+  [precombat main] modular decides PriorityDecisionRequest: 1.503 ms; observed options: 1; space size: 1; success
+  [precombat main] Life gained: simple; Impassioned Orator [c71] — amount: 1; last known: kind: CardLastKnownInformation; player: simple
+  [precombat main] Trigger detected: simple; Hallowed Priest [c67]; hallowed_priest_life
+  [precombat main] Trigger detected: simple; Hallowed Priest [c70]; hallowed_priest_life
+  [precombat main] simple decides TriggerOrderRequest: 0.037 ms; observed options: 1; space size: unknown; success
+  [precombat main] simple chooses trigger: ability: hallowed_priest_life; source: Hallowed Priest [c67]; targets: none
+  [precombat main] simple decides AbilityDecisionRequest: 0.134 ms; observed options: 1; space size: 1; success
+  [precombat main] simple chooses trigger: ability: hallowed_priest_life; source: Hallowed Priest [c70]; targets: none
+  [precombat main] simple decides AbilityDecisionRequest: 0.082 ms; observed options: 1; space size: 1; success
+  [precombat main] Resolution: simple; Impassioned Orator [c71]; impassioned_orator_etb; success: True
+  [precombat main] simple decides PriorityDecisionRequest: 0.116 ms; observed options: 0; space size: unknown; success
+  [precombat main] modular decides PriorityDecisionRequest: 1.201 ms; observed options: 1; space size: 1; success
+  [precombat main] Counter placed: simple; Hallowed Priest [c70] — amount: 1; counter: PLUS_ONE; last known: kind: CardLastKnownInformation
+  [precombat main] Resolution: simple; Hallowed Priest [c70]; hallowed_priest_life; success: True
+  [precombat main] simple decides PriorityDecisionRequest: 0.099 ms; observed options: 0; space size: unknown; success
+  [precombat main] modular decides PriorityDecisionRequest: 1.071 ms; observed options: 1; space size: 1; success
+  [precombat main] Counter placed: simple; Hallowed Priest [c67] — amount: 1; counter: PLUS_ONE; last known: kind: CardLastKnownInformation
+  [precombat main] Resolution: simple; Hallowed Priest [c67]; hallowed_priest_life; success: True
+  [precombat main] simple decides PriorityDecisionRequest: 0.921 ms; observed options: 1; space size: 1; success
+  [precombat main] modular decides PriorityDecisionRequest: 1.099 ms; observed options: 1; space size: 1; success
+  [begin combat] simple decides PriorityDecisionRequest: 0.098 ms; observed options: 0; space size: unknown; success
+  [begin combat] modular decides PriorityDecisionRequest: 0.982 ms; observed options: 1; space size: 1; success
+  [declare attackers] simple chooses attack: attackers: Impassioned Orator [c71]
+  [declare attackers] simple decides DeclareAttackersRequest: 0.205 ms; observed options: 1; space size: unknown; success
+  [declare attackers] Card tapped: simple; Impassioned Orator [c71]
+  [declare attackers] simple attacks with Impassioned Orator [c71] — attacker: Impassioned Orator [c71]; defender: modular
+  [declare attackers] Attackers declared: simple; - — attackers: Impassioned Orator [c71]
+  [declare attackers] simple decides PriorityDecisionRequest: 0.135 ms; observed options: 0; space size: unknown; success
+  [declare attackers] modular decides PriorityDecisionRequest: 1.685 ms; observed options: 1; space size: 1; success
+  [declare blockers] modular chooses policy_choice: candidate: 0; choice: blockers: c10: c71; kind: block; fallback: -; score: 0
+  [declare blockers] modular decides DeclareBlockersRequest: 1.171 ms; observed options: 5; space size: 5; success
+  [declare blockers] modular blocks with Hallowed Priest [c10] — attacker: Impassioned Orator [c71]; blocker: Hallowed Priest [c10]
+  [declare blockers] Attacker blocked: simple; Impassioned Orator [c71] — blockers: Hallowed Priest [c10]
+  [declare blockers] Blockers declared: modular; - — blockers: Hallowed Priest [c10], Impassioned Orator [c71]
+  [declare blockers] simple decides PriorityDecisionRequest: 0.118 ms; observed options: 0; space size: unknown; success
+  [declare blockers] modular chooses policy_choice: candidate: 1; choice: ability: cast:Tactical Advantage; cost targets: none; kind: action; payment: activate: c53; life: 0; mana: WHITE: 1; source: c28; targets: c10; x: 0; fallback: -; score: 45.0
+  [declare blockers] modular decides PriorityDecisionRequest: 2.239 ms; observed options: 2; space size: 2; success
+  [declare blockers] Card tapped: modular; Plains [c53] — last known: kind: CardLastKnownInformation
+  [declare blockers] Mana added: modular; Plains [c53] — amount: 1; last known: kind: CardLastKnownInformation; mana: WHITE
+  [declare blockers] modular activates Plains [c53] — ability: mana_white; last known: kind: CardLastKnownInformation
+  [declare blockers] Mana paid: modular; Tactical Advantage [c28] — last known: kind: CardLastKnownInformation; payment: WHITE: 1
+  [declare blockers] Card moved: modular; Tactical Advantage [c28] — card: Tactical Advantage [c28]; from: HAND; last known: kind: CardLastKnownInformation; previous controller: modular; to: STACK
+  [declare blockers] modular casts Tactical Advantage [c28] — ability: cast:Tactical Advantage
+  [declare blockers] modular decides PriorityDecisionRequest: 0.955 ms; observed options: 1; space size: 1; success
+  [declare blockers] simple decides PriorityDecisionRequest: 0.115 ms; observed options: 0; space size: unknown; success
+  [declare blockers] Temporary effect applied: modular; Tactical Advantage [c28] — last known: kind: CardLastKnownInformation; targets: Hallowed Priest [c10]
+  [declare blockers] Card moved: modular; Tactical Advantage [c28] — card: Tactical Advantage [c28]; from: STACK; last known: kind: CardLastKnownInformation; previous controller: modular; to: GRAVEYARD
+  [declare blockers] Resolution: modular; Tactical Advantage [c28]; cast:Tactical Advantage; success: True
+  [declare blockers] simple decides PriorityDecisionRequest: 0.150 ms; observed options: 0; space size: unknown; success
+  [declare blockers] modular decides PriorityDecisionRequest: 0.916 ms; observed options: 1; space size: 1; success
+  [second combat damage] Damage dealt: modular; Hallowed Priest [c10] — amount: 4; combat: True; last known: kind: CardLastKnownInformation; life loss: 0; source revision: 3; target: Impassioned Orator; target object: Impassioned Orator [c71]; target revision: 5
+  [second combat damage] Damage dealt: simple; Impassioned Orator [c71] — amount: 2; combat: True; last known: kind: CardLastKnownInformation; life loss: 0; source revision: 5; target: Hallowed Priest; target object: Hallowed Priest [c10]; target revision: 3
+  [second combat damage] Card moved: simple; Impassioned Orator [c71] — card: Impassioned Orator [c71]; from: BATTLEFIELD; last known: kind: CardLastKnownInformation; previous controller: simple; to: GRAVEYARD
+  [second combat damage] simple decides PriorityDecisionRequest: 0.114 ms; observed options: 0; space size: unknown; success
+  [second combat damage] modular decides PriorityDecisionRequest: 0.119 ms; observed options: 0; space size: unknown; success
+  [end combat] simple decides PriorityDecisionRequest: 0.097 ms; observed options: 0; space size: unknown; success
+  [end combat] modular decides PriorityDecisionRequest: 0.105 ms; observed options: 0; space size: unknown; success
+  [postcombat main] simple decides PriorityDecisionRequest: 1.109 ms; observed options: 1; space size: 1; success
+  [postcombat main] modular decides PriorityDecisionRequest: 0.118 ms; observed options: 0; space size: unknown; success
+  [end step] simple decides PriorityDecisionRequest: 0.095 ms; observed options: 0; space size: unknown; success
+  [end step] modular decides PriorityDecisionRequest: 0.114 ms; observed options: 0; space size: unknown; success
+
+Turn 9
+  [upkeep] modular decides PriorityDecisionRequest: 0.232 ms; observed options: 0; space size: unknown; success
+  [upkeep] simple decides PriorityDecisionRequest: 0.133 ms; observed options: 0; space size: unknown; success
+  [draw] Card moved: modular; Plains [c58] — card: Plains [c58]; from: DECK; last known: kind: CardLastKnownInformation; previous controller: modular; to: HAND
+  [draw] Card drawn: modular; Plains [c58] — card: Plains [c58]; last known: kind: CardLastKnownInformation
+  [draw] Resolution: -; -; -; success: True
+  [draw] modular decides PriorityDecisionRequest: 0.124 ms; observed options: 0; space size: unknown; success
+  [draw] simple decides PriorityDecisionRequest: 0.089 ms; observed options: 0; space size: unknown; success
+  [precombat main] modular chooses policy_choice: candidate: 1; choice: kind: land; source: c58; fallback: -; score: 100
+  [precombat main] modular decides PriorityDecisionRequest: 2.011 ms; observed options: 2; space size: 2; success
+  [precombat main] Card moved: modular; Plains [c58] — card: Plains [c58]; from: HAND; last known: kind: CardLastKnownInformation; previous controller: modular; to: BATTLEFIELD
+  [precombat main] modular plays land Plains [c58] — lands played: 1; last known: kind: CardLastKnownInformation
+  [precombat main] Resolution: modular; Plains [c58]; play_land; success: True
+  [precombat main] modular decides PriorityDecisionRequest: 1.144 ms; observed options: 1; space size: 1; success
+  [precombat main] simple decides PriorityDecisionRequest: 0.098 ms; observed options: 0; space size: unknown; success
+  [begin combat] modular decides PriorityDecisionRequest: 0.112 ms; observed options: 0; space size: unknown; success
+  [begin combat] simple decides PriorityDecisionRequest: 0.085 ms; observed options: 0; space size: unknown; success
+  [declare attackers] modular chooses policy_choice: candidate: 0; choice: attackers: none; kind: attack; fallback: -; score: 0
+  [declare attackers] modular decides DeclareAttackersRequest: 0.655 ms; observed options: 3; space size: 3; success
+  [declare attackers] modular decides PriorityDecisionRequest: 0.118 ms; observed options: 0; space size: unknown; success
+  [declare attackers] simple decides PriorityDecisionRequest: 0.085 ms; observed options: 0; space size: unknown; success
+  [end combat] modular decides PriorityDecisionRequest: 0.129 ms; observed options: 0; space size: unknown; success
+  [end combat] simple decides PriorityDecisionRequest: 0.099 ms; observed options: 0; space size: unknown; success
+  [postcombat main] modular decides PriorityDecisionRequest: 5.049 ms; observed options: 1; space size: 1; success
+  [postcombat main] simple decides PriorityDecisionRequest: 0.161 ms; observed options: 0; space size: unknown; success
+  [end step] modular decides PriorityDecisionRequest: 0.202 ms; observed options: 0; space size: unknown; success
+  [end step] simple decides PriorityDecisionRequest: 0.154 ms; observed options: 0; space size: unknown; success
+
+Turn 10
+  [upkeep] simple decides PriorityDecisionRequest: 0.106 ms; observed options: 0; space size: unknown; success
+  [upkeep] modular decides PriorityDecisionRequest: 0.113 ms; observed options: 0; space size: unknown; success
+  [draw] Card moved: simple; Plains [c107] — card: Plains [c107]; from: DECK; last known: kind: CardLastKnownInformation; previous controller: simple; to: HAND
+  [draw] Card drawn: simple; Plains [c107] — card: Plains [c107]; last known: kind: CardLastKnownInformation
+  [draw] Resolution: -; -; -; success: True
+  [draw] simple decides PriorityDecisionRequest: 0.158 ms; observed options: 0; space size: unknown; success
+  [draw] modular decides PriorityDecisionRequest: 0.156 ms; observed options: 0; space size: unknown; success
+  [precombat main] simple chooses land: source: Plains [c107]
+  [precombat main] simple decides PriorityDecisionRequest: 1.339 ms; observed options: 2; space size: unknown; success
+  [precombat main] Card moved: simple; Plains [c107] — card: Plains [c107]; from: HAND; last known: kind: CardLastKnownInformation; previous controller: simple; to: BATTLEFIELD
+  [precombat main] simple plays land Plains [c107] — lands played: 1; last known: kind: CardLastKnownInformation
+  [precombat main] Resolution: simple; Plains [c107]; play_land; success: True
+  [precombat main] simple chooses action: ability: cast:Serra Angel; source: Serra Angel [c80]; targets: none
+  [precombat main] simple decides PriorityDecisionRequest: 2.137 ms; observed options: 2; space size: 2; success
+  [precombat main] Card tapped: simple; Plains [c99] — last known: kind: CardLastKnownInformation
+  [precombat main] Mana added: simple; Plains [c99] — amount: 1; last known: kind: CardLastKnownInformation; mana: WHITE
+  [precombat main] simple activates Plains [c99] — ability: mana_white; last known: kind: CardLastKnownInformation
+  [precombat main] Card tapped: simple; Plains [c105] — last known: kind: CardLastKnownInformation
+  [precombat main] Mana added: simple; Plains [c105] — amount: 1; last known: kind: CardLastKnownInformation; mana: WHITE
+  [precombat main] simple activates Plains [c105] — ability: mana_white; last known: kind: CardLastKnownInformation
+  [precombat main] Card tapped: simple; Plains [c107] — last known: kind: CardLastKnownInformation
+  [precombat main] Mana added: simple; Plains [c107] — amount: 1; last known: kind: CardLastKnownInformation; mana: WHITE
+  [precombat main] simple activates Plains [c107] — ability: mana_white; last known: kind: CardLastKnownInformation
+  [precombat main] Card tapped: simple; Plains [c108] — last known: kind: CardLastKnownInformation
+  [precombat main] Mana added: simple; Plains [c108] — amount: 1; last known: kind: CardLastKnownInformation; mana: WHITE
+  [precombat main] simple activates Plains [c108] — ability: mana_white; last known: kind: CardLastKnownInformation
+  [precombat main] Card tapped: simple; Plains [c112] — last known: kind: CardLastKnownInformation
+  [precombat main] Mana added: simple; Plains [c112] — amount: 1; last known: kind: CardLastKnownInformation; mana: WHITE
+  [precombat main] simple activates Plains [c112] — ability: mana_white; last known: kind: CardLastKnownInformation
+  [precombat main] Mana paid: simple; Serra Angel [c80] — last known: kind: CardLastKnownInformation; payment: WHITE: 5
+  [precombat main] Card moved: simple; Serra Angel [c80] — card: Serra Angel [c80]; from: HAND; last known: kind: CardLastKnownInformation; previous controller: simple; to: STACK
+  [precombat main] simple casts Serra Angel [c80] — ability: cast:Serra Angel
+  [precombat main] simple decides PriorityDecisionRequest: 0.122 ms; observed options: 0; space size: unknown; success
+  [precombat main] modular decides PriorityDecisionRequest: 0.164 ms; observed options: 0; space size: unknown; success
+  [precombat main] Card moved: simple; Serra Angel [c80] — card: Serra Angel [c80]; from: STACK; last known: kind: CardLastKnownInformation; previous controller: simple; to: BATTLEFIELD
+  [precombat main] Resolution: simple; Serra Angel [c80]; cast:Serra Angel; success: True
+  [precombat main] simple decides PriorityDecisionRequest: 0.153 ms; observed options: 0; space size: unknown; success
+  [precombat main] modular decides PriorityDecisionRequest: 0.238 ms; observed options: 0; space size: unknown; success
+  [begin combat] simple decides PriorityDecisionRequest: 0.127 ms; observed options: 0; space size: unknown; success
+  [begin combat] modular decides PriorityDecisionRequest: 0.217 ms; observed options: 0; space size: unknown; success
+  [declare attackers] simple chooses attack: attackers: Hallowed Priest [c67], Hallowed Priest [c70]
+  [declare attackers] simple decides DeclareAttackersRequest: 0.461 ms; observed options: 1; space size: unknown; success
+  [declare attackers] Card tapped: simple; Hallowed Priest [c67]
+  [declare attackers] simple attacks with Hallowed Priest [c67] — attacker: Hallowed Priest [c67]; defender: modular
+  [declare attackers] Card tapped: simple; Hallowed Priest [c70]
+  [declare attackers] simple attacks with Hallowed Priest [c70] — attacker: Hallowed Priest [c70]; defender: modular
+  [declare attackers] Attackers declared: simple; - — attackers: Hallowed Priest [c67], Hallowed Priest [c70]
+  [declare attackers] simple decides PriorityDecisionRequest: 0.108 ms; observed options: 0; space size: unknown; success
+  [declare attackers] modular chooses policy_choice: candidate: 1; choice: ability: cast:Confront the Assault; cost targets: none; kind: action; payment: activate: c45, c47, c53, c55, c58; life: 0; mana: WHITE: 5; source: c30; targets: none; x: 0; fallback: -; score: 25.0
+  [declare attackers] modular decides PriorityDecisionRequest: 3.197 ms; observed options: 2; space size: 2; success
+  [declare attackers] Card tapped: modular; Plains [c45] — last known: kind: CardLastKnownInformation
+  [declare attackers] Mana added: modular; Plains [c45] — amount: 1; last known: kind: CardLastKnownInformation; mana: WHITE
+  [declare attackers] modular activates Plains [c45] — ability: mana_white; last known: kind: CardLastKnownInformation
+  [declare attackers] Card tapped: modular; Plains [c47] — last known: kind: CardLastKnownInformation
+  [declare attackers] Mana added: modular; Plains [c47] — amount: 1; last known: kind: CardLastKnownInformation; mana: WHITE
+  [declare attackers] modular activates Plains [c47] — ability: mana_white; last known: kind: CardLastKnownInformation
+  [declare attackers] Card tapped: modular; Plains [c53] — last known: kind: CardLastKnownInformation
+  [declare attackers] Mana added: modular; Plains [c53] — amount: 1; last known: kind: CardLastKnownInformation; mana: WHITE
+  [declare attackers] modular activates Plains [c53] — ability: mana_white; last known: kind: CardLastKnownInformation
+  [declare attackers] Card tapped: modular; Plains [c55] — last known: kind: CardLastKnownInformation
+  [declare attackers] Mana added: modular; Plains [c55] — amount: 1; last known: kind: CardLastKnownInformation; mana: WHITE
+  [declare attackers] modular activates Plains [c55] — ability: mana_white; last known: kind: CardLastKnownInformation
+  [declare attackers] Card tapped: modular; Plains [c58] — last known: kind: CardLastKnownInformation
+  [declare attackers] Mana added: modular; Plains [c58] — amount: 1; last known: kind: CardLastKnownInformation; mana: WHITE
+  [declare attackers] modular activates Plains [c58] — ability: mana_white; last known: kind: CardLastKnownInformation
+  [declare attackers] Mana paid: modular; Confront the Assault [c30] — last known: kind: CardLastKnownInformation; payment: WHITE: 5
+  [declare attackers] Card moved: modular; Confront the Assault [c30] — card: Confront the Assault [c30]; from: HAND; last known: kind: CardLastKnownInformation; previous controller: modular; to: STACK
+  [declare attackers] modular casts Confront the Assault [c30] — ability: cast:Confront the Assault
+  [declare attackers] modular decides PriorityDecisionRequest: 0.318 ms; observed options: 0; space size: unknown; success
+  [declare attackers] simple decides PriorityDecisionRequest: 0.159 ms; observed options: 0; space size: unknown; success
+  [declare attackers] modular decides ReplacementOrderRequest: 0.106 ms; observed options: 1; space size: unknown; success
+  [declare attackers] Card moved: modular; Spirit [c121] — card: Spirit [c121]; created token: True; from: -; previous controller: modular; to: BATTLEFIELD
+  [declare attackers] Card moved: modular; Spirit [c122] — card: Spirit [c122]; created token: True; from: -; previous controller: modular; to: BATTLEFIELD
+  [declare attackers] Card moved: modular; Spirit [c123] — card: Spirit [c123]; created token: True; from: -; previous controller: modular; to: BATTLEFIELD
+  [declare attackers] Card moved: modular; Confront the Assault [c30] — card: Confront the Assault [c30]; from: STACK; last known: kind: CardLastKnownInformation; previous controller: modular; to: GRAVEYARD
+  [declare attackers] Trigger detected: modular; Impassioned Orator [c12]; impassioned_orator_etb
+  [declare attackers] Trigger detected: modular; Impassioned Orator [c12]; impassioned_orator_etb
+  [declare attackers] Trigger detected: modular; Impassioned Orator [c12]; impassioned_orator_etb
+  [declare attackers] modular decides TriggerOrderRequest: 0.050 ms; observed options: 1; space size: unknown; success
+  [declare attackers] modular chooses policy_choice: candidate: 0; choice: ability: impassioned_orator_etb; kind: trigger; targets: none; fallback: -; score: 5.0
+  [declare attackers] modular decides AbilityDecisionRequest: 0.137 ms; observed options: 1; space size: 1; success
+  [declare attackers] modular chooses policy_choice: candidate: 0; choice: ability: impassioned_orator_etb; kind: trigger; targets: none; fallback: -; score: 5.0
+  [declare attackers] modular decides AbilityDecisionRequest: 0.148 ms; observed options: 1; space size: 1; success
+  [declare attackers] modular chooses policy_choice: candidate: 0; choice: ability: impassioned_orator_etb; kind: trigger; targets: none; fallback: -; score: 5.0
+  [declare attackers] modular decides AbilityDecisionRequest: 0.134 ms; observed options: 1; space size: 1; success
+  [declare attackers] Resolution: modular; Confront the Assault [c30]; cast:Confront the Assault; success: True
+  [declare attackers] simple decides PriorityDecisionRequest: 0.160 ms; observed options: 0; space size: unknown; success
+  [declare attackers] modular decides PriorityDecisionRequest: 0.222 ms; observed options: 0; space size: unknown; success
+  [declare attackers] Life gained: modular; Impassioned Orator [c12] — amount: 1; last known: kind: CardLastKnownInformation; player: modular
+  [declare attackers] Trigger detected: modular; Hallowed Priest [c10]; hallowed_priest_life
+  [declare attackers] modular decides TriggerOrderRequest: 0.067 ms; observed options: 1; space size: unknown; success
+  [declare attackers] modular chooses policy_choice: candidate: 0; choice: ability: hallowed_priest_life; kind: trigger; targets: none; fallback: -; score: 5.0
+  [declare attackers] modular decides AbilityDecisionRequest: 0.143 ms; observed options: 1; space size: 1; success
+  [declare attackers] Resolution: modular; Impassioned Orator [c12]; impassioned_orator_etb; success: True
+  [declare attackers] simple decides PriorityDecisionRequest: 0.107 ms; observed options: 0; space size: unknown; success
+  [declare attackers] modular decides PriorityDecisionRequest: 0.132 ms; observed options: 0; space size: unknown; success
+  [declare attackers] Counter placed: modular; Hallowed Priest [c10] — amount: 1; counter: PLUS_ONE; last known: kind: CardLastKnownInformation
+  [declare attackers] Resolution: modular; Hallowed Priest [c10]; hallowed_priest_life; success: True
+  [declare attackers] simple decides PriorityDecisionRequest: 0.188 ms; observed options: 0; space size: unknown; success
+  [declare attackers] modular decides PriorityDecisionRequest: 0.215 ms; observed options: 0; space size: unknown; success
+  [declare attackers] Life gained: modular; Impassioned Orator [c12] — amount: 1; last known: kind: CardLastKnownInformation; player: modular
+  [declare attackers] Trigger detected: modular; Hallowed Priest [c10]; hallowed_priest_life
+  [declare attackers] modular decides TriggerOrderRequest: 0.057 ms; observed options: 1; space size: unknown; success
+  [declare attackers] modular chooses policy_choice: candidate: 0; choice: ability: hallowed_priest_life; kind: trigger; targets: none; fallback: -; score: 5.0
+  [declare attackers] modular decides AbilityDecisionRequest: 0.207 ms; observed options: 1; space size: 1; success
+  [declare attackers] Resolution: modular; Impassioned Orator [c12]; impassioned_orator_etb; success: True
+  [declare attackers] simple decides PriorityDecisionRequest: 0.110 ms; observed options: 0; space size: unknown; success
+  [declare attackers] modular decides PriorityDecisionRequest: 0.151 ms; observed options: 0; space size: unknown; success
+  [declare attackers] Counter placed: modular; Hallowed Priest [c10] — amount: 1; counter: PLUS_ONE; last known: kind: CardLastKnownInformation
+  [declare attackers] Resolution: modular; Hallowed Priest [c10]; hallowed_priest_life; success: True
+  [declare attackers] simple decides PriorityDecisionRequest: 0.097 ms; observed options: 0; space size: unknown; success
+  [declare attackers] modular decides PriorityDecisionRequest: 0.129 ms; observed options: 0; space size: unknown; success
+  [declare attackers] Life gained: modular; Impassioned Orator [c12] — amount: 1; last known: kind: CardLastKnownInformation; player: modular
+  [declare attackers] Trigger detected: modular; Hallowed Priest [c10]; hallowed_priest_life
+  [declare attackers] modular decides TriggerOrderRequest: 0.045 ms; observed options: 1; space size: unknown; success
+  [declare attackers] modular chooses policy_choice: candidate: 0; choice: ability: hallowed_priest_life; kind: trigger; targets: none; fallback: -; score: 5.0
+  [declare attackers] modular decides AbilityDecisionRequest: 0.191 ms; observed options: 1; space size: 1; success
+  [declare attackers] Resolution: modular; Impassioned Orator [c12]; impassioned_orator_etb; success: True
+  [declare attackers] simple decides PriorityDecisionRequest: 0.159 ms; observed options: 0; space size: unknown; success
+  [declare attackers] modular decides PriorityDecisionRequest: 0.209 ms; observed options: 0; space size: unknown; success
+  [declare attackers] Counter placed: modular; Hallowed Priest [c10] — amount: 1; counter: PLUS_ONE; last known: kind: CardLastKnownInformation
+  [declare attackers] Resolution: modular; Hallowed Priest [c10]; hallowed_priest_life; success: True
+  [declare attackers] simple decides PriorityDecisionRequest: 0.106 ms; observed options: 0; space size: unknown; success
+  [declare attackers] modular decides PriorityDecisionRequest: 0.120 ms; observed options: 0; space size: unknown; success
+  [declare blockers] modular chooses policy_choice: candidate: 0; choice: blockers: c10: c67; c122: c70; c123: c70; kind: block; fallback: -; score: 6
+  [declare blockers] modular decides DeclareBlockersRequest: 82.840 ms; observed options: 244; space size: 244; success
+  [declare blockers] modular blocks with Hallowed Priest [c10] — attacker: Hallowed Priest [c67]; blocker: Hallowed Priest [c10]
+  [declare blockers] modular blocks with Spirit [c122] — attacker: Hallowed Priest [c70]; blocker: Spirit [c122]
+  [declare blockers] modular blocks with Spirit [c123] — attacker: Hallowed Priest [c70]; blocker: Spirit [c123]
+  [declare blockers] Attacker blocked: simple; Hallowed Priest [c67] — blockers: Hallowed Priest [c10]
+  [declare blockers] Attacker blocked: simple; Hallowed Priest [c70] — blockers: Spirit [c122], Spirit [c123]
+  [declare blockers] Blockers declared: modular; - — blockers: Hallowed Priest [c10], Hallowed Priest [c67], Spirit [c122], Hallowed Priest [c70], Spirit [c123], Hallowed Priest [c70]
+  [declare blockers] simple decides PriorityDecisionRequest: 0.089 ms; observed options: 0; space size: unknown; success
+  [declare blockers] modular decides PriorityDecisionRequest: 0.110 ms; observed options: 0; space size: unknown; success
+  [second combat damage] simple decides CombatDamageRequest: 0.163 ms; observed options: 1; space size: unknown; success
+  [second combat damage] simple decides ReplacementOrderRequest: 0.036 ms; observed options: 1; space size: unknown; success
+  [second combat damage] modular decides ReplacementOrderRequest: 0.023 ms; observed options: 1; space size: unknown; success
+  [second combat damage] Damage dealt: modular; Hallowed Priest [c10] — amount: 5; combat: True; last known: kind: CardLastKnownInformation; life loss: 0; source revision: 3; target: Hallowed Priest; target object: Hallowed Priest [c67]; target revision: 3
+  [second combat damage] Damage dealt: modular; Spirit [c122] — amount: 1; combat: True; last known: kind: CardLastKnownInformation; life loss: 0; source revision: 1; target: Hallowed Priest; target object: Hallowed Priest [c70]; target revision: 3
+  [second combat damage] Damage dealt: modular; Spirit [c123] — amount: 1; combat: True; last known: kind: CardLastKnownInformation; life loss: 0; source revision: 1; target: Hallowed Priest; target object: Hallowed Priest [c70]; target revision: 3
+  [second combat damage] Damage dealt: simple; Hallowed Priest [c67] — amount: 3; combat: True; last known: kind: CardLastKnownInformation; life loss: 0; source revision: 3; target: Hallowed Priest; target object: Hallowed Priest [c10]; target revision: 3
+  [second combat damage] Damage dealt: simple; Hallowed Priest [c70] — amount: 1; combat: True; last known: kind: CardLastKnownInformation; life loss: 0; source revision: 3; target: Spirit; target object: Spirit [c122]; target revision: 1
+  [second combat damage] Damage dealt: simple; Hallowed Priest [c70] — amount: 1; combat: True; last known: kind: CardLastKnownInformation; life loss: 0; source revision: 3; target: Spirit; target object: Spirit [c123]; target revision: 1
+  [second combat damage] simple decides ReplacementOrderRequest: 0.058 ms; observed options: 1; space size: unknown; success
+  [second combat damage] modular decides ReplacementOrderRequest: 0.029 ms; observed options: 1; space size: unknown; success
+  [second combat damage] modular decides ReplacementOrderRequest: 0.032 ms; observed options: 1; space size: unknown; success
+  [second combat damage] Card moved: simple; Hallowed Priest [c67] — card: Hallowed Priest [c67]; from: BATTLEFIELD; last known: kind: CardLastKnownInformation; previous controller: simple; to: GRAVEYARD
+  [second combat damage] Card moved: simple; Hallowed Priest [c70] — card: Hallowed Priest [c70]; from: BATTLEFIELD; last known: kind: CardLastKnownInformation; previous controller: simple; to: GRAVEYARD
+  [second combat damage] Card moved: modular; Spirit [c122] — card: Spirit [c122]; from: BATTLEFIELD; last known: kind: CardLastKnownInformation; previous controller: modular; to: GRAVEYARD
+  [second combat damage] Card moved: modular; Spirit [c123] — card: Spirit [c123]; from: BATTLEFIELD; last known: kind: CardLastKnownInformation; previous controller: modular; to: GRAVEYARD
+  [second combat damage] simple decides PriorityDecisionRequest: 0.087 ms; observed options: 0; space size: unknown; success
+  [second combat damage] modular decides PriorityDecisionRequest: 0.109 ms; observed options: 0; space size: unknown; success
+  [end combat] simple decides PriorityDecisionRequest: 0.090 ms; observed options: 0; space size: unknown; success
+  [end combat] modular decides PriorityDecisionRequest: 0.104 ms; observed options: 0; space size: unknown; success
+  [postcombat main] simple decides PriorityDecisionRequest: 0.073 ms; observed options: 0; space size: unknown; success
+  [postcombat main] modular decides PriorityDecisionRequest: 0.119 ms; observed options: 0; space size: unknown; success
+  [end step] simple decides PriorityDecisionRequest: 0.066 ms; observed options: 0; space size: unknown; success
+  [end step] modular decides PriorityDecisionRequest: 0.097 ms; observed options: 0; space size: unknown; success
+
+Turn 11
+  [upkeep] modular decides PriorityDecisionRequest: 0.101 ms; observed options: 0; space size: unknown; success
+  [upkeep] simple decides PriorityDecisionRequest: 0.063 ms; observed options: 0; space size: unknown; success
+  [draw] Card moved: modular; Charmed Stray [c1] — card: Charmed Stray [c1]; from: DECK; last known: kind: CardLastKnownInformation; previous controller: modular; to: HAND
+  [draw] Card drawn: modular; Charmed Stray [c1] — card: Charmed Stray [c1]; last known: kind: CardLastKnownInformation
+  [draw] Resolution: -; -; -; success: True
+  [draw] modular decides PriorityDecisionRequest: 0.143 ms; observed options: 0; space size: unknown; success
+  [draw] simple decides PriorityDecisionRequest: 0.112 ms; observed options: 0; space size: unknown; success
+  [precombat main] modular chooses policy_choice: candidate: 1; choice: ability: cast:Charmed Stray; cost targets: none; kind: action; payment: activate: c45; life: 0; mana: WHITE: 1; source: c1; targets: none; x: 0; fallback: -; score: 37.0
+  [precombat main] modular decides PriorityDecisionRequest: 3.611 ms; observed options: 2; space size: 2; success
+  [precombat main] Card tapped: modular; Plains [c45] — last known: kind: CardLastKnownInformation
+  [precombat main] Mana added: modular; Plains [c45] — amount: 1; last known: kind: CardLastKnownInformation; mana: WHITE
+  [precombat main] modular activates Plains [c45] — ability: mana_white; last known: kind: CardLastKnownInformation
+  [precombat main] Mana paid: modular; Charmed Stray [c1] — last known: kind: CardLastKnownInformation; payment: WHITE: 1
+  [precombat main] Card moved: modular; Charmed Stray [c1] — card: Charmed Stray [c1]; from: HAND; last known: kind: CardLastKnownInformation; previous controller: modular; to: STACK
+  [precombat main] modular casts Charmed Stray [c1] — ability: cast:Charmed Stray
+  [precombat main] modular decides PriorityDecisionRequest: 0.166 ms; observed options: 0; space size: unknown; success
+  [precombat main] simple decides PriorityDecisionRequest: 0.076 ms; observed options: 0; space size: unknown; success
+  [precombat main] Card moved: modular; Charmed Stray [c1] — card: Charmed Stray [c1]; from: STACK; last known: kind: CardLastKnownInformation; previous controller: modular; to: BATTLEFIELD
+  [precombat main] Trigger detected: modular; Charmed Stray [c1]; charmed_stray_etb
+  [precombat main] Trigger detected: modular; Impassioned Orator [c12]; impassioned_orator_etb
+  [precombat main] modular decides TriggerOrderRequest: 0.045 ms; observed options: 1; space size: unknown; success
+  [precombat main] modular chooses policy_choice: candidate: 0; choice: ability: charmed_stray_etb; kind: trigger; targets: none; fallback: -; score: 5.0
+  [precombat main] modular decides AbilityDecisionRequest: 0.104 ms; observed options: 1; space size: 1; success
+  [precombat main] modular chooses policy_choice: candidate: 0; choice: ability: impassioned_orator_etb; kind: trigger; targets: none; fallback: -; score: 5.0
+  [precombat main] modular decides AbilityDecisionRequest: 0.095 ms; observed options: 1; space size: 1; success
+  [precombat main] Resolution: modular; Charmed Stray [c1]; cast:Charmed Stray; success: True
+  [precombat main] modular decides PriorityDecisionRequest: 0.118 ms; observed options: 0; space size: unknown; success
+  [precombat main] simple decides PriorityDecisionRequest: 0.065 ms; observed options: 0; space size: unknown; success
+  [precombat main] Life gained: modular; Impassioned Orator [c12] — amount: 1; last known: kind: CardLastKnownInformation; player: modular
+  [precombat main] Trigger detected: modular; Hallowed Priest [c10]; hallowed_priest_life
+  [precombat main] modular decides TriggerOrderRequest: 0.032 ms; observed options: 1; space size: unknown; success
+  [precombat main] modular chooses policy_choice: candidate: 0; choice: ability: hallowed_priest_life; kind: trigger; targets: none; fallback: -; score: 5.0
+  [precombat main] modular decides AbilityDecisionRequest: 0.092 ms; observed options: 1; space size: 1; success
+  [precombat main] Resolution: modular; Impassioned Orator [c12]; impassioned_orator_etb; success: True
+  [precombat main] modular decides PriorityDecisionRequest: 0.110 ms; observed options: 0; space size: unknown; success
+  [precombat main] simple decides PriorityDecisionRequest: 0.071 ms; observed options: 0; space size: unknown; success
+  [precombat main] Counter placed: modular; Hallowed Priest [c10] — amount: 1; counter: PLUS_ONE; last known: kind: CardLastKnownInformation
+  [precombat main] Resolution: modular; Hallowed Priest [c10]; hallowed_priest_life; success: True
+  [precombat main] modular decides PriorityDecisionRequest: 0.211 ms; observed options: 0; space size: unknown; success
+  [precombat main] simple decides PriorityDecisionRequest: 0.108 ms; observed options: 0; space size: unknown; success
+  [precombat main] Resolution: modular; Charmed Stray [c1]; charmed_stray_etb; success: True
+  [precombat main] modular decides PriorityDecisionRequest: 2.162 ms; observed options: 1; space size: 1; success
+  [precombat main] simple decides PriorityDecisionRequest: 0.071 ms; observed options: 0; space size: unknown; success
+  [begin combat] modular decides PriorityDecisionRequest: 0.101 ms; observed options: 0; space size: unknown; success
+  [begin combat] simple decides PriorityDecisionRequest: 0.061 ms; observed options: 0; space size: unknown; success
+  [declare attackers] modular chooses policy_choice: candidate: 0; choice: attackers: c10; kind: attack; fallback: -; score: 6
+  [declare attackers] modular decides DeclareAttackersRequest: 0.797 ms; observed options: 3; space size: 3; success
+  [declare attackers] Card tapped: modular; Hallowed Priest [c10]
+  [declare attackers] modular attacks with Hallowed Priest [c10] — attacker: Hallowed Priest [c10]; defender: simple
+  [declare attackers] Attackers declared: modular; - — attackers: Hallowed Priest [c10]
+  [declare attackers] modular decides PriorityDecisionRequest: 0.133 ms; observed options: 0; space size: unknown; success
+  [declare attackers] simple decides PriorityDecisionRequest: 0.067 ms; observed options: 0; space size: unknown; success
+  [declare blockers] simple chooses block: blockers: Serra Angel [c80], Hallowed Priest [c10]
+  [declare blockers] simple decides DeclareBlockersRequest: 0.313 ms; observed options: 1; space size: unknown; success
+  [declare blockers] simple blocks with Serra Angel [c80] — attacker: Hallowed Priest [c10]; blocker: Serra Angel [c80]
+  [declare blockers] Attacker blocked: modular; Hallowed Priest [c10] — blockers: Serra Angel [c80]
+  [declare blockers] Blockers declared: simple; - — blockers: Serra Angel [c80], Hallowed Priest [c10]
+  [declare blockers] modular decides PriorityDecisionRequest: 0.101 ms; observed options: 0; space size: unknown; success
+  [declare blockers] simple decides PriorityDecisionRequest: 0.058 ms; observed options: 0; space size: unknown; success
+  [second combat damage] Damage dealt: simple; Serra Angel [c80] — amount: 4; combat: True; last known: kind: CardLastKnownInformation; life loss: 0; source revision: 5; target: Hallowed Priest; target object: Hallowed Priest [c10]; target revision: 3
+  [second combat damage] Damage dealt: modular; Hallowed Priest [c10] — amount: 6; combat: True; last known: kind: CardLastKnownInformation; life loss: 0; source revision: 3; target: Serra Angel; target object: Serra Angel [c80]; target revision: 5
+  [second combat damage] Card moved: simple; Serra Angel [c80] — card: Serra Angel [c80]; from: BATTLEFIELD; last known: kind: CardLastKnownInformation; previous controller: simple; to: GRAVEYARD
+  [second combat damage] modular decides PriorityDecisionRequest: 0.157 ms; observed options: 0; space size: unknown; success
+  [second combat damage] simple decides PriorityDecisionRequest: 0.073 ms; observed options: 0; space size: unknown; success
+  [end combat] modular decides PriorityDecisionRequest: 0.121 ms; observed options: 0; space size: unknown; success
+  [end combat] simple decides PriorityDecisionRequest: 0.079 ms; observed options: 0; space size: unknown; success
+  [postcombat main] modular decides PriorityDecisionRequest: 2.062 ms; observed options: 1; space size: 1; success
+  [postcombat main] simple decides PriorityDecisionRequest: 0.079 ms; observed options: 0; space size: unknown; success
+  [end step] modular decides PriorityDecisionRequest: 0.122 ms; observed options: 0; space size: unknown; success
+  [end step] simple decides PriorityDecisionRequest: 0.073 ms; observed options: 0; space size: unknown; success
+
+Turn 12
+  [upkeep] simple decides PriorityDecisionRequest: 0.070 ms; observed options: 0; space size: unknown; success
+  [upkeep] modular decides PriorityDecisionRequest: 0.091 ms; observed options: 0; space size: unknown; success
+  [draw] Card moved: simple; Confront the Assault [c90] — card: Confront the Assault [c90]; from: DECK; last known: kind: CardLastKnownInformation; previous controller: simple; to: HAND
+  [draw] Card drawn: simple; Confront the Assault [c90] — card: Confront the Assault [c90]; last known: kind: CardLastKnownInformation
+  [draw] Resolution: -; -; -; success: True
+  [draw] simple decides PriorityDecisionRequest: 0.092 ms; observed options: 0; space size: unknown; success
+  [draw] modular decides PriorityDecisionRequest: 0.092 ms; observed options: 0; space size: unknown; success
+  [precombat main] simple chooses land: source: Plains [c119]
+  [precombat main] simple decides PriorityDecisionRequest: 1.331 ms; observed options: 2; space size: unknown; success
+  [precombat main] Card moved: simple; Plains [c119] — card: Plains [c119]; from: HAND; last known: kind: CardLastKnownInformation; previous controller: simple; to: BATTLEFIELD
+  [precombat main] simple plays land Plains [c119] — lands played: 1; last known: kind: CardLastKnownInformation
+  [precombat main] Resolution: simple; Plains [c119]; play_land; success: True
+  [precombat main] simple decides PriorityDecisionRequest: 0.137 ms; observed options: 0; space size: unknown; success
+  [precombat main] modular decides PriorityDecisionRequest: 0.138 ms; observed options: 0; space size: unknown; success
+  [begin combat] simple decides PriorityDecisionRequest: 0.123 ms; observed options: 0; space size: unknown; success
+  [begin combat] modular decides PriorityDecisionRequest: 0.092 ms; observed options: 0; space size: unknown; success
+  [declare attackers] simple chooses attack: attackers: none
+  [declare attackers] simple decides DeclareAttackersRequest: 0.117 ms; observed options: 1; space size: unknown; success
+  [declare attackers] simple decides PriorityDecisionRequest: 0.096 ms; observed options: 0; space size: unknown; success
+  [declare attackers] modular decides PriorityDecisionRequest: 0.086 ms; observed options: 0; space size: unknown; success
+  [end combat] simple decides PriorityDecisionRequest: 0.086 ms; observed options: 0; space size: unknown; success
+  [end combat] modular decides PriorityDecisionRequest: 0.081 ms; observed options: 0; space size: unknown; success
+  [postcombat main] simple decides PriorityDecisionRequest: 0.083 ms; observed options: 0; space size: unknown; success
+  [postcombat main] modular decides PriorityDecisionRequest: 0.087 ms; observed options: 0; space size: unknown; success
+  [end step] simple decides PriorityDecisionRequest: 0.085 ms; observed options: 0; space size: unknown; success
+  [end step] modular decides PriorityDecisionRequest: 0.080 ms; observed options: 0; space size: unknown; success
+
+Turn 13
+  [upkeep] modular decides PriorityDecisionRequest: 0.105 ms; observed options: 0; space size: unknown; success
+  [upkeep] simple decides PriorityDecisionRequest: 0.099 ms; observed options: 0; space size: unknown; success
+  [draw] Card moved: modular; Leonin Warleader [c19] — card: Leonin Warleader [c19]; from: DECK; last known: kind: CardLastKnownInformation; previous controller: modular; to: HAND
+  [draw] Card drawn: modular; Leonin Warleader [c19] — card: Leonin Warleader [c19]; last known: kind: CardLastKnownInformation
+  [draw] Resolution: -; -; -; success: True
+  [draw] modular decides PriorityDecisionRequest: 0.114 ms; observed options: 0; space size: unknown; success
+  [draw] simple decides PriorityDecisionRequest: 0.089 ms; observed options: 0; space size: unknown; success
+  [precombat main] modular chooses policy_choice: candidate: 1; choice: ability: cast:Leonin Warleader; cost targets: none; kind: action; payment: activate: c45, c47, c53, c55; life: 0; mana: WHITE: 4; source: c19; targets: none; x: 0; fallback: -; score: 43.0
+  [precombat main] modular decides PriorityDecisionRequest: 3.468 ms; observed options: 2; space size: 2; success
+  [precombat main] Card tapped: modular; Plains [c45] — last known: kind: CardLastKnownInformation
+  [precombat main] Mana added: modular; Plains [c45] — amount: 1; last known: kind: CardLastKnownInformation; mana: WHITE
+  [precombat main] modular activates Plains [c45] — ability: mana_white; last known: kind: CardLastKnownInformation
+  [precombat main] Card tapped: modular; Plains [c47] — last known: kind: CardLastKnownInformation
+  [precombat main] Mana added: modular; Plains [c47] — amount: 1; last known: kind: CardLastKnownInformation; mana: WHITE
+  [precombat main] modular activates Plains [c47] — ability: mana_white; last known: kind: CardLastKnownInformation
+  [precombat main] Card tapped: modular; Plains [c53] — last known: kind: CardLastKnownInformation
+  [precombat main] Mana added: modular; Plains [c53] — amount: 1; last known: kind: CardLastKnownInformation; mana: WHITE
+  [precombat main] modular activates Plains [c53] — ability: mana_white; last known: kind: CardLastKnownInformation
+  [precombat main] Card tapped: modular; Plains [c55] — last known: kind: CardLastKnownInformation
+  [precombat main] Mana added: modular; Plains [c55] — amount: 1; last known: kind: CardLastKnownInformation; mana: WHITE
+  [precombat main] modular activates Plains [c55] — ability: mana_white; last known: kind: CardLastKnownInformation
+  [precombat main] Mana paid: modular; Leonin Warleader [c19] — last known: kind: CardLastKnownInformation; payment: WHITE: 4
+  [precombat main] Card moved: modular; Leonin Warleader [c19] — card: Leonin Warleader [c19]; from: HAND; last known: kind: CardLastKnownInformation; previous controller: modular; to: STACK
+  [precombat main] modular casts Leonin Warleader [c19] — ability: cast:Leonin Warleader
+  [precombat main] modular decides PriorityDecisionRequest: 0.203 ms; observed options: 0; space size: unknown; success
+  [precombat main] simple decides PriorityDecisionRequest: 0.171 ms; observed options: 0; space size: unknown; success
+  [precombat main] Card moved: modular; Leonin Warleader [c19] — card: Leonin Warleader [c19]; from: STACK; last known: kind: CardLastKnownInformation; previous controller: modular; to: BATTLEFIELD
+  [precombat main] Trigger detected: modular; Impassioned Orator [c12]; impassioned_orator_etb
+  [precombat main] modular decides TriggerOrderRequest: 0.045 ms; observed options: 1; space size: unknown; success
+  [precombat main] modular chooses policy_choice: candidate: 0; choice: ability: impassioned_orator_etb; kind: trigger; targets: none; fallback: -; score: 5.0
+  [precombat main] modular decides AbilityDecisionRequest: 0.107 ms; observed options: 1; space size: 1; success
+  [precombat main] Resolution: modular; Leonin Warleader [c19]; cast:Leonin Warleader; success: True
+  [precombat main] modular decides PriorityDecisionRequest: 0.112 ms; observed options: 0; space size: unknown; success
+  [precombat main] simple decides PriorityDecisionRequest: 0.093 ms; observed options: 0; space size: unknown; success
+  [precombat main] Life gained: modular; Impassioned Orator [c12] — amount: 1; last known: kind: CardLastKnownInformation; player: modular
+  [precombat main] Trigger detected: modular; Hallowed Priest [c10]; hallowed_priest_life
+  [precombat main] modular decides TriggerOrderRequest: 0.028 ms; observed options: 1; space size: unknown; success
+  [precombat main] modular chooses policy_choice: candidate: 0; choice: ability: hallowed_priest_life; kind: trigger; targets: none; fallback: -; score: 5.0
+  [precombat main] modular decides AbilityDecisionRequest: 0.087 ms; observed options: 1; space size: 1; success
+  [precombat main] Resolution: modular; Impassioned Orator [c12]; impassioned_orator_etb; success: True
+  [precombat main] modular decides PriorityDecisionRequest: 0.101 ms; observed options: 0; space size: unknown; success
+  [precombat main] simple decides PriorityDecisionRequest: 0.090 ms; observed options: 0; space size: unknown; success
+  [precombat main] Counter placed: modular; Hallowed Priest [c10] — amount: 1; counter: PLUS_ONE; last known: kind: CardLastKnownInformation
+  [precombat main] Resolution: modular; Hallowed Priest [c10]; hallowed_priest_life; success: True
+  [precombat main] modular decides PriorityDecisionRequest: 1.927 ms; observed options: 1; space size: 1; success
+  [precombat main] simple decides PriorityDecisionRequest: 0.099 ms; observed options: 0; space size: unknown; success
+  [begin combat] modular decides PriorityDecisionRequest: 0.093 ms; observed options: 0; space size: unknown; success
+  [begin combat] simple decides PriorityDecisionRequest: 0.089 ms; observed options: 0; space size: unknown; success
+  [declare attackers] modular chooses policy_choice: candidate: 0; choice: attackers: c1, c6, c10, c121; kind: attack; fallback: -; score: 10
+  [declare attackers] modular decides DeclareAttackersRequest: 0.797 ms; observed options: 3; space size: 3; success
+  [declare attackers] Card tapped: modular; Charmed Stray [c1]
+  [declare attackers] modular attacks with Charmed Stray [c1] — attacker: Charmed Stray [c1]; defender: simple
+  [declare attackers] Card tapped: modular; Fencing Ace [c6]
+  [declare attackers] modular attacks with Fencing Ace [c6] — attacker: Fencing Ace [c6]; defender: simple
+  [declare attackers] Card tapped: modular; Hallowed Priest [c10]
+  [declare attackers] modular attacks with Hallowed Priest [c10] — attacker: Hallowed Priest [c10]; defender: simple
+  [declare attackers] Card tapped: modular; Spirit [c121]
+  [declare attackers] modular attacks with Spirit [c121] — attacker: Spirit [c121]; defender: simple
+  [declare attackers] Attackers declared: modular; - — attackers: Charmed Stray [c1], Fencing Ace [c6], Hallowed Priest [c10], Spirit [c121]
+  [declare attackers] modular decides PriorityDecisionRequest: 0.116 ms; observed options: 0; space size: unknown; success
+  [declare attackers] simple chooses action: ability: cast:Confront the Assault; source: Confront the Assault [c90]; targets: none
+  [declare attackers] simple decides PriorityDecisionRequest: 2.456 ms; observed options: 2; space size: 2; success
+  [declare attackers] Card tapped: simple; Plains [c99] — last known: kind: CardLastKnownInformation
+  [declare attackers] Mana added: simple; Plains [c99] — amount: 1; last known: kind: CardLastKnownInformation; mana: WHITE
+  [declare attackers] simple activates Plains [c99] — ability: mana_white; last known: kind: CardLastKnownInformation
+  [declare attackers] Card tapped: simple; Plains [c105] — last known: kind: CardLastKnownInformation
+  [declare attackers] Mana added: simple; Plains [c105] — amount: 1; last known: kind: CardLastKnownInformation; mana: WHITE
+  [declare attackers] simple activates Plains [c105] — ability: mana_white; last known: kind: CardLastKnownInformation
+  [declare attackers] Card tapped: simple; Plains [c107] — last known: kind: CardLastKnownInformation
+  [declare attackers] Mana added: simple; Plains [c107] — amount: 1; last known: kind: CardLastKnownInformation; mana: WHITE
+  [declare attackers] simple activates Plains [c107] — ability: mana_white; last known: kind: CardLastKnownInformation
+  [declare attackers] Card tapped: simple; Plains [c108] — last known: kind: CardLastKnownInformation
+  [declare attackers] Mana added: simple; Plains [c108] — amount: 1; last known: kind: CardLastKnownInformation; mana: WHITE
+  [declare attackers] simple activates Plains [c108] — ability: mana_white; last known: kind: CardLastKnownInformation
+  [declare attackers] Card tapped: simple; Plains [c112] — last known: kind: CardLastKnownInformation
+  [declare attackers] Mana added: simple; Plains [c112] — amount: 1; last known: kind: CardLastKnownInformation; mana: WHITE
+  [declare attackers] simple activates Plains [c112] — ability: mana_white; last known: kind: CardLastKnownInformation
+  [declare attackers] Mana paid: simple; Confront the Assault [c90] — last known: kind: CardLastKnownInformation; payment: WHITE: 5
+  [declare attackers] Card moved: simple; Confront the Assault [c90] — card: Confront the Assault [c90]; from: HAND; last known: kind: CardLastKnownInformation; previous controller: simple; to: STACK
+  [declare attackers] simple casts Confront the Assault [c90] — ability: cast:Confront the Assault
+  [declare attackers] simple decides PriorityDecisionRequest: 0.133 ms; observed options: 0; space size: unknown; success
+  [declare attackers] modular decides PriorityDecisionRequest: 0.171 ms; observed options: 0; space size: unknown; success
+  [declare attackers] simple decides ReplacementOrderRequest: 0.054 ms; observed options: 1; space size: unknown; success
+  [declare attackers] Card moved: simple; Spirit [c124] — card: Spirit [c124]; created token: True; from: -; previous controller: simple; to: BATTLEFIELD
+  [declare attackers] Card moved: simple; Spirit [c125] — card: Spirit [c125]; created token: True; from: -; previous controller: simple; to: BATTLEFIELD
+  [declare attackers] Card moved: simple; Spirit [c126] — card: Spirit [c126]; created token: True; from: -; previous controller: simple; to: BATTLEFIELD
+  [declare attackers] Card moved: simple; Confront the Assault [c90] — card: Confront the Assault [c90]; from: STACK; last known: kind: CardLastKnownInformation; previous controller: simple; to: GRAVEYARD
+  [declare attackers] Resolution: simple; Confront the Assault [c90]; cast:Confront the Assault; success: True
+  [declare attackers] modular decides PriorityDecisionRequest: 0.158 ms; observed options: 0; space size: unknown; success
+  [declare attackers] simple decides PriorityDecisionRequest: 0.137 ms; observed options: 0; space size: unknown; success
+  [declare blockers] simple chooses block: blockers: Spirit [c124], Hallowed Priest [c10], Spirit [c125], Charmed Stray [c1], Spirit [c126], Fencing Ace [c6]
+  [declare blockers] simple decides DeclareBlockersRequest: 1.176 ms; observed options: 1; space size: unknown; success
+  [declare blockers] simple blocks with Spirit [c124] — attacker: Hallowed Priest [c10]; blocker: Spirit [c124]
+  [declare blockers] simple blocks with Spirit [c125] — attacker: Charmed Stray [c1]; blocker: Spirit [c125]
+  [declare blockers] simple blocks with Spirit [c126] — attacker: Fencing Ace [c6]; blocker: Spirit [c126]
+  [declare blockers] Attacker blocked: modular; Charmed Stray [c1] — blockers: Spirit [c125]
+  [declare blockers] Attacker blocked: modular; Fencing Ace [c6] — blockers: Spirit [c126]
+  [declare blockers] Attacker blocked: modular; Hallowed Priest [c10] — blockers: Spirit [c124]
+  [declare blockers] Blockers declared: simple; - — blockers: Spirit [c124], Hallowed Priest [c10], Spirit [c125], Charmed Stray [c1], Spirit [c126], Fencing Ace [c6]
+  [declare blockers] modular decides PriorityDecisionRequest: 0.152 ms; observed options: 0; space size: unknown; success
+  [declare blockers] simple decides PriorityDecisionRequest: 0.083 ms; observed options: 0; space size: unknown; success
+  [first combat damage] Damage dealt: modular; Fencing Ace [c6] — amount: 1; combat: True; last known: kind: CardLastKnownInformation; life loss: 0; source revision: 3; target: Spirit; target object: Spirit [c126]; target revision: 1
+  [first combat damage] Card moved: simple; Spirit [c126] — card: Spirit [c126]; from: BATTLEFIELD; last known: kind: CardLastKnownInformation; previous controller: simple; to: GRAVEYARD
+  [first combat damage] modular decides PriorityDecisionRequest: 0.125 ms; observed options: 0; space size: unknown; success
+  [first combat damage] simple decides PriorityDecisionRequest: 0.075 ms; observed options: 0; space size: unknown; success
+  [second combat damage] modular decides ReplacementOrderRequest: 0.047 ms; observed options: 1; space size: unknown; success
+  [second combat damage] simple decides ReplacementOrderRequest: 0.025 ms; observed options: 1; space size: unknown; success
+  [second combat damage] Damage dealt: simple; Spirit [c124] — amount: 1; combat: True; last known: kind: CardLastKnownInformation; life loss: 0; source revision: 1; target: Hallowed Priest; target object: Hallowed Priest [c10]; target revision: 3
+  [second combat damage] Damage dealt: simple; Spirit [c125] — amount: 1; combat: True; last known: kind: CardLastKnownInformation; life loss: 0; source revision: 1; target: Charmed Stray; target object: Charmed Stray [c1]; target revision: 3
+  [second combat damage] Damage dealt: modular; Charmed Stray [c1] — amount: 1; combat: True; last known: kind: CardLastKnownInformation; life loss: 0; source revision: 3; target: Spirit; target object: Spirit [c125]; target revision: 1
+  [second combat damage] Damage dealt: modular; Hallowed Priest [c10] — amount: 7; combat: True; last known: kind: CardLastKnownInformation; life loss: 0; source revision: 3; target: Spirit; target object: Spirit [c124]; target revision: 1
+  [second combat damage] Damage dealt: modular; Spirit [c121] — amount: 1; combat: True; last known: kind: CardLastKnownInformation; life loss: 1; source revision: 1; target: simple; target object: simple; target revision: -
+  [second combat damage] Life gained: modular; Charmed Stray [c1] — amount: 1; last known: kind: CardLastKnownInformation; player: modular
+  [second combat damage] Trigger detected: modular; Hallowed Priest [c10]; hallowed_priest_life
+  [second combat damage] simple decides ReplacementOrderRequest: 0.030 ms; observed options: 1; space size: unknown; success
+  [second combat damage] simple decides ReplacementOrderRequest: 0.028 ms; observed options: 1; space size: unknown; success
+  [second combat damage] Card moved: modular; Charmed Stray [c1] — card: Charmed Stray [c1]; from: BATTLEFIELD; last known: kind: CardLastKnownInformation; previous controller: modular; to: GRAVEYARD
+  [second combat damage] Card moved: simple; Spirit [c125] — card: Spirit [c125]; from: BATTLEFIELD; last known: kind: CardLastKnownInformation; previous controller: simple; to: GRAVEYARD
+  [second combat damage] Card moved: simple; Spirit [c124] — card: Spirit [c124]; from: BATTLEFIELD; last known: kind: CardLastKnownInformation; previous controller: simple; to: GRAVEYARD
+  [second combat damage] modular decides TriggerOrderRequest: 0.028 ms; observed options: 1; space size: unknown; success
+  [second combat damage] modular chooses policy_choice: candidate: 0; choice: ability: hallowed_priest_life; kind: trigger; targets: none; fallback: -; score: 5.0
+  [second combat damage] modular decides AbilityDecisionRequest: 0.095 ms; observed options: 1; space size: 1; success
+  [second combat damage] modular decides PriorityDecisionRequest: 0.100 ms; observed options: 0; space size: unknown; success
+  [second combat damage] simple decides PriorityDecisionRequest: 0.060 ms; observed options: 0; space size: unknown; success
+  [second combat damage] Counter placed: modular; Hallowed Priest [c10] — amount: 1; counter: PLUS_ONE; last known: kind: CardLastKnownInformation
+  [second combat damage] Resolution: modular; Hallowed Priest [c10]; hallowed_priest_life; success: True
+  [second combat damage] modular decides PriorityDecisionRequest: 0.118 ms; observed options: 0; space size: unknown; success
+  [second combat damage] simple decides PriorityDecisionRequest: 0.069 ms; observed options: 0; space size: unknown; success
+  [end combat] modular decides PriorityDecisionRequest: 0.094 ms; observed options: 0; space size: unknown; success
+  [end combat] simple decides PriorityDecisionRequest: 0.058 ms; observed options: 0; space size: unknown; success
+  [postcombat main] modular decides PriorityDecisionRequest: 1.795 ms; observed options: 1; space size: 1; success
+  [postcombat main] simple decides PriorityDecisionRequest: 0.062 ms; observed options: 0; space size: unknown; success
+  [end step] modular decides PriorityDecisionRequest: 0.086 ms; observed options: 0; space size: unknown; success
+  [end step] simple decides PriorityDecisionRequest: 0.056 ms; observed options: 0; space size: unknown; success
+
+Turn 14
+  [upkeep] simple decides PriorityDecisionRequest: 0.064 ms; observed options: 0; space size: unknown; success
+  [upkeep] modular decides PriorityDecisionRequest: 0.081 ms; observed options: 0; space size: unknown; success
+  [draw] Card moved: simple; Plains [c97] — card: Plains [c97]; from: DECK; last known: kind: CardLastKnownInformation; previous controller: simple; to: HAND
+  [draw] Card drawn: simple; Plains [c97] — card: Plains [c97]; last known: kind: CardLastKnownInformation
+  [draw] Resolution: -; -; -; success: True
+  [draw] simple decides PriorityDecisionRequest: 0.077 ms; observed options: 0; space size: unknown; success
+  [draw] modular decides PriorityDecisionRequest: 0.085 ms; observed options: 0; space size: unknown; success
+  [precombat main] simple chooses land: source: Plains [c97]
+  [precombat main] simple decides PriorityDecisionRequest: 0.818 ms; observed options: 2; space size: unknown; success
+  [precombat main] Card moved: simple; Plains [c97] — card: Plains [c97]; from: HAND; last known: kind: CardLastKnownInformation; previous controller: simple; to: BATTLEFIELD
+  [precombat main] simple plays land Plains [c97] — lands played: 1; last known: kind: CardLastKnownInformation
+  [precombat main] Resolution: simple; Plains [c97]; play_land; success: True
+  [precombat main] simple decides PriorityDecisionRequest: 0.065 ms; observed options: 0; space size: unknown; success
+  [precombat main] modular decides PriorityDecisionRequest: 0.098 ms; observed options: 0; space size: unknown; success
+  [begin combat] simple decides PriorityDecisionRequest: 0.060 ms; observed options: 0; space size: unknown; success
+  [begin combat] modular decides PriorityDecisionRequest: 0.080 ms; observed options: 0; space size: unknown; success
+  [declare attackers] simple chooses attack: attackers: none
+  [declare attackers] simple decides DeclareAttackersRequest: 0.115 ms; observed options: 1; space size: unknown; success
+  [declare attackers] simple decides PriorityDecisionRequest: 0.061 ms; observed options: 0; space size: unknown; success
+  [declare attackers] modular decides PriorityDecisionRequest: 0.091 ms; observed options: 0; space size: unknown; success
+  [end combat] simple decides PriorityDecisionRequest: 0.059 ms; observed options: 0; space size: unknown; success
+  [end combat] modular decides PriorityDecisionRequest: 0.080 ms; observed options: 0; space size: unknown; success
+  [postcombat main] simple decides PriorityDecisionRequest: 0.059 ms; observed options: 0; space size: unknown; success
+  [postcombat main] modular decides PriorityDecisionRequest: 0.079 ms; observed options: 0; space size: unknown; success
+  [end step] simple decides PriorityDecisionRequest: 0.092 ms; observed options: 0; space size: unknown; success
+  [end step] modular decides PriorityDecisionRequest: 0.100 ms; observed options: 0; space size: unknown; success
+
+Turn 15
+  [upkeep] modular decides PriorityDecisionRequest: 0.096 ms; observed options: 0; space size: unknown; success
+  [upkeep] simple decides PriorityDecisionRequest: 0.059 ms; observed options: 0; space size: unknown; success
+  [draw] Card moved: modular; Plains [c37] — card: Plains [c37]; from: DECK; last known: kind: CardLastKnownInformation; previous controller: modular; to: HAND
+  [draw] Card drawn: modular; Plains [c37] — card: Plains [c37]; last known: kind: CardLastKnownInformation
+  [draw] Resolution: -; -; -; success: True
+  [draw] modular decides PriorityDecisionRequest: 0.091 ms; observed options: 0; space size: unknown; success
+  [draw] simple decides PriorityDecisionRequest: 0.062 ms; observed options: 0; space size: unknown; success
+  [precombat main] modular chooses policy_choice: candidate: 1; choice: kind: land; source: c37; fallback: -; score: 100
+  [precombat main] modular decides PriorityDecisionRequest: 1.980 ms; observed options: 2; space size: 2; success
+  [precombat main] Card moved: modular; Plains [c37] — card: Plains [c37]; from: HAND; last known: kind: CardLastKnownInformation; previous controller: modular; to: BATTLEFIELD
+  [precombat main] modular plays land Plains [c37] — lands played: 1; last known: kind: CardLastKnownInformation
+  [precombat main] Resolution: modular; Plains [c37]; play_land; success: True
+  [precombat main] modular decides PriorityDecisionRequest: 0.948 ms; observed options: 1; space size: 1; success
+  [precombat main] simple decides PriorityDecisionRequest: 0.062 ms; observed options: 0; space size: unknown; success
+  [begin combat] modular decides PriorityDecisionRequest: 0.088 ms; observed options: 0; space size: unknown; success
+  [begin combat] simple decides PriorityDecisionRequest: 0.056 ms; observed options: 0; space size: unknown; success
+  [declare attackers] modular chooses policy_choice: candidate: 0; choice: attackers: c6, c10, c19, c121; kind: attack; fallback: -; score: 14
+  [declare attackers] modular decides DeclareAttackersRequest: 0.734 ms; observed options: 3; space size: 3; success
+  [declare attackers] Card tapped: modular; Fencing Ace [c6]
+  [declare attackers] modular attacks with Fencing Ace [c6] — attacker: Fencing Ace [c6]; defender: simple
+  [declare attackers] Card tapped: modular; Hallowed Priest [c10]
+  [declare attackers] modular attacks with Hallowed Priest [c10] — attacker: Hallowed Priest [c10]; defender: simple
+  [declare attackers] Card tapped: modular; Leonin Warleader [c19]
+  [declare attackers] modular attacks with Leonin Warleader [c19] — attacker: Leonin Warleader [c19]; defender: simple
+  [declare attackers] Card tapped: modular; Spirit [c121]
+  [declare attackers] modular attacks with Spirit [c121] — attacker: Spirit [c121]; defender: simple
+  [declare attackers] Attackers declared: modular; - — attackers: Fencing Ace [c6], Hallowed Priest [c10], Leonin Warleader [c19], Spirit [c121]
+  [declare attackers] Trigger detected: modular; Leonin Warleader [c19]; warleader_attack
+  [declare attackers] modular decides TriggerOrderRequest: 0.031 ms; observed options: 1; space size: unknown; success
+  [declare attackers] modular chooses policy_choice: candidate: 0; choice: ability: warleader_attack; kind: trigger; targets: none; fallback: -; score: 5.0
+  [declare attackers] modular decides AbilityDecisionRequest: 0.086 ms; observed options: 1; space size: 1; success
+  [declare attackers] modular decides PriorityDecisionRequest: 0.092 ms; observed options: 0; space size: unknown; success
+  [declare attackers] simple decides PriorityDecisionRequest: 0.073 ms; observed options: 0; space size: unknown; success
+  [declare attackers] modular decides ReplacementOrderRequest: 0.039 ms; observed options: 1; space size: unknown; success
+  [declare attackers] Card moved: modular; Cat [c127] — card: Cat [c127]; created token: True; from: -; previous controller: modular; to: BATTLEFIELD
+  [declare attackers] Card moved: modular; Cat [c128] — card: Cat [c128]; created token: True; from: -; previous controller: modular; to: BATTLEFIELD
+  [declare attackers] Trigger detected: modular; Impassioned Orator [c12]; impassioned_orator_etb
+  [declare attackers] Trigger detected: modular; Impassioned Orator [c12]; impassioned_orator_etb
+  [declare attackers] modular decides TriggerOrderRequest: 0.032 ms; observed options: 1; space size: unknown; success
+  [declare attackers] modular chooses policy_choice: candidate: 0; choice: ability: impassioned_orator_etb; kind: trigger; targets: none; fallback: -; score: 5.0
+  [declare attackers] modular decides AbilityDecisionRequest: 0.094 ms; observed options: 1; space size: 1; success
+  [declare attackers] modular chooses policy_choice: candidate: 0; choice: ability: impassioned_orator_etb; kind: trigger; targets: none; fallback: -; score: 5.0
+  [declare attackers] modular decides AbilityDecisionRequest: 0.076 ms; observed options: 1; space size: 1; success
+  [declare attackers] Resolution: modular; Leonin Warleader [c19]; warleader_attack; success: True
+  [declare attackers] modular decides PriorityDecisionRequest: 0.106 ms; observed options: 0; space size: unknown; success
+  [declare attackers] simple decides PriorityDecisionRequest: 0.059 ms; observed options: 0; space size: unknown; success
+  [declare attackers] Life gained: modular; Impassioned Orator [c12] — amount: 1; last known: kind: CardLastKnownInformation; player: modular
+  [declare attackers] Trigger detected: modular; Hallowed Priest [c10]; hallowed_priest_life
+  [declare attackers] modular decides TriggerOrderRequest: 0.026 ms; observed options: 1; space size: unknown; success
+  [declare attackers] modular chooses policy_choice: candidate: 0; choice: ability: hallowed_priest_life; kind: trigger; targets: none; fallback: -; score: 5.0
+  [declare attackers] modular decides AbilityDecisionRequest: 0.086 ms; observed options: 1; space size: 1; success
+  [declare attackers] Resolution: modular; Impassioned Orator [c12]; impassioned_orator_etb; success: True
+  [declare attackers] modular decides PriorityDecisionRequest: 0.091 ms; observed options: 0; space size: unknown; success
+  [declare attackers] simple decides PriorityDecisionRequest: 0.061 ms; observed options: 0; space size: unknown; success
+  [declare attackers] Counter placed: modular; Hallowed Priest [c10] — amount: 1; counter: PLUS_ONE; last known: kind: CardLastKnownInformation
+  [declare attackers] Resolution: modular; Hallowed Priest [c10]; hallowed_priest_life; success: True
+  [declare attackers] modular decides PriorityDecisionRequest: 0.125 ms; observed options: 0; space size: unknown; success
+  [declare attackers] simple decides PriorityDecisionRequest: 0.077 ms; observed options: 0; space size: unknown; success
+  [declare attackers] Life gained: modular; Impassioned Orator [c12] — amount: 1; last known: kind: CardLastKnownInformation; player: modular
+  [declare attackers] Trigger detected: modular; Hallowed Priest [c10]; hallowed_priest_life
+  [declare attackers] modular decides TriggerOrderRequest: 0.033 ms; observed options: 1; space size: unknown; success
+  [declare attackers] modular chooses policy_choice: candidate: 0; choice: ability: hallowed_priest_life; kind: trigger; targets: none; fallback: -; score: 5.0
+  [declare attackers] modular decides AbilityDecisionRequest: 0.083 ms; observed options: 1; space size: 1; success
+  [declare attackers] Resolution: modular; Impassioned Orator [c12]; impassioned_orator_etb; success: True
+  [declare attackers] modular decides PriorityDecisionRequest: 0.089 ms; observed options: 0; space size: unknown; success
+  [declare attackers] simple decides PriorityDecisionRequest: 0.056 ms; observed options: 0; space size: unknown; success
+  [declare attackers] Counter placed: modular; Hallowed Priest [c10] — amount: 1; counter: PLUS_ONE; last known: kind: CardLastKnownInformation
+  [declare attackers] Resolution: modular; Hallowed Priest [c10]; hallowed_priest_life; success: True
+  [declare attackers] modular decides PriorityDecisionRequest: 0.085 ms; observed options: 0; space size: unknown; success
+  [declare attackers] simple decides PriorityDecisionRequest: 0.057 ms; observed options: 0; space size: unknown; success
+  [declare blockers] simple chooses block: blockers: none
+  [declare blockers] simple decides DeclareBlockersRequest: 0.568 ms; observed options: 1; space size: unknown; success
+  [declare blockers] modular decides PriorityDecisionRequest: 0.084 ms; observed options: 0; space size: unknown; success
+  [declare blockers] simple decides PriorityDecisionRequest: 0.072 ms; observed options: 0; space size: unknown; success
+  [first combat damage] Damage dealt: modular; Fencing Ace [c6] — amount: 1; combat: True; last known: kind: CardLastKnownInformation; life loss: 1; source revision: 3; target: simple; target object: simple; target revision: -
+  [first combat damage] modular decides PriorityDecisionRequest: 0.093 ms; observed options: 0; space size: unknown; success
+  [first combat damage] simple decides PriorityDecisionRequest: 0.057 ms; observed options: 0; space size: unknown; success
+  [second combat damage] simple decides ReplacementOrderRequest: 0.033 ms; observed options: 1; space size: unknown; success
+  [second combat damage] Damage dealt: modular; Fencing Ace [c6] — amount: 1; combat: True; last known: kind: CardLastKnownInformation; life loss: 1; source revision: 3; target: simple; target object: simple; target revision: -
+  [second combat damage] Damage dealt: modular; Hallowed Priest [c10] — amount: 10; combat: True; last known: kind: CardLastKnownInformation; life loss: 10; source revision: 3; target: simple; target object: simple; target revision: -
+  [second combat damage] Damage dealt: modular; Leonin Warleader [c19] — amount: 4; combat: True; last known: kind: CardLastKnownInformation; life loss: 4; source revision: 3; target: simple; target object: simple; target revision: -
+  [second combat damage] Damage dealt: modular; Spirit [c121] — amount: 1; combat: True; last known: kind: CardLastKnownInformation; life loss: 1; source revision: 1; target: simple; target object: simple; target revision: -
+  [second combat damage] Damage dealt: modular; Cat [c127] — amount: 1; combat: True; last known: kind: CardLastKnownInformation; life loss: 1; source revision: 1; target: simple; target object: simple; target revision: -
+  [second combat damage] Damage dealt: modular; Cat [c128] — amount: 1; combat: True; last known: kind: CardLastKnownInformation; life loss: 1; source revision: 1; target: simple; target object: simple; target revision: -
+  [second combat damage] Life gained: modular; Cat [c127] — amount: 1; last known: kind: CardLastKnownInformation; player: modular
+  [second combat damage] Life gained: modular; Cat [c128] — amount: 1; last known: kind: CardLastKnownInformation; player: modular
+  [second combat damage] Trigger detected: modular; Hallowed Priest [c10]; hallowed_priest_life
+  [second combat damage] Trigger detected: modular; Hallowed Priest [c10]; hallowed_priest_life
+  [second combat damage] modular decides TriggerOrderRequest: 0.027 ms; observed options: 1; space size: unknown; success
+  [second combat damage] modular chooses policy_choice: candidate: 0; choice: ability: hallowed_priest_life; kind: trigger; targets: none; fallback: -; score: 5.0
+  [second combat damage] modular decides AbilityDecisionRequest: 0.086 ms; observed options: 1; space size: 1; success
+  [second combat damage] modular chooses policy_choice: candidate: 0; choice: ability: hallowed_priest_life; kind: trigger; targets: none; fallback: -; score: 5.0
+  [second combat damage] modular decides AbilityDecisionRequest: 0.076 ms; observed options: 1; space size: 1; success
+  [second combat damage] modular decides PriorityDecisionRequest: 0.090 ms; observed options: 0; space size: unknown; success
+  [second combat damage] simple decides PriorityDecisionRequest: 0.055 ms; observed options: 0; space size: unknown; success
+  [second combat damage] Counter placed: modular; Hallowed Priest [c10] — amount: 1; counter: PLUS_ONE; last known: kind: CardLastKnownInformation
+  [second combat damage] Resolution: modular; Hallowed Priest [c10]; hallowed_priest_life; success: True
+  [second combat damage] modular decides PriorityDecisionRequest: 0.092 ms; observed options: 0; space size: unknown; success
+  [second combat damage] simple decides PriorityDecisionRequest: 0.056 ms; observed options: 0; space size: unknown; success
+  [second combat damage] Counter placed: modular; Hallowed Priest [c10] — amount: 1; counter: PLUS_ONE; last known: kind: CardLastKnownInformation
+  [second combat damage] Resolution: modular; Hallowed Priest [c10]; hallowed_priest_life; success: True
+  [second combat damage] modular decides PriorityDecisionRequest: 0.084 ms; observed options: 0; space size: unknown; success
+  [second combat damage] simple decides PriorityDecisionRequest: 0.056 ms; observed options: 0; space size: unknown; success
+  [end combat] modular decides PriorityDecisionRequest: 0.089 ms; observed options: 0; space size: unknown; success
+  [end combat] simple decides PriorityDecisionRequest: 0.056 ms; observed options: 0; space size: unknown; success
+  [postcombat main] modular decides PriorityDecisionRequest: 0.935 ms; observed options: 1; space size: 1; success
+  [postcombat main] simple decides PriorityDecisionRequest: 0.061 ms; observed options: 0; space size: unknown; success
+  [end step] modular decides PriorityDecisionRequest: 0.096 ms; observed options: 0; space size: unknown; success
+  [end step] simple decides PriorityDecisionRequest: 0.059 ms; observed options: 0; space size: unknown; success
+
+Turn 16
+  [upkeep] simple decides PriorityDecisionRequest: 0.060 ms; observed options: 0; space size: unknown; success
+  [upkeep] modular decides PriorityDecisionRequest: 0.083 ms; observed options: 0; space size: unknown; success
+  [draw] Card moved: simple; Plains [c115] — card: Plains [c115]; from: DECK; last known: kind: CardLastKnownInformation; previous controller: simple; to: HAND
+  [draw] Card drawn: simple; Plains [c115] — card: Plains [c115]; last known: kind: CardLastKnownInformation
+  [draw] Resolution: -; -; -; success: True
+  [draw] simple decides PriorityDecisionRequest: 0.068 ms; observed options: 0; space size: unknown; success
+  [draw] modular decides PriorityDecisionRequest: 0.082 ms; observed options: 0; space size: unknown; success
+  [precombat main] simple chooses land: source: Plains [c115]
+  [precombat main] simple decides PriorityDecisionRequest: 1.164 ms; observed options: 2; space size: unknown; success
+  [precombat main] Card moved: simple; Plains [c115] — card: Plains [c115]; from: HAND; last known: kind: CardLastKnownInformation; previous controller: simple; to: BATTLEFIELD
+  [precombat main] simple plays land Plains [c115] — lands played: 1; last known: kind: CardLastKnownInformation
+  [precombat main] Resolution: simple; Plains [c115]; play_land; success: True
+  [precombat main] simple decides PriorityDecisionRequest: 0.066 ms; observed options: 0; space size: unknown; success
+  [precombat main] modular decides PriorityDecisionRequest: 0.090 ms; observed options: 0; space size: unknown; success
+  [begin combat] simple decides PriorityDecisionRequest: 0.062 ms; observed options: 0; space size: unknown; success
+  [begin combat] modular decides PriorityDecisionRequest: 0.080 ms; observed options: 0; space size: unknown; success
+  [declare attackers] simple chooses attack: attackers: none
+  [declare attackers] simple decides DeclareAttackersRequest: 0.112 ms; observed options: 1; space size: unknown; success
+  [declare attackers] simple decides PriorityDecisionRequest: 0.066 ms; observed options: 0; space size: unknown; success
+  [declare attackers] modular decides PriorityDecisionRequest: 0.084 ms; observed options: 0; space size: unknown; success
+  [end combat] simple decides PriorityDecisionRequest: 0.073 ms; observed options: 0; space size: unknown; success
+  [end combat] modular decides PriorityDecisionRequest: 0.081 ms; observed options: 0; space size: unknown; success
+  [postcombat main] simple decides PriorityDecisionRequest: 0.059 ms; observed options: 0; space size: unknown; success
+  [postcombat main] modular decides PriorityDecisionRequest: 0.106 ms; observed options: 0; space size: unknown; success
+  [end step] simple decides PriorityDecisionRequest: 0.057 ms; observed options: 0; space size: unknown; success
+  [end step] modular decides PriorityDecisionRequest: 0.076 ms; observed options: 0; space size: unknown; success
+
+Turn 17
+  [upkeep] modular decides PriorityDecisionRequest: 0.083 ms; observed options: 0; space size: unknown; success
+  [upkeep] simple decides PriorityDecisionRequest: 0.067 ms; observed options: 0; space size: unknown; success
+  [draw] Card moved: modular; Plains [c46] — card: Plains [c46]; from: DECK; last known: kind: CardLastKnownInformation; previous controller: modular; to: HAND
+  [draw] Card drawn: modular; Plains [c46] — card: Plains [c46]; last known: kind: CardLastKnownInformation
+  [draw] Resolution: -; -; -; success: True
+  [draw] modular decides PriorityDecisionRequest: 0.098 ms; observed options: 0; space size: unknown; success
+  [draw] simple decides PriorityDecisionRequest: 0.057 ms; observed options: 0; space size: unknown; success
+  [precombat main] modular chooses policy_choice: candidate: 1; choice: kind: land; source: c46; fallback: -; score: 100
+  [precombat main] modular decides PriorityDecisionRequest: 2.468 ms; observed options: 2; space size: 2; success
+  [precombat main] Card moved: modular; Plains [c46] — card: Plains [c46]; from: HAND; last known: kind: CardLastKnownInformation; previous controller: modular; to: BATTLEFIELD
+  [precombat main] modular plays land Plains [c46] — lands played: 1; last known: kind: CardLastKnownInformation
+  [precombat main] Resolution: modular; Plains [c46]; play_land; success: True
+  [precombat main] modular chooses policy_choice: candidate: 1; choice: ability: cast:Goring Ceratops; cost targets: none; kind: action; payment: activate: c37, c45, c46, c47, c53, c55, c58; life: 0; mana: WHITE: 7; source: c25; targets: none; x: 0; fallback: -; score: 41.0
+  [precombat main] modular decides PriorityDecisionRequest: 2.317 ms; observed options: 2; space size: 2; success
+  [precombat main] Card tapped: modular; Plains [c37] — last known: kind: CardLastKnownInformation
+  [precombat main] Mana added: modular; Plains [c37] — amount: 1; last known: kind: CardLastKnownInformation; mana: WHITE
+  [precombat main] modular activates Plains [c37] — ability: mana_white; last known: kind: CardLastKnownInformation
+  [precombat main] Card tapped: modular; Plains [c45] — last known: kind: CardLastKnownInformation
+  [precombat main] Mana added: modular; Plains [c45] — amount: 1; last known: kind: CardLastKnownInformation; mana: WHITE
+  [precombat main] modular activates Plains [c45] — ability: mana_white; last known: kind: CardLastKnownInformation
+  [precombat main] Card tapped: modular; Plains [c46] — last known: kind: CardLastKnownInformation
+  [precombat main] Mana added: modular; Plains [c46] — amount: 1; last known: kind: CardLastKnownInformation; mana: WHITE
+  [precombat main] modular activates Plains [c46] — ability: mana_white; last known: kind: CardLastKnownInformation
+  [precombat main] Card tapped: modular; Plains [c47] — last known: kind: CardLastKnownInformation
+  [precombat main] Mana added: modular; Plains [c47] — amount: 1; last known: kind: CardLastKnownInformation; mana: WHITE
+  [precombat main] modular activates Plains [c47] — ability: mana_white; last known: kind: CardLastKnownInformation
+  [precombat main] Card tapped: modular; Plains [c53] — last known: kind: CardLastKnownInformation
+  [precombat main] Mana added: modular; Plains [c53] — amount: 1; last known: kind: CardLastKnownInformation; mana: WHITE
+  [precombat main] modular activates Plains [c53] — ability: mana_white; last known: kind: CardLastKnownInformation
+  [precombat main] Card tapped: modular; Plains [c55] — last known: kind: CardLastKnownInformation
+  [precombat main] Mana added: modular; Plains [c55] — amount: 1; last known: kind: CardLastKnownInformation; mana: WHITE
+  [precombat main] modular activates Plains [c55] — ability: mana_white; last known: kind: CardLastKnownInformation
+  [precombat main] Card tapped: modular; Plains [c58] — last known: kind: CardLastKnownInformation
+  [precombat main] Mana added: modular; Plains [c58] — amount: 1; last known: kind: CardLastKnownInformation; mana: WHITE
+  [precombat main] modular activates Plains [c58] — ability: mana_white; last known: kind: CardLastKnownInformation
+  [precombat main] Mana paid: modular; Goring Ceratops [c25] — last known: kind: CardLastKnownInformation; payment: WHITE: 7
+  [precombat main] Card moved: modular; Goring Ceratops [c25] — card: Goring Ceratops [c25]; from: HAND; last known: kind: CardLastKnownInformation; previous controller: modular; to: STACK
+  [precombat main] modular casts Goring Ceratops [c25] — ability: cast:Goring Ceratops
+  [precombat main] modular decides PriorityDecisionRequest: 0.100 ms; observed options: 0; space size: unknown; success
+  [precombat main] simple decides PriorityDecisionRequest: 0.060 ms; observed options: 0; space size: unknown; success
+  [precombat main] Card moved: modular; Goring Ceratops [c25] — card: Goring Ceratops [c25]; from: STACK; last known: kind: CardLastKnownInformation; previous controller: modular; to: BATTLEFIELD
+  [precombat main] Trigger detected: modular; Impassioned Orator [c12]; impassioned_orator_etb
+  [precombat main] modular decides TriggerOrderRequest: 0.037 ms; observed options: 1; space size: unknown; success
+  [precombat main] modular chooses policy_choice: candidate: 0; choice: ability: impassioned_orator_etb; kind: trigger; targets: none; fallback: -; score: 5.0
+  [precombat main] modular decides AbilityDecisionRequest: 0.096 ms; observed options: 1; space size: 1; success
+  [precombat main] Resolution: modular; Goring Ceratops [c25]; cast:Goring Ceratops; success: True
+  [precombat main] modular decides PriorityDecisionRequest: 0.064 ms; observed options: 0; space size: unknown; success
+  [precombat main] simple decides PriorityDecisionRequest: 0.089 ms; observed options: 0; space size: unknown; success
+  [precombat main] Life gained: modular; Impassioned Orator [c12] — amount: 1; last known: kind: CardLastKnownInformation; player: modular
+  [precombat main] Trigger detected: modular; Hallowed Priest [c10]; hallowed_priest_life
+  [precombat main] modular decides TriggerOrderRequest: 0.024 ms; observed options: 1; space size: unknown; success
+  [precombat main] modular chooses policy_choice: candidate: 0; choice: ability: hallowed_priest_life; kind: trigger; targets: none; fallback: -; score: 5.0
+  [precombat main] modular decides AbilityDecisionRequest: 0.083 ms; observed options: 1; space size: 1; success
+  [precombat main] Resolution: modular; Impassioned Orator [c12]; impassioned_orator_etb; success: True
+  [precombat main] modular decides PriorityDecisionRequest: 0.062 ms; observed options: 0; space size: unknown; success
+  [precombat main] simple decides PriorityDecisionRequest: 0.057 ms; observed options: 0; space size: unknown; success
+  [precombat main] Counter placed: modular; Hallowed Priest [c10] — amount: 1; counter: PLUS_ONE; last known: kind: CardLastKnownInformation
+  [precombat main] Resolution: modular; Hallowed Priest [c10]; hallowed_priest_life; success: True
+  [precombat main] modular decides PriorityDecisionRequest: 0.067 ms; observed options: 0; space size: unknown; success
+  [precombat main] simple decides PriorityDecisionRequest: 0.058 ms; observed options: 0; space size: unknown; success
+  [begin combat] modular decides PriorityDecisionRequest: 0.092 ms; observed options: 0; space size: unknown; success
+  [begin combat] simple decides PriorityDecisionRequest: 0.076 ms; observed options: 0; space size: unknown; success
+  [declare attackers] modular chooses policy_choice: candidate: 0; choice: attackers: c6, c10, c19, c121, c128, c127; kind: attack; fallback: -; score: 1021
+  [declare attackers] modular decides DeclareAttackersRequest: 1.028 ms; observed options: 3; space size: 3; success
+  [declare attackers] Card tapped: modular; Fencing Ace [c6]
+  [declare attackers] modular attacks with Fencing Ace [c6] — attacker: Fencing Ace [c6]; defender: simple
+  [declare attackers] Card tapped: modular; Hallowed Priest [c10]
+  [declare attackers] modular attacks with Hallowed Priest [c10] — attacker: Hallowed Priest [c10]; defender: simple
+  [declare attackers] Card tapped: modular; Leonin Warleader [c19]
+  [declare attackers] modular attacks with Leonin Warleader [c19] — attacker: Leonin Warleader [c19]; defender: simple
+  [declare attackers] Card tapped: modular; Spirit [c121]
+  [declare attackers] modular attacks with Spirit [c121] — attacker: Spirit [c121]; defender: simple
+  [declare attackers] Card tapped: modular; Cat [c128]
+  [declare attackers] modular attacks with Cat [c128] — attacker: Cat [c128]; defender: simple
+  [declare attackers] Card tapped: modular; Cat [c127]
+  [declare attackers] modular attacks with Cat [c127] — attacker: Cat [c127]; defender: simple
+  [declare attackers] Attackers declared: modular; - — attackers: Fencing Ace [c6], Hallowed Priest [c10], Leonin Warleader [c19], Spirit [c121], Cat [c128], Cat [c127]
+  [declare attackers] Trigger detected: modular; Leonin Warleader [c19]; warleader_attack
+  [declare attackers] modular decides TriggerOrderRequest: 0.047 ms; observed options: 1; space size: unknown; success
+  [declare attackers] modular chooses policy_choice: candidate: 0; choice: ability: warleader_attack; kind: trigger; targets: none; fallback: -; score: 5.0
+  [declare attackers] modular decides AbilityDecisionRequest: 0.104 ms; observed options: 1; space size: 1; success
+  [declare attackers] modular decides PriorityDecisionRequest: 0.079 ms; observed options: 0; space size: unknown; success
+  [declare attackers] simple decides PriorityDecisionRequest: 0.060 ms; observed options: 0; space size: unknown; success
+  [declare attackers] modular decides ReplacementOrderRequest: 0.031 ms; observed options: 1; space size: unknown; success
+  [declare attackers] Card moved: modular; Cat [c129] — card: Cat [c129]; created token: True; from: -; previous controller: modular; to: BATTLEFIELD
+  [declare attackers] Card moved: modular; Cat [c130] — card: Cat [c130]; created token: True; from: -; previous controller: modular; to: BATTLEFIELD
+  [declare attackers] Trigger detected: modular; Impassioned Orator [c12]; impassioned_orator_etb
+  [declare attackers] Trigger detected: modular; Impassioned Orator [c12]; impassioned_orator_etb
+  [declare attackers] modular decides TriggerOrderRequest: 0.025 ms; observed options: 1; space size: unknown; success
+  [declare attackers] modular chooses policy_choice: candidate: 0; choice: ability: impassioned_orator_etb; kind: trigger; targets: none; fallback: -; score: 5.0
+  [declare attackers] modular decides AbilityDecisionRequest: 0.099 ms; observed options: 1; space size: 1; success
+  [declare attackers] modular chooses policy_choice: candidate: 0; choice: ability: impassioned_orator_etb; kind: trigger; targets: none; fallback: -; score: 5.0
+  [declare attackers] modular decides AbilityDecisionRequest: 0.078 ms; observed options: 1; space size: 1; success
+  [declare attackers] Resolution: modular; Leonin Warleader [c19]; warleader_attack; success: True
+  [declare attackers] modular decides PriorityDecisionRequest: 0.068 ms; observed options: 0; space size: unknown; success
+  [declare attackers] simple decides PriorityDecisionRequest: 0.059 ms; observed options: 0; space size: unknown; success
+  [declare attackers] Life gained: modular; Impassioned Orator [c12] — amount: 1; last known: kind: CardLastKnownInformation; player: modular
+  [declare attackers] Trigger detected: modular; Hallowed Priest [c10]; hallowed_priest_life
+  [declare attackers] modular decides TriggerOrderRequest: 0.023 ms; observed options: 1; space size: unknown; success
+  [declare attackers] modular chooses policy_choice: candidate: 0; choice: ability: hallowed_priest_life; kind: trigger; targets: none; fallback: -; score: 5.0
+  [declare attackers] modular decides AbilityDecisionRequest: 0.079 ms; observed options: 1; space size: 1; success
+  [declare attackers] Resolution: modular; Impassioned Orator [c12]; impassioned_orator_etb; success: True
+  [declare attackers] modular decides PriorityDecisionRequest: 0.066 ms; observed options: 0; space size: unknown; success
+  [declare attackers] simple decides PriorityDecisionRequest: 0.099 ms; observed options: 0; space size: unknown; success
+  [declare attackers] Counter placed: modular; Hallowed Priest [c10] — amount: 1; counter: PLUS_ONE; last known: kind: CardLastKnownInformation
+  [declare attackers] Resolution: modular; Hallowed Priest [c10]; hallowed_priest_life; success: True
+  [declare attackers] modular decides PriorityDecisionRequest: 0.066 ms; observed options: 0; space size: unknown; success
+  [declare attackers] simple decides PriorityDecisionRequest: 0.076 ms; observed options: 0; space size: unknown; success
+  [declare attackers] Life gained: modular; Impassioned Orator [c12] — amount: 1; last known: kind: CardLastKnownInformation; player: modular
+  [declare attackers] Trigger detected: modular; Hallowed Priest [c10]; hallowed_priest_life
+  [declare attackers] modular decides TriggerOrderRequest: 0.029 ms; observed options: 1; space size: unknown; success
+  [declare attackers] modular chooses policy_choice: candidate: 0; choice: ability: hallowed_priest_life; kind: trigger; targets: none; fallback: -; score: 5.0
+  [declare attackers] modular decides AbilityDecisionRequest: 0.086 ms; observed options: 1; space size: 1; success
+  [declare attackers] Resolution: modular; Impassioned Orator [c12]; impassioned_orator_etb; success: True
+  [declare attackers] modular decides PriorityDecisionRequest: 0.065 ms; observed options: 0; space size: unknown; success
+  [declare attackers] simple decides PriorityDecisionRequest: 0.056 ms; observed options: 0; space size: unknown; success
+  [declare attackers] Counter placed: modular; Hallowed Priest [c10] — amount: 1; counter: PLUS_ONE; last known: kind: CardLastKnownInformation
+  [declare attackers] Resolution: modular; Hallowed Priest [c10]; hallowed_priest_life; success: True
+  [declare attackers] modular decides PriorityDecisionRequest: 0.073 ms; observed options: 0; space size: unknown; success
+  [declare attackers] simple decides PriorityDecisionRequest: 0.061 ms; observed options: 0; space size: unknown; success
+  [declare blockers] simple chooses block: blockers: none
+  [declare blockers] simple decides DeclareBlockersRequest: 0.866 ms; observed options: 1; space size: unknown; success
+  [declare blockers] modular decides PriorityDecisionRequest: 0.073 ms; observed options: 0; space size: unknown; success
+  [declare blockers] simple decides PriorityDecisionRequest: 0.062 ms; observed options: 0; space size: unknown; success
+  [first combat damage] Damage dealt: modular; Fencing Ace [c6] — amount: 1; combat: True; last known: kind: CardLastKnownInformation; life loss: 1; source revision: 3; target: simple; target object: simple; target revision: -
+  [first combat damage] modular decides PriorityDecisionRequest: 0.064 ms; observed options: 0; space size: unknown; success
+  [first combat damage] simple decides PriorityDecisionRequest: 0.056 ms; observed options: 0; space size: unknown; success
+  [second combat damage] simple decides ReplacementOrderRequest: 0.037 ms; observed options: 1; space size: unknown; success
+  [second combat damage] Damage dealt: modular; Fencing Ace [c6] — amount: 1; combat: True; last known: kind: CardLastKnownInformation; life loss: 1; source revision: 3; target: simple; target object: simple; target revision: -
+  [second combat damage] Damage dealt: modular; Hallowed Priest [c10] — amount: 15; combat: True; last known: kind: CardLastKnownInformation; life loss: 15; source revision: 3; target: simple; target object: simple; target revision: -
+  [second combat damage] Damage dealt: modular; Leonin Warleader [c19] — amount: 4; combat: True; last known: kind: CardLastKnownInformation; life loss: 4; source revision: 3; target: simple; target object: simple; target revision: -
+  [second combat damage] Damage dealt: modular; Spirit [c121] — amount: 1; combat: True; last known: kind: CardLastKnownInformation; life loss: 1; source revision: 1; target: simple; target object: simple; target revision: -
+  [second combat damage] Damage dealt: modular; Cat [c128] — amount: 1; combat: True; last known: kind: CardLastKnownInformation; life loss: 1; source revision: 1; target: simple; target object: simple; target revision: -
+  [second combat damage] Damage dealt: modular; Cat [c127] — amount: 1; combat: True; last known: kind: CardLastKnownInformation; life loss: 1; source revision: 1; target: simple; target object: simple; target revision: -
+  [second combat damage] Damage dealt: modular; Cat [c129] — amount: 1; combat: True; last known: kind: CardLastKnownInformation; life loss: 1; source revision: 1; target: simple; target object: simple; target revision: -
+  [second combat damage] Damage dealt: modular; Cat [c130] — amount: 1; combat: True; last known: kind: CardLastKnownInformation; life loss: 1; source revision: 1; target: simple; target object: simple; target revision: -
+  [second combat damage] Life gained: modular; Cat [c128] — amount: 1; last known: kind: CardLastKnownInformation; player: modular
+  [second combat damage] Life gained: modular; Cat [c127] — amount: 1; last known: kind: CardLastKnownInformation; player: modular
+  [second combat damage] Life gained: modular; Cat [c129] — amount: 1; last known: kind: CardLastKnownInformation; player: modular
+  [second combat damage] Life gained: modular; Cat [c130] — amount: 1; last known: kind: CardLastKnownInformation; player: modular
+  [second combat damage] Trigger detected: modular; Hallowed Priest [c10]; hallowed_priest_life
+  [second combat damage] Trigger detected: modular; Hallowed Priest [c10]; hallowed_priest_life
+  [second combat damage] Trigger detected: modular; Hallowed Priest [c10]; hallowed_priest_life
+  [second combat damage] Trigger detected: modular; Hallowed Priest [c10]; hallowed_priest_life
+  [second combat damage] Player lost: simple; - — reason: life

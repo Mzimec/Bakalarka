@@ -9,7 +9,7 @@ from helper.query_system.object_register import IndexKey
 from .indexed_register import IndexedRegister
 from ...enums import CardType, CardSubtype, ZoneType, ActivatableAbilityType
 from ..card_changes import CardChange
-from ..modifier import only_empty_builtin_sources
+from ..native_modifier_plan import live_sources_empty
 from ...stat_type import (STAT_MANA_COST, STAT_TYPES, STAT_SUBTYPES, STAT_TOUGHNESS,
                          STAT_POWER, STAT_CONTROLLER, STAT_ABILITIES, STAT_TRIGGERS,
                          STAT_INTRINSIC_MANA, STAT_ATTACH_MODS)
@@ -82,6 +82,7 @@ _CHARACTERISTIC_KEYS = frozenset({
 _LAYER_KEYS = _CHARACTERISTIC_KEYS | {
     IK_CMC, IK_ZONE, IK_STATIC_CONTINUOUS, IK_STATIC_REPLACEMENT, IK_DYNAMIC_CHARACTERISTICS,
 }
+_DYNAMIC_ONLY = frozenset({IK_DYNAMIC_CHARACTERISTICS})
 _RUNTIME_KEYS = {
     CardChange.TAPPED: frozenset({IK_TAPPED}),
     CardChange.DAMAGE: frozenset({IK_HAS_DAMAGE}),
@@ -158,6 +159,7 @@ class CardRegister(IndexedRegister):
         @param card Runtime card to register.
         """
         self.validate_new(card)
+        self.state._trigger_registry.invalidate(card)
         if id(card) not in self._introductions:
             self._introduction_sequence += 1
             # Retain identity even after unregister; runtime IDs may be recycled.
@@ -217,6 +219,7 @@ class CardRegister(IndexedRegister):
         @param card Runtime card to unregister.
         """
         super().unregister(card)
+        self.state._trigger_registry.remove(card)
         self.layer_candidates.remove(card)
         self._command_cards.pop(card.command_id, None)
         self.state._card_snapshots.discard(card)
@@ -224,16 +227,20 @@ class CardRegister(IndexedRegister):
     def mark_changed(self, card, indexes=None):
         super().mark_changed(card, indexes)
         if self._by_key.get(card.key) is card:
+            if indexes is None or indexes & {IK_HAS_TRIGGERS, IK_CONTROLLER, IK_ZONE}:
+                self.state._trigger_registry.invalidate(card)
             self.layer_candidates.invalidate(card)
 
     def invalidate_layer_inputs(self, card):
         """Reclassify replaced input tables without widening queued index writes."""
         if self._by_key.get(card.key) is card:
+            self.state._trigger_registry.invalidate(card)
             self.layer_candidates.invalidate(card)
             self.state._effects_dirty = True
 
     def clear(self):
         super().clear()
+        self.state._trigger_registry.clear()
         self.layer_candidates.clear()
         self._layer_read_cards.clear()
 
@@ -244,6 +251,14 @@ class CardRegister(IndexedRegister):
         Custom/modified cards and mutable mana or stack X retain full updates.
         """
         if indexes is not None:
+            # A supported modifier can affect only unindexed characteristics.
+            # Check this one live marker before queuing a no-op projection.
+            # Existing real mutations and their wider write sets take priority.
+            if indexes == _DYNAMIC_ONLY and card.key not in self._dirty:
+                previous = self._snapshots.get(card.key)
+                if (previous is not None and previous[IK_DYNAMIC_CHARACTERISTICS]
+                        == frozenset({self._dynamic_characteristics(card)})):
+                    return
             self.mark_changed(card, indexes)
             return
         if card.key not in self._dirty and self._can_preserve_characteristics(card):
@@ -347,7 +362,7 @@ class CardRegister(IndexedRegister):
         from ..card import Card, CardDefinition
         from helper.mutability_objs import ImmutableSet
         if (type(card) is not Card or type(card.definition) is not CardDefinition
-                or not only_empty_builtin_sources(card.modifier_sources)):
+                or not live_sources_empty(card)):
             return True
         for key in (STAT_TYPES, STAT_SUBTYPES, STAT_TOUGHNESS):
             stat = card.stats.get(key)

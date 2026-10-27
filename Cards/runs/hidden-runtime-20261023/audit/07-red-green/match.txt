@@ -1,0 +1,833 @@
+Goblins Everywhere! (Goblins Everywhere!) vs Large and in Charge (Large and in Charge)
+Result: win | Winner: Simple | Player turn: 15
+Elapsed wall time: 27.430 s
+Seed: 107 | Starting player: 1
+Player turns are numbered individually. Interactive time includes waiting for input.
+
+Decision timing (wall time; includes option generation and input/model waits):
+  Simple [SimpleAgent, agent]: 180 decisions, average 0.861 ms, total 0.155 s, errors 0, auto-passes 151
+    Active option generation: 0.126 s; other decision work: 0.029 s (split recorded for 180 decisions)
+    CombatDamageRequest: n=2, average 0.165 ms; observed options 1.00; space size unknown
+      1 observed options: n=2, average 0.165 ms
+    DeclareAttackersRequest: n=8, average 0.260 ms; observed options 1.00; space size unknown
+      1 observed options: n=8, average 0.260 ms
+    DeclareBlockersRequest: n=3, average 0.372 ms; observed options 1.00; space size unknown
+      1 observed options: n=3, average 0.372 ms
+    MulliganRequest: n=1, average 0.056 ms; observed options 0.00; space size unknown
+      0 observed options: n=1, average 0.056 ms
+    PriorityDecisionRequest: n=165, average 0.918 ms; observed options 0.67; space size 1.20 (known for 80 decisions)
+      0 observed options: n=78, average 0.104 ms
+      1 observed options: n=73, average 1.495 ms
+      2-10 observed options: n=14, average 2.445 ms
+    ReplacementOrderRequest: n=1, average 0.077 ms; observed options 1.00; space size unknown
+      1 observed options: n=1, average 0.077 ms
+  Search [MCTSAgent, agent]: 191 decisions, average 140.735 ms, total 26.880 s, errors 0, auto-passes 0
+    Active option generation: 1.587 s; other decision work: 25.293 s (split recorded for 191 decisions)
+    AbilityDecisionRequest: n=1, average 7.224 ms; observed options 1.00; space size 1.00 (known for 1 decisions)
+      1 observed options: n=1, average 7.224 ms
+    DeclareAttackersRequest: n=7, average 278.086 ms; observed options 10.71; space size 1.00 (known for 4 decisions)
+      1 observed options: n=4, average 20.880 ms
+      11-100 observed options: n=3, average 621.026 ms
+    DeclareBlockersRequest: n=4, average 89.157 ms; observed options 1.00; space size 1.00 (known for 4 decisions)
+      1 observed options: n=4, average 89.157 ms
+    MulliganBottomRequest: n=1, average 3.358 ms; observed options 7.00; space size 7.00 (known for 1 decisions)
+      2-10 observed options: n=1, average 3.358 ms
+    MulliganRequest: n=2, average 5.271 ms; observed options 2.00; space size 2.00 (known for 2 decisions)
+      2-10 observed options: n=2, average 5.271 ms
+    PriorityDecisionRequest: n=169, average 116.310 ms; observed options 10.23; space size 1.00 (known for 139 decisions)
+      1 observed options: n=139, average 17.802 ms
+      11-100 observed options: n=30, average 572.732 ms
+    ReplacementOrderRequest: n=6, average 815.299 ms; observed options 409.17; space size unknown
+      101-1000 observed options: n=3, average 964.925 ms
+      11-100 observed options: n=3, average 665.673 ms
+    TriggerOrderRequest: n=1, average 7.877 ms; observed options 1.00; space size 1.00 (known for 1 decisions)
+      1 observed options: n=1, average 7.877 ms
+  Observed options are consumed yields, not unique actions. Size refers to the policy-filtered space.
+  Generation times only active option-stream next() calls, including nested expansion once. Other decision work includes policy, discovery outside streams, validation and measurement overhead; it is not pure scoring time. Precomputed choices were generated before this measurement.
+
+
+Turn 1
+  [untap] Simple decides MulliganRequest: 0.056 ms; observed options: 0; space size: unknown; success
+  [untap] Search decides MulliganRequest: 8.326 ms; observed options: 2; space size: 2; success
+  [untap] Search decides MulliganBottomRequest: 3.358 ms; observed options: 7; space size: 7; success
+  [untap] Search decides MulliganRequest: 2.217 ms; observed options: 2; space size: 2; success
+  [upkeep] Simple decides PriorityDecisionRequest: 20.558 ms; observed options: 1; space size: 1; success
+  [upkeep] Search decides PriorityDecisionRequest: 2.715 ms; observed options: 1; space size: 1; success
+  [precombat main] Simple chooses land: source: Forest [c98]
+  [precombat main] Simple decides PriorityDecisionRequest: 3.244 ms; observed options: 2; space size: unknown; success
+  [precombat main] Card moved: Simple; Forest [c98] — card: Forest [c98]; from: HAND; last known: kind: CardLastKnownInformation; previous controller: Simple; to: BATTLEFIELD
+  [precombat main] Simple plays land Forest [c98] — lands played: 1; last known: kind: CardLastKnownInformation
+  [precombat main] Resolution: Simple; Forest [c98]; play_land; success: True
+  [precombat main] Simple decides PriorityDecisionRequest: 2.956 ms; observed options: 1; space size: 1; success
+  [precombat main] Search decides PriorityDecisionRequest: 2.575 ms; observed options: 1; space size: 1; success
+  [begin combat] Simple decides PriorityDecisionRequest: 0.967 ms; observed options: 1; space size: 1; success
+  [begin combat] Search decides PriorityDecisionRequest: 2.630 ms; observed options: 1; space size: 1; success
+  [declare attackers] Simple chooses attack: attackers: none
+  [declare attackers] Simple decides DeclareAttackersRequest: 0.138 ms; observed options: 1; space size: unknown; success
+  [declare attackers] Simple decides PriorityDecisionRequest: 0.963 ms; observed options: 1; space size: 1; success
+  [declare attackers] Search decides PriorityDecisionRequest: 2.604 ms; observed options: 1; space size: 1; success
+  [end combat] Simple decides PriorityDecisionRequest: 0.949 ms; observed options: 1; space size: 1; success
+  [end combat] Search decides PriorityDecisionRequest: 2.614 ms; observed options: 1; space size: 1; success
+  [postcombat main] Simple decides PriorityDecisionRequest: 1.881 ms; observed options: 1; space size: 1; success
+  [postcombat main] Search decides PriorityDecisionRequest: 3.693 ms; observed options: 1; space size: 1; success
+  [end step] Simple decides PriorityDecisionRequest: 1.612 ms; observed options: 1; space size: 1; success
+  [end step] Search decides PriorityDecisionRequest: 17.296 ms; observed options: 1; space size: 1; success
+
+Turn 2
+  [upkeep] Search decides PriorityDecisionRequest: 2.690 ms; observed options: 1; space size: 1; success
+  [upkeep] Simple decides PriorityDecisionRequest: 1.158 ms; observed options: 1; space size: 1; success
+  [draw] Card moved: Search; Burn Bright [c26] — card: Burn Bright [c26]; from: DECK; last known: kind: CardLastKnownInformation; previous controller: Search; to: HAND
+  [draw] Card drawn: Search; Burn Bright [c26] — card: Burn Bright [c26]; last known: kind: CardLastKnownInformation
+  [draw] Resolution: -; -; -; success: True
+  [draw] Search decides PriorityDecisionRequest: 3.638 ms; observed options: 1; space size: 1; success
+  [draw] Simple decides PriorityDecisionRequest: 1.120 ms; observed options: 1; space size: 1; success
+  [precombat main] Search decides PriorityDecisionRequest: 517.398 ms; observed options: 60; space size: unknown; success
+  [precombat main] Card moved: Search; Mountain [c41] — card: Mountain [c41]; from: HAND; last known: kind: CardLastKnownInformation; previous controller: Search; to: BATTLEFIELD
+  [precombat main] Search plays land Mountain [c41] — lands played: 1; last known: kind: CardLastKnownInformation
+  [precombat main] Resolution: Search; Mountain [c41]; play_land; success: True
+  [precombat main] Search decides PriorityDecisionRequest: 4.078 ms; observed options: 1; space size: 1; success
+  [precombat main] Simple decides PriorityDecisionRequest: 1.183 ms; observed options: 1; space size: 1; success
+  [begin combat] Search decides PriorityDecisionRequest: 3.744 ms; observed options: 1; space size: 1; success
+  [begin combat] Simple decides PriorityDecisionRequest: 1.019 ms; observed options: 1; space size: 1; success
+  [declare attackers] Search decides DeclareAttackersRequest: 12.660 ms; observed options: 1; space size: 1; success
+  [declare attackers] Search decides PriorityDecisionRequest: 3.405 ms; observed options: 1; space size: 1; success
+  [declare attackers] Simple decides PriorityDecisionRequest: 0.982 ms; observed options: 1; space size: 1; success
+  [end combat] Search decides PriorityDecisionRequest: 3.623 ms; observed options: 1; space size: 1; success
+  [end combat] Simple decides PriorityDecisionRequest: 0.902 ms; observed options: 1; space size: 1; success
+  [postcombat main] Search decides PriorityDecisionRequest: 4.068 ms; observed options: 1; space size: 1; success
+  [postcombat main] Simple decides PriorityDecisionRequest: 1.201 ms; observed options: 1; space size: 1; success
+  [end step] Search decides PriorityDecisionRequest: 13.254 ms; observed options: 1; space size: 1; success
+  [end step] Simple decides PriorityDecisionRequest: 1.133 ms; observed options: 1; space size: 1; success
+
+Turn 3
+  [upkeep] Simple decides PriorityDecisionRequest: 0.901 ms; observed options: 1; space size: 1; success
+  [upkeep] Search decides PriorityDecisionRequest: 3.178 ms; observed options: 1; space size: 1; success
+  [draw] Card moved: Simple; Rabid Bite [c91] — card: Rabid Bite [c91]; from: DECK; last known: kind: CardLastKnownInformation; previous controller: Simple; to: HAND
+  [draw] Card drawn: Simple; Rabid Bite [c91] — card: Rabid Bite [c91]; last known: kind: CardLastKnownInformation
+  [draw] Resolution: -; -; -; success: True
+  [draw] Simple decides PriorityDecisionRequest: 1.038 ms; observed options: 1; space size: 1; success
+  [draw] Search decides PriorityDecisionRequest: 3.073 ms; observed options: 1; space size: 1; success
+  [precombat main] Simple chooses land: source: Forest [c100]
+  [precombat main] Simple decides PriorityDecisionRequest: 0.959 ms; observed options: 2; space size: unknown; success
+  [precombat main] Card moved: Simple; Forest [c100] — card: Forest [c100]; from: HAND; last known: kind: CardLastKnownInformation; previous controller: Simple; to: BATTLEFIELD
+  [precombat main] Simple plays land Forest [c100] — lands played: 1; last known: kind: CardLastKnownInformation
+  [precombat main] Resolution: Simple; Forest [c100]; play_land; success: True
+  [precombat main] Simple decides PriorityDecisionRequest: 4.407 ms; observed options: 1; space size: 1; success
+  [precombat main] Search decides PriorityDecisionRequest: 5.663 ms; observed options: 1; space size: 1; success
+  [begin combat] Simple decides PriorityDecisionRequest: 1.057 ms; observed options: 1; space size: 1; success
+  [begin combat] Search decides PriorityDecisionRequest: 3.729 ms; observed options: 1; space size: 1; success
+  [declare attackers] Simple chooses attack: attackers: none
+  [declare attackers] Simple decides DeclareAttackersRequest: 0.215 ms; observed options: 1; space size: unknown; success
+  [declare attackers] Simple decides PriorityDecisionRequest: 1.067 ms; observed options: 1; space size: 1; success
+  [declare attackers] Search decides PriorityDecisionRequest: 3.379 ms; observed options: 1; space size: 1; success
+  [end combat] Simple decides PriorityDecisionRequest: 0.833 ms; observed options: 1; space size: 1; success
+  [end combat] Search decides PriorityDecisionRequest: 3.173 ms; observed options: 1; space size: 1; success
+  [postcombat main] Simple decides PriorityDecisionRequest: 2.561 ms; observed options: 1; space size: 1; success
+  [postcombat main] Search decides PriorityDecisionRequest: 4.405 ms; observed options: 1; space size: 1; success
+  [end step] Simple decides PriorityDecisionRequest: 1.161 ms; observed options: 1; space size: 1; success
+  [end step] Search decides PriorityDecisionRequest: 14.066 ms; observed options: 1; space size: 1; success
+
+Turn 4
+  [upkeep] Search decides PriorityDecisionRequest: 3.393 ms; observed options: 1; space size: 1; success
+  [upkeep] Simple decides PriorityDecisionRequest: 1.126 ms; observed options: 1; space size: 1; success
+  [draw] Card moved: Search; Molten Ravager [c11] — card: Molten Ravager [c11]; from: DECK; last known: kind: CardLastKnownInformation; previous controller: Search; to: HAND
+  [draw] Card drawn: Search; Molten Ravager [c11] — card: Molten Ravager [c11]; last known: kind: CardLastKnownInformation
+  [draw] Resolution: -; -; -; success: True
+  [draw] Search decides PriorityDecisionRequest: 3.449 ms; observed options: 1; space size: 1; success
+  [draw] Simple decides PriorityDecisionRequest: 1.062 ms; observed options: 1; space size: 1; success
+  [precombat main] Search decides PriorityDecisionRequest: 525.465 ms; observed options: 56; space size: unknown; success
+  [precombat main] Card moved: Search; Mountain [c60] — card: Mountain [c60]; from: HAND; last known: kind: CardLastKnownInformation; previous controller: Search; to: BATTLEFIELD
+  [precombat main] Search plays land Mountain [c60] — lands played: 1; last known: kind: CardLastKnownInformation
+  [precombat main] Resolution: Search; Mountain [c60]; play_land; success: True
+  [precombat main] Search decides PriorityDecisionRequest: 478.734 ms; observed options: 32; space size: unknown; success
+  [precombat main] Card tapped: Search; Mountain [c41] — last known: kind: CardLastKnownInformation
+  [precombat main] Mana added: Search; Mountain [c41] — amount: 1; last known: kind: CardLastKnownInformation; mana: RED
+  [precombat main] Search activates Mountain [c41] — ability: mana_red; last known: kind: CardLastKnownInformation
+  [precombat main] Card tapped: Search; Mountain [c60] — last known: kind: CardLastKnownInformation
+  [precombat main] Mana added: Search; Mountain [c60] — amount: 1; last known: kind: CardLastKnownInformation; mana: RED
+  [precombat main] Search activates Mountain [c60] — ability: mana_red; last known: kind: CardLastKnownInformation
+  [precombat main] Mana paid: Search; Goblin Tunneler [c5] — last known: kind: CardLastKnownInformation; payment: RED: 2
+  [precombat main] Card moved: Search; Goblin Tunneler [c5] — card: Goblin Tunneler [c5]; from: HAND; last known: kind: CardLastKnownInformation; previous controller: Search; to: STACK
+  [precombat main] Search casts Goblin Tunneler [c5] — ability: cast:Goblin Tunneler
+  [precombat main] Search decides PriorityDecisionRequest: 4.758 ms; observed options: 1; space size: 1; success
+  [precombat main] Simple decides PriorityDecisionRequest: 1.101 ms; observed options: 1; space size: 1; success
+  [precombat main] Card moved: Search; Goblin Tunneler [c5] — card: Goblin Tunneler [c5]; from: STACK; last known: kind: CardLastKnownInformation; previous controller: Search; to: BATTLEFIELD
+  [precombat main] Resolution: Search; Goblin Tunneler [c5]; cast:Goblin Tunneler; success: True
+  [precombat main] Search decides PriorityDecisionRequest: 4.522 ms; observed options: 1; space size: 1; success
+  [precombat main] Simple decides PriorityDecisionRequest: 1.246 ms; observed options: 1; space size: 1; success
+  [begin combat] Search decides PriorityDecisionRequest: 3.999 ms; observed options: 1; space size: 1; success
+  [begin combat] Simple decides PriorityDecisionRequest: 0.916 ms; observed options: 1; space size: 1; success
+  [declare attackers] Search decides DeclareAttackersRequest: 15.897 ms; observed options: 1; space size: 1; success
+  [declare attackers] Search decides PriorityDecisionRequest: 3.728 ms; observed options: 1; space size: 1; success
+  [declare attackers] Simple decides PriorityDecisionRequest: 0.857 ms; observed options: 1; space size: 1; success
+  [end combat] Search decides PriorityDecisionRequest: 3.447 ms; observed options: 1; space size: 1; success
+  [end combat] Simple decides PriorityDecisionRequest: 0.954 ms; observed options: 1; space size: 1; success
+  [postcombat main] Search decides PriorityDecisionRequest: 4.311 ms; observed options: 1; space size: 1; success
+  [postcombat main] Simple decides PriorityDecisionRequest: 1.214 ms; observed options: 1; space size: 1; success
+  [end step] Search decides PriorityDecisionRequest: 17.770 ms; observed options: 1; space size: 1; success
+  [end step] Simple decides PriorityDecisionRequest: 1.733 ms; observed options: 1; space size: 1; success
+
+Turn 5
+  [upkeep] Simple decides PriorityDecisionRequest: 1.124 ms; observed options: 1; space size: 1; success
+  [upkeep] Search decides PriorityDecisionRequest: 49.612 ms; observed options: 1; space size: 1; success
+  [draw] Card moved: Simple; Forest [c109] — card: Forest [c109]; from: DECK; last known: kind: CardLastKnownInformation; previous controller: Simple; to: HAND
+  [draw] Card drawn: Simple; Forest [c109] — card: Forest [c109]; last known: kind: CardLastKnownInformation
+  [draw] Resolution: -; -; -; success: True
+  [draw] Simple decides PriorityDecisionRequest: 1.391 ms; observed options: 1; space size: 1; success
+  [draw] Search decides PriorityDecisionRequest: 4.011 ms; observed options: 1; space size: 1; success
+  [precombat main] Simple chooses land: source: Forest [c103]
+  [precombat main] Simple decides PriorityDecisionRequest: 1.017 ms; observed options: 2; space size: unknown; success
+  [precombat main] Card moved: Simple; Forest [c103] — card: Forest [c103]; from: HAND; last known: kind: CardLastKnownInformation; previous controller: Simple; to: BATTLEFIELD
+  [precombat main] Simple plays land Forest [c103] — lands played: 1; last known: kind: CardLastKnownInformation
+  [precombat main] Resolution: Simple; Forest [c103]; play_land; success: True
+  [precombat main] Simple decides PriorityDecisionRequest: 2.978 ms; observed options: 1; space size: 1; success
+  [precombat main] Search decides PriorityDecisionRequest: 4.375 ms; observed options: 1; space size: 1; success
+  [begin combat] Simple decides PriorityDecisionRequest: 1.369 ms; observed options: 1; space size: 1; success
+  [begin combat] Search decides PriorityDecisionRequest: 4.483 ms; observed options: 1; space size: 1; success
+  [declare attackers] Simple chooses attack: attackers: none
+  [declare attackers] Simple decides DeclareAttackersRequest: 0.125 ms; observed options: 1; space size: unknown; success
+  [declare attackers] Simple decides PriorityDecisionRequest: 0.923 ms; observed options: 1; space size: 1; success
+  [declare attackers] Search decides PriorityDecisionRequest: 3.891 ms; observed options: 1; space size: 1; success
+  [end combat] Simple decides PriorityDecisionRequest: 1.165 ms; observed options: 1; space size: 1; success
+  [end combat] Search decides PriorityDecisionRequest: 4.243 ms; observed options: 1; space size: 1; success
+  [postcombat main] Simple decides PriorityDecisionRequest: 2.715 ms; observed options: 1; space size: 1; success
+  [postcombat main] Search decides PriorityDecisionRequest: 3.564 ms; observed options: 1; space size: 1; success
+  [end step] Simple decides PriorityDecisionRequest: 0.942 ms; observed options: 1; space size: 1; success
+  [end step] Search decides PriorityDecisionRequest: 18.770 ms; observed options: 1; space size: 1; success
+
+Turn 6
+  [upkeep] Search decides PriorityDecisionRequest: 535.760 ms; observed options: 43; space size: unknown; success
+  [upkeep] Simple decides PriorityDecisionRequest: 1.199 ms; observed options: 1; space size: 1; success
+  [draw] Card moved: Search; Goblin Tunneler [c4] — card: Goblin Tunneler [c4]; from: DECK; last known: kind: CardLastKnownInformation; previous controller: Search; to: HAND
+  [draw] Card drawn: Search; Goblin Tunneler [c4] — card: Goblin Tunneler [c4]; last known: kind: CardLastKnownInformation
+  [draw] Resolution: -; -; -; success: True
+  [draw] Search decides PriorityDecisionRequest: 531.437 ms; observed options: 55; space size: unknown; success
+  [draw] Simple decides PriorityDecisionRequest: 1.364 ms; observed options: 1; space size: 1; success
+  [precombat main] Search decides PriorityDecisionRequest: 538.974 ms; observed options: 72; space size: unknown; success
+  [precombat main] Card moved: Search; Mountain [c54] — card: Mountain [c54]; from: HAND; last known: kind: CardLastKnownInformation; previous controller: Search; to: BATTLEFIELD
+  [precombat main] Search plays land Mountain [c54] — lands played: 1; last known: kind: CardLastKnownInformation
+  [precombat main] Resolution: Search; Mountain [c54]; play_land; success: True
+  [precombat main] Search decides PriorityDecisionRequest: 529.727 ms; observed options: 55; space size: unknown; success
+  [precombat main] Card tapped: Search; Mountain [c41] — last known: kind: CardLastKnownInformation
+  [precombat main] Mana added: Search; Mountain [c41] — amount: 1; last known: kind: CardLastKnownInformation; mana: RED
+  [precombat main] Search activates Mountain [c41] — ability: mana_red; last known: kind: CardLastKnownInformation
+  [precombat main] Card tapped: Search; Mountain [c54] — last known: kind: CardLastKnownInformation
+  [precombat main] Mana added: Search; Mountain [c54] — amount: 1; last known: kind: CardLastKnownInformation; mana: RED
+  [precombat main] Search activates Mountain [c54] — ability: mana_red; last known: kind: CardLastKnownInformation
+  [precombat main] Mana paid: Search; Goblin Tunneler [c4] — last known: kind: CardLastKnownInformation; payment: RED: 2
+  [precombat main] Card moved: Search; Goblin Tunneler [c4] — card: Goblin Tunneler [c4]; from: HAND; last known: kind: CardLastKnownInformation; previous controller: Search; to: STACK
+  [precombat main] Search casts Goblin Tunneler [c4] — ability: cast:Goblin Tunneler
+  [precombat main] Search decides PriorityDecisionRequest: 585.482 ms; observed options: 37; space size: unknown; success
+  [precombat main] Simple decides PriorityDecisionRequest: 1.958 ms; observed options: 1; space size: 1; success
+  [precombat main] Card moved: Search; Goblin Tunneler [c4] — card: Goblin Tunneler [c4]; from: STACK; last known: kind: CardLastKnownInformation; previous controller: Search; to: BATTLEFIELD
+  [precombat main] Resolution: Search; Goblin Tunneler [c4]; cast:Goblin Tunneler; success: True
+  [precombat main] Search decides PriorityDecisionRequest: 553.472 ms; observed options: 50; space size: unknown; success
+  [precombat main] Card tapped: Search; Goblin Tunneler [c5] — last known: kind: CardLastKnownInformation
+  [precombat main] Search activates Goblin Tunneler [c5] — ability: tunnel
+  [precombat main] Search decides PriorityDecisionRequest: 6.287 ms; observed options: 1; space size: 1; success
+  [precombat main] Simple decides PriorityDecisionRequest: 1.087 ms; observed options: 1; space size: 1; success
+  [precombat main] Temporary effect applied: Search; Goblin Tunneler [c5] — last known: kind: CardLastKnownInformation; targets: Goblin Tunneler [c4]
+  [precombat main] Resolution: Search; Goblin Tunneler [c5]; tunnel; success: True
+  [precombat main] Search decides PriorityDecisionRequest: 5.638 ms; observed options: 1; space size: 1; success
+  [precombat main] Simple decides PriorityDecisionRequest: 1.048 ms; observed options: 1; space size: 1; success
+  [begin combat] Search decides PriorityDecisionRequest: 4.935 ms; observed options: 1; space size: 1; success
+  [begin combat] Simple decides PriorityDecisionRequest: 1.204 ms; observed options: 1; space size: 1; success
+  [declare attackers] Search decides DeclareAttackersRequest: 22.267 ms; observed options: 1; space size: 1; success
+  [declare attackers] Search decides PriorityDecisionRequest: 4.614 ms; observed options: 1; space size: 1; success
+  [declare attackers] Simple decides PriorityDecisionRequest: 0.965 ms; observed options: 1; space size: 1; success
+  [end combat] Search decides PriorityDecisionRequest: 5.694 ms; observed options: 1; space size: 1; success
+  [end combat] Simple decides PriorityDecisionRequest: 0.944 ms; observed options: 1; space size: 1; success
+  [postcombat main] Search decides PriorityDecisionRequest: 5.326 ms; observed options: 1; space size: 1; success
+  [postcombat main] Simple decides PriorityDecisionRequest: 0.983 ms; observed options: 1; space size: 1; success
+  [end step] Search decides PriorityDecisionRequest: 23.355 ms; observed options: 1; space size: 1; success
+  [end step] Simple decides PriorityDecisionRequest: 1.035 ms; observed options: 1; space size: 1; success
+
+Turn 7
+  [upkeep] Simple decides PriorityDecisionRequest: 1.077 ms; observed options: 1; space size: 1; success
+  [upkeep] Search decides PriorityDecisionRequest: 4.622 ms; observed options: 1; space size: 1; success
+  [draw] Card moved: Simple; Gigantosaurus [c80] — card: Gigantosaurus [c80]; from: DECK; last known: kind: CardLastKnownInformation; previous controller: Simple; to: HAND
+  [draw] Card drawn: Simple; Gigantosaurus [c80] — card: Gigantosaurus [c80]; last known: kind: CardLastKnownInformation
+  [draw] Resolution: -; -; -; success: True
+  [draw] Simple decides PriorityDecisionRequest: 1.342 ms; observed options: 1; space size: 1; success
+  [draw] Search decides PriorityDecisionRequest: 4.254 ms; observed options: 1; space size: 1; success
+  [precombat main] Simple chooses land: source: Forest [c107]
+  [precombat main] Simple decides PriorityDecisionRequest: 0.979 ms; observed options: 2; space size: unknown; success
+  [precombat main] Card moved: Simple; Forest [c107] — card: Forest [c107]; from: HAND; last known: kind: CardLastKnownInformation; previous controller: Simple; to: BATTLEFIELD
+  [precombat main] Simple plays land Forest [c107] — lands played: 1; last known: kind: CardLastKnownInformation
+  [precombat main] Resolution: Simple; Forest [c107]; play_land; success: True
+  [precombat main] Simple chooses action: ability: cast:Prized Unicorn; source: Prized Unicorn [c76]; targets: none
+  [precombat main] Simple decides PriorityDecisionRequest: 6.022 ms; observed options: 2; space size: 2; success
+  [precombat main] Card tapped: Simple; Forest [c98] — last known: kind: CardLastKnownInformation
+  [precombat main] Mana added: Simple; Forest [c98] — amount: 1; last known: kind: CardLastKnownInformation; mana: GREEN
+  [precombat main] Simple activates Forest [c98] — ability: mana_green; last known: kind: CardLastKnownInformation
+  [precombat main] Card tapped: Simple; Forest [c100] — last known: kind: CardLastKnownInformation
+  [precombat main] Mana added: Simple; Forest [c100] — amount: 1; last known: kind: CardLastKnownInformation; mana: GREEN
+  [precombat main] Simple activates Forest [c100] — ability: mana_green; last known: kind: CardLastKnownInformation
+  [precombat main] Card tapped: Simple; Forest [c103] — last known: kind: CardLastKnownInformation
+  [precombat main] Mana added: Simple; Forest [c103] — amount: 1; last known: kind: CardLastKnownInformation; mana: GREEN
+  [precombat main] Simple activates Forest [c103] — ability: mana_green; last known: kind: CardLastKnownInformation
+  [precombat main] Card tapped: Simple; Forest [c107] — last known: kind: CardLastKnownInformation
+  [precombat main] Mana added: Simple; Forest [c107] — amount: 1; last known: kind: CardLastKnownInformation; mana: GREEN
+  [precombat main] Simple activates Forest [c107] — ability: mana_green; last known: kind: CardLastKnownInformation
+  [precombat main] Mana paid: Simple; Prized Unicorn [c76] — last known: kind: CardLastKnownInformation; payment: GREEN: 4
+  [precombat main] Card moved: Simple; Prized Unicorn [c76] — card: Prized Unicorn [c76]; from: HAND; last known: kind: CardLastKnownInformation; previous controller: Simple; to: STACK
+  [precombat main] Simple casts Prized Unicorn [c76] — ability: cast:Prized Unicorn
+  [precombat main] Simple decides PriorityDecisionRequest: 1.412 ms; observed options: 1; space size: 1; success
+  [precombat main] Search decides PriorityDecisionRequest: 25.473 ms; observed options: 1; space size: 1; success
+  [precombat main] Card moved: Simple; Prized Unicorn [c76] — card: Prized Unicorn [c76]; from: STACK; last known: kind: CardLastKnownInformation; previous controller: Simple; to: BATTLEFIELD
+  [precombat main] Resolution: Simple; Prized Unicorn [c76]; cast:Prized Unicorn; success: True
+  [precombat main] Simple decides PriorityDecisionRequest: 2.177 ms; observed options: 1; space size: 1; success
+  [precombat main] Search decides PriorityDecisionRequest: 5.492 ms; observed options: 1; space size: 1; success
+  [begin combat] Simple decides PriorityDecisionRequest: 0.691 ms; observed options: 1; space size: 1; success
+  [begin combat] Search decides PriorityDecisionRequest: 4.599 ms; observed options: 1; space size: 1; success
+  [declare attackers] Simple chooses attack: attackers: none
+  [declare attackers] Simple decides DeclareAttackersRequest: 0.134 ms; observed options: 1; space size: unknown; success
+  [declare attackers] Simple decides PriorityDecisionRequest: 0.571 ms; observed options: 1; space size: 1; success
+  [declare attackers] Search decides PriorityDecisionRequest: 4.677 ms; observed options: 1; space size: 1; success
+  [end combat] Simple decides PriorityDecisionRequest: 0.674 ms; observed options: 1; space size: 1; success
+  [end combat] Search decides PriorityDecisionRequest: 5.534 ms; observed options: 1; space size: 1; success
+  [postcombat main] Simple decides PriorityDecisionRequest: 2.413 ms; observed options: 1; space size: 1; success
+  [postcombat main] Search decides PriorityDecisionRequest: 5.906 ms; observed options: 1; space size: 1; success
+  [end step] Simple decides PriorityDecisionRequest: 0.887 ms; observed options: 1; space size: 1; success
+  [end step] Search decides PriorityDecisionRequest: 26.511 ms; observed options: 1; space size: 1; success
+
+Turn 8
+  [upkeep] Search decides PriorityDecisionRequest: 540.384 ms; observed options: 87; space size: unknown; success
+  [upkeep] Card tapped: Search; Goblin Tunneler [c4] — last known: kind: CardLastKnownInformation
+  [upkeep] Search activates Goblin Tunneler [c4] — ability: tunnel
+  [upkeep] Search decides PriorityDecisionRequest: 543.185 ms; observed options: 58; space size: unknown; success
+  [upkeep] Simple decides PriorityDecisionRequest: 0.656 ms; observed options: 1; space size: 1; success
+  [upkeep] Temporary effect applied: Search; Goblin Tunneler [c4] — last known: kind: CardLastKnownInformation; targets: Goblin Tunneler [c4]
+  [upkeep] Resolution: Search; Goblin Tunneler [c4]; tunnel; success: True
+  [upkeep] Search decides PriorityDecisionRequest: 597.593 ms; observed options: 49; space size: unknown; success
+  [upkeep] Card tapped: Search; Goblin Tunneler [c5] — last known: kind: CardLastKnownInformation
+  [upkeep] Search activates Goblin Tunneler [c5] — ability: tunnel
+  [upkeep] Search decides PriorityDecisionRequest: 532.927 ms; observed options: 26; space size: unknown; success
+  [upkeep] Simple decides PriorityDecisionRequest: 0.729 ms; observed options: 1; space size: 1; success
+  [upkeep] Temporary effect applied: Search; Goblin Tunneler [c5] — last known: kind: CardLastKnownInformation; targets: Goblin Tunneler [c5]
+  [upkeep] Resolution: Search; Goblin Tunneler [c5]; tunnel; success: True
+  [upkeep] Search decides PriorityDecisionRequest: 533.594 ms; observed options: 28; space size: unknown; success
+  [upkeep] Simple decides PriorityDecisionRequest: 0.756 ms; observed options: 1; space size: 1; success
+  [draw] Card moved: Search; Tin Street Cadet [c1] — card: Tin Street Cadet [c1]; from: DECK; last known: kind: CardLastKnownInformation; previous controller: Search; to: HAND
+  [draw] Card drawn: Search; Tin Street Cadet [c1] — card: Tin Street Cadet [c1]; last known: kind: CardLastKnownInformation
+  [draw] Resolution: -; -; -; success: True
+  [draw] Search decides PriorityDecisionRequest: 557.839 ms; observed options: 37; space size: unknown; success
+  [draw] Simple decides PriorityDecisionRequest: 0.794 ms; observed options: 1; space size: 1; success
+  [precombat main] Search decides PriorityDecisionRequest: 599.475 ms; observed options: 39; space size: unknown; success
+  [precombat main] Card tapped: Search; Mountain [c41] — last known: kind: CardLastKnownInformation
+  [precombat main] Mana added: Search; Mountain [c41] — amount: 1; last known: kind: CardLastKnownInformation; mana: RED
+  [precombat main] Search activates Mountain [c41] — ability: mana_red; last known: kind: CardLastKnownInformation
+  [precombat main] Card tapped: Search; Mountain [c54] — last known: kind: CardLastKnownInformation
+  [precombat main] Mana added: Search; Mountain [c54] — amount: 1; last known: kind: CardLastKnownInformation; mana: RED
+  [precombat main] Search activates Mountain [c54] — ability: mana_red; last known: kind: CardLastKnownInformation
+  [precombat main] Card tapped: Search; Mountain [c60] — last known: kind: CardLastKnownInformation
+  [precombat main] Mana added: Search; Mountain [c60] — amount: 1; last known: kind: CardLastKnownInformation; mana: RED
+  [precombat main] Search activates Mountain [c60] — ability: mana_red; last known: kind: CardLastKnownInformation
+  [precombat main] Mana paid: Search; Molten Ravager [c11] — last known: kind: CardLastKnownInformation; payment: RED: 3
+  [precombat main] Card moved: Search; Molten Ravager [c11] — card: Molten Ravager [c11]; from: HAND; last known: kind: CardLastKnownInformation; previous controller: Search; to: STACK
+  [precombat main] Search casts Molten Ravager [c11] — ability: cast:Molten Ravager
+  [precombat main] Search decides PriorityDecisionRequest: 6.948 ms; observed options: 1; space size: 1; success
+  [precombat main] Simple decides PriorityDecisionRequest: 0.866 ms; observed options: 1; space size: 1; success
+  [precombat main] Card moved: Search; Molten Ravager [c11] — card: Molten Ravager [c11]; from: STACK; last known: kind: CardLastKnownInformation; previous controller: Search; to: BATTLEFIELD
+  [precombat main] Resolution: Search; Molten Ravager [c11]; cast:Molten Ravager; success: True
+  [precombat main] Search decides PriorityDecisionRequest: 7.605 ms; observed options: 1; space size: 1; success
+  [precombat main] Simple decides PriorityDecisionRequest: 0.751 ms; observed options: 1; space size: 1; success
+  [begin combat] Search decides PriorityDecisionRequest: 6.652 ms; observed options: 1; space size: 1; success
+  [begin combat] Simple decides PriorityDecisionRequest: 0.665 ms; observed options: 1; space size: 1; success
+  [declare attackers] Search decides DeclareAttackersRequest: 32.698 ms; observed options: 1; space size: 1; success
+  [declare attackers] Search decides PriorityDecisionRequest: 5.914 ms; observed options: 1; space size: 1; success
+  [declare attackers] Simple decides PriorityDecisionRequest: 0.596 ms; observed options: 1; space size: 1; success
+  [end combat] Search decides PriorityDecisionRequest: 5.483 ms; observed options: 1; space size: 1; success
+  [end combat] Simple decides PriorityDecisionRequest: 0.572 ms; observed options: 1; space size: 1; success
+  [postcombat main] Search decides PriorityDecisionRequest: 6.763 ms; observed options: 1; space size: 1; success
+  [postcombat main] Simple decides PriorityDecisionRequest: 0.586 ms; observed options: 1; space size: 1; success
+  [end step] Search decides PriorityDecisionRequest: 32.888 ms; observed options: 1; space size: 1; success
+  [end step] Simple decides PriorityDecisionRequest: 1.235 ms; observed options: 1; space size: 1; success
+
+Turn 9
+  [upkeep] Simple chooses action: ability: cast:Stony Strength; source: Stony Strength [c88]; targets: Prized Unicorn [c76]
+  [upkeep] Simple decides PriorityDecisionRequest: 1.616 ms; observed options: 2; space size: 2; success
+  [upkeep] Card tapped: Simple; Forest [c98] — last known: kind: CardLastKnownInformation
+  [upkeep] Mana added: Simple; Forest [c98] — amount: 1; last known: kind: CardLastKnownInformation; mana: GREEN
+  [upkeep] Simple activates Forest [c98] — ability: mana_green; last known: kind: CardLastKnownInformation
+  [upkeep] Mana paid: Simple; Stony Strength [c88] — last known: kind: CardLastKnownInformation; payment: GREEN: 1
+  [upkeep] Card moved: Simple; Stony Strength [c88] — card: Stony Strength [c88]; from: HAND; last known: kind: CardLastKnownInformation; previous controller: Simple; to: STACK
+  [upkeep] Simple casts Stony Strength [c88] — ability: cast:Stony Strength
+  [upkeep] Simple decides PriorityDecisionRequest: 0.116 ms; observed options: 0; space size: unknown; success
+  [upkeep] Search decides PriorityDecisionRequest: 36.010 ms; observed options: 1; space size: 1; success
+  [upkeep] Counter placed: Simple; Prized Unicorn [c76] — amount: 1; counter: PLUS_ONE; last known: kind: CardLastKnownInformation
+  [upkeep] Card untapped: Simple; Prized Unicorn [c76] — last known: kind: CardLastKnownInformation
+  [upkeep] Card moved: Simple; Stony Strength [c88] — card: Stony Strength [c88]; from: STACK; last known: kind: CardLastKnownInformation; previous controller: Simple; to: GRAVEYARD
+  [upkeep] Resolution: Simple; Stony Strength [c88]; cast:Stony Strength; success: True
+  [upkeep] Simple decides PriorityDecisionRequest: 0.148 ms; observed options: 0; space size: unknown; success
+  [upkeep] Search decides PriorityDecisionRequest: 6.800 ms; observed options: 1; space size: 1; success
+  [draw] Card moved: Simple; Woodland Mystic [c69] — card: Woodland Mystic [c69]; from: DECK; last known: kind: CardLastKnownInformation; previous controller: Simple; to: HAND
+  [draw] Card drawn: Simple; Woodland Mystic [c69] — card: Woodland Mystic [c69]; last known: kind: CardLastKnownInformation
+  [draw] Resolution: -; -; -; success: True
+  [draw] Simple decides PriorityDecisionRequest: 0.155 ms; observed options: 0; space size: unknown; success
+  [draw] Search decides PriorityDecisionRequest: 6.080 ms; observed options: 1; space size: 1; success
+  [precombat main] Simple chooses land: source: Forest [c109]
+  [precombat main] Simple decides PriorityDecisionRequest: 1.148 ms; observed options: 2; space size: unknown; success
+  [precombat main] Card moved: Simple; Forest [c109] — card: Forest [c109]; from: HAND; last known: kind: CardLastKnownInformation; previous controller: Simple; to: BATTLEFIELD
+  [precombat main] Simple plays land Forest [c109] — lands played: 1; last known: kind: CardLastKnownInformation
+  [precombat main] Resolution: Simple; Forest [c109]; play_land; success: True
+  [precombat main] Simple chooses action: ability: cast:Rabid Bite; source: Rabid Bite [c91]; targets: Prized Unicorn [c76], Goblin Tunneler [c4]
+  [precombat main] Simple decides PriorityDecisionRequest: 4.919 ms; observed options: 5; space size: 5; success
+  [precombat main] Card tapped: Simple; Forest [c100] — last known: kind: CardLastKnownInformation
+  [precombat main] Mana added: Simple; Forest [c100] — amount: 1; last known: kind: CardLastKnownInformation; mana: GREEN
+  [precombat main] Simple activates Forest [c100] — ability: mana_green; last known: kind: CardLastKnownInformation
+  [precombat main] Card tapped: Simple; Forest [c103] — last known: kind: CardLastKnownInformation
+  [precombat main] Mana added: Simple; Forest [c103] — amount: 1; last known: kind: CardLastKnownInformation; mana: GREEN
+  [precombat main] Simple activates Forest [c103] — ability: mana_green; last known: kind: CardLastKnownInformation
+  [precombat main] Mana paid: Simple; Rabid Bite [c91] — last known: kind: CardLastKnownInformation; payment: GREEN: 2
+  [precombat main] Card moved: Simple; Rabid Bite [c91] — card: Rabid Bite [c91]; from: HAND; last known: kind: CardLastKnownInformation; previous controller: Simple; to: STACK
+  [precombat main] Simple casts Rabid Bite [c91] — ability: cast:Rabid Bite
+  [precombat main] Simple decides PriorityDecisionRequest: 0.129 ms; observed options: 0; space size: unknown; success
+  [precombat main] Search decides PriorityDecisionRequest: 41.133 ms; observed options: 1; space size: 1; success
+  [precombat main] Damage dealt: Simple; Prized Unicorn [c76] — amount: 3; combat: False; last known: kind: CardLastKnownInformation; life loss: 0; source revision: 2; target: Goblin Tunneler; target object: Goblin Tunneler [c4]; target revision: 3
+  [precombat main] Card moved: Simple; Rabid Bite [c91] — card: Rabid Bite [c91]; from: STACK; last known: kind: CardLastKnownInformation; previous controller: Simple; to: GRAVEYARD
+  [precombat main] Card moved: Search; Goblin Tunneler [c4] — card: Goblin Tunneler [c4]; from: BATTLEFIELD; last known: kind: CardLastKnownInformation; previous controller: Search; to: GRAVEYARD
+  [precombat main] Resolution: Simple; Rabid Bite [c91]; cast:Rabid Bite; success: True
+  [precombat main] Simple chooses action: ability: cast:Woodland Mystic; source: Woodland Mystic [c69]; targets: none
+  [precombat main] Simple decides PriorityDecisionRequest: 4.321 ms; observed options: 2; space size: 2; success
+  [precombat main] Card tapped: Simple; Forest [c107] — last known: kind: CardLastKnownInformation
+  [precombat main] Mana added: Simple; Forest [c107] — amount: 1; last known: kind: CardLastKnownInformation; mana: GREEN
+  [precombat main] Simple activates Forest [c107] — ability: mana_green; last known: kind: CardLastKnownInformation
+  [precombat main] Card tapped: Simple; Forest [c109] — last known: kind: CardLastKnownInformation
+  [precombat main] Mana added: Simple; Forest [c109] — amount: 1; last known: kind: CardLastKnownInformation; mana: GREEN
+  [precombat main] Simple activates Forest [c109] — ability: mana_green; last known: kind: CardLastKnownInformation
+  [precombat main] Mana paid: Simple; Woodland Mystic [c69] — last known: kind: CardLastKnownInformation; payment: GREEN: 2
+  [precombat main] Card moved: Simple; Woodland Mystic [c69] — card: Woodland Mystic [c69]; from: HAND; last known: kind: CardLastKnownInformation; previous controller: Simple; to: STACK
+  [precombat main] Simple casts Woodland Mystic [c69] — ability: cast:Woodland Mystic
+  [precombat main] Simple decides PriorityDecisionRequest: 0.166 ms; observed options: 0; space size: unknown; success
+  [precombat main] Search decides PriorityDecisionRequest: 89.450 ms; observed options: 1; space size: 1; success
+  [precombat main] Card moved: Simple; Woodland Mystic [c69] — card: Woodland Mystic [c69]; from: STACK; last known: kind: CardLastKnownInformation; previous controller: Simple; to: BATTLEFIELD
+  [precombat main] Resolution: Simple; Woodland Mystic [c69]; cast:Woodland Mystic; success: True
+  [precombat main] Simple decides PriorityDecisionRequest: 1.508 ms; observed options: 1; space size: 1; success
+  [precombat main] Search decides PriorityDecisionRequest: 7.484 ms; observed options: 1; space size: 1; success
+  [begin combat] Simple decides PriorityDecisionRequest: 0.113 ms; observed options: 0; space size: unknown; success
+  [begin combat] Search decides PriorityDecisionRequest: 6.849 ms; observed options: 1; space size: 1; success
+  [declare attackers] Simple chooses attack: attackers: Prized Unicorn [c76]
+  [declare attackers] Simple decides DeclareAttackersRequest: 0.354 ms; observed options: 1; space size: unknown; success
+  [declare attackers] Card tapped: Simple; Prized Unicorn [c76]
+  [declare attackers] Simple attacks with Prized Unicorn [c76] — attacker: Prized Unicorn [c76]; defender: Search
+  [declare attackers] Attackers declared: Simple; - — attackers: Prized Unicorn [c76]
+  [declare attackers] Simple decides PriorityDecisionRequest: 0.135 ms; observed options: 0; space size: unknown; success
+  [declare attackers] Search decides PriorityDecisionRequest: 7.329 ms; observed options: 1; space size: 1; success
+  [declare blockers] Search decides DeclareBlockersRequest: 38.279 ms; observed options: 1; space size: 1; success
+  [declare blockers] Search blocks with Molten Ravager [c11] — attacker: Prized Unicorn [c76]; blocker: Molten Ravager [c11]
+  [declare blockers] Attacker blocked: Simple; Prized Unicorn [c76] — blockers: Molten Ravager [c11]
+  [declare blockers] Blockers declared: Search; - — blockers: Molten Ravager [c11], Prized Unicorn [c76]
+  [declare blockers] Simple decides PriorityDecisionRequest: 0.111 ms; observed options: 0; space size: unknown; success
+  [declare blockers] Search decides PriorityDecisionRequest: 7.513 ms; observed options: 1; space size: 1; success
+  [second combat damage] Damage dealt: Simple; Prized Unicorn [c76] — amount: 3; combat: True; last known: kind: CardLastKnownInformation; life loss: 0; source revision: 3; target: Molten Ravager; target object: Molten Ravager [c11]; target revision: 3
+  [second combat damage] Simple decides PriorityDecisionRequest: 0.106 ms; observed options: 0; space size: unknown; success
+  [second combat damage] Search decides PriorityDecisionRequest: 6.893 ms; observed options: 1; space size: 1; success
+  [end combat] Simple decides PriorityDecisionRequest: 0.120 ms; observed options: 0; space size: unknown; success
+  [end combat] Search decides PriorityDecisionRequest: 7.407 ms; observed options: 1; space size: 1; success
+  [postcombat main] Simple decides PriorityDecisionRequest: 1.289 ms; observed options: 1; space size: 1; success
+  [postcombat main] Search decides PriorityDecisionRequest: 7.479 ms; observed options: 1; space size: 1; success
+  [end step] Simple decides PriorityDecisionRequest: 0.112 ms; observed options: 0; space size: unknown; success
+  [end step] Search decides PriorityDecisionRequest: 42.689 ms; observed options: 1; space size: 1; success
+
+Turn 10
+  [upkeep] Search decides PriorityDecisionRequest: 605.832 ms; observed options: 78; space size: unknown; success
+  [upkeep] Simple decides PriorityDecisionRequest: 0.124 ms; observed options: 0; space size: unknown; success
+  [draw] Card moved: Search; Ogre Battledriver [c15] — card: Ogre Battledriver [c15]; from: DECK; last known: kind: CardLastKnownInformation; previous controller: Search; to: HAND
+  [draw] Card drawn: Search; Ogre Battledriver [c15] — card: Ogre Battledriver [c15]; last known: kind: CardLastKnownInformation
+  [draw] Resolution: -; -; -; success: True
+  [draw] Search decides PriorityDecisionRequest: 552.222 ms; observed options: 67; space size: unknown; success
+  [draw] Card tapped: Search; Goblin Tunneler [c5] — last known: kind: CardLastKnownInformation
+  [draw] Search activates Goblin Tunneler [c5] — ability: tunnel
+  [draw] Search decides PriorityDecisionRequest: 622.468 ms; observed options: 39; space size: unknown; success
+  [draw] Card tapped: Search; Mountain [c41] — last known: kind: CardLastKnownInformation
+  [draw] Mana added: Search; Mountain [c41] — amount: 1; last known: kind: CardLastKnownInformation; mana: RED
+  [draw] Search activates Mountain [c41] — ability: mana_red; last known: kind: CardLastKnownInformation
+  [draw] Mana paid: Search; Molten Ravager [c11] — last known: kind: CardLastKnownInformation; payment: RED: 1
+  [draw] Search activates Molten Ravager [c11] — ability: power_up
+  [draw] Search decides PriorityDecisionRequest: 558.067 ms; observed options: 32; space size: unknown; success
+  [draw] Card tapped: Search; Mountain [c54] — last known: kind: CardLastKnownInformation
+  [draw] Mana added: Search; Mountain [c54] — amount: 1; last known: kind: CardLastKnownInformation; mana: RED
+  [draw] Search activates Mountain [c54] — ability: mana_red; last known: kind: CardLastKnownInformation
+  [draw] Mana paid: Search; Molten Ravager [c11] — last known: kind: CardLastKnownInformation; payment: RED: 1
+  [draw] Search activates Molten Ravager [c11] — ability: power_up
+  [draw] Search decides PriorityDecisionRequest: 570.168 ms; observed options: 28; space size: unknown; success
+  [draw] Card tapped: Search; Mountain [c60] — last known: kind: CardLastKnownInformation
+  [draw] Mana added: Search; Mountain [c60] — amount: 1; last known: kind: CardLastKnownInformation; mana: RED
+  [draw] Search activates Mountain [c60] — ability: mana_red; last known: kind: CardLastKnownInformation
+  [draw] Mana paid: Search; Molten Ravager [c11] — last known: kind: CardLastKnownInformation; payment: RED: 1
+  [draw] Search activates Molten Ravager [c11] — ability: power_up
+  [draw] Search decides PriorityDecisionRequest: 7.948 ms; observed options: 1; space size: 1; success
+  [draw] Simple decides PriorityDecisionRequest: 0.116 ms; observed options: 0; space size: unknown; success
+  [draw] Temporary effect applied: Search; Molten Ravager [c11] — last known: kind: CardLastKnownInformation; targets: Molten Ravager [c11]
+  [draw] Resolution: Search; Molten Ravager [c11]; power_up; success: True
+  [draw] Search decides PriorityDecisionRequest: 7.151 ms; observed options: 1; space size: 1; success
+  [draw] Simple decides PriorityDecisionRequest: 0.103 ms; observed options: 0; space size: unknown; success
+  [draw] Temporary effect applied: Search; Molten Ravager [c11] — last known: kind: CardLastKnownInformation; targets: Molten Ravager [c11]
+  [draw] Resolution: Search; Molten Ravager [c11]; power_up; success: True
+  [draw] Search decides PriorityDecisionRequest: 7.491 ms; observed options: 1; space size: 1; success
+  [draw] Simple decides PriorityDecisionRequest: 0.097 ms; observed options: 0; space size: unknown; success
+  [draw] Temporary effect applied: Search; Molten Ravager [c11] — last known: kind: CardLastKnownInformation; targets: Molten Ravager [c11]
+  [draw] Resolution: Search; Molten Ravager [c11]; power_up; success: True
+  [draw] Search decides PriorityDecisionRequest: 7.533 ms; observed options: 1; space size: 1; success
+  [draw] Simple decides PriorityDecisionRequest: 0.121 ms; observed options: 0; space size: unknown; success
+  [draw] Resolution: Search; Goblin Tunneler [c5]; tunnel; success: False
+  [draw] Search decides PriorityDecisionRequest: 6.951 ms; observed options: 1; space size: 1; success
+  [draw] Simple decides PriorityDecisionRequest: 0.099 ms; observed options: 0; space size: unknown; success
+  [precombat main] Search decides PriorityDecisionRequest: 9.211 ms; observed options: 1; space size: 1; success
+  [precombat main] Simple decides PriorityDecisionRequest: 0.115 ms; observed options: 0; space size: unknown; success
+  [begin combat] Search decides PriorityDecisionRequest: 8.547 ms; observed options: 1; space size: 1; success
+  [begin combat] Simple decides PriorityDecisionRequest: 0.139 ms; observed options: 0; space size: unknown; success
+  [declare attackers] Search decides DeclareAttackersRequest: 558.160 ms; observed options: 25; space size: unknown; success
+  [declare attackers] Card tapped: Search; Molten Ravager [c11]
+  [declare attackers] Search attacks with Molten Ravager [c11] — attacker: Molten Ravager [c11]; defender: Simple
+  [declare attackers] Attackers declared: Search; - — attackers: Molten Ravager [c11]
+  [declare attackers] Search decides PriorityDecisionRequest: 8.181 ms; observed options: 1; space size: 1; success
+  [declare attackers] Simple decides PriorityDecisionRequest: 0.110 ms; observed options: 0; space size: unknown; success
+  [declare blockers] Simple chooses block: blockers: Woodland Mystic [c69], Molten Ravager [c11]
+  [declare blockers] Simple decides DeclareBlockersRequest: 0.317 ms; observed options: 1; space size: unknown; success
+  [declare blockers] Simple blocks with Woodland Mystic [c69] — attacker: Molten Ravager [c11]; blocker: Woodland Mystic [c69]
+  [declare blockers] Attacker blocked: Search; Molten Ravager [c11] — blockers: Woodland Mystic [c69]
+  [declare blockers] Blockers declared: Simple; - — blockers: Woodland Mystic [c69], Molten Ravager [c11]
+  [declare blockers] Search decides PriorityDecisionRequest: 49.662 ms; observed options: 1; space size: 1; success
+  [declare blockers] Simple decides PriorityDecisionRequest: 0.127 ms; observed options: 0; space size: unknown; success
+  [second combat damage] Damage dealt: Simple; Woodland Mystic [c69] — amount: 1; combat: True; last known: kind: CardLastKnownInformation; life loss: 0; source revision: 3; target: Molten Ravager; target object: Molten Ravager [c11]; target revision: 3
+  [second combat damage] Damage dealt: Search; Molten Ravager [c11] — amount: 3; combat: True; last known: kind: CardLastKnownInformation; life loss: 0; source revision: 3; target: Woodland Mystic; target object: Woodland Mystic [c69]; target revision: 3
+  [second combat damage] Card moved: Simple; Woodland Mystic [c69] — card: Woodland Mystic [c69]; from: BATTLEFIELD; last known: kind: CardLastKnownInformation; previous controller: Simple; to: GRAVEYARD
+  [second combat damage] Search decides PriorityDecisionRequest: 7.586 ms; observed options: 1; space size: 1; success
+  [second combat damage] Simple decides PriorityDecisionRequest: 0.115 ms; observed options: 0; space size: unknown; success
+  [end combat] Search decides PriorityDecisionRequest: 8.095 ms; observed options: 1; space size: 1; success
+  [end combat] Simple decides PriorityDecisionRequest: 0.108 ms; observed options: 0; space size: unknown; success
+  [postcombat main] Search decides PriorityDecisionRequest: 70.988 ms; observed options: 1; space size: 1; success
+  [postcombat main] Simple decides PriorityDecisionRequest: 0.137 ms; observed options: 0; space size: unknown; success
+  [end step] Search decides PriorityDecisionRequest: 52.007 ms; observed options: 1; space size: 1; success
+  [end step] Simple decides PriorityDecisionRequest: 0.145 ms; observed options: 0; space size: unknown; success
+
+Turn 11
+  [upkeep] Simple decides PriorityDecisionRequest: 0.150 ms; observed options: 0; space size: unknown; success
+  [upkeep] Search decides PriorityDecisionRequest: 7.776 ms; observed options: 1; space size: 1; success
+  [draw] Card moved: Simple; Forest [c114] — card: Forest [c114]; from: DECK; last known: kind: CardLastKnownInformation; previous controller: Simple; to: HAND
+  [draw] Card drawn: Simple; Forest [c114] — card: Forest [c114]; last known: kind: CardLastKnownInformation
+  [draw] Resolution: -; -; -; success: True
+  [draw] Simple decides PriorityDecisionRequest: 0.106 ms; observed options: 0; space size: unknown; success
+  [draw] Search decides PriorityDecisionRequest: 6.859 ms; observed options: 1; space size: 1; success
+  [precombat main] Simple chooses land: source: Forest [c110]
+  [precombat main] Simple decides PriorityDecisionRequest: 1.021 ms; observed options: 2; space size: unknown; success
+  [precombat main] Card moved: Simple; Forest [c110] — card: Forest [c110]; from: HAND; last known: kind: CardLastKnownInformation; previous controller: Simple; to: BATTLEFIELD
+  [precombat main] Simple plays land Forest [c110] — lands played: 1; last known: kind: CardLastKnownInformation
+  [precombat main] Resolution: Simple; Forest [c110]; play_land; success: True
+  [precombat main] Simple chooses action: ability: cast:Gigantosaurus; source: Gigantosaurus [c80]; targets: none
+  [precombat main] Simple decides PriorityDecisionRequest: 2.075 ms; observed options: 2; space size: 2; success
+  [precombat main] Card tapped: Simple; Forest [c98] — last known: kind: CardLastKnownInformation
+  [precombat main] Mana added: Simple; Forest [c98] — amount: 1; last known: kind: CardLastKnownInformation; mana: GREEN
+  [precombat main] Simple activates Forest [c98] — ability: mana_green; last known: kind: CardLastKnownInformation
+  [precombat main] Card tapped: Simple; Forest [c100] — last known: kind: CardLastKnownInformation
+  [precombat main] Mana added: Simple; Forest [c100] — amount: 1; last known: kind: CardLastKnownInformation; mana: GREEN
+  [precombat main] Simple activates Forest [c100] — ability: mana_green; last known: kind: CardLastKnownInformation
+  [precombat main] Card tapped: Simple; Forest [c103] — last known: kind: CardLastKnownInformation
+  [precombat main] Mana added: Simple; Forest [c103] — amount: 1; last known: kind: CardLastKnownInformation; mana: GREEN
+  [precombat main] Simple activates Forest [c103] — ability: mana_green; last known: kind: CardLastKnownInformation
+  [precombat main] Card tapped: Simple; Forest [c107] — last known: kind: CardLastKnownInformation
+  [precombat main] Mana added: Simple; Forest [c107] — amount: 1; last known: kind: CardLastKnownInformation; mana: GREEN
+  [precombat main] Simple activates Forest [c107] — ability: mana_green; last known: kind: CardLastKnownInformation
+  [precombat main] Card tapped: Simple; Forest [c109] — last known: kind: CardLastKnownInformation
+  [precombat main] Mana added: Simple; Forest [c109] — amount: 1; last known: kind: CardLastKnownInformation; mana: GREEN
+  [precombat main] Simple activates Forest [c109] — ability: mana_green; last known: kind: CardLastKnownInformation
+  [precombat main] Mana paid: Simple; Gigantosaurus [c80] — last known: kind: CardLastKnownInformation; payment: GREEN: 5
+  [precombat main] Card moved: Simple; Gigantosaurus [c80] — card: Gigantosaurus [c80]; from: HAND; last known: kind: CardLastKnownInformation; previous controller: Simple; to: STACK
+  [precombat main] Simple casts Gigantosaurus [c80] — ability: cast:Gigantosaurus
+  [precombat main] Simple decides PriorityDecisionRequest: 0.080 ms; observed options: 0; space size: unknown; success
+  [precombat main] Search decides PriorityDecisionRequest: 54.332 ms; observed options: 1; space size: 1; success
+  [precombat main] Card moved: Simple; Gigantosaurus [c80] — card: Gigantosaurus [c80]; from: STACK; last known: kind: CardLastKnownInformation; previous controller: Simple; to: BATTLEFIELD
+  [precombat main] Resolution: Simple; Gigantosaurus [c80]; cast:Gigantosaurus; success: True
+  [precombat main] Simple decides PriorityDecisionRequest: 0.081 ms; observed options: 0; space size: unknown; success
+  [precombat main] Search decides PriorityDecisionRequest: 7.938 ms; observed options: 1; space size: 1; success
+  [begin combat] Simple decides PriorityDecisionRequest: 0.084 ms; observed options: 0; space size: unknown; success
+  [begin combat] Search decides PriorityDecisionRequest: 7.653 ms; observed options: 1; space size: 1; success
+  [declare attackers] Simple chooses attack: attackers: Prized Unicorn [c76]
+  [declare attackers] Simple decides DeclareAttackersRequest: 0.319 ms; observed options: 1; space size: unknown; success
+  [declare attackers] Card tapped: Simple; Prized Unicorn [c76]
+  [declare attackers] Simple attacks with Prized Unicorn [c76] — attacker: Prized Unicorn [c76]; defender: Search
+  [declare attackers] Attackers declared: Simple; - — attackers: Prized Unicorn [c76]
+  [declare attackers] Simple decides PriorityDecisionRequest: 0.069 ms; observed options: 0; space size: unknown; success
+  [declare attackers] Search decides PriorityDecisionRequest: 7.623 ms; observed options: 1; space size: 1; success
+  [declare blockers] Search decides DeclareBlockersRequest: 85.313 ms; observed options: 1; space size: 1; success
+  [declare blockers] Simple decides PriorityDecisionRequest: 0.090 ms; observed options: 0; space size: unknown; success
+  [declare blockers] Search decides PriorityDecisionRequest: 8.287 ms; observed options: 1; space size: 1; success
+  [second combat damage] Damage dealt: Simple; Prized Unicorn [c76] — amount: 3; combat: True; last known: kind: CardLastKnownInformation; life loss: 3; source revision: 3; target: Search; target object: Search; target revision: -
+  [second combat damage] Simple decides PriorityDecisionRequest: 0.080 ms; observed options: 0; space size: unknown; success
+  [second combat damage] Search decides PriorityDecisionRequest: 7.481 ms; observed options: 1; space size: 1; success
+  [end combat] Simple decides PriorityDecisionRequest: 0.073 ms; observed options: 0; space size: unknown; success
+  [end combat] Search decides PriorityDecisionRequest: 7.276 ms; observed options: 1; space size: 1; success
+  [postcombat main] Simple decides PriorityDecisionRequest: 0.079 ms; observed options: 0; space size: unknown; success
+  [postcombat main] Search decides PriorityDecisionRequest: 7.909 ms; observed options: 1; space size: 1; success
+  [end step] Simple decides PriorityDecisionRequest: 0.083 ms; observed options: 0; space size: unknown; success
+  [end step] Search decides PriorityDecisionRequest: 59.385 ms; observed options: 1; space size: 1; success
+
+Turn 12
+  [upkeep] Search decides PriorityDecisionRequest: 603.408 ms; observed options: 60; space size: unknown; success
+  [upkeep] Simple decides PriorityDecisionRequest: 0.095 ms; observed options: 0; space size: unknown; success
+  [draw] Card moved: Search; Mountain [c48] — card: Mountain [c48]; from: DECK; last known: kind: CardLastKnownInformation; previous controller: Search; to: HAND
+  [draw] Card drawn: Search; Mountain [c48] — card: Mountain [c48]; last known: kind: CardLastKnownInformation
+  [draw] Resolution: -; -; -; success: True
+  [draw] Search decides PriorityDecisionRequest: 576.753 ms; observed options: 62; space size: unknown; success
+  [draw] Simple decides PriorityDecisionRequest: 0.087 ms; observed options: 0; space size: unknown; success
+  [precombat main] Search decides PriorityDecisionRequest: 571.573 ms; observed options: 86; space size: unknown; success
+  [precombat main] Card moved: Search; Mountain [c48] — card: Mountain [c48]; from: HAND; last known: kind: CardLastKnownInformation; previous controller: Search; to: BATTLEFIELD
+  [precombat main] Search plays land Mountain [c48] — lands played: 1; last known: kind: CardLastKnownInformation
+  [precombat main] Resolution: Search; Mountain [c48]; play_land; success: True
+  [precombat main] Search decides PriorityDecisionRequest: 653.543 ms; observed options: 87; space size: unknown; success
+  [precombat main] Card tapped: Search; Mountain [c41] — last known: kind: CardLastKnownInformation
+  [precombat main] Mana added: Search; Mountain [c41] — amount: 1; last known: kind: CardLastKnownInformation; mana: RED
+  [precombat main] Search activates Mountain [c41] — ability: mana_red; last known: kind: CardLastKnownInformation
+  [precombat main] Card tapped: Search; Mountain [c48] — last known: kind: CardLastKnownInformation
+  [precombat main] Mana added: Search; Mountain [c48] — amount: 1; last known: kind: CardLastKnownInformation; mana: RED
+  [precombat main] Search activates Mountain [c48] — ability: mana_red; last known: kind: CardLastKnownInformation
+  [precombat main] Card tapped: Search; Mountain [c54] — last known: kind: CardLastKnownInformation
+  [precombat main] Mana added: Search; Mountain [c54] — amount: 1; last known: kind: CardLastKnownInformation; mana: RED
+  [precombat main] Search activates Mountain [c54] — ability: mana_red; last known: kind: CardLastKnownInformation
+  [precombat main] Card tapped: Search; Mountain [c60] — last known: kind: CardLastKnownInformation
+  [precombat main] Mana added: Search; Mountain [c60] — amount: 1; last known: kind: CardLastKnownInformation; mana: RED
+  [precombat main] Search activates Mountain [c60] — ability: mana_red; last known: kind: CardLastKnownInformation
+  [precombat main] Mana paid: Search; Goblin Gang Leader [c12] — last known: kind: CardLastKnownInformation; payment: RED: 4
+  [precombat main] Card moved: Search; Goblin Gang Leader [c12] — card: Goblin Gang Leader [c12]; from: HAND; last known: kind: CardLastKnownInformation; previous controller: Search; to: STACK
+  [precombat main] Search casts Goblin Gang Leader [c12] — ability: cast:Goblin Gang Leader
+  [precombat main] Search decides PriorityDecisionRequest: 640.542 ms; observed options: 44; space size: unknown; success
+  [precombat main] Card tapped: Search; Goblin Tunneler [c5] — last known: kind: CardLastKnownInformation
+  [precombat main] Search activates Goblin Tunneler [c5] — ability: tunnel
+  [precombat main] Search decides PriorityDecisionRequest: 7.930 ms; observed options: 1; space size: 1; success
+  [precombat main] Simple decides PriorityDecisionRequest: 0.081 ms; observed options: 0; space size: unknown; success
+  [precombat main] Temporary effect applied: Search; Goblin Tunneler [c5] — last known: kind: CardLastKnownInformation; targets: Molten Ravager [c11]
+  [precombat main] Resolution: Search; Goblin Tunneler [c5]; tunnel; success: True
+  [precombat main] Search decides PriorityDecisionRequest: 8.335 ms; observed options: 1; space size: 1; success
+  [precombat main] Simple decides PriorityDecisionRequest: 0.084 ms; observed options: 0; space size: unknown; success
+  [precombat main] Card moved: Search; Goblin Gang Leader [c12] — card: Goblin Gang Leader [c12]; from: STACK; last known: kind: CardLastKnownInformation; previous controller: Search; to: BATTLEFIELD
+  [precombat main] Trigger detected: Search; Goblin Gang Leader [c12]; gang_leader_etb
+  [precombat main] Search decides TriggerOrderRequest: 7.877 ms; observed options: 1; space size: 1; success
+  [precombat main] Search decides AbilityDecisionRequest: 7.224 ms; observed options: 1; space size: 1; success
+  [precombat main] Resolution: Search; Goblin Gang Leader [c12]; cast:Goblin Gang Leader; success: True
+  [precombat main] Search decides PriorityDecisionRequest: 7.575 ms; observed options: 1; space size: 1; success
+  [precombat main] Simple decides PriorityDecisionRequest: 0.084 ms; observed options: 0; space size: unknown; success
+  [precombat main] Search decides ReplacementOrderRequest: 875.485 ms; observed options: 72; space size: unknown; success
+  [precombat main] Card moved: Search; Goblin [c121] — card: Goblin [c121]; created token: True; from: -; previous controller: Search; to: BATTLEFIELD
+  [precombat main] Card moved: Search; Goblin [c122] — card: Goblin [c122]; created token: True; from: -; previous controller: Search; to: BATTLEFIELD
+  [precombat main] Resolution: Search; Goblin Gang Leader [c12]; gang_leader_etb; success: True
+  [precombat main] Search decides PriorityDecisionRequest: 8.884 ms; observed options: 1; space size: 1; success
+  [precombat main] Simple decides PriorityDecisionRequest: 0.081 ms; observed options: 0; space size: unknown; success
+  [begin combat] Search decides PriorityDecisionRequest: 9.493 ms; observed options: 1; space size: 1; success
+  [begin combat] Simple decides PriorityDecisionRequest: 0.095 ms; observed options: 0; space size: unknown; success
+  [declare attackers] Search decides DeclareAttackersRequest: 667.462 ms; observed options: 23; space size: unknown; success
+  [declare attackers] Card tapped: Search; Molten Ravager [c11]
+  [declare attackers] Search attacks with Molten Ravager [c11] — attacker: Molten Ravager [c11]; defender: Simple
+  [declare attackers] Attackers declared: Search; - — attackers: Molten Ravager [c11]
+  [declare attackers] Search decides PriorityDecisionRequest: 11.026 ms; observed options: 1; space size: 1; success
+  [declare attackers] Simple decides PriorityDecisionRequest: 0.260 ms; observed options: 0; space size: unknown; success
+  [declare blockers] Simple chooses block: blockers: none
+  [declare blockers] Simple decides DeclareBlockersRequest: 0.513 ms; observed options: 1; space size: unknown; success
+  [declare blockers] Search decides PriorityDecisionRequest: 76.952 ms; observed options: 1; space size: 1; success
+  [declare blockers] Simple decides PriorityDecisionRequest: 0.203 ms; observed options: 0; space size: unknown; success
+  [second combat damage] Search decides PriorityDecisionRequest: 12.085 ms; observed options: 1; space size: 1; success
+  [second combat damage] Simple decides PriorityDecisionRequest: 0.115 ms; observed options: 0; space size: unknown; success
+  [end combat] Search decides PriorityDecisionRequest: 77.099 ms; observed options: 1; space size: 1; success
+  [end combat] Simple decides PriorityDecisionRequest: 0.098 ms; observed options: 0; space size: unknown; success
+  [postcombat main] Search decides PriorityDecisionRequest: 9.764 ms; observed options: 1; space size: 1; success
+  [postcombat main] Simple decides PriorityDecisionRequest: 0.103 ms; observed options: 0; space size: unknown; success
+  [end step] Search decides PriorityDecisionRequest: 112.935 ms; observed options: 1; space size: 1; success
+  [end step] Simple decides PriorityDecisionRequest: 0.142 ms; observed options: 0; space size: unknown; success
+
+Turn 13
+  [upkeep] Simple decides PriorityDecisionRequest: 0.077 ms; observed options: 0; space size: unknown; success
+  [upkeep] Search decides PriorityDecisionRequest: 119.105 ms; observed options: 1; space size: 1; success
+  [draw] Card moved: Simple; Epic Proportions [c95] — card: Epic Proportions [c95]; from: DECK; last known: kind: CardLastKnownInformation; previous controller: Simple; to: HAND
+  [draw] Card drawn: Simple; Epic Proportions [c95] — card: Epic Proportions [c95]; last known: kind: CardLastKnownInformation
+  [draw] Resolution: -; -; -; success: True
+  [draw] Simple chooses action: ability: cast:aura; source: Epic Proportions [c95]; targets: Prized Unicorn [c76]
+  [draw] Simple decides PriorityDecisionRequest: 4.140 ms; observed options: 8; space size: 8; success
+  [draw] Card tapped: Simple; Forest [c98] — last known: kind: CardLastKnownInformation
+  [draw] Mana added: Simple; Forest [c98] — amount: 1; last known: kind: CardLastKnownInformation; mana: GREEN
+  [draw] Simple activates Forest [c98] — ability: mana_green; last known: kind: CardLastKnownInformation
+  [draw] Card tapped: Simple; Forest [c100] — last known: kind: CardLastKnownInformation
+  [draw] Mana added: Simple; Forest [c100] — amount: 1; last known: kind: CardLastKnownInformation; mana: GREEN
+  [draw] Simple activates Forest [c100] — ability: mana_green; last known: kind: CardLastKnownInformation
+  [draw] Card tapped: Simple; Forest [c103] — last known: kind: CardLastKnownInformation
+  [draw] Mana added: Simple; Forest [c103] — amount: 1; last known: kind: CardLastKnownInformation; mana: GREEN
+  [draw] Simple activates Forest [c103] — ability: mana_green; last known: kind: CardLastKnownInformation
+  [draw] Card tapped: Simple; Forest [c107] — last known: kind: CardLastKnownInformation
+  [draw] Mana added: Simple; Forest [c107] — amount: 1; last known: kind: CardLastKnownInformation; mana: GREEN
+  [draw] Simple activates Forest [c107] — ability: mana_green; last known: kind: CardLastKnownInformation
+  [draw] Card tapped: Simple; Forest [c109] — last known: kind: CardLastKnownInformation
+  [draw] Mana added: Simple; Forest [c109] — amount: 1; last known: kind: CardLastKnownInformation; mana: GREEN
+  [draw] Simple activates Forest [c109] — ability: mana_green; last known: kind: CardLastKnownInformation
+  [draw] Card tapped: Simple; Forest [c110] — last known: kind: CardLastKnownInformation
+  [draw] Mana added: Simple; Forest [c110] — amount: 1; last known: kind: CardLastKnownInformation; mana: GREEN
+  [draw] Simple activates Forest [c110] — ability: mana_green; last known: kind: CardLastKnownInformation
+  [draw] Mana paid: Simple; Epic Proportions [c95] — last known: kind: CardLastKnownInformation; payment: GREEN: 6
+  [draw] Card moved: Simple; Epic Proportions [c95] — card: Epic Proportions [c95]; from: HAND; last known: kind: CardLastKnownInformation; previous controller: Simple; to: STACK
+  [draw] Simple casts Epic Proportions [c95] — ability: cast:aura
+  [draw] Simple decides PriorityDecisionRequest: 0.096 ms; observed options: 0; space size: unknown; success
+  [draw] Search decides PriorityDecisionRequest: 73.830 ms; observed options: 1; space size: 1; success
+  [draw] Card moved: Simple; Epic Proportions [c95] — card: Epic Proportions [c95]; from: STACK; last known: kind: CardLastKnownInformation; previous controller: Simple; to: BATTLEFIELD
+  [draw] Attached: Simple; Epic Proportions [c95] — host: Prized Unicorn [c76]; last known: kind: CardLastKnownInformation
+  [draw] Resolution: Simple; Epic Proportions [c95]; cast:aura; success: True
+  [draw] Simple decides PriorityDecisionRequest: 0.107 ms; observed options: 0; space size: unknown; success
+  [draw] Search decides PriorityDecisionRequest: 10.347 ms; observed options: 1; space size: 1; success
+  [precombat main] Simple chooses land: source: Forest [c114]
+  [precombat main] Simple decides PriorityDecisionRequest: 0.821 ms; observed options: 2; space size: unknown; success
+  [precombat main] Card moved: Simple; Forest [c114] — card: Forest [c114]; from: HAND; last known: kind: CardLastKnownInformation; previous controller: Simple; to: BATTLEFIELD
+  [precombat main] Simple plays land Forest [c114] — lands played: 1; last known: kind: CardLastKnownInformation
+  [precombat main] Resolution: Simple; Forest [c114]; play_land; success: True
+  [precombat main] Simple decides PriorityDecisionRequest: 0.069 ms; observed options: 0; space size: unknown; success
+  [precombat main] Search decides PriorityDecisionRequest: 8.637 ms; observed options: 1; space size: 1; success
+  [begin combat] Simple decides PriorityDecisionRequest: 0.074 ms; observed options: 0; space size: unknown; success
+  [begin combat] Search decides PriorityDecisionRequest: 8.187 ms; observed options: 1; space size: 1; success
+  [declare attackers] Simple chooses attack: attackers: Prized Unicorn [c76], Gigantosaurus [c80]
+  [declare attackers] Simple decides DeclareAttackersRequest: 0.386 ms; observed options: 1; space size: unknown; success
+  [declare attackers] Card tapped: Simple; Prized Unicorn [c76]
+  [declare attackers] Simple attacks with Prized Unicorn [c76] — attacker: Prized Unicorn [c76]; defender: Search
+  [declare attackers] Card tapped: Simple; Gigantosaurus [c80]
+  [declare attackers] Simple attacks with Gigantosaurus [c80] — attacker: Gigantosaurus [c80]; defender: Search
+  [declare attackers] Attackers declared: Simple; - — attackers: Prized Unicorn [c76], Gigantosaurus [c80]
+  [declare attackers] Simple decides PriorityDecisionRequest: 0.072 ms; observed options: 0; space size: unknown; success
+  [declare attackers] Search decides PriorityDecisionRequest: 8.262 ms; observed options: 1; space size: 1; success
+  [declare blockers] Search decides DeclareBlockersRequest: 112.603 ms; observed options: 1; space size: 1; success
+  [declare blockers] Search blocks with Goblin Gang Leader [c12] — attacker: Prized Unicorn [c76]; blocker: Goblin Gang Leader [c12]
+  [declare blockers] Search blocks with Goblin [c121] — attacker: Prized Unicorn [c76]; blocker: Goblin [c121]
+  [declare blockers] Search blocks with Goblin [c122] — attacker: Prized Unicorn [c76]; blocker: Goblin [c122]
+  [declare blockers] Attacker blocked: Simple; Prized Unicorn [c76] — blockers: Goblin Gang Leader [c12], Goblin [c121], Goblin [c122]
+  [declare blockers] Blockers declared: Search; - — blockers: Goblin Gang Leader [c12], Prized Unicorn [c76], Goblin [c121], Prized Unicorn [c76], Goblin [c122], Prized Unicorn [c76]
+  [declare blockers] Simple decides PriorityDecisionRequest: 0.082 ms; observed options: 0; space size: unknown; success
+  [declare blockers] Search decides PriorityDecisionRequest: 10.318 ms; observed options: 1; space size: 1; success
+  [second combat damage] Simple decides CombatDamageRequest: 0.189 ms; observed options: 1; space size: unknown; success
+  [second combat damage] Simple decides ReplacementOrderRequest: 0.077 ms; observed options: 1; space size: unknown; success
+  [second combat damage] Search decides ReplacementOrderRequest: 964.101 ms; observed options: 814; space size: unknown; success
+  [second combat damage] Damage dealt: Search; Goblin Gang Leader [c12] — amount: 2; combat: True; last known: kind: CardLastKnownInformation; life loss: 0; source revision: 3; target: Prized Unicorn; target object: Prized Unicorn [c76]; target revision: 3
+  [second combat damage] Damage dealt: Search; Goblin [c121] — amount: 1; combat: True; last known: kind: CardLastKnownInformation; life loss: 0; source revision: 1; target: Prized Unicorn; target object: Prized Unicorn [c76]; target revision: 3
+  [second combat damage] Damage dealt: Search; Goblin [c122] — amount: 1; combat: True; last known: kind: CardLastKnownInformation; life loss: 0; source revision: 1; target: Prized Unicorn; target object: Prized Unicorn [c76]; target revision: 3
+  [second combat damage] Damage dealt: Simple; Prized Unicorn [c76] — amount: 2; combat: True; last known: kind: CardLastKnownInformation; life loss: 0; source revision: 3; target: Goblin Gang Leader; target object: Goblin Gang Leader [c12]; target revision: 3
+  [second combat damage] Damage dealt: Simple; Prized Unicorn [c76] — amount: 4; combat: True; last known: kind: CardLastKnownInformation; life loss: 4; source revision: 3; target: Search; target object: Search; target revision: -
+  [second combat damage] Damage dealt: Simple; Prized Unicorn [c76] — amount: 1; combat: True; last known: kind: CardLastKnownInformation; life loss: 0; source revision: 3; target: Goblin; target object: Goblin [c121]; target revision: 1
+  [second combat damage] Damage dealt: Simple; Prized Unicorn [c76] — amount: 1; combat: True; last known: kind: CardLastKnownInformation; life loss: 0; source revision: 3; target: Goblin; target object: Goblin [c122]; target revision: 1
+  [second combat damage] Damage dealt: Simple; Gigantosaurus [c80] — amount: 10; combat: True; last known: kind: CardLastKnownInformation; life loss: 10; source revision: 3; target: Search; target object: Search; target revision: -
+  [second combat damage] Search decides ReplacementOrderRequest: 813.818 ms; observed options: 614; space size: unknown; success
+  [second combat damage] Search decides ReplacementOrderRequest: 1116.857 ms; observed options: 795; space size: unknown; success
+  [second combat damage] Card moved: Search; Goblin [c121] — card: Goblin [c121]; from: BATTLEFIELD; last known: kind: CardLastKnownInformation; previous controller: Search; to: GRAVEYARD
+  [second combat damage] Card moved: Search; Goblin [c122] — card: Goblin [c122]; from: BATTLEFIELD; last known: kind: CardLastKnownInformation; previous controller: Search; to: GRAVEYARD
+  [second combat damage] Card moved: Search; Goblin Gang Leader [c12] — card: Goblin Gang Leader [c12]; from: BATTLEFIELD; last known: kind: CardLastKnownInformation; previous controller: Search; to: GRAVEYARD
+  [second combat damage] Simple decides PriorityDecisionRequest: 0.079 ms; observed options: 0; space size: unknown; success
+  [second combat damage] Search decides PriorityDecisionRequest: 8.352 ms; observed options: 1; space size: 1; success
+  [end combat] Simple decides PriorityDecisionRequest: 0.088 ms; observed options: 0; space size: unknown; success
+  [end combat] Search decides PriorityDecisionRequest: 8.230 ms; observed options: 1; space size: 1; success
+  [postcombat main] Simple decides PriorityDecisionRequest: 0.076 ms; observed options: 0; space size: unknown; success
+  [postcombat main] Search decides PriorityDecisionRequest: 8.453 ms; observed options: 1; space size: 1; success
+  [end step] Simple decides PriorityDecisionRequest: 0.073 ms; observed options: 0; space size: unknown; success
+  [end step] Search decides PriorityDecisionRequest: 115.408 ms; observed options: 1; space size: 1; success
+
+Turn 14
+  [upkeep] Search decides PriorityDecisionRequest: 604.487 ms; observed options: 54; space size: unknown; success
+  [upkeep] Simple decides PriorityDecisionRequest: 0.099 ms; observed options: 0; space size: unknown; success
+  [draw] Card moved: Search; Immortal Phoenix [c17] — card: Immortal Phoenix [c17]; from: DECK; last known: kind: CardLastKnownInformation; previous controller: Search; to: HAND
+  [draw] Card drawn: Search; Immortal Phoenix [c17] — card: Immortal Phoenix [c17]; last known: kind: CardLastKnownInformation
+  [draw] Resolution: -; -; -; success: True
+  [draw] Search decides PriorityDecisionRequest: 644.281 ms; observed options: 57; space size: unknown; success
+  [draw] Simple decides PriorityDecisionRequest: 0.096 ms; observed options: 0; space size: unknown; success
+  [precombat main] Search decides PriorityDecisionRequest: 645.189 ms; observed options: 83; space size: unknown; success
+  [precombat main] Card tapped: Search; Mountain [c41] — last known: kind: CardLastKnownInformation
+  [precombat main] Mana added: Search; Mountain [c41] — amount: 1; last known: kind: CardLastKnownInformation; mana: RED
+  [precombat main] Search activates Mountain [c41] — ability: mana_red; last known: kind: CardLastKnownInformation
+  [precombat main] Card tapped: Search; Mountain [c48] — last known: kind: CardLastKnownInformation
+  [precombat main] Mana added: Search; Mountain [c48] — amount: 1; last known: kind: CardLastKnownInformation; mana: RED
+  [precombat main] Search activates Mountain [c48] — ability: mana_red; last known: kind: CardLastKnownInformation
+  [precombat main] Card tapped: Search; Mountain [c54] — last known: kind: CardLastKnownInformation
+  [precombat main] Mana added: Search; Mountain [c54] — amount: 1; last known: kind: CardLastKnownInformation; mana: RED
+  [precombat main] Search activates Mountain [c54] — ability: mana_red; last known: kind: CardLastKnownInformation
+  [precombat main] Card tapped: Search; Mountain [c60] — last known: kind: CardLastKnownInformation
+  [precombat main] Mana added: Search; Mountain [c60] — amount: 1; last known: kind: CardLastKnownInformation; mana: RED
+  [precombat main] Search activates Mountain [c60] — ability: mana_red; last known: kind: CardLastKnownInformation
+  [precombat main] Mana paid: Search; Ogre Battledriver [c15] — last known: kind: CardLastKnownInformation; payment: RED: 4
+  [precombat main] Card moved: Search; Ogre Battledriver [c15] — card: Ogre Battledriver [c15]; from: HAND; last known: kind: CardLastKnownInformation; previous controller: Search; to: STACK
+  [precombat main] Search casts Ogre Battledriver [c15] — ability: cast:Ogre Battledriver
+  [precombat main] Search decides PriorityDecisionRequest: 631.976 ms; observed options: 29; space size: unknown; success
+  [precombat main] Card tapped: Search; Goblin Tunneler [c5] — last known: kind: CardLastKnownInformation
+  [precombat main] Search activates Goblin Tunneler [c5] — ability: tunnel
+  [precombat main] Search decides PriorityDecisionRequest: 9.880 ms; observed options: 1; space size: 1; success
+  [precombat main] Simple decides PriorityDecisionRequest: 0.083 ms; observed options: 0; space size: unknown; success
+  [precombat main] Temporary effect applied: Search; Goblin Tunneler [c5] — last known: kind: CardLastKnownInformation; targets: Molten Ravager [c11]
+  [precombat main] Resolution: Search; Goblin Tunneler [c5]; tunnel; success: True
+  [precombat main] Search decides PriorityDecisionRequest: 8.781 ms; observed options: 1; space size: 1; success
+  [precombat main] Simple decides PriorityDecisionRequest: 0.089 ms; observed options: 0; space size: unknown; success
+  [precombat main] Card moved: Search; Ogre Battledriver [c15] — card: Ogre Battledriver [c15]; from: STACK; last known: kind: CardLastKnownInformation; previous controller: Search; to: BATTLEFIELD
+  [precombat main] Resolution: Search; Ogre Battledriver [c15]; cast:Ogre Battledriver; success: True
+  [precombat main] Search decides PriorityDecisionRequest: 10.879 ms; observed options: 1; space size: 1; success
+  [precombat main] Simple decides PriorityDecisionRequest: 0.078 ms; observed options: 0; space size: unknown; success
+  [begin combat] Search decides PriorityDecisionRequest: 8.473 ms; observed options: 1; space size: 1; success
+  [begin combat] Simple decides PriorityDecisionRequest: 0.091 ms; observed options: 0; space size: unknown; success
+  [declare attackers] Search decides DeclareAttackersRequest: 637.456 ms; observed options: 23; space size: unknown; success
+  [declare attackers] Card tapped: Search; Molten Ravager [c11]
+  [declare attackers] Search attacks with Molten Ravager [c11] — attacker: Molten Ravager [c11]; defender: Simple
+  [declare attackers] Attackers declared: Search; - — attackers: Molten Ravager [c11]
+  [declare attackers] Search decides PriorityDecisionRequest: 9.068 ms; observed options: 1; space size: 1; success
+  [declare attackers] Simple decides PriorityDecisionRequest: 0.084 ms; observed options: 0; space size: unknown; success
+  [declare blockers] Simple chooses block: blockers: none
+  [declare blockers] Simple decides DeclareBlockersRequest: 0.286 ms; observed options: 1; space size: unknown; success
+  [declare blockers] Search decides PriorityDecisionRequest: 127.985 ms; observed options: 1; space size: 1; success
+  [declare blockers] Simple decides PriorityDecisionRequest: 0.097 ms; observed options: 0; space size: unknown; success
+  [second combat damage] Search decides PriorityDecisionRequest: 9.334 ms; observed options: 1; space size: 1; success
+  [second combat damage] Simple decides PriorityDecisionRequest: 0.080 ms; observed options: 0; space size: unknown; success
+  [end combat] Search decides PriorityDecisionRequest: 8.678 ms; observed options: 1; space size: 1; success
+  [end combat] Simple decides PriorityDecisionRequest: 0.080 ms; observed options: 0; space size: unknown; success
+  [postcombat main] Search decides PriorityDecisionRequest: 10.401 ms; observed options: 1; space size: 1; success
+  [postcombat main] Simple decides PriorityDecisionRequest: 0.117 ms; observed options: 0; space size: unknown; success
+  [end step] Search decides PriorityDecisionRequest: 114.166 ms; observed options: 1; space size: 1; success
+  [end step] Simple decides PriorityDecisionRequest: 0.092 ms; observed options: 0; space size: unknown; success
+
+Turn 15
+  [upkeep] Simple decides PriorityDecisionRequest: 0.077 ms; observed options: 0; space size: unknown; success
+  [upkeep] Search decides PriorityDecisionRequest: 91.130 ms; observed options: 1; space size: 1; success
+  [draw] Card moved: Simple; Woodland Mystic [c68] — card: Woodland Mystic [c68]; from: DECK; last known: kind: CardLastKnownInformation; previous controller: Simple; to: HAND
+  [draw] Card drawn: Simple; Woodland Mystic [c68] — card: Woodland Mystic [c68]; last known: kind: CardLastKnownInformation
+  [draw] Resolution: -; -; -; success: True
+  [draw] Simple decides PriorityDecisionRequest: 0.144 ms; observed options: 0; space size: unknown; success
+  [draw] Search decides PriorityDecisionRequest: 9.160 ms; observed options: 1; space size: 1; success
+  [precombat main] Simple chooses action: ability: cast:Woodland Mystic; source: Woodland Mystic [c68]; targets: none
+  [precombat main] Simple decides PriorityDecisionRequest: 1.946 ms; observed options: 2; space size: 2; success
+  [precombat main] Card tapped: Simple; Forest [c98] — last known: kind: CardLastKnownInformation
+  [precombat main] Mana added: Simple; Forest [c98] — amount: 1; last known: kind: CardLastKnownInformation; mana: GREEN
+  [precombat main] Simple activates Forest [c98] — ability: mana_green; last known: kind: CardLastKnownInformation
+  [precombat main] Card tapped: Simple; Forest [c100] — last known: kind: CardLastKnownInformation
+  [precombat main] Mana added: Simple; Forest [c100] — amount: 1; last known: kind: CardLastKnownInformation; mana: GREEN
+  [precombat main] Simple activates Forest [c100] — ability: mana_green; last known: kind: CardLastKnownInformation
+  [precombat main] Mana paid: Simple; Woodland Mystic [c68] — last known: kind: CardLastKnownInformation; payment: GREEN: 2
+  [precombat main] Card moved: Simple; Woodland Mystic [c68] — card: Woodland Mystic [c68]; from: HAND; last known: kind: CardLastKnownInformation; previous controller: Simple; to: STACK
+  [precombat main] Simple casts Woodland Mystic [c68] — ability: cast:Woodland Mystic
+  [precombat main] Simple decides PriorityDecisionRequest: 0.077 ms; observed options: 0; space size: unknown; success
+  [precombat main] Search decides PriorityDecisionRequest: 121.682 ms; observed options: 1; space size: 1; success
+  [precombat main] Card moved: Simple; Woodland Mystic [c68] — card: Woodland Mystic [c68]; from: STACK; last known: kind: CardLastKnownInformation; previous controller: Simple; to: BATTLEFIELD
+  [precombat main] Resolution: Simple; Woodland Mystic [c68]; cast:Woodland Mystic; success: True
+  [precombat main] Simple decides PriorityDecisionRequest: 0.638 ms; observed options: 1; space size: 1; success
+  [precombat main] Search decides PriorityDecisionRequest: 8.752 ms; observed options: 1; space size: 1; success
+  [begin combat] Simple decides PriorityDecisionRequest: 0.074 ms; observed options: 0; space size: unknown; success
+  [begin combat] Search decides PriorityDecisionRequest: 8.426 ms; observed options: 1; space size: 1; success
+  [declare attackers] Simple chooses attack: attackers: Prized Unicorn [c76], Gigantosaurus [c80]
+  [declare attackers] Simple decides DeclareAttackersRequest: 0.408 ms; observed options: 1; space size: unknown; success
+  [declare attackers] Card tapped: Simple; Prized Unicorn [c76]
+  [declare attackers] Simple attacks with Prized Unicorn [c76] — attacker: Prized Unicorn [c76]; defender: Search
+  [declare attackers] Card tapped: Simple; Gigantosaurus [c80]
+  [declare attackers] Simple attacks with Gigantosaurus [c80] — attacker: Gigantosaurus [c80]; defender: Search
+  [declare attackers] Attackers declared: Simple; - — attackers: Prized Unicorn [c76], Gigantosaurus [c80]
+  [declare attackers] Simple decides PriorityDecisionRequest: 0.071 ms; observed options: 0; space size: unknown; success
+  [declare attackers] Search decides PriorityDecisionRequest: 8.897 ms; observed options: 1; space size: 1; success
+  [declare blockers] Search decides DeclareBlockersRequest: 120.433 ms; observed options: 1; space size: 1; success
+  [declare blockers] Search blocks with Ogre Battledriver [c15] — attacker: Prized Unicorn [c76]; blocker: Ogre Battledriver [c15]
+  [declare blockers] Attacker blocked: Simple; Prized Unicorn [c76] — blockers: Ogre Battledriver [c15]
+  [declare blockers] Blockers declared: Search; - — blockers: Ogre Battledriver [c15], Prized Unicorn [c76]
+  [declare blockers] Simple decides PriorityDecisionRequest: 0.091 ms; observed options: 0; space size: unknown; success
+  [declare blockers] Search decides PriorityDecisionRequest: 9.827 ms; observed options: 1; space size: 1; success
+  [second combat damage] Simple decides CombatDamageRequest: 0.142 ms; observed options: 1; space size: unknown; success
+  [second combat damage] Search decides ReplacementOrderRequest: 514.740 ms; observed options: 68; space size: unknown; success
+  [second combat damage] Damage dealt: Search; Ogre Battledriver [c15] — amount: 3; combat: True; last known: kind: CardLastKnownInformation; life loss: 0; source revision: 3; target: Prized Unicorn; target object: Prized Unicorn [c76]; target revision: 3
+  [second combat damage] Damage dealt: Simple; Prized Unicorn [c76] — amount: 3; combat: True; last known: kind: CardLastKnownInformation; life loss: 0; source revision: 3; target: Ogre Battledriver; target object: Ogre Battledriver [c15]; target revision: 3
+  [second combat damage] Damage dealt: Simple; Gigantosaurus [c80] — amount: 10; combat: True; last known: kind: CardLastKnownInformation; life loss: 10; source revision: 3; target: Search; target object: Search; target revision: -
+  [second combat damage] Damage dealt: Simple; Prized Unicorn [c76] — amount: 5; combat: True; last known: kind: CardLastKnownInformation; life loss: 5; source revision: 3; target: Search; target object: Search; target revision: -
+  [second combat damage] Search decides ReplacementOrderRequest: 606.795 ms; observed options: 92; space size: unknown; success
+  [second combat damage] Card moved: Search; Ogre Battledriver [c15] — card: Ogre Battledriver [c15]; from: BATTLEFIELD; last known: kind: CardLastKnownInformation; previous controller: Search; to: GRAVEYARD
+  [second combat damage] Player lost: Search; - — reason: life

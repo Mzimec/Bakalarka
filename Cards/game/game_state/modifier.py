@@ -6,6 +6,7 @@ from typing import TYPE_CHECKING, Any, TypeVar, Generic
 from dataclasses import dataclass, field
 from functools import total_ordering
 from collections.abc import Set
+from helper.change_tracking import TrackedDict, TrackedSet
 
 if TYPE_CHECKING:
     from .state import State
@@ -308,6 +309,26 @@ class ContinuousEffectState:
     timestamp_order: int = 0
     inferred_dependencies: dict = field(default_factory=dict)
 
+    def __setattr__(self, name, value):
+        # Layer/dependency edits invalidate only the objects receiving this
+        # effect. Raw callbacks and mutable effect definitions are never cached.
+        if not self.__dict__.get("_tracks_native_plan", False):
+            object.__setattr__(self, name, value)
+            return
+        if name == "active_layers" and type(value) is set:
+            value = TrackedSet(value, self._changed)
+        elif name == "inferred_dependencies" and type(value) is dict:
+            value = TrackedDict(value, self._changed)
+        object.__setattr__(self, name, value)
+        if name in {"active_layers", "inferred_dependencies", "timestamp_order"}:
+            self._changed()
+
+    def _changed(self):
+        for card in self.__dict__.get("currently_affected", ()):
+            invalidate = getattr(card, "_invalidate_modifier_plan", None)
+            if invalidate is not None:
+                invalidate()
+
 
 @dataclass(frozen=True)
 class ContinuousEffect(RuntimeObject):
@@ -318,6 +339,16 @@ class ContinuousEffect(RuntimeObject):
     _key: str
     definition: ContinuousEffectDefinition
     state: ContinuousEffectState
+
+    def __post_init__(self):
+        from immutabledict import immutabledict
+        from helper.mutability_objs import ImmutableDict
+        if (type(self.definition.modifiers) in (immutabledict, ImmutableDict)
+                and all(type(values) is tuple or values is None
+                        for values in self.definition.modifiers.values())):
+            self.state._tracks_native_plan = True
+            self.state.active_layers = self.state.active_layers
+            self.state.inferred_dependencies = self.state.inferred_dependencies
 
     @property
     def key(self) -> str:
@@ -624,6 +655,7 @@ class ContinuousEffectsManager:
         self.register = EffectRegister()
         self._continuous_effects: dict[str, ContinuousEffect] = dict()
         self._sequence = 0
+        self.change_token = object()
 
         self._time_stamp_heap: Heap[TimeStamp] = Heap()
         self._time_stamp_bucket: dict[TimeStamp, list[str]] = dict()
@@ -660,6 +692,7 @@ class ContinuousEffectsManager:
         self.register.add(ce)
         ce.state.timestamp_order = self.next_order()
         self._continuous_effects[ce.key] = ce
+        self.change_token = object()
 
         if isinstance(ce.duration, TimeStampDuration):
             time_stamp = ce.duration.end_time_stamp
@@ -691,6 +724,7 @@ class ContinuousEffectsManager:
         @return Removed effect.
         """
         ce = self._continuous_effects.pop(key)
+        self.change_token = object()
         self.register.remove(key)
 
         if isinstance(ce.duration, TimeStampDuration):
@@ -730,6 +764,7 @@ class ContinuousEffectsManager:
 
             for key in keys:
                 if self._continuous_effects.pop(key, None) is not None:
+                    self.change_token = object()
                     self.register.remove(key)
 
         active_player_idx = state.active_player_idx
@@ -746,6 +781,7 @@ class ContinuousEffectsManager:
 
                 for key in keys:
                     if self._continuous_effects.pop(key, None) is not None:
+                        self.change_token = object()
                         self.register.remove(key)
 
 
@@ -803,6 +839,12 @@ class ModifierSource(ABC):
     """!
     @brief Interface exposing modifiers contributed by one runtime source type.
     """
+
+    def __setattr__(self, name, value):
+        object.__setattr__(self, name, value)
+        owner = self.__dict__.get("_native_card")
+        if owner is not None:
+            owner._notify_changed()
 
     @abstractmethod
     def get_modifiers(self, stat: StatType, state: State) -> dict[TimeStampedModifier]: ...
@@ -1032,10 +1074,16 @@ def only_empty_builtin_sources(sources):
     Exact types deliberately exclude extensions overriding get_modifiers.
     No state-dependent result survives a call.
     """
-    return (len(sources) == 3
-            and type(sources[0]) is ContinuouosEffectModifierSource
-            and type(sources[1]) is CounterModifierSource
-            and type(sources[2]) is AttachedModifierSource
-            and not sources[0].active_cont_effects
-            and not sources[1].counters
+    if (len(sources) != 3
+            or type(sources[0]) is not ContinuouosEffectModifierSource
+            or type(sources[1]) is not CounterModifierSource
+            or type(sources[2]) is not AttachedModifierSource):
+        return False
+    effects = sources[0].active_cont_effects
+    # Read native backing containers without routing truth tests through
+    # MutableSet/UserDict.__len__. Mutations still use the tracked wrappers.
+    if effects._values if type(effects) is TrackedSet else effects:
+        return False
+    counters = sources[1].counters
+    return (not (counters.data if type(counters) is TrackedDict else counters)
             and not sources[2].attached)

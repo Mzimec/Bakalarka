@@ -15,6 +15,7 @@ from ..game_actions.game_stack import GameStack, PrioritySystem
 from ..game_loop.game_loop import Turn
 from .look_up import LookUpSystem, LookUpResult
 from .modifier import ContinuousEffectsManager, ContinuousEffect, TimeStamp
+from . import continuous_rules
 
 from ..enums import *
 
@@ -45,6 +46,7 @@ class State:
             invalid, players are reused, or initial card identities conflict.
         """
         self._players = tuple(players)
+        self.knowledge_token = object()  # Distinguish games without retaining their runtime graph in an agent.
 
         if not self._players:
             raise ValueError("A game state needs at least one player.")
@@ -65,6 +67,8 @@ class State:
         self._stack: GameStack = GameStack()
         self._priority: PrioritySystem = PrioritySystem(self)
         self._turn = Turn()
+        from .turn_history import TurnHistory
+        self._turn_history = TurnHistory()
         self.skip_first_draw = skip_first_draw
         self.cleanup_priority = False
         self._deferred_events = []
@@ -80,6 +84,8 @@ class State:
         self._card_snapshots = CardSnapshotCache()
         from ..mana.source_cache import StaticManaSourceCache
         self._mana_source_cache = StaticManaSourceCache()
+        from ..game_actions.triggers.trigger_registry import NativeTriggerRegistry
+        self._trigger_registry = NativeTriggerRegistry()
 
         # These flags coordinate lazy/re-entrant continuous-effect refresh.
         self._refreshing_effects = False
@@ -108,6 +114,26 @@ class State:
 
         for card in cards:
             self.register_card(card)
+
+    @property
+    def turn_history(self):
+        return self._turn_history
+
+    @property
+    def turn_events(self):
+        """Legacy live archive; unavailable archives never masquerade as empty."""
+        return self._turn_history.events
+
+    @turn_events.setter
+    def turn_events(self, events):
+        from .turn_history import TurnHistory
+        self._turn_history = TurnHistory(events)
+
+    def record_turn_event(self, event):
+        if getattr(self, "_history_turn", None) != self.turn.number:
+            self._turn_history.reset()
+            self._history_turn = self.turn.number
+        self._turn_history.record(event)
 
     def register_card(self, card: Card) -> None:
         """!
@@ -148,9 +174,7 @@ class State:
         """!
         @brief Recompute continuous-effect memberships and layered characteristics.
         """
-        from .continuous_rules import refresh_continuous_effects
-
-        refresh_continuous_effects(self)
+        continuous_rules.refresh_continuous_effects(self)
 
     def add_continuous_effect(self, effect):
         """!
@@ -212,7 +236,11 @@ class State:
         """!
         @brief Return the current global turn/phase timestamp.
         """
-        return TimeStamp(self.turn.number, self.turn.phase)
+        turn = self.turn
+        stamp = self.__dict__.get("_cached_time_stamp")
+        if stamp is None or stamp.turn_number != turn.number or stamp.phase != turn.phase:
+            stamp = self._cached_time_stamp = TimeStamp(turn.number, turn.phase)
+        return stamp
 
     @property
     def stack(self) -> GameStack:
@@ -411,30 +439,9 @@ class State:
         @param event Optional event associated with the created trigger instances.
         @return Trigger abilities exposed by cards in usable zones.
         """
-        from ..game_actions.data_structs.ability import TriggerAbility, TriggerAbilityDefinition
-
-        triggers: list[TriggerAbility] = []
-
-        from helper.query_system.query import EqQuery
-        from .registers.card_register import IK_HAS_TRIGGERS
-
-        for card in self.query_cards(EqQuery(IK_HAS_TRIGGERS, True)):
-            zone = card.get_zone()
-
-            for ability_def in card.get_trigger_defs(self).values():
-                if not isinstance(ability_def, TriggerAbilityDefinition):
-                    continue
-
-                if ability_def.is_usable_in_zone(zone):
-                    triggers.append(
-                        ability_def.to_ability(
-                            card,
-                            card.get_controller(self),
-                            event=event,
-                        )
-                    )
-
-        return triggers
+        from ..game_actions.triggers.trigger_roster import iter_trigger_bindings
+        return [binding.definition.to_ability(binding.source, binding.controller, event=event)
+                for binding in iter_trigger_bindings(self)]
 
     def get_triggered_abilities(self, event: GameEvent | None = None) -> list[TriggerAbility]:
         """!

@@ -377,7 +377,7 @@ class ReplacementResolver:
     restricted by CR 616 priority and then chosen by the affected player.
     """
 
-    def replace(self, state: object, operations: object) -> tuple[object, ...]:
+    def replace(self, state: object, operations: object, *, ordering_frame=None) -> tuple[object, ...]:
         """!
         @brief Apply replacement effects to one operation or simultaneous batch.
         Simultaneous operations are ordered in APNAP order where necessary so
@@ -395,12 +395,20 @@ class ReplacementResolver:
         if len(operations) > 1 and hasattr(state, "players"):
             players = list(state.players)
             start = players.index(state.active_player)
-            ordered = []
+            players = players[start:] + players[:start]
+            from ...game_loop.continuations import ReplacementOrderingFrame
+            frame = ordering_frame or ReplacementOrderingFrame(operations, tuple(p.idx for p in players))
+            if (type(frame) is not ReplacementOrderingFrame
+                    or tuple(map(id, frame.operations)) != tuple(map(id, operations))
+                    or frame.player_order != tuple(p.idx for p in players)
+                    or not 0 <= frame.position <= len(players)
+                    or sorted(map(id, frame.ordered)) != sorted(id(op) for op in operations
+                        if affected_player(state, op) in players[:frame.position])):
+                raise ValueError("Incompatible replacement-order continuation")
+            ordered = list(frame.ordered)
 
-            for player in (
-                players[start:]
-                + players[:start]
-            ):
+            for position in range(frame.position, len(players)):
+                player = players[position]
                 group = tuple(
                     op
                     for op in operations
@@ -409,9 +417,18 @@ class ReplacementResolver:
 
                 if len(group) > 1:
                     from ...ai.decision_maker import ReplacementOrderRequest
-                    chosen = player.decision_maker.decide(
-                        ReplacementOrderRequest(state, player, group)
-                    ).value.items
+                    previous = getattr(state, "replacement_order_boundary", None)
+                    state.replacement_order_boundary = ReplacementOrderingFrame(
+                        operations, frame.player_order, position, tuple(ordered))
+                    try:
+                        chosen = player.decision_maker.decide(
+                            ReplacementOrderRequest(state, player, group)
+                        ).value.items
+                    finally:
+                        if previous is None:
+                            del state.replacement_order_boundary
+                        else:
+                            state.replacement_order_boundary = previous
 
                     if sorted(map(id, chosen)) != sorted(map(id, group)):
                         raise ValueError(

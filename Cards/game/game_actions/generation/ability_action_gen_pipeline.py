@@ -196,20 +196,11 @@ class AbilityActionGenerationPipeline:
                 cost effect binding fails its own
                 `Effect.validation_error` check.
         """
-        error: str | None = ability.definition.validation_error(ability.source, ability.controller, state)
-        if error:
-            raise ValueError(error)
-        if not isinstance(x_value, int) or isinstance(x_value, bool) or x_value < 0:
-            raise ValueError("X must be a nonnegative integer.")
-        ctx: ActionGenerationContext = ActionGenerationContext(_ability=ability, x_value=x_value, life_payment=life_payment)
-        ctx.mana_cost = ability.casting_mana_cost(state)
+        from .plan_validation import EXECUTION_PLAN_VALIDATOR
+        from .pruning.pruning_strategy import apply_pruning
 
-        for subability_result in strategy.subability_gen.generate(ctx, state):
-            ctx.subability_gen_res = subability_result
-
-            from .plan_validation import EXECUTION_PLAN_VALIDATOR
-            from .pruning.pruning_strategy import apply_pruning
-
+        for ctx in self.contexts(ability, strategy, state, x_value=x_value, life_payment=life_payment):
+            subability_result = ctx.subability_gen_res
             costs = EXECUTION_PLAN_VALIDATOR.legal_plans(
                 strategy.cost_pipeline.generate(ctx, subability_result.cost_subability, strategy.cost_strategy, state),
                 ability, state, is_cost=True, strict=not skip_unpayable_costs,
@@ -221,6 +212,22 @@ class AbilityActionGenerationPipeline:
                 )
                 for action_execution_plan in apply_pruning(actions, strategy.action_plan_pruning):
                     yield ctx.ability.to_game_action(cost_execution_plan, action_execution_plan)
+
+    def contexts(self, ability, strategy, state, *, x_value=0, life_payment=None):
+        """Shared validation, casting cost and subability compilation boundary."""
+        error: str | None = ability.definition.validation_error(ability.source, ability.controller, state)
+        if error:
+            raise ValueError(error)
+        if not isinstance(x_value, int) or isinstance(x_value, bool) or x_value < 0:
+            raise ValueError("X must be a nonnegative integer.")
+        ctx: ActionGenerationContext = ActionGenerationContext(_ability=ability, x_value=x_value, life_payment=life_payment)
+        ctx.mana_cost = ability.casting_mana_cost(state)
+
+        for subability_result in strategy.subability_gen.generate(ctx, state):
+            ctx.subability_gen_res = subability_result
+            # The flat iterator consumes this before advancing the generator;
+            # staged consumers take a detached dataclass copy of one context.
+            yield ctx
 
 
 

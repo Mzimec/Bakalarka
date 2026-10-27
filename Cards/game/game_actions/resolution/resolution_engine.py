@@ -162,6 +162,7 @@ class ResolutionEngine:
             raise
 
         finally:
+            transaction.close()
             pending = self._pending_triggers
             self._cost_transaction = None
             self._pending_triggers = previous
@@ -340,7 +341,7 @@ class ResolutionEngine:
         """
         return self.resolve(state, resolution)
 
-    def resolve_simultaneous(self, state: State, operations: Iterable[Operation]) -> ExecutionResult:
+    def resolve_simultaneous(self, state: State, operations: Iterable[Operation], *, ordering_frame=None) -> ExecutionResult:
         """!
         @brief Resolve a simultaneous operation group and settle resulting state.
         Replacement effects are chosen for the whole batch before execution,
@@ -349,10 +350,11 @@ class ResolutionEngine:
         @param operations Operations belonging to one simultaneous event group.
         @return Successful execution result containing all resulting events.
         """
-        replaced = self._apply_replacement_effects(
-            state,
-            tuple(operations),
-        )
+        if ordering_frame is None:
+            replaced = self._apply_replacement_effects(state, tuple(operations))
+        else:
+            from .replacement_effects import ReplacementResolver
+            replaced = ReplacementResolver().replace(state, tuple(operations), ordering_frame=ordering_frame)
 
         events = self._operation_executor.execute_batch(
             state,

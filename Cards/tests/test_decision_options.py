@@ -199,7 +199,7 @@ def test_unpayable_mana_activation_is_omitted_from_priority(state):
 
 
 def test_selection_values_and_engine_values_share_nominal_base(state):
-    from game.ai.mana_solver import ManaSolverResult
+    from game.mana.mana_solver import ManaSolverResult
     from game.game_actions.data_structs.game_action import GameAction
     for cls in (GameAction, ManaSolverResult, DeclareAttackersOption, DeclareBlockersOption,
                 MulliganOption, MulliganBottomOption, DiscardOption, AbilityResolutionOption):

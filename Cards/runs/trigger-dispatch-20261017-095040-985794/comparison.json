@@ -1,0 +1,839 @@
+{
+  "passed": true,
+  "timing_valid": true,
+  "environment": {
+    "python": {
+      "version": "3.12.13 (main, Mar  3 2026, 15:01:35) [MSC v.1944 64 bit (AMD64)]",
+      "executable": "C:\\Users\\stepa\\Documents\\Bakalarka\\Bakalarka\\.venv\\Scripts\\python.exe",
+      "implementation": "CPython",
+      "build": [
+        "main",
+        "Mar  3 2026 15:01:35"
+      ],
+      "compiler": "MSC v.1944 64 bit (AMD64)",
+      "flags": "sys.flags(debug=0, inspect=0, interactive=0, optimize=0, dont_write_bytecode=0, no_user_site=0, no_site=0, ignore_environment=0, verbose=0, bytes_warning=0, quiet=0, hash_randomization=0, isolated=0, dev_mode=False, utf8_mode=0, warn_default_encoding=0, safe_path=False, int_max_str_digits=4300)",
+      "debug_build": false,
+      "gil_disabled_build": false
+    },
+    "instrumentation": {
+      "component_profiler_enabled": false,
+      "trace_hook_active": false,
+      "profile_hook_active": false,
+      "debugger_modules_loaded": [],
+      "monitoring_tools": []
+    },
+    "system": {
+      "platform": "Windows-11-10.0.26200-SP0",
+      "machine": "AMD64",
+      "processor": "AMD64 Family 25 Model 80 Stepping 0, AuthenticAMD",
+      "logical_cpus": 16
+    },
+    "code": {
+      "sources": {
+        "sha256": "b1dd0da05f5690f23917e10002a09ffb9a4f5c89d4ea595515fd67543aaa6919",
+        "files": 233,
+        "scope": [
+          "game/**/*.py",
+          "helper/**/*.py",
+          "benchmarks/**/*.py"
+        ]
+      },
+      "git": {
+        "commit": "17650b7d527327b1ba6b63497952023e562d9f5b",
+        "branch": "decision-maker-api-update",
+        "source_dirty": true,
+        "source_status": [
+          " M Cards/game/ai/combat_strategies.py",
+          " M Cards/game/ai/llm_policy.py",
+          " M Cards/game/ai/modular_agent.py",
+          " M Cards/game/bin/play.py",
+          " M Cards/game/cards/starter_cards.py",
+          " M Cards/game/game_actions/advanced_effects.py",
+          " M Cards/game/game_actions/data_structs/ability.py",
+          " M Cards/game/game_actions/resolution/event_bus.py",
+          " M Cards/game/game_actions/resolution/operation_executor.py",
+          " M Cards/game/game_actions/triggers/trigger_condition.py",
+          " M Cards/game/game_loop/game_loop.py",
+          " M Cards/game/game_loop/setup.py",
+          " M Cards/game/game_state/card_snapshot_cache.py",
+          " M Cards/game/game_state/stat.py",
+          " M Cards/game/game_state/state.py",
+          " M Cards/game/rules/combat.py",
+          " M Cards/game/rules/permanents.py",
+          " M Cards/game/simulation/config.py",
+          " M Cards/game/simulation/match_runner.py",
+          "?? Cards/benchmarks/checkpoint_copies.py",
+          "?? Cards/benchmarks/continuous_trajectories.py",
+          "?? Cards/benchmarks/cow_worlds.py",
+          "?? Cards/benchmarks/fast_world_copy.py",
+          "?? Cards/benchmarks/game_origin.py",
+          "?? Cards/benchmarks/history_replay.py",
+          "?? Cards/benchmarks/incremental_belief.py",
+          "?? Cards/benchmarks/information_set_search.py",
+          "?? Cards/benchmarks/live_history_search.py",
+          "?? Cards/benchmarks/live_search_agent.py",
+          "?? Cards/benchmarks/opponent_policy.py",
+          "?? Cards/benchmarks/pacifism_decisions.py",
+          "?? Cards/benchmarks/play_search.py",
+          "?? Cards/benchmarks/prepared_worlds.py",
+          "?? Cards/benchmarks/priority_window.py",
+          "?? Cards/benchmarks/replay_projection.py",
+          "?? Cards/benchmarks/search_checkpoints.py",
+          "?? Cards/benchmarks/search_edges.py",
+          "?? Cards/benchmarks/search_hidden_worlds.py",
+          "?? Cards/benchmarks/search_quality.py",
+          "?? Cards/benchmarks/search_replay_comparison.py",
+          "?? Cards/benchmarks/search_runtime.py",
+          "?? Cards/benchmarks/search_simulator.py",
+          "?? Cards/benchmarks/search_tactics.py",
+          "?? Cards/benchmarks/trigger_dispatch.py",
+          "?? Cards/benchmarks/world_root_copy.py",
+          "?? Cards/game/ai/action_priors.py",
+          "?? Cards/game/ai/belief.py",
+          "?? Cards/game/ai/checkpoint_simulator.py",
+          "?? Cards/game/ai/current_position_worlds.py",
+          "?? Cards/game/ai/draw_prefix_evidence.py",
+          "?? Cards/game/ai/game_origin.py",
+          "?? Cards/game/ai/history_diagnostics.py",
+          "?? Cards/game/ai/history_world_provider.py",
+          "?? Cards/game/ai/incremental_world_provider.py",
+          "?? Cards/game/ai/information_set_search.py",
+          "?? Cards/game/ai/knowledge.py",
+          "?? Cards/game/ai/library_positions.py",
+          "?? Cards/game/ai/mcts_agent.py",
+          "?? Cards/game/ai/observation.py",
+          "?? Cards/game/ai/observation_policy.py",
+          "?? Cards/game/ai/opening_reveal_evidence.py",
+          "?? Cards/game/ai/perfect_information_search.py",
+          "?? Cards/game/ai/prefix_replay_simulator.py",
+          "?? Cards/game/ai/runtime_clone.py",
+          "?? Cards/game/ai/sampled_scenario.py",
+          "?? Cards/game/ai/scenario_world_provider.py",
+          "?? Cards/game/ai/search_actions.py",
+          "?? Cards/game/ai/search_context.py",
+          "?? Cards/game/ai/search_decision.py",
+          "?? Cards/game/ai/search_descriptors.py",
+          "?? Cards/game/ai/search_horizon.py",
+          "?? Cards/game/ai/search_observation.py",
+          "?? Cards/game/ai/search_recall.py",
+          "?? Cards/game/ai/search_simulator.py",
+          "?? Cards/game/ai/search_statistics.py",
+          "?? Cards/game/ai/search_trajectory.py",
+          "?? Cards/game/ai/setup_deal_evidence.py",
+          "?? Cards/game/ai/simulation_clone.py",
+          "?? Cards/game/ai/simulation_world.py",
+          "?? Cards/game/ai/state_value.py",
+          "?? Cards/game/ai/tactical_evaluation.py",
+          "?? Cards/game/ai/visible_effects.py",
+          "?? Cards/game/game_actions/triggers/trigger_roster.py",
+          "?? Cards/game/game_loop/continuations.py",
+          "?? Cards/game/simulation/search_config.py",
+          "?? Cards/helper/query_system/cow_index.py"
+        ]
+      }
+    }
+  },
+  "games_per_trial": 20,
+  "trials": [
+    {
+      "mode": "reference",
+      "wall_seconds": 20.62050819999422,
+      "cpu_seconds": 20.53125,
+      "matches": [
+        {
+          "status": "win",
+          "winner_index": 1,
+          "turns": 14,
+          "decisions": 343,
+          "error": null
+        },
+        {
+          "status": "win",
+          "winner_index": 0,
+          "turns": 14,
+          "decisions": 343,
+          "error": null
+        },
+        {
+          "status": "win",
+          "winner_index": 0,
+          "turns": 17,
+          "decisions": 461,
+          "error": null
+        },
+        {
+          "status": "win",
+          "winner_index": 0,
+          "turns": 22,
+          "decisions": 679,
+          "error": null
+        },
+        {
+          "status": "win",
+          "winner_index": 0,
+          "turns": 23,
+          "decisions": 602,
+          "error": null
+        },
+        {
+          "status": "win",
+          "winner_index": 1,
+          "turns": 15,
+          "decisions": 377,
+          "error": null
+        },
+        {
+          "status": "win",
+          "winner_index": 0,
+          "turns": 27,
+          "decisions": 653,
+          "error": null
+        },
+        {
+          "status": "win",
+          "winner_index": 0,
+          "turns": 28,
+          "decisions": 694,
+          "error": null
+        },
+        {
+          "status": "win",
+          "winner_index": 0,
+          "turns": 19,
+          "decisions": 495,
+          "error": null
+        },
+        {
+          "status": "win",
+          "winner_index": 1,
+          "turns": 19,
+          "decisions": 515,
+          "error": null
+        },
+        {
+          "status": "win",
+          "winner_index": 0,
+          "turns": 21,
+          "decisions": 584,
+          "error": null
+        },
+        {
+          "status": "win",
+          "winner_index": 0,
+          "turns": 22,
+          "decisions": 578,
+          "error": null
+        },
+        {
+          "status": "win",
+          "winner_index": 1,
+          "turns": 16,
+          "decisions": 385,
+          "error": null
+        },
+        {
+          "status": "win",
+          "winner_index": 0,
+          "turns": 24,
+          "decisions": 572,
+          "error": null
+        },
+        {
+          "status": "win",
+          "winner_index": 1,
+          "turns": 16,
+          "decisions": 458,
+          "error": null
+        },
+        {
+          "status": "win",
+          "winner_index": 0,
+          "turns": 16,
+          "decisions": 490,
+          "error": null
+        },
+        {
+          "status": "win",
+          "winner_index": 0,
+          "turns": 19,
+          "decisions": 512,
+          "error": null
+        },
+        {
+          "status": "win",
+          "winner_index": 1,
+          "turns": 19,
+          "decisions": 504,
+          "error": null
+        },
+        {
+          "status": "win",
+          "winner_index": 0,
+          "turns": 17,
+          "decisions": 402,
+          "error": null
+        },
+        {
+          "status": "win",
+          "winner_index": 0,
+          "turns": 36,
+          "decisions": 914,
+          "error": null
+        }
+      ]
+    },
+    {
+      "mode": "optimized",
+      "wall_seconds": 20.172546100016916,
+      "cpu_seconds": 20.0625,
+      "matches": [
+        {
+          "status": "win",
+          "winner_index": 1,
+          "turns": 14,
+          "decisions": 343,
+          "error": null
+        },
+        {
+          "status": "win",
+          "winner_index": 0,
+          "turns": 14,
+          "decisions": 343,
+          "error": null
+        },
+        {
+          "status": "win",
+          "winner_index": 0,
+          "turns": 17,
+          "decisions": 461,
+          "error": null
+        },
+        {
+          "status": "win",
+          "winner_index": 0,
+          "turns": 22,
+          "decisions": 679,
+          "error": null
+        },
+        {
+          "status": "win",
+          "winner_index": 0,
+          "turns": 23,
+          "decisions": 602,
+          "error": null
+        },
+        {
+          "status": "win",
+          "winner_index": 1,
+          "turns": 15,
+          "decisions": 377,
+          "error": null
+        },
+        {
+          "status": "win",
+          "winner_index": 0,
+          "turns": 27,
+          "decisions": 653,
+          "error": null
+        },
+        {
+          "status": "win",
+          "winner_index": 0,
+          "turns": 28,
+          "decisions": 694,
+          "error": null
+        },
+        {
+          "status": "win",
+          "winner_index": 0,
+          "turns": 19,
+          "decisions": 495,
+          "error": null
+        },
+        {
+          "status": "win",
+          "winner_index": 1,
+          "turns": 19,
+          "decisions": 515,
+          "error": null
+        },
+        {
+          "status": "win",
+          "winner_index": 0,
+          "turns": 21,
+          "decisions": 584,
+          "error": null
+        },
+        {
+          "status": "win",
+          "winner_index": 0,
+          "turns": 22,
+          "decisions": 578,
+          "error": null
+        },
+        {
+          "status": "win",
+          "winner_index": 1,
+          "turns": 16,
+          "decisions": 385,
+          "error": null
+        },
+        {
+          "status": "win",
+          "winner_index": 0,
+          "turns": 24,
+          "decisions": 572,
+          "error": null
+        },
+        {
+          "status": "win",
+          "winner_index": 1,
+          "turns": 16,
+          "decisions": 458,
+          "error": null
+        },
+        {
+          "status": "win",
+          "winner_index": 0,
+          "turns": 16,
+          "decisions": 490,
+          "error": null
+        },
+        {
+          "status": "win",
+          "winner_index": 0,
+          "turns": 19,
+          "decisions": 512,
+          "error": null
+        },
+        {
+          "status": "win",
+          "winner_index": 1,
+          "turns": 19,
+          "decisions": 504,
+          "error": null
+        },
+        {
+          "status": "win",
+          "winner_index": 0,
+          "turns": 17,
+          "decisions": 402,
+          "error": null
+        },
+        {
+          "status": "win",
+          "winner_index": 0,
+          "turns": 36,
+          "decisions": 914,
+          "error": null
+        }
+      ]
+    },
+    {
+      "mode": "optimized",
+      "wall_seconds": 19.92342330000247,
+      "cpu_seconds": 19.84375,
+      "matches": [
+        {
+          "status": "win",
+          "winner_index": 1,
+          "turns": 14,
+          "decisions": 343,
+          "error": null
+        },
+        {
+          "status": "win",
+          "winner_index": 0,
+          "turns": 14,
+          "decisions": 343,
+          "error": null
+        },
+        {
+          "status": "win",
+          "winner_index": 0,
+          "turns": 17,
+          "decisions": 461,
+          "error": null
+        },
+        {
+          "status": "win",
+          "winner_index": 0,
+          "turns": 22,
+          "decisions": 679,
+          "error": null
+        },
+        {
+          "status": "win",
+          "winner_index": 0,
+          "turns": 23,
+          "decisions": 602,
+          "error": null
+        },
+        {
+          "status": "win",
+          "winner_index": 1,
+          "turns": 15,
+          "decisions": 377,
+          "error": null
+        },
+        {
+          "status": "win",
+          "winner_index": 0,
+          "turns": 27,
+          "decisions": 653,
+          "error": null
+        },
+        {
+          "status": "win",
+          "winner_index": 0,
+          "turns": 28,
+          "decisions": 694,
+          "error": null
+        },
+        {
+          "status": "win",
+          "winner_index": 0,
+          "turns": 19,
+          "decisions": 495,
+          "error": null
+        },
+        {
+          "status": "win",
+          "winner_index": 1,
+          "turns": 19,
+          "decisions": 515,
+          "error": null
+        },
+        {
+          "status": "win",
+          "winner_index": 0,
+          "turns": 21,
+          "decisions": 584,
+          "error": null
+        },
+        {
+          "status": "win",
+          "winner_index": 0,
+          "turns": 22,
+          "decisions": 578,
+          "error": null
+        },
+        {
+          "status": "win",
+          "winner_index": 1,
+          "turns": 16,
+          "decisions": 385,
+          "error": null
+        },
+        {
+          "status": "win",
+          "winner_index": 0,
+          "turns": 24,
+          "decisions": 572,
+          "error": null
+        },
+        {
+          "status": "win",
+          "winner_index": 1,
+          "turns": 16,
+          "decisions": 458,
+          "error": null
+        },
+        {
+          "status": "win",
+          "winner_index": 0,
+          "turns": 16,
+          "decisions": 490,
+          "error": null
+        },
+        {
+          "status": "win",
+          "winner_index": 0,
+          "turns": 19,
+          "decisions": 512,
+          "error": null
+        },
+        {
+          "status": "win",
+          "winner_index": 1,
+          "turns": 19,
+          "decisions": 504,
+          "error": null
+        },
+        {
+          "status": "win",
+          "winner_index": 0,
+          "turns": 17,
+          "decisions": 402,
+          "error": null
+        },
+        {
+          "status": "win",
+          "winner_index": 0,
+          "turns": 36,
+          "decisions": 914,
+          "error": null
+        }
+      ]
+    },
+    {
+      "mode": "reference",
+      "wall_seconds": 20.902919999993173,
+      "cpu_seconds": 20.859375,
+      "matches": [
+        {
+          "status": "win",
+          "winner_index": 1,
+          "turns": 14,
+          "decisions": 343,
+          "error": null
+        },
+        {
+          "status": "win",
+          "winner_index": 0,
+          "turns": 14,
+          "decisions": 343,
+          "error": null
+        },
+        {
+          "status": "win",
+          "winner_index": 0,
+          "turns": 17,
+          "decisions": 461,
+          "error": null
+        },
+        {
+          "status": "win",
+          "winner_index": 0,
+          "turns": 22,
+          "decisions": 679,
+          "error": null
+        },
+        {
+          "status": "win",
+          "winner_index": 0,
+          "turns": 23,
+          "decisions": 602,
+          "error": null
+        },
+        {
+          "status": "win",
+          "winner_index": 1,
+          "turns": 15,
+          "decisions": 377,
+          "error": null
+        },
+        {
+          "status": "win",
+          "winner_index": 0,
+          "turns": 27,
+          "decisions": 653,
+          "error": null
+        },
+        {
+          "status": "win",
+          "winner_index": 0,
+          "turns": 28,
+          "decisions": 694,
+          "error": null
+        },
+        {
+          "status": "win",
+          "winner_index": 0,
+          "turns": 19,
+          "decisions": 495,
+          "error": null
+        },
+        {
+          "status": "win",
+          "winner_index": 1,
+          "turns": 19,
+          "decisions": 515,
+          "error": null
+        },
+        {
+          "status": "win",
+          "winner_index": 0,
+          "turns": 21,
+          "decisions": 584,
+          "error": null
+        },
+        {
+          "status": "win",
+          "winner_index": 0,
+          "turns": 22,
+          "decisions": 578,
+          "error": null
+        },
+        {
+          "status": "win",
+          "winner_index": 1,
+          "turns": 16,
+          "decisions": 385,
+          "error": null
+        },
+        {
+          "status": "win",
+          "winner_index": 0,
+          "turns": 24,
+          "decisions": 572,
+          "error": null
+        },
+        {
+          "status": "win",
+          "winner_index": 1,
+          "turns": 16,
+          "decisions": 458,
+          "error": null
+        },
+        {
+          "status": "win",
+          "winner_index": 0,
+          "turns": 16,
+          "decisions": 490,
+          "error": null
+        },
+        {
+          "status": "win",
+          "winner_index": 0,
+          "turns": 19,
+          "decisions": 512,
+          "error": null
+        },
+        {
+          "status": "win",
+          "winner_index": 1,
+          "turns": 19,
+          "decisions": 504,
+          "error": null
+        },
+        {
+          "status": "win",
+          "winner_index": 0,
+          "turns": 17,
+          "decisions": 402,
+          "error": null
+        },
+        {
+          "status": "win",
+          "winner_index": 0,
+          "turns": 36,
+          "decisions": 914,
+          "error": null
+        }
+      ]
+    }
+  ],
+  "median_seconds": {
+    "reference": 20.761714099993696,
+    "optimized": 20.047984700009692
+  },
+  "reduction": 0.03437719046445309,
+  "trace_checks": [
+    {
+      "colors": [
+        "white",
+        "white"
+      ],
+      "seed": 42,
+      "records": 1584,
+      "equal": true,
+      "outcomes": [
+        {
+          "status": "win",
+          "winner_index": 0,
+          "turns": 19,
+          "decisions": 474,
+          "error": null
+        },
+        {
+          "status": "win",
+          "winner_index": 0,
+          "turns": 19,
+          "decisions": 474,
+          "error": null
+        }
+      ],
+      "sha256": "ac651d86e5dd004abb5c00f0df3927df1ad9039e3b3a532b02b4cf53e828ad15"
+    },
+    {
+      "colors": [
+        "red",
+        "white"
+      ],
+      "seed": 43,
+      "records": 1579,
+      "equal": true,
+      "outcomes": [
+        {
+          "status": "win",
+          "winner_index": 1,
+          "turns": 18,
+          "decisions": 467,
+          "error": null
+        },
+        {
+          "status": "win",
+          "winner_index": 1,
+          "turns": 18,
+          "decisions": 467,
+          "error": null
+        }
+      ],
+      "sha256": "3ead2b2f60ace0e71d4571a1a863216602f8791d82b9438b1929bd0c2a77d97c"
+    },
+    {
+      "colors": [
+        "blue",
+        "black"
+      ],
+      "seed": 44,
+      "records": 3049,
+      "equal": true,
+      "outcomes": [
+        {
+          "status": "win",
+          "winner_index": 0,
+          "turns": 35,
+          "decisions": 879,
+          "error": null
+        },
+        {
+          "status": "win",
+          "winner_index": 0,
+          "turns": 35,
+          "decisions": 879,
+          "error": null
+        }
+      ],
+      "sha256": "94fc76481e594226ab8792e102af13b98fa6ef1e630612ceb5e7727d779f182b"
+    },
+    {
+      "colors": [
+        "green",
+        "red"
+      ],
+      "seed": 45,
+      "records": 1879,
+      "equal": true,
+      "outcomes": [
+        {
+          "status": "win",
+          "winner_index": 0,
+          "turns": 23,
+          "decisions": 545,
+          "error": null
+        },
+        {
+          "status": "win",
+          "winner_index": 0,
+          "turns": 23,
+          "decisions": 545,
+          "error": null
+        }
+      ],
+      "sha256": "a8f2b335d526bfb5c7a3779b156e27db5cc9ff24b1ec75c988fd6600e0dbcdf1"
+    }
+  ],
+  "scope": "Trigger dispatch and native-stat shortcut versus both original paths. Sequential alternating pairs, warmed imports, GC collection before each trial, natural GC during matches, no profiler/decision telemetry/logging in timings; separate complete event/action log validation."
+}

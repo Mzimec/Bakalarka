@@ -8,6 +8,8 @@ def _empty():
         "min_elapsed_ns": None, "max_elapsed_ns": None,
         "total_options_observed": 0, "known_size_count": 0,
         "total_known_size": 0,
+        "generation_timed_count": 0, "total_generation_ns": 0,
+        "total_other_decision_ns": 0,
     }
 
 
@@ -16,6 +18,9 @@ def _merge_bucket(target, source):
                 "known_size_count", "total_known_size"):
         target[key] += source[key]
     target["auto_pass_count"] += source.get("auto_pass_count", 0)
+    # Old saved reports did not split generation from the rest of decide().
+    for key in ("generation_timed_count", "total_generation_ns", "total_other_decision_ns"):
+        target[key] += source.get(key, 0)
     for key, operation in (("min_elapsed_ns", min), ("max_elapsed_ns", max)):
         values = [v for v in (target[key], source[key]) if v is not None]
         target[key] = operation(values) if values else None
@@ -29,6 +34,10 @@ def _averages(bucket):
         "average_options_observed": bucket["total_options_observed"] / count if count else None,
         "average_known_size": (bucket["total_known_size"] / bucket["known_size_count"]
                                if bucket["known_size_count"] else None),
+        "average_generation_ms": (bucket["total_generation_ns"] / bucket["generation_timed_count"] / 1e6
+                                  if bucket["generation_timed_count"] else None),
+        "average_other_decision_ms": (bucket["total_other_decision_ns"] / bucket["generation_timed_count"] / 1e6
+                                      if bucket["generation_timed_count"] else None),
     }
 
 
@@ -62,6 +71,9 @@ class DecisionStatistics:
             "total_options_observed": metrics["options_observed"],
             "known_size_count": int(metrics["option_space_size"] is not None),
             "total_known_size": metrics["option_space_size"] or 0,
+            "generation_timed_count": int("generation_elapsed_ns" in metrics),
+            "total_generation_ns": metrics.get("generation_elapsed_ns", 0),
+            "total_other_decision_ns": metrics.get("other_decision_elapsed_ns", 0),
         }
         _merge_bucket(entry["overall"], sample)
         request = metrics["request_type"]
@@ -107,6 +119,12 @@ def format_decision_statistics(summaries):
             f"total {overall['total_elapsed_ns'] / 1e9:.3f} s, errors {overall['errors']}, "
             f"auto-passes {overall.get('auto_pass_count', 0)}"
         )
+        if overall.get("generation_timed_count", 0):
+            lines.append(
+                f"    Active option generation: {overall['total_generation_ns'] / 1e9:.3f} s; "
+                f"other decision work: {overall['total_other_decision_ns'] / 1e9:.3f} s "
+                f"(split recorded for {overall['generation_timed_count']} decisions)"
+            )
         for request, stats in entry["by_request"].items():
             known = stats["average_known_size"]
             size = f"{known:.2f} (known for {stats['known_size_count']} decisions)" if known is not None else "unknown"
@@ -118,4 +136,7 @@ def format_decision_statistics(summaries):
                 lines.append(f"      {label} observed options: n={bucket['count']}, "
                              f"average {bucket['average_elapsed_ms']:.3f} ms")
     lines.append("  Observed options are consumed yields, not unique actions. Size refers to the policy-filtered space.")
+    lines.append("  Generation times only active option-stream next() calls, including nested expansion once. "
+                 "Other decision work includes policy, discovery outside streams, validation and measurement overhead; "
+                 "it is not pure scoring time. Precomputed choices were generated before this measurement.")
     return lines

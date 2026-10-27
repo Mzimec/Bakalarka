@@ -1,0 +1,436 @@
+Goblins Everywhere! (Goblins Everywhere!) vs Keep the Peace (Keep the Peace)
+Result: turn_limit | Winner: - | Player turn: 9
+Elapsed wall time: 9.020 s
+Seed: 42 | Starting player: 0
+Player turns are numbered individually. Interactive time includes waiting for input.
+
+Decision timing (wall time; includes option generation and input/model waits):
+  Search [MCTSAgent, agent]: 96 decisions, average 86.900 ms, total 8.342 s, errors 0, auto-passes 0
+    Active option generation: 0.542 s; other decision work: 7.801 s (split recorded for 96 decisions)
+    AbilityDecisionRequest: n=1, average 15.251 ms; observed options 1.00; space size 1.00 (known for 1 decisions)
+      1 observed options: n=1, average 15.251 ms
+    DeclareAttackersRequest: n=4, average 460.551 ms; observed options 29.00; space size 1.00 (known for 1 decisions)
+      1 observed options: n=1, average 27.776 ms
+      11-100 observed options: n=3, average 604.809 ms
+    DeclareBlockersRequest: n=1, average 707.437 ms; observed options 46.00; space size unknown
+      11-100 observed options: n=1, average 707.437 ms
+    MulliganRequest: n=1, average 13.241 ms; observed options 2.00; space size 2.00 (known for 1 decisions)
+      2-10 observed options: n=1, average 13.241 ms
+    PriorityDecisionRequest: n=88, average 65.373 ms; observed options 2.45; space size 1.00 (known for 81 decisions)
+      1 observed options: n=81, average 18.693 ms
+      11-100 observed options: n=7, average 605.522 ms
+    TriggerOrderRequest: n=1, average 11.441 ms; observed options 1.00; space size 1.00 (known for 1 decisions)
+      1 observed options: n=1, average 11.441 ms
+  Simple [SimpleAgent, agent]: 100 decisions, average 1.973 ms, total 0.197 s, errors 0, auto-passes 80
+    Active option generation: 0.159 s; other decision work: 0.038 s (split recorded for 100 decisions)
+    DeclareAttackersRequest: n=4, average 0.390 ms; observed options 1.00; space size unknown
+      1 observed options: n=4, average 0.390 ms
+    DeclareBlockersRequest: n=3, average 0.535 ms; observed options 1.00; space size unknown
+      1 observed options: n=3, average 0.535 ms
+    MulliganBottomRequest: n=1, average 0.127 ms; observed options 0.00; space size unknown
+      0 observed options: n=1, average 0.127 ms
+    MulliganRequest: n=2, average 0.124 ms; observed options 0.00; space size unknown
+      0 observed options: n=2, average 0.124 ms
+    PriorityDecisionRequest: n=88, average 2.201 ms; observed options 0.91; space size 1.09 (known for 66 decisions)
+      0 observed options: n=18, average 0.225 ms
+      1 observed options: n=62, average 2.645 ms
+      2-10 observed options: n=8, average 3.202 ms
+    ReplacementOrderRequest: n=2, average 0.079 ms; observed options 1.00; space size unknown
+      1 observed options: n=2, average 0.079 ms
+  Observed options are consumed yields, not unique actions. Size refers to the policy-filtered space.
+  Generation times only active option-stream next() calls, including nested expansion once. Other decision work includes policy, discovery outside streams, validation and measurement overhead; it is not pure scoring time. Precomputed choices were generated before this measurement.
+
+
+Turn 1
+  [untap] Search decides MulliganRequest: 13.241 ms; observed options: 2; space size: 2; success
+  [untap] Simple decides MulliganRequest: 0.217 ms; observed options: 0; space size: unknown; success
+  [untap] Simple decides MulliganBottomRequest: 0.127 ms; observed options: 0; space size: unknown; success
+  [untap] Simple decides MulliganRequest: 0.031 ms; observed options: 0; space size: unknown; success
+  [upkeep] Search decides PriorityDecisionRequest: 24.972 ms; observed options: 1; space size: 1; success
+  [upkeep] Simple decides PriorityDecisionRequest: 21.995 ms; observed options: 1; space size: 1; success
+  [precombat main] Search decides PriorityDecisionRequest: 551.194 ms; observed options: 19; space size: unknown; success
+  [precombat main] Card moved: Search; Mountain [c41] — card: Mountain [c41]; from: HAND; last known: kind: CardLastKnownInformation; previous controller: Search; to: BATTLEFIELD
+  [precombat main] Search plays land Mountain [c41] — lands played: 1; last known: kind: CardLastKnownInformation
+  [precombat main] Resolution: Search; Mountain [c41]; play_land; success: True
+  [precombat main] Search decides PriorityDecisionRequest: 653.114 ms; observed options: 21; space size: unknown; success
+  [precombat main] Card tapped: Search; Mountain [c41] — last known: kind: CardLastKnownInformation
+  [precombat main] Mana added: Search; Mountain [c41] — amount: 1; last known: kind: CardLastKnownInformation; mana: RED
+  [precombat main] Search activates Mountain [c41] — ability: mana_red; last known: kind: CardLastKnownInformation
+  [precombat main] Mana paid: Search; Tin Street Cadet [c2] — last known: kind: CardLastKnownInformation; payment: RED: 1
+  [precombat main] Card moved: Search; Tin Street Cadet [c2] — card: Tin Street Cadet [c2]; from: HAND; last known: kind: CardLastKnownInformation; previous controller: Search; to: STACK
+  [precombat main] Search casts Tin Street Cadet [c2] — ability: cast:Tin Street Cadet
+  [precombat main] Search decides PriorityDecisionRequest: 7.454 ms; observed options: 1; space size: 1; success
+  [precombat main] Simple decides PriorityDecisionRequest: 1.697 ms; observed options: 1; space size: 1; success
+  [precombat main] Card moved: Search; Tin Street Cadet [c2] — card: Tin Street Cadet [c2]; from: STACK; last known: kind: CardLastKnownInformation; previous controller: Search; to: BATTLEFIELD
+  [precombat main] Resolution: Search; Tin Street Cadet [c2]; cast:Tin Street Cadet; success: True
+  [precombat main] Search decides PriorityDecisionRequest: 11.441 ms; observed options: 1; space size: 1; success
+  [precombat main] Simple decides PriorityDecisionRequest: 1.745 ms; observed options: 1; space size: 1; success
+  [begin combat] Search decides PriorityDecisionRequest: 8.033 ms; observed options: 1; space size: 1; success
+  [begin combat] Simple decides PriorityDecisionRequest: 1.323 ms; observed options: 1; space size: 1; success
+  [declare attackers] Search decides DeclareAttackersRequest: 27.776 ms; observed options: 1; space size: 1; success
+  [declare attackers] Search decides PriorityDecisionRequest: 5.902 ms; observed options: 1; space size: 1; success
+  [declare attackers] Simple decides PriorityDecisionRequest: 1.377 ms; observed options: 1; space size: 1; success
+  [end combat] Search decides PriorityDecisionRequest: 6.920 ms; observed options: 1; space size: 1; success
+  [end combat] Simple decides PriorityDecisionRequest: 1.093 ms; observed options: 1; space size: 1; success
+  [postcombat main] Search decides PriorityDecisionRequest: 7.444 ms; observed options: 1; space size: 1; success
+  [postcombat main] Simple decides PriorityDecisionRequest: 1.151 ms; observed options: 1; space size: 1; success
+  [end step] Search decides PriorityDecisionRequest: 26.982 ms; observed options: 1; space size: 1; success
+  [end step] Simple decides PriorityDecisionRequest: 1.804 ms; observed options: 1; space size: 1; success
+
+Turn 2
+  [upkeep] Simple decides PriorityDecisionRequest: 1.529 ms; observed options: 1; space size: 1; success
+  [upkeep] Search decides PriorityDecisionRequest: 7.282 ms; observed options: 1; space size: 1; success
+  [draw] Card moved: Simple; Plains [c101] — card: Plains [c101]; from: DECK; last known: kind: CardLastKnownInformation; previous controller: Simple; to: HAND
+  [draw] Card drawn: Simple; Plains [c101] — card: Plains [c101]; last known: kind: CardLastKnownInformation
+  [draw] Resolution: -; -; -; success: True
+  [draw] Simple decides PriorityDecisionRequest: 1.244 ms; observed options: 1; space size: 1; success
+  [draw] Search decides PriorityDecisionRequest: 6.248 ms; observed options: 1; space size: 1; success
+  [precombat main] Simple chooses land: source: Plains [c97]
+  [precombat main] Simple decides PriorityDecisionRequest: 1.534 ms; observed options: 2; space size: unknown; success
+  [precombat main] Card moved: Simple; Plains [c97] — card: Plains [c97]; from: HAND; last known: kind: CardLastKnownInformation; previous controller: Simple; to: BATTLEFIELD
+  [precombat main] Simple plays land Plains [c97] — lands played: 1; last known: kind: CardLastKnownInformation
+  [precombat main] Resolution: Simple; Plains [c97]; play_land; success: True
+  [precombat main] Simple decides PriorityDecisionRequest: 3.724 ms; observed options: 1; space size: 1; success
+  [precombat main] Search decides PriorityDecisionRequest: 8.354 ms; observed options: 1; space size: 1; success
+  [begin combat] Simple decides PriorityDecisionRequest: 2.406 ms; observed options: 1; space size: 1; success
+  [begin combat] Search decides PriorityDecisionRequest: 6.624 ms; observed options: 1; space size: 1; success
+  [declare attackers] Simple chooses attack: attackers: none
+  [declare attackers] Simple decides DeclareAttackersRequest: 0.284 ms; observed options: 1; space size: unknown; success
+  [declare attackers] Simple decides PriorityDecisionRequest: 2.930 ms; observed options: 1; space size: 1; success
+  [declare attackers] Search decides PriorityDecisionRequest: 8.163 ms; observed options: 1; space size: 1; success
+  [end combat] Simple decides PriorityDecisionRequest: 2.088 ms; observed options: 1; space size: 1; success
+  [end combat] Search decides PriorityDecisionRequest: 9.214 ms; observed options: 1; space size: 1; success
+  [postcombat main] Simple decides PriorityDecisionRequest: 3.855 ms; observed options: 1; space size: 1; success
+  [postcombat main] Search decides PriorityDecisionRequest: 6.636 ms; observed options: 1; space size: 1; success
+  [end step] Simple decides PriorityDecisionRequest: 3.003 ms; observed options: 1; space size: 1; success
+  [end step] Search decides PriorityDecisionRequest: 14.399 ms; observed options: 1; space size: 1; success
+
+Turn 3
+  [upkeep] Search decides PriorityDecisionRequest: 7.441 ms; observed options: 1; space size: 1; success
+  [upkeep] Simple decides PriorityDecisionRequest: 3.183 ms; observed options: 1; space size: 1; success
+  [draw] Card moved: Search; Nest Robber [c9] — card: Nest Robber [c9]; from: DECK; last known: kind: CardLastKnownInformation; previous controller: Search; to: HAND
+  [draw] Card drawn: Search; Nest Robber [c9] — card: Nest Robber [c9]; last known: kind: CardLastKnownInformation
+  [draw] Resolution: -; -; -; success: True
+  [draw] Search decides PriorityDecisionRequest: 8.272 ms; observed options: 1; space size: 1; success
+  [draw] Simple decides PriorityDecisionRequest: 2.699 ms; observed options: 1; space size: 1; success
+  [precombat main] Search decides PriorityDecisionRequest: 582.408 ms; observed options: 19; space size: unknown; success
+  [precombat main] Card moved: Search; Mountain [c48] — card: Mountain [c48]; from: HAND; last known: kind: CardLastKnownInformation; previous controller: Search; to: BATTLEFIELD
+  [precombat main] Search plays land Mountain [c48] — lands played: 1; last known: kind: CardLastKnownInformation
+  [precombat main] Resolution: Search; Mountain [c48]; play_land; success: True
+  [precombat main] Search decides PriorityDecisionRequest: 583.503 ms; observed options: 20; space size: unknown; success
+  [precombat main] Card tapped: Search; Mountain [c41] — last known: kind: CardLastKnownInformation
+  [precombat main] Mana added: Search; Mountain [c41] — amount: 1; last known: kind: CardLastKnownInformation; mana: RED
+  [precombat main] Search activates Mountain [c41] — ability: mana_red; last known: kind: CardLastKnownInformation
+  [precombat main] Card tapped: Search; Mountain [c48] — last known: kind: CardLastKnownInformation
+  [precombat main] Mana added: Search; Mountain [c48] — amount: 1; last known: kind: CardLastKnownInformation; mana: RED
+  [precombat main] Search activates Mountain [c48] — ability: mana_red; last known: kind: CardLastKnownInformation
+  [precombat main] Mana paid: Search; Nest Robber [c8] — last known: kind: CardLastKnownInformation; payment: RED: 2
+  [precombat main] Card moved: Search; Nest Robber [c8] — card: Nest Robber [c8]; from: HAND; last known: kind: CardLastKnownInformation; previous controller: Search; to: STACK
+  [precombat main] Search casts Nest Robber [c8] — ability: cast:Nest Robber
+  [precombat main] Search decides PriorityDecisionRequest: 7.388 ms; observed options: 1; space size: 1; success
+  [precombat main] Simple decides PriorityDecisionRequest: 2.675 ms; observed options: 1; space size: 1; success
+  [precombat main] Card moved: Search; Nest Robber [c8] — card: Nest Robber [c8]; from: STACK; last known: kind: CardLastKnownInformation; previous controller: Search; to: BATTLEFIELD
+  [precombat main] Resolution: Search; Nest Robber [c8]; cast:Nest Robber; success: True
+  [precombat main] Search decides PriorityDecisionRequest: 10.810 ms; observed options: 1; space size: 1; success
+  [precombat main] Simple decides PriorityDecisionRequest: 2.311 ms; observed options: 1; space size: 1; success
+  [begin combat] Search decides PriorityDecisionRequest: 7.084 ms; observed options: 1; space size: 1; success
+  [begin combat] Simple decides PriorityDecisionRequest: 2.318 ms; observed options: 1; space size: 1; success
+  [declare attackers] Search decides DeclareAttackersRequest: 612.641 ms; observed options: 29; space size: unknown; success
+  [declare attackers] Card tapped: Search; Tin Street Cadet [c2]
+  [declare attackers] Search attacks with Tin Street Cadet [c2] — attacker: Tin Street Cadet [c2]; defender: Simple
+  [declare attackers] Card tapped: Search; Nest Robber [c8]
+  [declare attackers] Search attacks with Nest Robber [c8] — attacker: Nest Robber [c8]; defender: Simple
+  [declare attackers] Attackers declared: Search; - — attackers: Tin Street Cadet [c2], Nest Robber [c8]
+  [declare attackers] Search decides PriorityDecisionRequest: 10.933 ms; observed options: 1; space size: 1; success
+  [declare attackers] Simple decides PriorityDecisionRequest: 2.524 ms; observed options: 1; space size: 1; success
+  [declare blockers] Simple chooses block: blockers: none
+  [declare blockers] Simple decides DeclareBlockersRequest: 0.519 ms; observed options: 1; space size: unknown; success
+  [declare blockers] Search decides PriorityDecisionRequest: 42.001 ms; observed options: 1; space size: 1; success
+  [declare blockers] Simple decides PriorityDecisionRequest: 2.164 ms; observed options: 1; space size: 1; success
+  [second combat damage] Simple decides ReplacementOrderRequest: 0.092 ms; observed options: 1; space size: unknown; success
+  [second combat damage] Damage dealt: Search; Tin Street Cadet [c2] — amount: 1; combat: True; last known: kind: CardLastKnownInformation; life loss: 1; source revision: 3; target: Simple; target object: Simple; target revision: -
+  [second combat damage] Damage dealt: Search; Nest Robber [c8] — amount: 2; combat: True; last known: kind: CardLastKnownInformation; life loss: 2; source revision: 3; target: Simple; target object: Simple; target revision: -
+  [second combat damage] Search decides PriorityDecisionRequest: 7.108 ms; observed options: 1; space size: 1; success
+  [second combat damage] Simple decides PriorityDecisionRequest: 1.863 ms; observed options: 1; space size: 1; success
+  [end combat] Search decides PriorityDecisionRequest: 7.249 ms; observed options: 1; space size: 1; success
+  [end combat] Simple decides PriorityDecisionRequest: 2.088 ms; observed options: 1; space size: 1; success
+  [postcombat main] Search decides PriorityDecisionRequest: 9.717 ms; observed options: 1; space size: 1; success
+  [postcombat main] Simple decides PriorityDecisionRequest: 1.838 ms; observed options: 1; space size: 1; success
+  [end step] Search decides PriorityDecisionRequest: 36.203 ms; observed options: 1; space size: 1; success
+  [end step] Simple decides PriorityDecisionRequest: 2.583 ms; observed options: 1; space size: 1; success
+
+Turn 4
+  [upkeep] Simple decides PriorityDecisionRequest: 1.673 ms; observed options: 1; space size: 1; success
+  [upkeep] Search decides PriorityDecisionRequest: 9.469 ms; observed options: 1; space size: 1; success
+  [draw] Card moved: Simple; Plains [c120] — card: Plains [c120]; from: DECK; last known: kind: CardLastKnownInformation; previous controller: Simple; to: HAND
+  [draw] Card drawn: Simple; Plains [c120] — card: Plains [c120]; last known: kind: CardLastKnownInformation
+  [draw] Resolution: -; -; -; success: True
+  [draw] Simple decides PriorityDecisionRequest: 2.002 ms; observed options: 1; space size: 1; success
+  [draw] Search decides PriorityDecisionRequest: 7.517 ms; observed options: 1; space size: 1; success
+  [precombat main] Simple chooses land: source: Plains [c101]
+  [precombat main] Simple decides PriorityDecisionRequest: 2.053 ms; observed options: 2; space size: unknown; success
+  [precombat main] Card moved: Simple; Plains [c101] — card: Plains [c101]; from: HAND; last known: kind: CardLastKnownInformation; previous controller: Simple; to: BATTLEFIELD
+  [precombat main] Simple plays land Plains [c101] — lands played: 1; last known: kind: CardLastKnownInformation
+  [precombat main] Resolution: Simple; Plains [c101]; play_land; success: True
+  [precombat main] Simple chooses action: ability: cast:Moorland Inquisitor; source: Moorland Inquisitor [c74]; targets: none
+  [precombat main] Simple decides PriorityDecisionRequest: 6.177 ms; observed options: 3; space size: 3; success
+  [precombat main] Card tapped: Simple; Plains [c97] — last known: kind: CardLastKnownInformation
+  [precombat main] Mana added: Simple; Plains [c97] — amount: 1; last known: kind: CardLastKnownInformation; mana: WHITE
+  [precombat main] Simple activates Plains [c97] — ability: mana_white; last known: kind: CardLastKnownInformation
+  [precombat main] Card tapped: Simple; Plains [c101] — last known: kind: CardLastKnownInformation
+  [precombat main] Mana added: Simple; Plains [c101] — amount: 1; last known: kind: CardLastKnownInformation; mana: WHITE
+  [precombat main] Simple activates Plains [c101] — ability: mana_white; last known: kind: CardLastKnownInformation
+  [precombat main] Mana paid: Simple; Moorland Inquisitor [c74] — last known: kind: CardLastKnownInformation; payment: WHITE: 2
+  [precombat main] Card moved: Simple; Moorland Inquisitor [c74] — card: Moorland Inquisitor [c74]; from: HAND; last known: kind: CardLastKnownInformation; previous controller: Simple; to: STACK
+  [precombat main] Simple casts Moorland Inquisitor [c74] — ability: cast:Moorland Inquisitor
+  [precombat main] Simple decides PriorityDecisionRequest: 1.678 ms; observed options: 1; space size: 1; success
+  [precombat main] Search decides PriorityDecisionRequest: 27.298 ms; observed options: 1; space size: 1; success
+  [precombat main] Card moved: Simple; Moorland Inquisitor [c74] — card: Moorland Inquisitor [c74]; from: STACK; last known: kind: CardLastKnownInformation; previous controller: Simple; to: BATTLEFIELD
+  [precombat main] Resolution: Simple; Moorland Inquisitor [c74]; cast:Moorland Inquisitor; success: True
+  [precombat main] Simple decides PriorityDecisionRequest: 3.982 ms; observed options: 1; space size: 1; success
+  [precombat main] Search decides PriorityDecisionRequest: 8.063 ms; observed options: 1; space size: 1; success
+  [begin combat] Simple decides PriorityDecisionRequest: 2.978 ms; observed options: 1; space size: 1; success
+  [begin combat] Search decides PriorityDecisionRequest: 9.925 ms; observed options: 1; space size: 1; success
+  [declare attackers] Simple chooses attack: attackers: none
+  [declare attackers] Simple decides DeclareAttackersRequest: 0.310 ms; observed options: 1; space size: unknown; success
+  [declare attackers] Simple decides PriorityDecisionRequest: 2.051 ms; observed options: 1; space size: 1; success
+  [declare attackers] Search decides PriorityDecisionRequest: 8.469 ms; observed options: 1; space size: 1; success
+  [end combat] Simple decides PriorityDecisionRequest: 1.671 ms; observed options: 1; space size: 1; success
+  [end combat] Search decides PriorityDecisionRequest: 10.285 ms; observed options: 1; space size: 1; success
+  [postcombat main] Simple decides PriorityDecisionRequest: 3.880 ms; observed options: 1; space size: 1; success
+  [postcombat main] Search decides PriorityDecisionRequest: 8.264 ms; observed options: 1; space size: 1; success
+  [end step] Simple decides PriorityDecisionRequest: 2.003 ms; observed options: 1; space size: 1; success
+  [end step] Search decides PriorityDecisionRequest: 30.808 ms; observed options: 1; space size: 1; success
+
+Turn 5
+  [upkeep] Search decides PriorityDecisionRequest: 10.262 ms; observed options: 1; space size: 1; success
+  [upkeep] Simple decides PriorityDecisionRequest: 1.788 ms; observed options: 1; space size: 1; success
+  [draw] Card moved: Search; Mountain [c57] — card: Mountain [c57]; from: DECK; last known: kind: CardLastKnownInformation; previous controller: Search; to: HAND
+  [draw] Card drawn: Search; Mountain [c57] — card: Mountain [c57]; last known: kind: CardLastKnownInformation
+  [draw] Resolution: -; -; -; success: True
+  [draw] Search decides PriorityDecisionRequest: 9.396 ms; observed options: 1; space size: 1; success
+  [draw] Simple decides PriorityDecisionRequest: 2.624 ms; observed options: 1; space size: 1; success
+  [precombat main] Search decides PriorityDecisionRequest: 639.240 ms; observed options: 24; space size: unknown; success
+  [precombat main] Card moved: Search; Mountain [c57] — card: Mountain [c57]; from: HAND; last known: kind: CardLastKnownInformation; previous controller: Search; to: BATTLEFIELD
+  [precombat main] Search plays land Mountain [c57] — lands played: 1; last known: kind: CardLastKnownInformation
+  [precombat main] Resolution: Search; Mountain [c57]; play_land; success: True
+  [precombat main] Search decides PriorityDecisionRequest: 590.506 ms; observed options: 17; space size: unknown; success
+  [precombat main] Card tapped: Search; Mountain [c41] — last known: kind: CardLastKnownInformation
+  [precombat main] Mana added: Search; Mountain [c41] — amount: 1; last known: kind: CardLastKnownInformation; mana: RED
+  [precombat main] Search activates Mountain [c41] — ability: mana_red; last known: kind: CardLastKnownInformation
+  [precombat main] Card tapped: Search; Mountain [c48] — last known: kind: CardLastKnownInformation
+  [precombat main] Mana added: Search; Mountain [c48] — amount: 1; last known: kind: CardLastKnownInformation; mana: RED
+  [precombat main] Search activates Mountain [c48] — ability: mana_red; last known: kind: CardLastKnownInformation
+  [precombat main] Mana paid: Search; Nest Robber [c9] — last known: kind: CardLastKnownInformation; payment: RED: 2
+  [precombat main] Card moved: Search; Nest Robber [c9] — card: Nest Robber [c9]; from: HAND; last known: kind: CardLastKnownInformation; previous controller: Search; to: STACK
+  [precombat main] Search casts Nest Robber [c9] — ability: cast:Nest Robber
+  [precombat main] Search decides PriorityDecisionRequest: 10.069 ms; observed options: 1; space size: 1; success
+  [precombat main] Simple decides PriorityDecisionRequest: 1.977 ms; observed options: 1; space size: 1; success
+  [precombat main] Card moved: Search; Nest Robber [c9] — card: Nest Robber [c9]; from: STACK; last known: kind: CardLastKnownInformation; previous controller: Search; to: BATTLEFIELD
+  [precombat main] Resolution: Search; Nest Robber [c9]; cast:Nest Robber; success: True
+  [precombat main] Search decides PriorityDecisionRequest: 11.409 ms; observed options: 1; space size: 1; success
+  [precombat main] Simple decides PriorityDecisionRequest: 2.526 ms; observed options: 1; space size: 1; success
+  [begin combat] Search decides PriorityDecisionRequest: 8.481 ms; observed options: 1; space size: 1; success
+  [begin combat] Simple decides PriorityDecisionRequest: 2.333 ms; observed options: 1; space size: 1; success
+  [declare attackers] Search decides DeclareAttackersRequest: 560.879 ms; observed options: 42; space size: unknown; success
+  [declare attackers] Card tapped: Search; Nest Robber [c8]
+  [declare attackers] Search attacks with Nest Robber [c8] — attacker: Nest Robber [c8]; defender: Simple
+  [declare attackers] Card tapped: Search; Nest Robber [c9]
+  [declare attackers] Search attacks with Nest Robber [c9] — attacker: Nest Robber [c9]; defender: Simple
+  [declare attackers] Attackers declared: Search; - — attackers: Nest Robber [c8], Nest Robber [c9]
+  [declare attackers] Search decides PriorityDecisionRequest: 10.861 ms; observed options: 1; space size: 1; success
+  [declare attackers] Simple decides PriorityDecisionRequest: 1.834 ms; observed options: 1; space size: 1; success
+  [declare blockers] Simple chooses block: blockers: Moorland Inquisitor [c74], Nest Robber [c8]
+  [declare blockers] Simple decides DeclareBlockersRequest: 0.565 ms; observed options: 1; space size: unknown; success
+  [declare blockers] Simple blocks with Moorland Inquisitor [c74] — attacker: Nest Robber [c8]; blocker: Moorland Inquisitor [c74]
+  [declare blockers] Attacker blocked: Search; Nest Robber [c8] — blockers: Moorland Inquisitor [c74]
+  [declare blockers] Blockers declared: Simple; - — blockers: Moorland Inquisitor [c74], Nest Robber [c8]
+  [declare blockers] Search decides PriorityDecisionRequest: 57.074 ms; observed options: 1; space size: 1; success
+  [declare blockers] Simple decides PriorityDecisionRequest: 1.866 ms; observed options: 1; space size: 1; success
+  [second combat damage] Simple decides ReplacementOrderRequest: 0.066 ms; observed options: 1; space size: unknown; success
+  [second combat damage] Damage dealt: Simple; Moorland Inquisitor [c74] — amount: 2; combat: True; last known: kind: CardLastKnownInformation; life loss: 0; source revision: 3; target: Nest Robber; target object: Nest Robber [c8]; target revision: 3
+  [second combat damage] Damage dealt: Search; Nest Robber [c8] — amount: 2; combat: True; last known: kind: CardLastKnownInformation; life loss: 0; source revision: 3; target: Moorland Inquisitor; target object: Moorland Inquisitor [c74]; target revision: 3
+  [second combat damage] Damage dealt: Search; Nest Robber [c9] — amount: 2; combat: True; last known: kind: CardLastKnownInformation; life loss: 2; source revision: 3; target: Simple; target object: Simple; target revision: -
+  [second combat damage] Card moved: Search; Nest Robber [c8] — card: Nest Robber [c8]; from: BATTLEFIELD; last known: kind: CardLastKnownInformation; previous controller: Search; to: GRAVEYARD
+  [second combat damage] Card moved: Simple; Moorland Inquisitor [c74] — card: Moorland Inquisitor [c74]; from: BATTLEFIELD; last known: kind: CardLastKnownInformation; previous controller: Simple; to: GRAVEYARD
+  [second combat damage] Search decides PriorityDecisionRequest: 10.190 ms; observed options: 1; space size: 1; success
+  [second combat damage] Simple decides PriorityDecisionRequest: 2.062 ms; observed options: 1; space size: 1; success
+  [end combat] Search decides PriorityDecisionRequest: 9.719 ms; observed options: 1; space size: 1; success
+  [end combat] Simple decides PriorityDecisionRequest: 1.261 ms; observed options: 1; space size: 1; success
+  [postcombat main] Search decides PriorityDecisionRequest: 11.752 ms; observed options: 1; space size: 1; success
+  [postcombat main] Simple decides PriorityDecisionRequest: 1.752 ms; observed options: 1; space size: 1; success
+  [end step] Search decides PriorityDecisionRequest: 60.816 ms; observed options: 1; space size: 1; success
+  [end step] Simple decides PriorityDecisionRequest: 1.513 ms; observed options: 1; space size: 1; success
+
+Turn 6
+  [upkeep] Simple decides PriorityDecisionRequest: 2.579 ms; observed options: 1; space size: 1; success
+  [upkeep] Search decides PriorityDecisionRequest: 8.609 ms; observed options: 1; space size: 1; success
+  [draw] Card moved: Simple; Hallowed Priest [c68] — card: Hallowed Priest [c68]; from: DECK; last known: kind: CardLastKnownInformation; previous controller: Simple; to: HAND
+  [draw] Card drawn: Simple; Hallowed Priest [c68] — card: Hallowed Priest [c68]; last known: kind: CardLastKnownInformation
+  [draw] Resolution: -; -; -; success: True
+  [draw] Simple decides PriorityDecisionRequest: 2.173 ms; observed options: 1; space size: 1; success
+  [draw] Search decides PriorityDecisionRequest: 9.348 ms; observed options: 1; space size: 1; success
+  [precombat main] Simple chooses land: source: Plains [c102]
+  [precombat main] Simple decides PriorityDecisionRequest: 1.779 ms; observed options: 2; space size: unknown; success
+  [precombat main] Card moved: Simple; Plains [c102] — card: Plains [c102]; from: HAND; last known: kind: CardLastKnownInformation; previous controller: Simple; to: BATTLEFIELD
+  [precombat main] Simple plays land Plains [c102] — lands played: 1; last known: kind: CardLastKnownInformation
+  [precombat main] Resolution: Simple; Plains [c102]; play_land; success: True
+  [precombat main] Simple chooses action: ability: cast:Hallowed Priest; source: Hallowed Priest [c68]; targets: none
+  [precombat main] Simple decides PriorityDecisionRequest: 5.869 ms; observed options: 3; space size: 3; success
+  [precombat main] Card tapped: Simple; Plains [c97] — last known: kind: CardLastKnownInformation
+  [precombat main] Mana added: Simple; Plains [c97] — amount: 1; last known: kind: CardLastKnownInformation; mana: WHITE
+  [precombat main] Simple activates Plains [c97] — ability: mana_white; last known: kind: CardLastKnownInformation
+  [precombat main] Card tapped: Simple; Plains [c101] — last known: kind: CardLastKnownInformation
+  [precombat main] Mana added: Simple; Plains [c101] — amount: 1; last known: kind: CardLastKnownInformation; mana: WHITE
+  [precombat main] Simple activates Plains [c101] — ability: mana_white; last known: kind: CardLastKnownInformation
+  [precombat main] Mana paid: Simple; Hallowed Priest [c68] — last known: kind: CardLastKnownInformation; payment: WHITE: 2
+  [precombat main] Card moved: Simple; Hallowed Priest [c68] — card: Hallowed Priest [c68]; from: HAND; last known: kind: CardLastKnownInformation; previous controller: Simple; to: STACK
+  [precombat main] Simple casts Hallowed Priest [c68] — ability: cast:Hallowed Priest
+  [precombat main] Simple decides PriorityDecisionRequest: 2.643 ms; observed options: 1; space size: 1; success
+  [precombat main] Search decides PriorityDecisionRequest: 65.763 ms; observed options: 1; space size: 1; success
+  [precombat main] Card moved: Simple; Hallowed Priest [c68] — card: Hallowed Priest [c68]; from: STACK; last known: kind: CardLastKnownInformation; previous controller: Simple; to: BATTLEFIELD
+  [precombat main] Resolution: Simple; Hallowed Priest [c68]; cast:Hallowed Priest; success: True
+  [precombat main] Simple decides PriorityDecisionRequest: 4.077 ms; observed options: 1; space size: 1; success
+  [precombat main] Search decides PriorityDecisionRequest: 13.797 ms; observed options: 1; space size: 1; success
+  [begin combat] Simple decides PriorityDecisionRequest: 3.900 ms; observed options: 1; space size: 1; success
+  [begin combat] Search decides PriorityDecisionRequest: 16.180 ms; observed options: 1; space size: 1; success
+  [declare attackers] Simple chooses attack: attackers: none
+  [declare attackers] Simple decides DeclareAttackersRequest: 0.484 ms; observed options: 1; space size: unknown; success
+  [declare attackers] Simple decides PriorityDecisionRequest: 3.323 ms; observed options: 1; space size: 1; success
+  [declare attackers] Search decides PriorityDecisionRequest: 12.268 ms; observed options: 1; space size: 1; success
+  [end combat] Simple decides PriorityDecisionRequest: 2.427 ms; observed options: 1; space size: 1; success
+  [end combat] Search decides PriorityDecisionRequest: 14.841 ms; observed options: 1; space size: 1; success
+  [postcombat main] Simple decides PriorityDecisionRequest: 3.232 ms; observed options: 1; space size: 1; success
+  [postcombat main] Search decides PriorityDecisionRequest: 12.783 ms; observed options: 1; space size: 1; success
+  [end step] Simple decides PriorityDecisionRequest: 2.860 ms; observed options: 1; space size: 1; success
+  [end step] Search decides PriorityDecisionRequest: 74.469 ms; observed options: 1; space size: 1; success
+
+Turn 7
+  [upkeep] Search decides PriorityDecisionRequest: 13.540 ms; observed options: 1; space size: 1; success
+  [upkeep] Simple decides PriorityDecisionRequest: 2.319 ms; observed options: 1; space size: 1; success
+  [draw] Card moved: Search; Nest Robber [c7] — card: Nest Robber [c7]; from: DECK; last known: kind: CardLastKnownInformation; previous controller: Search; to: HAND
+  [draw] Card drawn: Search; Nest Robber [c7] — card: Nest Robber [c7]; last known: kind: CardLastKnownInformation
+  [draw] Resolution: -; -; -; success: True
+  [draw] Search decides PriorityDecisionRequest: 13.342 ms; observed options: 1; space size: 1; success
+  [draw] Simple decides PriorityDecisionRequest: 2.729 ms; observed options: 1; space size: 1; success
+  [precombat main] Search decides PriorityDecisionRequest: 638.687 ms; observed options: 15; space size: unknown; success
+  [precombat main] Card tapped: Search; Mountain [c41] — last known: kind: CardLastKnownInformation
+  [precombat main] Mana added: Search; Mountain [c41] — amount: 1; last known: kind: CardLastKnownInformation; mana: RED
+  [precombat main] Search activates Mountain [c41] — ability: mana_red; last known: kind: CardLastKnownInformation
+  [precombat main] Card tapped: Search; Mountain [c48] — last known: kind: CardLastKnownInformation
+  [precombat main] Mana added: Search; Mountain [c48] — amount: 1; last known: kind: CardLastKnownInformation; mana: RED
+  [precombat main] Search activates Mountain [c48] — ability: mana_red; last known: kind: CardLastKnownInformation
+  [precombat main] Mana paid: Search; Nest Robber [c7] — last known: kind: CardLastKnownInformation; payment: RED: 2
+  [precombat main] Card moved: Search; Nest Robber [c7] — card: Nest Robber [c7]; from: HAND; last known: kind: CardLastKnownInformation; previous controller: Search; to: STACK
+  [precombat main] Search casts Nest Robber [c7] — ability: cast:Nest Robber
+  [precombat main] Search decides PriorityDecisionRequest: 11.709 ms; observed options: 1; space size: 1; success
+  [precombat main] Simple decides PriorityDecisionRequest: 2.579 ms; observed options: 1; space size: 1; success
+  [precombat main] Card moved: Search; Nest Robber [c7] — card: Nest Robber [c7]; from: STACK; last known: kind: CardLastKnownInformation; previous controller: Search; to: BATTLEFIELD
+  [precombat main] Resolution: Search; Nest Robber [c7]; cast:Nest Robber; success: True
+  [precombat main] Search decides PriorityDecisionRequest: 15.383 ms; observed options: 1; space size: 1; success
+  [precombat main] Simple decides PriorityDecisionRequest: 2.351 ms; observed options: 1; space size: 1; success
+  [begin combat] Search decides PriorityDecisionRequest: 12.258 ms; observed options: 1; space size: 1; success
+  [begin combat] Simple decides PriorityDecisionRequest: 2.170 ms; observed options: 1; space size: 1; success
+  [declare attackers] Search decides DeclareAttackersRequest: 640.907 ms; observed options: 44; space size: unknown; success
+  [declare attackers] Card tapped: Search; Tin Street Cadet [c2]
+  [declare attackers] Search attacks with Tin Street Cadet [c2] — attacker: Tin Street Cadet [c2]; defender: Simple
+  [declare attackers] Attackers declared: Search; - — attackers: Tin Street Cadet [c2]
+  [declare attackers] Search decides PriorityDecisionRequest: 12.725 ms; observed options: 1; space size: 1; success
+  [declare attackers] Simple decides PriorityDecisionRequest: 1.942 ms; observed options: 1; space size: 1; success
+  [declare blockers] Simple chooses block: blockers: Hallowed Priest [c68], Tin Street Cadet [c2]
+  [declare blockers] Simple decides DeclareBlockersRequest: 0.520 ms; observed options: 1; space size: unknown; success
+  [declare blockers] Simple blocks with Hallowed Priest [c68] — attacker: Tin Street Cadet [c2]; blocker: Hallowed Priest [c68]
+  [declare blockers] Attacker blocked: Search; Tin Street Cadet [c2] — blockers: Hallowed Priest [c68]
+  [declare blockers] Blockers declared: Simple; - — blockers: Hallowed Priest [c68], Tin Street Cadet [c2]
+  [declare blockers] Trigger detected: Search; Tin Street Cadet [c2]; cadet_blocked
+  [declare blockers] Search decides TriggerOrderRequest: 11.441 ms; observed options: 1; space size: 1; success
+  [declare blockers] Search decides AbilityDecisionRequest: 15.251 ms; observed options: 1; space size: 1; success
+  [declare blockers] Search decides PriorityDecisionRequest: 78.107 ms; observed options: 1; space size: 1; success
+  [declare blockers] Simple chooses action: ability: cast:Tactical Advantage; source: Tactical Advantage [c89]; targets: Hallowed Priest [c68]
+  [declare blockers] Simple decides PriorityDecisionRequest: 3.300 ms; observed options: 2; space size: 2; success
+  [declare blockers] Card tapped: Simple; Plains [c102] — last known: kind: CardLastKnownInformation
+  [declare blockers] Mana added: Simple; Plains [c102] — amount: 1; last known: kind: CardLastKnownInformation; mana: WHITE
+  [declare blockers] Simple activates Plains [c102] — ability: mana_white; last known: kind: CardLastKnownInformation
+  [declare blockers] Mana paid: Simple; Tactical Advantage [c89] — last known: kind: CardLastKnownInformation; payment: WHITE: 1
+  [declare blockers] Card moved: Simple; Tactical Advantage [c89] — card: Tactical Advantage [c89]; from: HAND; last known: kind: CardLastKnownInformation; previous controller: Simple; to: STACK
+  [declare blockers] Simple casts Tactical Advantage [c89] — ability: cast:Tactical Advantage
+  [declare blockers] Simple decides PriorityDecisionRequest: 0.228 ms; observed options: 0; space size: unknown; success
+  [declare blockers] Search decides PriorityDecisionRequest: 18.274 ms; observed options: 1; space size: 1; success
+  [declare blockers] Temporary effect applied: Simple; Tactical Advantage [c89] — last known: kind: CardLastKnownInformation; targets: Hallowed Priest [c68]
+  [declare blockers] Card moved: Simple; Tactical Advantage [c89] — card: Tactical Advantage [c89]; from: STACK; last known: kind: CardLastKnownInformation; previous controller: Simple; to: GRAVEYARD
+  [declare blockers] Resolution: Simple; Tactical Advantage [c89]; cast:Tactical Advantage; success: True
+  [declare blockers] Search decides PriorityDecisionRequest: 15.462 ms; observed options: 1; space size: 1; success
+  [declare blockers] Simple decides PriorityDecisionRequest: 0.278 ms; observed options: 0; space size: unknown; success
+  [declare blockers] Card moved: Search; Goblin [c121] — card: Goblin [c121]; created token: True; from: -; previous controller: Search; to: BATTLEFIELD
+  [declare blockers] Resolution: Search; Tin Street Cadet [c2]; cadet_blocked; success: True
+  [declare blockers] Search decides PriorityDecisionRequest: 14.246 ms; observed options: 1; space size: 1; success
+  [declare blockers] Simple decides PriorityDecisionRequest: 0.230 ms; observed options: 0; space size: unknown; success
+  [second combat damage] Damage dealt: Simple; Hallowed Priest [c68] — amount: 3; combat: True; last known: kind: CardLastKnownInformation; life loss: 0; source revision: 3; target: Tin Street Cadet; target object: Tin Street Cadet [c2]; target revision: 3
+  [second combat damage] Damage dealt: Search; Tin Street Cadet [c2] — amount: 1; combat: True; last known: kind: CardLastKnownInformation; life loss: 0; source revision: 3; target: Hallowed Priest; target object: Hallowed Priest [c68]; target revision: 3
+  [second combat damage] Card moved: Search; Tin Street Cadet [c2] — card: Tin Street Cadet [c2]; from: BATTLEFIELD; last known: kind: CardLastKnownInformation; previous controller: Search; to: GRAVEYARD
+  [second combat damage] Search decides PriorityDecisionRequest: 15.961 ms; observed options: 1; space size: 1; success
+  [second combat damage] Simple decides PriorityDecisionRequest: 0.248 ms; observed options: 0; space size: unknown; success
+  [end combat] Search decides PriorityDecisionRequest: 15.379 ms; observed options: 1; space size: 1; success
+  [end combat] Simple decides PriorityDecisionRequest: 0.260 ms; observed options: 0; space size: unknown; success
+  [postcombat main] Search decides PriorityDecisionRequest: 16.425 ms; observed options: 1; space size: 1; success
+  [postcombat main] Simple decides PriorityDecisionRequest: 0.309 ms; observed options: 0; space size: unknown; success
+  [end step] Search decides PriorityDecisionRequest: 91.629 ms; observed options: 1; space size: 1; success
+  [end step] Simple decides PriorityDecisionRequest: 0.229 ms; observed options: 0; space size: unknown; success
+
+Turn 8
+  [upkeep] Simple decides PriorityDecisionRequest: 0.212 ms; observed options: 0; space size: unknown; success
+  [upkeep] Search decides PriorityDecisionRequest: 11.321 ms; observed options: 1; space size: 1; success
+  [draw] Card moved: Simple; Plains [c107] — card: Plains [c107]; from: DECK; last known: kind: CardLastKnownInformation; previous controller: Simple; to: HAND
+  [draw] Card drawn: Simple; Plains [c107] — card: Plains [c107]; last known: kind: CardLastKnownInformation
+  [draw] Resolution: -; -; -; success: True
+  [draw] Simple decides PriorityDecisionRequest: 0.208 ms; observed options: 0; space size: unknown; success
+  [draw] Search decides PriorityDecisionRequest: 12.881 ms; observed options: 1; space size: 1; success
+  [precombat main] Simple chooses land: source: Plains [c107]
+  [precombat main] Simple decides PriorityDecisionRequest: 1.568 ms; observed options: 2; space size: unknown; success
+  [precombat main] Card moved: Simple; Plains [c107] — card: Plains [c107]; from: HAND; last known: kind: CardLastKnownInformation; previous controller: Simple; to: BATTLEFIELD
+  [precombat main] Simple plays land Plains [c107] — lands played: 1; last known: kind: CardLastKnownInformation
+  [precombat main] Resolution: Simple; Plains [c107]; play_land; success: True
+  [precombat main] Simple chooses action: ability: cast:Hallowed Priest; source: Hallowed Priest [c69]; targets: none
+  [precombat main] Simple decides PriorityDecisionRequest: 3.337 ms; observed options: 2; space size: 2; success
+  [precombat main] Card tapped: Simple; Plains [c97] — last known: kind: CardLastKnownInformation
+  [precombat main] Mana added: Simple; Plains [c97] — amount: 1; last known: kind: CardLastKnownInformation; mana: WHITE
+  [precombat main] Simple activates Plains [c97] — ability: mana_white; last known: kind: CardLastKnownInformation
+  [precombat main] Card tapped: Simple; Plains [c101] — last known: kind: CardLastKnownInformation
+  [precombat main] Mana added: Simple; Plains [c101] — amount: 1; last known: kind: CardLastKnownInformation; mana: WHITE
+  [precombat main] Simple activates Plains [c101] — ability: mana_white; last known: kind: CardLastKnownInformation
+  [precombat main] Mana paid: Simple; Hallowed Priest [c69] — last known: kind: CardLastKnownInformation; payment: WHITE: 2
+  [precombat main] Card moved: Simple; Hallowed Priest [c69] — card: Hallowed Priest [c69]; from: HAND; last known: kind: CardLastKnownInformation; previous controller: Simple; to: STACK
+  [precombat main] Simple casts Hallowed Priest [c69] — ability: cast:Hallowed Priest
+  [precombat main] Simple decides PriorityDecisionRequest: 0.297 ms; observed options: 0; space size: unknown; success
+  [precombat main] Search decides PriorityDecisionRequest: 88.378 ms; observed options: 1; space size: 1; success
+  [precombat main] Card moved: Simple; Hallowed Priest [c69] — card: Hallowed Priest [c69]; from: STACK; last known: kind: CardLastKnownInformation; previous controller: Simple; to: BATTLEFIELD
+  [precombat main] Resolution: Simple; Hallowed Priest [c69]; cast:Hallowed Priest; success: True
+  [precombat main] Simple decides PriorityDecisionRequest: 0.180 ms; observed options: 0; space size: unknown; success
+  [precombat main] Search decides PriorityDecisionRequest: 13.233 ms; observed options: 1; space size: 1; success
+  [begin combat] Simple decides PriorityDecisionRequest: 0.147 ms; observed options: 0; space size: unknown; success
+  [begin combat] Search decides PriorityDecisionRequest: 13.002 ms; observed options: 1; space size: 1; success
+  [declare attackers] Simple chooses attack: attackers: Hallowed Priest [c68]
+  [declare attackers] Simple decides DeclareAttackersRequest: 0.480 ms; observed options: 1; space size: unknown; success
+  [declare attackers] Card tapped: Simple; Hallowed Priest [c68]
+  [declare attackers] Simple attacks with Hallowed Priest [c68] — attacker: Hallowed Priest [c68]; defender: Search
+  [declare attackers] Attackers declared: Simple; - — attackers: Hallowed Priest [c68]
+  [declare attackers] Simple decides PriorityDecisionRequest: 0.164 ms; observed options: 0; space size: unknown; success
+  [declare attackers] Search decides PriorityDecisionRequest: 13.637 ms; observed options: 1; space size: 1; success
+  [declare blockers] Search decides DeclareBlockersRequest: 707.437 ms; observed options: 46; space size: unknown; success
+  [declare blockers] Search blocks with Goblin [c121] — attacker: Hallowed Priest [c68]; blocker: Goblin [c121]
+  [declare blockers] Attacker blocked: Simple; Hallowed Priest [c68] — blockers: Goblin [c121]
+  [declare blockers] Blockers declared: Search; - — blockers: Goblin [c121], Hallowed Priest [c68]
+  [declare blockers] Simple decides PriorityDecisionRequest: 0.289 ms; observed options: 0; space size: unknown; success
+  [declare blockers] Search decides PriorityDecisionRequest: 13.513 ms; observed options: 1; space size: 1; success
+  [second combat damage] Damage dealt: Search; Goblin [c121] — amount: 1; combat: True; last known: kind: CardLastKnownInformation; life loss: 0; source revision: 1; target: Hallowed Priest; target object: Hallowed Priest [c68]; target revision: 3
+  [second combat damage] Damage dealt: Simple; Hallowed Priest [c68] — amount: 1; combat: True; last known: kind: CardLastKnownInformation; life loss: 0; source revision: 3; target: Goblin; target object: Goblin [c121]; target revision: 1
+  [second combat damage] Card moved: Simple; Hallowed Priest [c68] — card: Hallowed Priest [c68]; from: BATTLEFIELD; last known: kind: CardLastKnownInformation; previous controller: Simple; to: GRAVEYARD
+  [second combat damage] Card moved: Search; Goblin [c121] — card: Goblin [c121]; from: BATTLEFIELD; last known: kind: CardLastKnownInformation; previous controller: Search; to: GRAVEYARD
+  [second combat damage] Simple decides PriorityDecisionRequest: 0.196 ms; observed options: 0; space size: unknown; success
+  [second combat damage] Search decides PriorityDecisionRequest: 12.150 ms; observed options: 1; space size: 1; success
+  [end combat] Simple decides PriorityDecisionRequest: 0.150 ms; observed options: 0; space size: unknown; success
+  [end combat] Search decides PriorityDecisionRequest: 12.353 ms; observed options: 1; space size: 1; success
+  [postcombat main] Simple decides PriorityDecisionRequest: 0.172 ms; observed options: 0; space size: unknown; success
+  [postcombat main] Search decides PriorityDecisionRequest: 12.862 ms; observed options: 1; space size: 1; success
+  [end step] Simple decides PriorityDecisionRequest: 0.262 ms; observed options: 0; space size: unknown; success
+  [end step] Search decides PriorityDecisionRequest: 87.911 ms; observed options: 1; space size: 1; success

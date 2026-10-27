@@ -338,6 +338,9 @@ def lost_life_this_turn(state: object, player: object) -> bool:
     """
     if getattr(state, "_history_turn", None) != state.turn.number:
         return False
+    history = getattr(state, "turn_history", None)
+    if history is not None:
+        return history.lost_life(player)
     return any(
         event.key in {"damage_dealt", "life_lost", "life_paid"}
         and event.payload.get("amount", 0) > 0

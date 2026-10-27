@@ -1,8 +1,8 @@
 # Project layout
 
 Run commands and tests from `Cards/`. Public entry points remain unchanged:
-`python -m game.bin.play_ai`, `python -m game.bin.ai_matches`,
-`python -m game.bin.match_report`, and `python -m game.bin.starter_game`.
+`python -m game.bin.play`, `python -m game.bin.match`,
+`python -m game.bin.tournament`, and `python -m game.bin.self_play`.
 
 ```text
 Cards/
@@ -15,7 +15,7 @@ Cards/
     game_actions/    Ability generation, costs, execution and resolution
     game_loop/       Turn loop, setup and minimal runnable game
     mana/            Mana representation, source discovery and planning
-    ai/              Player strategy and automatic payment controller
+    ai/              Player information, policies, sampled worlds and MCTS
     simulation/      Match and tournament orchestration
     reporting/       Human-readable match report rendering
     paths.py         Shared data and artifact paths
@@ -24,7 +24,10 @@ Cards/
   data/
     decks/arena_anb/  The five counted decklists
     *.json           Offline card characteristics and rules text
-  docs/              Rules coverage, guides, testing history and specification
+  docs/              Central Markdown documentation, guides and specifications
+  benchmarks/        Maintained profiling and regression tools
+  configs/           Match, search and self-play configurations
+  runs/              Retained historical numeric results and output logs
   artifacts/
     test-results/    Retained test reports and reference matches
     runs/            Local interactive match output
@@ -62,5 +65,10 @@ use the new module paths listed below; old flat module paths were removed.
 
 ## Engine development
 
-See [ENGINE_ROADMAP.md](ENGINE_ROADMAP.md) for staged rule work and removed legacy interfaces.
+See [PROJECT_ROADMAP.md](PROJECT_ROADMAP.md) for staged work and
+[AI_SEARCH.md](AI_SEARCH.md) for current search ownership and interfaces.
+Mana planning is imported from `game.mana.mana_solver`.
+Markdown documentation belongs under `docs`; dependency environments are excluded
+from source cleanup. Historical Python snapshots and one-shot scripts under
+`runs` were removed; retained results are data rather than runtime dependencies.
 
