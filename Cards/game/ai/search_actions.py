@@ -106,7 +106,10 @@ class PlayerAction:
         return self.structured.value.readonly
 
 
+from game.game_actions.generation.decision_abstraction.combat_frames import CombatNextOption
+
 _SIMPLE_OPTIONS = (
+    CombatNextOption,
     OrderNextOption,
     DeclareAttackersOption, DeclareBlockersOption, MulliganOption, MulliganBottomOption,
     DiscardOption, AbilityResolutionOption, StartingPlayerOption, LegendOption,

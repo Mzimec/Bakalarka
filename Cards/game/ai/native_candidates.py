@@ -137,56 +137,53 @@ class NativeCombatStrategy:
     This does not enumerate complete combat products to sort them. The exact
     validator may reject drafts with coupled requirements; enumeration continues.
     """
-    def __init__(self, *, blockers, width):
-        self.blockers, self.width = blockers, width
+    def __init__(self, *, blockers, width, attack_risk=False):
+        self.blockers, self.width, self.attack_risk = blockers, width, attack_risk
 
     def generate(self, request):
         """!
         @brief Yield native proposals under the configured action-generation policy.
         """
         from game.ai.generation_candidates import BeamCombatStrategy
-        from game.game_actions.generation.decision_abstraction.selection_strategies import combat_view
-        from game.game_actions.generation.decision_abstraction.options import DeclareAttackersOption, DeclareBlockersOption
-        from game.ai.combat_strategies import GreedyBlockersStrategy, CombatEvaluator
-        state, player = request.state, request.player
         seen = set()
-        def emit(mapping):
-            key = frozenset(mapping.items())
+        def emit(option):
+            key = frozenset(option.declarations.items())
             if key not in seen:
                 seen.add(key)
-                yield (DeclareBlockersOption if self.blockers else DeclareAttackersOption)(mapping)
+                yield option
+        for option in self.drafts(request):
+            yield from emit(option)
+        for option in BeamCombatStrategy(blockers=self.blockers, width=self.width).generate(request):
+            yield from emit(option)
+
+    def drafts(self, request, *, block_targets=None):
+        """!
+        @brief Yield only cheap seed drafts, without starting beam or full enumeration.
+        """
+        from game.game_actions.generation.decision_abstraction.selection_strategies import combat_view
+        from game.game_actions.generation.decision_abstraction.options import DeclareBlockersOption
+        from game.ai.combat_strategies import GreedyBlockersStrategy
+        state, player = request.state, request.player
         if self.blockers:
             combat = combat_view(state)
-            for option in GreedyBlockersStrategy().generate(request):
-                yield from emit(option.declarations)
-            yield from emit({})
-            attackers = sorted(combat.attackers, key=lambda c: (-(c.get_power(state) or 0), c.command_id))
+            yield from GreedyBlockersStrategy().generate(request)
+            yield DeclareBlockersOption({})
+            attackers = sorted(combat.attackers if block_targets is None else block_targets,
+                               key=lambda c: (-(c.get_power(state) or 0), c.command_id))
             for attacker in attackers:
                 blockers = sorted(combat.legal_blockers(player, attacker),
                     key=lambda c: ((c.get_power(state) or 0)+(c.get_toughness(state) or 0), c.command_id))
                 count = 2 if attacker.has_keyword(state, 'menace') else 1
                 if len(blockers) >= count:
-                    yield from emit({b: attacker for b in blockers[:count]})
+                    yield DeclareBlockersOption({b: attacker for b in blockers[:count]})
                 power, group = 0, {}
                 for blocker in reversed(blockers):
                     group[blocker] = attacker
                     power += max(0, blocker.get_power(state) or 0)
                     if len(group) >= count and power >= (attacker.get_toughness(state) or 0):
-                        yield from emit(group)
+                        yield DeclareBlockersOption(dict(group))
                         break
         else:
-            attackers = sorted(state.combat.legal_attackers(player),
-                               key=lambda c: (-(c.get_power(state) or 0), c.command_id))
-            evaluator = CombatEvaluator()
-            opponents = tuple(p for p in state.active_players if p is not player)
-            for opponent in opponents:
-                all_attack = {c: opponent for c in attackers if (c.get_power(state) or 0) > 0}
-                yield from emit(all_attack)
-                defenders = evaluator.defenders(state, opponent)
-                yield from emit({c: opponent for c in all_attack if evaluator.safe_attacker(state, c, defenders)})
-                yield from emit({})
-                # Different sized pressure/defence drafts; no subset product.
-                for count in range(1, min(len(attackers), self.width)+1):
-                    yield from emit({c: opponent for c in attackers[:count]})
-        for option in BeamCombatStrategy(blockers=self.blockers, width=self.width).generate(request):
-            yield from emit(option.declarations)
+            from game.ai.attack_candidates import RiskAttackersStrategy, PowerAttackersStrategy
+            strategy = RiskAttackersStrategy if self.attack_risk else PowerAttackersStrategy
+            yield from strategy(self.width).generate(request)

@@ -118,7 +118,8 @@ class CurrentPositionWorlds:
         No native Python frame or inaccessible opponent choice is retained.
         """
         from game.ai.decision_maker import PriorityDecisionRequest, DeclareAttackersRequest, DeclareBlockersRequest
-        if not isinstance(request, (PriorityDecisionRequest, DeclareAttackersRequest, DeclareBlockersRequest)):
+        from game.game_actions.generation.decision_abstraction.combat_frames import CombatNextRequest
+        if not isinstance(request, (PriorityDecisionRequest, DeclareAttackersRequest, DeclareBlockersRequest, CombatNextRequest)):
             return
         if isinstance(request, PriorityDecisionRequest) and not self._needs_forced_anchor(request):
             return
@@ -249,11 +250,12 @@ class CurrentPositionWorlds:
         """
         from game.ai.decision_maker import PriorityDecisionRequest, DeclareAttackersRequest, DeclareBlockersRequest
         from game.game_loop.continuations import is_combat_damage_order
+        from game.game_actions.generation.decision_abstraction.combat_frames import CombatNextRequest
         self.unsupported_reason = None
         self.preparation = {"route": "unavailable"}
         self.unsupported_detail = {"request": type(request).__name__,
                                    "phase": request.state.turn.phase.name if request.state is not None else None}
-        if (not isinstance(request, (PriorityDecisionRequest, DeclareAttackersRequest, DeclareBlockersRequest))
+        if (not isinstance(request, (PriorityDecisionRequest, DeclareAttackersRequest, DeclareBlockersRequest, CombatNextRequest))
                 and not is_combat_damage_order(request)):
             self.unsupported_reason = "unsupported_root_continuation"
             return self._continuation(request, information) if _allow_continuation else None
@@ -353,6 +355,7 @@ class _Snapshot:
         from game.mana.source_cache import StaticManaSourceCache
         state, observer = request.state, request.player.idx
         from game.ai.decision_maker import PriorityDecisionRequest, DeclareAttackersRequest
+        from game.game_actions.generation.decision_abstraction.combat_frames import CombatNextRequest
         from game.game_loop.continuations import CombatDeclarationBoundary, is_combat_damage_order
         self.combat_batch_root = is_combat_damage_order(request)
         self.combat_root = not isinstance(request, PriorityDecisionRequest)
@@ -360,8 +363,13 @@ class _Snapshot:
             pass  # Validated public batch frame includes deferred phase triggers.
         elif self.combat_root:
             boundary = getattr(state, "combat_declaration_boundary", None)
-            phase = (TurnPhase.DECLARE_ATTACKERS if isinstance(request, DeclareAttackersRequest)
+            attack = (isinstance(request, DeclareAttackersRequest) or
+                      type(request) is CombatNextRequest and request.frame.kind == 'attackers')
+            phase = (TurnPhase.DECLARE_ATTACKERS if attack
                      else TurnPhase.DECLARE_BLOCKERS)
+            if (type(request) is CombatNextRequest
+                    and getattr(state, 'combat_decision_frame', None) is not request.frame):
+                raise UnsupportedSnapshot('Missing native combat construction frame')
             if (not isinstance(boundary, CombatDeclarationBoundary) or boundary.phase != phase
                     or state.turn.phase != phase or boundary.player != observer or len(state.players) != 2):
                 raise UnsupportedSnapshot("Missing native combat declaration boundary")

@@ -37,6 +37,25 @@ class CardSnapshotCache:
     def __init__(self):
         self._entries = {}
         self._index_entries = {}
+        self._validated_stats = {}
+
+    def _immutable_table(self, card):
+        """! @brief Validate each unchanged immutable stat table once per owned state.
+
+        The table and reviewed stat records are immutable. Mutable rule metadata
+        is deliberately excluded: definition_index_signature still runs live.
+        References prevent id reuse; failed/custom tables are never retained.
+        """
+        stats = card.stats
+        cached = self._validated_stats.get(id(stats))
+        if cached is not None and cached is stats:
+            return True
+        if not self._immutable_inputs(card):
+            return False
+        if len(self._validated_stats) >= 256:
+            self._validated_stats.clear()
+        self._validated_stats[id(stats)] = stats
+        return True
 
     @staticmethod
     def _immutable_inputs(card):
@@ -120,7 +139,7 @@ class CardSnapshotCache:
         """Reuse structural validation of an unchanged immutable stat table."""
         entry = self._index_entries.get(id(card))
         return ((entry is not None and entry.card is card and entry.stats is card.stats)
-                or self._immutable_inputs(card))
+                or self._immutable_table(card))
 
     @staticmethod
     def _eligible(state, card):
@@ -140,6 +159,39 @@ class CardSnapshotCache:
         return (self._eligible(state, card) and self._matches(entry, card)
                 and entry.signature == self._index_definition_signature(card, validation_cache))
 
+    def restore_index_projections(self, source, state, clone):
+        """!
+        @brief Rebind still-valid native index entries into an owned world copy.
+
+        Only the strict unmodified index cache qualifies. LKI, counter/attachment
+        projections and custom caches remain cold. The ownership copier supplies
+        already rebound cards, controllers, definitions and stat tables; no
+        mutable runtime reference or id-keyed entry is shared with the source.
+        Recheck the live source signature so an unnotified zone/ability metadata
+        change cannot turn an old cached row into an accepted proof.
+        @param source Original native index cache, never modified by this method.
+        @param state Source state whose registered card identity must still match.
+        @param clone Ownership copier for the destination world, with its shared memo.
+        @return Number of transferred, independently owned index entries.
+        """
+        if type(source) is not CardSnapshotCache or type(self) is not CardSnapshotCache:
+            return 0
+        validation_cache = {}
+        for entry in source._index_entries.values():
+            card = entry.card
+            if any(name in vars(card) for name in (
+                    'get_stat', 'get_power', 'get_toughness', 'get_types', 'get_subtypes',
+                    'get_controller', 'get_zone', 'get_trigger_defs',
+                    'get_activatable_ability_defs', '_get_modifier_pipeline')):
+                continue
+            if not source.has_current_index_projection(state, card, validation_cache):
+                continue
+            rebound = clone.copy(entry)
+            self._index_entries[id(rebound.card)] = rebound
+            # The source entry was created only after immutable-table validation.
+            self._validated_stats[id(rebound.stats)] = rebound.stats
+        return len(self._index_entries)
+
     def _capture(self, state, card, reader, entries, signature_reader=None):
         if not self._eligible(state, card):
             if entries is self._entries:
@@ -152,7 +204,7 @@ class CardSnapshotCache:
         ):
             return entry.snapshot
         snapshot = reader(state, card)
-        immutable = self._immutable_inputs(card)
+        immutable = self._immutable_table(card)
         signature = signature_reader(card) if immutable and signature_reader else None
         if immutable and (signature_reader is None or signature is not None):
             entries[identity] = _Entry(card, card.stats, card.definition,

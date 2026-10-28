@@ -30,21 +30,6 @@ def _pairs(value):
     return value.get("mapping", ()) if isinstance(value, Mapping) else ()
 
 
-def _features(value):
-    """!
-    @brief Find reviewed features in detached rule descriptions, never parse text.
-    """
-    if isinstance(value, Mapping):
-        if "features" in value:
-            yield value["features"]
-        for key, child in value.items():
-            if key != "features":
-                yield from _features(child)
-    elif isinstance(value, (list, tuple)):
-        for child in value:
-            yield from _features(child)
-
-
 def remembered_counter_sources(info, view):
     """!
     @brief Only still-known hand locations, matched to previously visible rule data.
@@ -53,27 +38,10 @@ def remembered_counter_sources(info, view):
     invalidation is owned by PlayerKnowledge, not re-inferred here. Names without a
     previous visible description do not magically provide a deck model.
     """
-    wanted = {r["card_id"]: r["name"] for r in (view.get("knowledge") or {}).get("known_locations", ())
-              if r["zone"] == "HAND" and r["owner"] != view["self"]}
-    answers = []
-    if not wanted:
+    if not any(r['zone'] == 'HAND' and r['owner'] != view['self']
+               for r in (view.get('knowledge') or {}).get('known_locations', ())):
         return ()
-    for entry in reversed(info.recall.entries):
-        if entry.kind != "observation":
-            continue
-        previous = entry.readonly().get("view", {})
-        for zone in ("stack", "battlefield", "graveyard", "exile"):
-            for card in previous.get(zone, ()):
-                identity = card.get("id")
-                if (identity not in wanted or card.get("name") != wanted[identity]
-                        or not card.get("identity_visible", True)):
-                    continue
-                wanted.pop(identity)
-                if any(f.get("kind") == "counter" for f in _features(card.get("abilities", ()))):
-                    answers.append(identity)
-        if not wanted:
-            break
-    return tuple(sorted(answers))
+    return info.recall.knowledge.counter_sources(view)
 
 
 class ObservationOpponentPolicy:
@@ -84,8 +52,16 @@ class ObservationOpponentPolicy:
     offered action. Ties prefer pass and then canonical action content, independent
     of option enumeration. This policy does not prune the root search menu.
     """
-    def __init__(self, evaluator=None):
+    def __init__(self, evaluator=None, *, memory=None):
         self.evaluator = evaluator if evaluator is not None else StateValueEvaluator()
+        self.memory = memory
+
+    def clear_memory(self):
+        """!
+        @brief Release exact pure ratings after a session or evaluator change.
+        """
+        if self.memory is not None:
+            self.memory.clear()
 
     def rank(self, info):
         """!
@@ -98,8 +74,15 @@ class ObservationOpponentPolicy:
                 else info.current.observation())
         if view.get("self") != info.current.player:
             raise ValueError("Observation must belong to the acting player")
-        scorer = _Scorer(view, self.evaluator, remembered_counter_sources(info, view))
-        rows = [scorer.rate(a) for a in info.actions]
+        remembered = remembered_counter_sources(info, view)
+        if self.memory is not None and type(self) is ObservationOpponentPolicy and type(self.evaluator) is StateValueEvaluator:
+            return self.memory.rank(info, remembered,
+                lambda canonical, counter_present: _Scorer(canonical, self.evaluator, counter_present))
+        else:
+            # Custom evaluators/policies have no reviewed input-equivalence
+            # contract. They always receive the original complete observation.
+            scorer = _Scorer(view, self.evaluator, remembered)
+            rows = [scorer.rate(a) for a in info.actions]
         return tuple(sorted(rows, key=lambda r: (-r.score, r.action.kind != "PassPriorityAction",
                                                 r.action.sort_key)))
 
@@ -309,6 +292,11 @@ class _Scorer:
             result = -0.5, True, ("prefer_payment_plan_to_floating_mana",)
         elif kind in {"DeclareAttackersOption", "DeclareBlockersOption"}:
             result = self.combat(data, kind == "DeclareAttackersOption")
+        elif kind == 'CombatNextOption':
+            context = self.view['decision_context']
+            selected = [*context['prefix'], data['target']]
+            declarations = {'mapping': [[c, t] for c, t in zip(context['creatures'], selected) if t is not None]}
+            result = self.combat({'declarations': declarations}, context['combat_kind'] == 'attackers')
         elif kind == "CombatDamageOption":
             result = self.combat_damage(data)
         elif kind in {"DiscardOption", "MulliganBottomOption"}:

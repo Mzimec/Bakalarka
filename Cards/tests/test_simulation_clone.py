@@ -96,6 +96,45 @@ def test_native_container_subclasses_keep_their_serialization_contract():
         assert type(result) is cls and result.restored
 
 
+def test_component_fields_preserve_attribute_aliases_callbacks_and_unknown_mutable_fields():
+    from test_player_observation import board, add
+    state = board()
+    card = add(state, 'Component')
+    card.extra_extension_data = {'card': card, 'events': []}
+    card.attribute_alias = card.__dict__
+    def callback():
+        card.extra_extension_data['events'].append(card)
+    card.extra_callback = callback
+    clone = SimulationClone(object_replacements=(), scalar_fields=True).copy(card)
+    assert clone.attribute_alias is clone.__dict__
+    assert clone.extra_extension_data['card'] is clone
+    clone.extra_callback()
+    assert clone.extra_extension_data['events'] == [clone]
+    assert not card.extra_extension_data['events']
+
+
+def test_nonstandard_component_attribute_keys_and_primitive_substitution_keep_generic_contract():
+    from test_player_observation import board, add
+    card = add(board(), 'Component')
+    marker = 123456789
+    card.__dict__[marker] = [marker, card]
+    for objects in (None, ()):
+        clone = SimulationClone({id(marker): 7}, object_replacements=objects, scalar_fields=True).copy(card)
+        assert clone.__dict__[7] == [7, clone]
+
+
+@pytest.mark.parametrize('scalar_fields', [False, True])
+def test_component_copier_does_not_retain_its_ownership_memo_in_a_bound_method_cycle(scalar_fields):
+    import weakref
+    from test_player_observation import board, add
+    copier = SimulationClone(object_replacements=(), scalar_fields=scalar_fields)
+    reference = weakref.ref(copier)
+    copied = copier.copy(add(board(), 'Component'))
+    del copier
+    assert reference() is None
+    assert copied.name == 'Component'
+
+
 def test_fast_copy_keeps_live_mapping_proxies_and_tracked_callbacks():
     from helper.dict_helper import MutableCounterMapping, MutableSetMapping
     from helper.change_tracking import TrackedDict, TrackedSet

@@ -5,7 +5,7 @@ simulation hashing and equality use typed immutable structure instead.
 """
 from collections.abc import Mapping
 from dataclasses import dataclass, field
-from functools import cached_property
+from functools import cached_property, lru_cache
 from hashlib import blake2b
 import json
 import math
@@ -321,6 +321,15 @@ def text(value):
     return value.text if isinstance(value, StructuredJSON) else value
 
 
+@lru_cache(maxsize=2048)
+def _scalar_digest(kind, representation):
+    """! @brief Reuse only typed scalar bytes, never mutable/native input objects. """
+    result = blake2b(digest_size=20, person=b'card-search-v1')
+    result.update(kind.encode())
+    result.update(representation.encode('utf-8'))
+    return result.digest()
+
+
 def structural_key(*values):
     # Key construction needs a digest, not another allocated immutable tree.
     # Preserve exactly ValueStore's typed digest, including already frozen rows.
@@ -336,9 +345,13 @@ def structural_key(*values):
         if value is None or value_type in (str, int, float, bool):
             if value_type is float and not math.isfinite(value):
                 raise ValueError('Observation numbers must be finite')
+            representation = repr(value)
+            # Do not let a large user string occupy the bounded scalar cache.
+            if len(representation) <= 128:
+                return _scalar_digest(value_type.__name__, representation)
             result = blake2b(digest_size=20, person=b'card-search-v1')
             result.update(value_type.__name__.encode())
-            result.update(repr(value).encode('utf-8'))
+            result.update(representation.encode('utf-8'))
         elif value_type in (list, tuple):
             result = blake2b(digest_size=20, person=b'card-search-v1')
             result.update(b'array')

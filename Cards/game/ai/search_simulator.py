@@ -115,7 +115,8 @@ class _Projection:
     @var header Header retained by this record.
     @var descriptors Descriptors retained by this record.
     @var address Address retained by this record.
-    @var views Views retained by this record.
+    @var views Frozen views; a forced prefix record may retain only the actor,
+        because it is consumed solely while replaying a recorded action.
     @var prior_recall Prior recall retained by this record.
     @var information Immutable actor observation, recall and offered actions.
     @var bindings Bindings retained by this record.
@@ -305,6 +306,11 @@ class _ReplayController(DecisionMaker):
         self.driver = driver
         self.knowledge = PlayerKnowledge()
 
+    @property
+    def sequential_combat(self):
+        """! @brief Reconstruct the live controller's optional native combat frames. """
+        return getattr(self.driver.simulator.policy_for, 'sequential_combat', False)
+
     def receive_player_event(self, event, *, game_token, player):
         """!
         @brief Record only this player projected event in the current session.
@@ -339,6 +345,7 @@ class _Replay:
         self.frontier = None
         self.candidate_complete = True
         self.candidate_prior = None
+        self._combat_projection = None
         self.recalls = {0: PlayerRecall(), 1: PlayerRecall(), **dict(simulator.initial_recalls)}
 
     def observe_event(self, player, event):
@@ -366,6 +373,18 @@ class _Replay:
         if state is None:
             return tuple((p.idx, {"self": p.idx, "setup": True,
                           "players": [{"id": q.idx, "name": q.name} for q in participants]}) for p in participants)
+        from game.game_actions.generation.decision_abstraction.combat_frames import CombatNextRequest
+        layout = None
+        if (type(request) is CombatNextRequest and self.simulator.track_information
+                and self.simulator.structured_records and exclude_player is None and shared_characteristics is None):
+            # Only this native frame can execute between these callbacks. No
+            # card, zone, event or knowledge changes until atomic completion.
+            layout = (state, request.player, request.frame.creatures, request.frame.targets)
+            cached = self._combat_projection
+            if cached is not None and all(a is b for a, b in zip(cached[0], layout)):
+                return tuple((p, view.value.readonly) for p, view in cached[1])
+        else:
+            self._combat_projection = None
         views = []
         shared_characteristics = {} if shared_characteristics is None else shared_characteristics
         for p in participants:
@@ -389,6 +408,9 @@ class _Replay:
             if evidence is not None:
                 view["initial_search_evidence"] = evidence
             views.append((p.idx, view))
+        if layout is not None:
+            self._combat_projection = (layout, tuple((p, StructuredJSON(view, self.simulator.value_store))
+                                                     for p, view in views))
         return tuple(views)
 
     def decide(self, request):
@@ -406,12 +428,16 @@ class _Replay:
                  self.simulator.candidate_widths.get(self.history)) or model.initial_width
         try:
             width = min(width, self.simulator.max_options)
-            reserve = (max(width, min(16, self.simulator.max_options))
-                       if self.simulator.track_information and getattr(model, 'native_ordering', False)
-                       and self.simulator._candidate_cache_limit
-                       and not self.history and self.follow is None else width)
             started = perf_counter() if self.simulator.profile_advance else 0
-            options, self.candidate_complete = self.frontier.take(reserve)
+            role_combat = (getattr(model, 'combat_equivalence', False) and type(request).__name__
+                           in {'DeclareAttackersRequest', 'DeclareBlockersRequest'})
+            reservoir = min(16, self.simulator.max_options)
+            prefetch = (self.simulator.track_information and getattr(model, 'native_ordering', False)
+                        and self.simulator._candidate_cache_limit and not self.history and self.follow is None)
+            if prefetch and role_combat:
+                reservoir = model.combat_reservoir_limit(request, width, reservoir)
+            reserve = max(width, reservoir) if prefetch else width
+            options, self.candidate_complete = self.frontier.take(reserve, lookahead=not (role_combat and reserve > width))
             self.simulator.record_stage('candidate_generation', started)
             self.simulator._active_candidates = self, request
             if reserve > width:
@@ -438,11 +464,18 @@ class _Replay:
         options, self.candidate_complete = self.frontier.take(width)
         self.simulator.record_stage('candidate_generation', started)
         self.recalls[request.player.idx] = self.candidate_prior
-        node = self._decide_options(request, options, expand_only=True)
+        # Widening resumes this exact native callback before any selected
+        # action executes. The board and viewer permissions have not changed;
+        # only admitted options and their bindings need to be projected again.
+        from game.ai.generation_candidates import DeterministicCandidates
+        model = getattr(self.simulator.policy_for, 'candidate_model', None)
+        views = (self.node._views if self.node is not None and type(model) is DeterministicCandidates else None)
+        node = self._decide_options(request, options, expand_only=True,
+                                    existing_views=views)
         self.node = node
         return node
 
-    def _decide_options(self, request, supplied_options=None, *, expand_only=False):
+    def _decide_options(self, request, supplied_options=None, *, expand_only=False, existing_views=None):
         started = perf_counter() if self.simulator.profile_advance else 0
         # This is a hard diagnostic budget, never silent top-k pruning. Policies
         # can be supplied explicitly when an experiment intentionally uses proposals.
@@ -488,7 +521,11 @@ class _Replay:
         menu = sorted((d.data for d in descriptors), key=repr)
         digest = (structural_key(menu) if self.simulator.structured_records
                   else sha256(repr(menu).encode()).hexdigest())
-        view_data = self._view_data(state, request.participants, request)
+        if existing_views is not None and self.simulator.structured_records:
+            from game.ai.structured_values import payload
+            view_data = tuple((player, payload(view).value.readonly) for player, view in existing_views)
+        else:
+            view_data = self._view_data(state, request.participants, request)
         started = self.simulator.record_stage('views', started, return_start=True)
         bindings = ()
         information = None
@@ -530,6 +567,7 @@ class _Replay:
     def _forced_decision(self, request, option):
         started = perf_counter() if self.simulator.profile_advance else 0
         actor = request.player.idx
+        prior_recall = self.recalls[actor]
         shared_characteristics = {}
         view = (decision_observation(request, shared_characteristics=shared_characteristics,
                 projection_store=self.simulator.value_store) if request.state is not None else
@@ -549,6 +587,17 @@ class _Replay:
             state.turn.number if state is not None else None,
             state.turn.phase.name if state is not None else None,
             structural_key(descriptor.data), structural_key(info.current.structured))
+        # Future reconstruction can replay this exact deterministic prefix
+        # without re-projecting it. A prefix replay consumes the cached action
+        # immediately; it never publishes these actor-only views as a leaf.
+        # Keep the same legality/header/recall checks as ordinary projections.
+        cache = self.simulator._projections
+        if len(cache) < self.simulator.projection_cache_size:
+            key = self.history if model is None else (self.history, 1, True)
+            header = (address.kind, actor, address.turn, address.phase)
+            cache.setdefault(key, _Projection(header, (descriptor,), address,
+                ((actor, info.current._json),), prior_recall, info,
+                ((info.actions[0], descriptor),)))
         boundary = ForcedBoundary(self, request, address, descriptor, info, shared_characteristics)
         self.simulator.record_stage('forced_projection', started)
         self.simulator.native_forced_steps += 1

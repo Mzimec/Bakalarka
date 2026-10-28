@@ -4,6 +4,11 @@ Aktuální přehled objektů a jejich kontraktů. Pravidla provádí nativní en
 agent vybírá z nabídek, které engine vytvořil nebo ověřil. Numerické encodery
 pro model nejsou náhradou přesného simulovaného stavu.
 
+Nový [bezeztrátový základ abstrakce](MCTS_EXACT_ABSTRACTION.md) odděluje přesné
+klíče světa/search od dostatečných vstupů vestavěné heuristiky. Volitelně sdílí
+hodnocení a pořadí akcí, včetně konzistentního přejmenování fyzických ID;
+automaticky neslučuje návštěvy ani výsledky různých světů.
+
 ## Objekty rozhodování
 
 | Objekt | Odpovědnost |
@@ -56,6 +61,18 @@ pipeline připravuje návrhy před drahými kombinacemi a později může pokra�
 úplným výčtem. Widening omezuje připuštěný prefix podle
 `ceil(c * (visits + 1) ** exponent)`, nejméně jednu možnost. Legálnost se tím
 nemění. Neúplný prefix se nesmí vydávat za pokrytí celého legálního menu.
+
+Volitelná `candidate_attack_risk` nad nativní generací řadí návrhy útoků podle
+veřejného statického rizika blokování. Nabízí all-in, bezpečnější skupiny,
+žádný útok a omezené prefixy před beam/úplným pokračováním. Neprořezává
+pravidlově legální akce ani neslučuje návštěvy různých karet. Kontrakt,
+omezení a měření jsou v [MCTS_ATTACK_CANDIDATES.md](MCTS_ATTACK_CANDIDATES.md).
+
+`candidate_combat_equivalence` přidává proud reprezentantů aktuálních bojových
+rolí před konkrétní výčet. Útoky se generují přes počty bytostí ve skupině,
+blokování přes uspořádané balíky počtů blokerů. Původní úplné deklarace
+zůstávají později dostupné a statistiky různých ID se neslučují. Podrobnosti
+jsou v [MCTS_COMBAT_EQUIVALENCE.md](MCTS_COMBAT_EQUIVALENCE.md).
 
 ## Vlastnictví trajektorií
 

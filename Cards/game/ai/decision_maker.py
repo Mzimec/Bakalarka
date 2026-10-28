@@ -53,6 +53,7 @@ class DecisionMaker(ABC):
     @brief Abstract base class for request-based decision makers.
     """
     decision_mode = "agent"
+    sequential_combat = False
 
     def decide[T: DecisionOption](self, request: DecisionRequest[T]) -> DecisionResult[T]:
         """!
@@ -76,7 +77,15 @@ class DecisionMaker(ABC):
         """!
         @brief Run a decision and validate its result type.
         """
-        if type(request) in (TriggerOrderRequest, ReplacementOrderRequest) and len(request.candidates) >= 7:
+        combat_mode = self.sequential_combat if type(request) in (DeclareAttackersRequest, DeclareBlockersRequest) else False
+        if (type(request) in (DeclareAttackersRequest, DeclareBlockersRequest)
+                and (combat_mode is True or combat_mode == 'attackers' and type(request) is DeclareAttackersRequest
+                     or combat_mode == 'blockers' and type(request) is DeclareBlockersRequest)):
+            from ..game_actions.generation.decision_abstraction.combat_frames import CombatDecisionFrame
+            frame = CombatDecisionFrame.capture(request)
+            result = (DecisionResult(self._complete_combat(request, frame)) if frame is not None
+                      else self._decide(request))
+        elif type(request) in (TriggerOrderRequest, ReplacementOrderRequest) and len(request.candidates) >= 7:
             from ..game_actions.generation.decision_abstraction.order_frames import choose_order
             # Seven candidates already have 5040 permutations. All controllers,
             # including live/search/replay, use the same construction protocol.
@@ -99,6 +108,11 @@ class DecisionMaker(ABC):
         if not isinstance(result, DecisionResult) or not isinstance(result.value, request.option_type):
             raise TypeError(f"{type(request).__name__} requires DecisionResult[{request.option_type.__name__}].")
         return result
+
+    def _complete_combat(self, request, frame):
+        """! @brief Construct a whole declaration; search controllers may share one plan. """
+        from ..game_actions.generation.decision_abstraction.combat_frames import choose_combat
+        return choose_combat(request, frame, self.decide)
 
     @abstractmethod
     def _decide[T: DecisionOption](self, request: DecisionRequest[T]) -> DecisionResult[T]:
@@ -126,6 +140,9 @@ class ModularDecisionMaker(DecisionMaker):
         @brief Dispatch or implement one decision request.
         """
         from ..game_actions.generation.decision_abstraction.order_frames import OrderNextRequest
+        from ..game_actions.generation.decision_abstraction.combat_frames import CombatNextRequest
+        if isinstance(request, CombatNextRequest):
+            return self.decide_combat_next(request)
         if isinstance(request, OrderNextRequest):
             return self.decide_order_next(request)
         if isinstance(request, PriorityDecisionRequest):
@@ -170,6 +187,10 @@ class ModularDecisionMaker(DecisionMaker):
         """!
         @brief Choose the next item through the typed ordering handler.
         """
+        return _first(request)
+
+    def decide_combat_next(self, request):
+        """! @brief Override an optional atomic combat construction choice. """
         return _first(request)
 
     def decide_priority(self, request: PriorityDecisionRequest) -> DecisionResult[GameAction]:

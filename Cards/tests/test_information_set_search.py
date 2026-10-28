@@ -196,6 +196,24 @@ def test_terminal_outcome_overrides_custom_leaf_evaluator():
     assert result.value == 1 and result.metrics.terminal_leaves == 8
 
 
+def test_terminal_world_stops_its_trajectory_without_solving_other_hidden_worlds():
+    outcomes = set()
+    class TerminalTree(Tree):
+        def advance_action(self, node, action):
+            assert not node.terminal, 'A terminal world must never advance again'
+            child = super().advance_action(node, action)
+            outcomes.add(child.spec['winner'])
+            return child
+    def factory(seed):
+        return TerminalTree({'root': {'children': {'attack': 'end'}},
+                             'end': {'winner': seed % 2}})
+    result = search(factory, iterations=128, worlds=16)
+    assert outcomes == {0, 1}
+    assert result.metrics.iterations_completed == result.metrics.terminal_leaves == 128
+    assert result.metrics.advance_attempts == 128
+    assert -1 < result.value < 1
+
+
 @pytest.mark.parametrize("score", [float("nan"), float("inf"), 2])
 def test_invalid_leaf_values_fail_explicitly(score):
     factory = lambda seed: Tree({"root": {"score": score, "children": {"go": "root"}}})

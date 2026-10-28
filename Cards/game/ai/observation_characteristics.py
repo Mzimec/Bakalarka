@@ -1,15 +1,15 @@
-"""Reuse four proven native characteristics inside one owned runtime only."""
+"""Reuse six proven native characteristics inside one owned runtime only."""
 from game.game_state.card import Card
 from game.game_state.native_modifier_plan import live_sources_empty
 
 
 _READERS = {name: getattr(Card, name) for name in
-            ('get_stat', 'get_types', 'get_subtypes')}
+            ('get_stat', 'get_types', 'get_subtypes', 'get_power', 'get_toughness')}
 
 
 def native_characteristics(card, state, reader):
     """!
-    @brief Reuse four proven native characteristics within an owned runtime.
+    @brief Reuse six proven native characteristics within an owned runtime.
     """
     if (type(card) is not Card or state._refreshing_effects or state._layer_ceiling is not None
             or '_get_modifier_pipeline' in vars(card)

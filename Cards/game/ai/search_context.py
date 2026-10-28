@@ -215,6 +215,21 @@ class SearchContextBuilder:
         @brief Project the explicit context needed to bind this request kind.
         """
         request = self.request
+        from game.game_actions.generation.decision_abstraction.combat_frames import CombatNextRequest
+        if type(request) is CombatNextRequest:
+            frame = request.frame
+            context = {'combat_version': 1, 'combat_kind': frame.kind,
+                    'creatures': self.builder.encode(frame.creatures),
+                    'targets': self.builder.encode(frame.targets),
+                    'prefix': self.builder.encode(frame.prefix),
+                    'creature': self.builder.encode(frame.creatures[len(frame.prefix)]),
+                    'remaining_count': frame.remaining_count}
+            if frame.kind == 'attackers':
+                from game.ai.search_actions import PlayerActionBuilder
+                builder = PlayerActionBuilder(DeclareAttackersRequest(request.state, request.player))
+                builder.__dict__['view'] = self.view
+                context.update(builder.context.request_context())
+            return context
         from game.game_actions.generation.decision_abstraction.ability_frames import AbilityConstructionRequest, context_key
         if type(request) is AbilityConstructionRequest:
             frame = request._frame

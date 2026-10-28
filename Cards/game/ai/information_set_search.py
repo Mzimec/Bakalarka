@@ -151,6 +151,10 @@ class InformationSearchMetrics:
     @var checkpoint_evictions Number of checkpoint evictions recorded by this component.
     @var checkpoint_capture_ms Recorded checkpoint capture in milliseconds.
     @var checkpoint_copy_rejections Number of checkpoint copy rejections recorded by this component.
+    @var policy_view_hits Exact policy-input cache hits, not information-node or world reuse.
+    @var policy_action_hits Complete action ratings reused without rescoring.
+    @var policy_action_misses Complete action ratings computed on a cache miss.
+    @var policy_normalization_ms Time constructing or looking up exact policy input identities.
     """
     worlds_built: int
     iterations_started: int
@@ -230,6 +234,10 @@ class InformationSearchMetrics:
     checkpoint_evictions: int = 0
     checkpoint_capture_ms: float = 0.0
     checkpoint_copy_rejections: int = 0
+    policy_view_hits: int = 0
+    policy_action_hits: int = 0
+    policy_action_misses: int = 0
+    policy_normalization_ms: float = 0.0
 
 
 @dataclass(frozen=True)
@@ -346,12 +354,21 @@ class InformationSetSearch:
         self.evaluator = evaluator if evaluator is not None else StateValueEvaluator()
         self.exploration = exploration
         self.rollout_policy, self.rollout_exploration = rollout_policy, rollout_exploration
+        self.construction_choices = ()
 
     def reset(self):
         """!
         @brief Discard session-owned mutable state before preparing a new search context.
         """
         self.tree_memory.clear()
+        self.construction_choices = ()
+        self._clear_policy_memory()
+
+    def _clear_policy_memory(self):
+        for policy in (self.opponent_policy, self.rollout_policy, getattr(self.action_prior, 'policy', None)):
+            clear = getattr(policy, 'clear_memory', None)
+            if callable(clear):
+                clear()
 
     def invalidate_belief(self):
         # Current observations still have to match exactly. Pure deterministic
@@ -360,6 +377,7 @@ class InformationSetSearch:
         @brief Invalidate outcome statistics tied to a changed sampled-belief contract.
         """
         self.tree_memory.invalidate_statistics()
+        self.construction_choices = ()
 
     def invalidate_model(self, revision=None):
         """!
@@ -380,6 +398,9 @@ class InformationSetSearch:
                 model.invalidate_cache()
                 models.add(id(model))
         self.tree_memory.clear()
+        self.construction_choices = ()
+
+        self._clear_policy_memory()
 
     def _memory_signature(self):
         return (self.model_revision, self.model_epoch, self.reuse_rolling_horizon, self.budget, self.selection, self.exploration, id(self.evaluator), id(self.action_prior),
@@ -429,7 +450,24 @@ class InformationSetSearch:
             run.reused_nodes = sum(bool(rows.visits) for rows in run.table.values())
             run.loaded_keys = set(run.table)
             run.reused_root_visits = sum(s.visits for s in run.table.get(root_information.fast_key, {}).values())
+        self.construction_choices = ()
         result = run.search(world_factory, root_information, fallback)
+        # A declaration is one atomic action. Export a bounded, detached plan
+        # for its remaining native microchoices; no sampled runtime is retained.
+        if root_information.current.request_kind == 'CombatNextRequest' and not result.used_fallback:
+            choices = []
+            for key, information in run.information.items():
+                if (information.current.player != run.player
+                        or information.current.request_kind != 'CombatNextRequest'):
+                    continue
+                rows = run.table.get(key, {})
+                visited = [(action, stats) for action, stats in rows.items() if stats.visits]
+                if visited:
+                    action, _ = max(visited, key=lambda row: (row[1].visits, row[1].total / row[1].visits))
+                    choices.append((key, action))
+                if len(choices) >= 512:
+                    break
+            self.construction_choices = tuple(choices)
         if self.tree_reuse_size:
             if result.used_fallback:
                 self.tree_memory.clear()
@@ -662,7 +700,17 @@ class _Run:
         """!
         @brief Read revision-scoped feature and evaluation cache counters.
         """
-        result = dict(encoding_cache_hits=0,neural_cache_hits=0,encoding_ms=0.,inference_ms=0.)
+        result = dict(encoding_cache_hits=0,neural_cache_hits=0,encoding_ms=0.,inference_ms=0.,
+                      policy_view_hits=0, policy_action_hits=0, policy_action_misses=0, policy_normalization_ms=0.)
+        policies = set()
+        for policy in (self.searcher.opponent_policy, self.searcher.rollout_policy,
+                       getattr(self.searcher.action_prior, 'policy', None)):
+            memory = getattr(policy, 'memory', None)
+            if memory is not None and id(memory) not in policies:
+                policies.add(id(memory))
+                for target, source in (('policy_view_hits', 'view_hits'), ('policy_action_hits', 'action_hits'),
+                                       ('policy_action_misses', 'action_misses'), ('policy_normalization_ms', 'normalization_ms')):
+                    result[target] += memory.counts[source]
         seen = set()
         for adapter in (self.searcher.action_prior,self.searcher.evaluator):
             model = getattr(adapter,'model',None)
@@ -875,26 +923,23 @@ class _Run:
             if node.cutoff:
                 raise _Interrupted("simulator_cutoff")
             info = node.player_information()
-            if info.candidate_model is not None and not info.menu_complete:
-                from game.ai.generation_candidates import CandidateExpansion
-                visits = max(self.candidate_visits.get(info.fast_key, 0),
-                             sum(s.visits for s in self.table.get(info.fast_key, {}).values()))
-                width = self.widening.width(visits, minimum_constant=1)
-                if width > info.candidate_width:
-                    if self.time_exhausted():
-                        raise _Interrupted('time_budget')
-                    try:
-                        node = yield CandidateExpansion(width)
-                    except SimulationBudgetExceeded as exc:
-                        raise _Interrupted('simulator_budget') from exc
-                    continue
             forced = (self.searcher.compress_forced and info.menu_complete and len(info.actions) == 1)
-            constructing = node.decision.kind in {"OrderNextRequest", "PriorityAbilityRequest", "AbilityConstructionRequest"}
+            constructing = node.decision.kind in {"OrderNextRequest", "PriorityAbilityRequest", "AbilityConstructionRequest", "CombatNextRequest"}
             if depth >= self.budget.max_depth:
-                compact = isinstance(node, (SimulationNode, ForcedBoundary))
-                view = (node.observation_readonly(self.player) if compact
-                        else node.observation(self.player))
-                if quiet_priority(node.decision.kind, view):
+                # A non-priority request can never be a settled leaf. Avoid
+                # materializing another observer's entire board to establish it.
+                view = None
+                if (node.decision.kind == "PriorityDecisionRequest" and
+                        (not isinstance(node, (ForcedBoundary, SimulationNode)) or
+                         quiet_priority(node.decision.kind, info.current.readonly()))):
+                    # Stack occupancy and combat progress are public. The
+                    # forced actor's existing view can reject an unsettled
+                    # boundary without projecting the root observer as well.
+                    # Accepted leaves still use the root observer's own view.
+                    compact = isinstance(node, (SimulationNode, ForcedBoundary))
+                    view = (node.observation_readonly(self.player) if compact
+                            else node.observation(self.player))
+                if view is not None and quiet_priority(node.decision.kind, view):
                     evaluator = self.searcher.evaluator
                     structured = getattr(evaluator,'evaluate_structured',None)
                     if structured is not None and isinstance(node,SimulationNode):
@@ -908,10 +953,25 @@ class _Run:
                     self.leaves += 1
                     limit = nextafter(1.0, 0.0)
                     return path, max(-limit, min(limit, value))
+            # A scored leaf needs no wider action menu. Delay widening until
+            # after that check. Charge extensions only for actual transitions.
+            if info.candidate_model is not None and not info.menu_complete:
+                from game.ai.generation_candidates import CandidateExpansion
+                visits = max(self.candidate_visits.get(info.fast_key, 0),
+                             sum(s.visits for s in self.table.get(info.fast_key, {}).values()))
+                width = self.widening.width(visits, minimum_constant=1)
+                if width > info.candidate_width:
+                    if self.time_exhausted():
+                        raise _Interrupted('time_budget')
+                    try:
+                        node = yield CandidateExpansion(width)
+                    except SimulationBudgetExceeded as exc:
+                        raise _Interrupted('simulator_budget') from exc
+                    continue
+            if depth >= self.budget.max_depth:
                 if not forced and not constructing and extensions >= self.budget.max_extensions:
                     raise _Interrupted("extension_limit")
                 extensions += not forced and not constructing
-            info = node.player_information()
             if forced:
                 action = info.actions[0]
                 if not path:
@@ -951,6 +1011,8 @@ class _Run:
             # against the hard advances/time/decision budgets.
             completes_order = (node.decision.kind == "OrderNextRequest" and
                 info.current.readonly()["decision_context"]["remaining_count"] == 1)
+            completes_combat = (node.decision.kind == "CombatNextRequest" and
+                info.current.readonly()['decision_context']['remaining_count'] == 1)
             completes_ability = node.decision.kind in {"PriorityAbilityRequest", "AbilityConstructionRequest"}
             source_prefix = action.kind in {"PrioritySourceOption", "AbilityConstructionOption"}
             try:
@@ -959,4 +1021,4 @@ class _Run:
                 raise _Interrupted("unsupported_historical_information") from exc
             except SimulationBudgetExceeded as exc:
                 raise _Interrupted("simulator_budget") from exc
-            depth += (not constructing or completes_order or completes_ability) and not source_prefix
+            depth += (not constructing or completes_order or completes_ability or completes_combat) and not source_prefix

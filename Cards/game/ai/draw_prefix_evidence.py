@@ -31,7 +31,7 @@ class DrawPrefixEvidence:
         # Requests which neither inspect nor reorder a library. Unknown request
         # kinds are a boundary rather than an implicit permission to proceed.
         safe_requests = {"StartingPlayerRequest", "MulliganRequest", "MulliganBottomRequest",
-                         "PriorityDecisionRequest", "DeclareAttackersRequest", "DeclareBlockersRequest",
+                         "PriorityDecisionRequest", "DeclareAttackersRequest", "DeclareBlockersRequest", "CombatNextRequest",
                          "CombatDamageRequest", "DiscardRequest", "AbilityDecisionRequest",
                          "ManaGenerationRequest", "TriggerOrderRequest", "LegendRequest",
                          "ReplacementRequest", "ReplacementOrderRequest", "ReplacementAcceptanceRequest", "OrderNextRequest"}

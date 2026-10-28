@@ -55,6 +55,7 @@ class SearchStatistics:
             'encoding_cache_hits':0,'neural_cache_hits':0,'encoding_ms':0.,'inference_ms':0.,
             'checkpoint_copies':0,'checkpoint_evictions':0,'checkpoint_capture_ms':0.,
             'checkpoint_copy_rejections':0,
+            'policy_view_hits':0, 'policy_action_hits':0, 'policy_action_misses':0, 'policy_normalization_ms':0.,
             "checkpoint_hits": 0, "checkpoint_skipped_decisions": 0,
             "world_materializations": 0, "world_restores": 0, "reasons": Counter()})
         row["decisions"] += 1
@@ -78,6 +79,7 @@ class SearchStatistics:
                      'encoding_cache_hits','neural_cache_hits','encoding_ms','inference_ms',
                      'checkpoint_copies','checkpoint_evictions','checkpoint_capture_ms',
                      'checkpoint_copy_rejections',
+                     'policy_view_hits', 'policy_action_hits', 'policy_action_misses', 'policy_normalization_ms',
                      "checkpoint_hits", "checkpoint_skipped_decisions", "world_materializations", "world_restores"):
             row[name] += metrics.get(name, 0)
 

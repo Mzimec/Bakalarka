@@ -13,6 +13,7 @@ from game.ai.runtime_clone import RuntimeClone, _ATOMIC, _plain_record
 
 
 _VALUES = _ATOMIC - {FunctionType, BuiltinMethodType}
+_MISSING = object()
 
 
 @lru_cache(maxsize=512)
@@ -46,7 +47,7 @@ class SimulationClone(RuntimeClone):
     """
 
     def __init__(self, replacements=(), *, dictionary_plans=None, object_replacements=None,
-                 component_copies=True):
+                 component_copies=True, scalar_fields=False):
         replacements = dict(replacements)
         # Owned-world callers supply original objects, not only their ids. This
         # proves that no primitive value is substituted. The generic id-based
@@ -65,6 +66,34 @@ class SimulationClone(RuntimeClone):
         self._native_dicts, self._native_frozen_maps, self._native_identities = _native_containers()
         # Equivalent to copy._keep_alive, without an extra dispatch per object.
         self._originals = self.memo.setdefault(id(self.memo), [])
+        # Store a flag, never a bound method: a method pointing back to this
+        # copier would retain its entire memo until cyclic garbage collection.
+        self.scalar_fields = bool(scalar_fields and component_copies and self._primitive_identity
+                                  and dictionary_plans is None)
+
+    def _attributes(self, source):
+        """!
+        @brief Copy a native component's dynamic references after a shallow field copy.
+
+        Scalar fields retain their values; references still pass through the
+        single graph memo. Install the actual attribute dictionary before any
+        callback or back-edge can reach it. Root-template recipes and explicit
+        primitive substitutions retain their existing generic contract.
+        """
+        if any(type(key) is not str for key in source):
+            return self.copy(source)
+        identity = id(source)
+        if identity in self.memo:
+            return self.memo[identity]
+        result = source.copy()
+        self.memo[identity] = result
+        clone, atoms, lookup = self.copy, _VALUES, self.memo.get
+        for key, item in source.items():
+            if type(item) not in atoms:
+                cached = lookup(id(item), _MISSING)
+                result[key] = clone(item) if cached is _MISSING else cached
+        self._originals.append(source)
+        return result
 
     def copy(self, value, memo=None):
         """!
@@ -147,7 +176,8 @@ class SimulationClone(RuntimeClone):
             # Raw insertion must not run gameplay/cost-transaction write hooks.
             result = dict.__new__(cls)
             memo[identity] = result
-            object.__setattr__(result, '__dict__', self.copy(value.__dict__))
+            attributes = self._attributes(value.__dict__) if self.scalar_fields else self.copy(value.__dict__)
+            object.__setattr__(result, '__dict__', attributes)
             clone = self.copy
             dict.update(result, ((clone(key), clone(item)) for key, item in value.items()))
         elif self.component_copies and cls in self._native_frozen_maps:
@@ -156,7 +186,8 @@ class SimulationClone(RuntimeClone):
             # install the wrapper before cyclic/runtime members are rebound.
             result = object.__new__(cls)
             memo[identity] = result
-            object.__setattr__(result, '__dict__', self.copy(value.__dict__))
+            attributes = self._attributes(value.__dict__) if self.scalar_fields else self.copy(value.__dict__)
+            object.__setattr__(result, '__dict__', attributes)
             result._hash = None  # Hash the rebound keys/values on demand.
         elif _plain_record(cls) and hasattr(value, "__dict__"):
             result = object.__new__(cls)
@@ -166,7 +197,7 @@ class SimulationClone(RuntimeClone):
                 # owning state has finished copying. Install its stable hash
                 # identity first, respecting even explicit key replacements.
                 object.__setattr__(result, '_key', self.copy(value._key))
-            attributes = self.copy(value.__dict__)
+            attributes = self._attributes(value.__dict__) if self.scalar_fields else self.copy(value.__dict__)
             if self.component_copies:
                 # The memoized attribute mapping is the actual component
                 # mapping, preserving aliases to it and avoiding a second dict.

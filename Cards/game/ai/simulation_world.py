@@ -102,13 +102,14 @@ def immutable_world_values(state):
 
 
 def copy_world(state, knowledge, *, immutable_values=(), dictionary_plans=None,
-               fast_copy=True):
+               fast_copy=True, scalar_fields=False, retain_index_projections=True):
     """!
     @brief Copy ownership graph and repair Python-identity indexes, not stable IDs.
 
     Bitset memberships, runtime IDs, free slots and command/incarnation references
-    survive unchanged. Derived caches are reset; actual effects and callbacks are
-    copied together so captured runtime references point into the new world.
+    survive unchanged. Derived caches are reset except for proven invariant
+    native index rows rebound through the same ownership memo. Actual effects
+    and callbacks are copied together into the new world.
     """
     from game.game_state.card_snapshot_cache import CardSnapshotCache
     from game.mana.source_cache import StaticManaSourceCache
@@ -123,11 +124,14 @@ def copy_world(state, knowledge, *, immutable_values=(), dictionary_plans=None,
                     (state._trigger_registry, NativeTriggerRegistry()),
                     (state.card_register.layer_candidates, None)))
     if fast_copy:
-        clone = SimulationClone(replacements, object_replacements=objects, dictionary_plans=dictionary_plans)
+        clone = SimulationClone(replacements, object_replacements=objects, dictionary_plans=dictionary_plans,
+                                scalar_fields=scalar_fields)
     else:
         replacements.update((id(old), new) for old, new in objects)
         clone = RuntimeClone(replacements, dictionary_plans=dictionary_plans)
     copied, memories = clone.copy((state, knowledge))
+    if retain_index_projections:
+        copied._card_snapshots.restore_index_projections(state._card_snapshots, state, clone)
     rebind_replacement_instances(copied)
     register = copied.card_register
     register._introductions = {id(card): (card, seq) for card, seq in register._introductions.values()}

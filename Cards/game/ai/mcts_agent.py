@@ -62,6 +62,11 @@ class MCTSAgent(DecisionMaker):
         self._game_token = self._player = self._participants = None
         self._reset_trace()
 
+    @property
+    def sequential_combat(self):
+        """! @brief Use the same combat protocol as this agent's sampled worlds. """
+        return getattr(self.policy_for, 'sequential_combat', False)
+
     def _reset_trace(self):
         reset = getattr(self.world_provider, "reset", None)
         if reset is not None:
@@ -77,6 +82,23 @@ class MCTSAgent(DecisionMaker):
         self.decisions = 0
         self.search_statistics = SearchStatistics()
         self._search_disabled_reason = None
+        self._combat_plan = None
+        self._combat_search_started = False
+
+    def _complete_combat(self, request, frame):
+        """!
+        @brief Spend one search budget on the declaration and execute its exact prefix plan.
+
+        A plan holds detached player-information keys and choices only. Missing
+        tree prefixes use the ordinary visible rollout policy. Neither route
+        launches another full search for each creature.
+        """
+        self._bind(request.state.knowledge_token, request.player.idx, tuple(request.participants))
+        self._combat_plan, self._combat_search_started = {}, False
+        try:
+            return super()._complete_combat(request, frame)
+        finally:
+            self._combat_plan, self._combat_search_started = None, False
 
     def search_summary(self):
         """!
@@ -185,6 +207,10 @@ class MCTSAgent(DecisionMaker):
                 stages["continuation_anchor_ms"] = (perf_counter() - anchor_started) * 1000
         elif self._search_disabled_reason is not None:
             reason = self._search_disabled_reason
+        elif self._combat_plan is not None and self._combat_search_started:
+            planned = self._combat_plan.get(info.fast_key)
+            choice = planned if planned is not None else fallback
+            reason = 'combat_plan' if planned is not None else 'combat_plan_policy'
         elif request.state is None:
             reason = "setup"
         elif not self.search_setup and info.current.request_kind in {"MulliganRequest", "MulliganBottomRequest"}:
@@ -201,6 +227,8 @@ class MCTSAgent(DecisionMaker):
                 unsupported_detail = getattr(self.world_provider, "unsupported_detail", None)
             if factory is not None:
                 search_attempted = True
+                if self._combat_plan is not None:
+                    self._combat_search_started = True
                 stage_started = perf_counter()
                 try:
                     reuse = {"reuse_context": self._search_session} if getattr(self.search, "tree_reuse_size", 0) else {}
@@ -211,6 +239,8 @@ class MCTSAgent(DecisionMaker):
                     reason = "sampled_root_mismatch"
                 else:
                     choice = self.last_search.choice
+                    if self._combat_plan is not None and not self.last_search.used_fallback:
+                        self._combat_plan.update(getattr(self.search, 'construction_choices', ()))
                     if not self.last_search.used_fallback and self.search_choice is not None:
                         choice = self.search_choice(info, self.last_search)
                         if choice not in {row.action for row in self.last_search.estimates}:
@@ -219,7 +249,8 @@ class MCTSAgent(DecisionMaker):
                               if self.last_search.used_fallback else "searched")
                 stages["search_ms"] = (perf_counter() - stage_started) * 1000
         if choice not in info.actions and candidate_model is not None:
-            width = max(candidate_width, len(self.last_search.estimates))
+            width = max(candidate_width, len(self.last_search.estimates) if self.last_search is not None
+                        else candidate_width * 2)
             frontier = CandidateFrontier(candidate_model.generate(request, self.policy_for(request)), self.max_options)
             try:
                 while True:
@@ -245,7 +276,7 @@ class MCTSAgent(DecisionMaker):
                       if self.last_search is not None and self.last_search.metrics.parallel_backend == 'process' else 0.0)
         detail = {
             "reason": reason, "used_search": search_attempted,
-            "used_fallback": reason not in {"searched", "forced_choice"},
+            "used_fallback": reason not in {"searched", "forced_choice", "combat_plan", "combat_plan_policy"},
             "options": len(info.actions), "information_key": info.key,
             "information_contract": 3 if info.candidate_model else 2,
             "knowledge_key": info.knowledge_key, "menu_digest": info.menu_digest,

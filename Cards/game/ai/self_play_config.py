@@ -95,7 +95,8 @@ class SelfPlayConfig:
             raise ValueError('Actors receive generation snapshots in memory; do not embed a model checkpoint in mcts settings')
         if settings.parallel_workers != 1:
             raise ValueError('Self-play uses process actors; mcts.parallel_workers must be 1')
-        if settings.tree_reuse_size or settings.staged_priority or settings.staged_ability or settings.progressive_candidates:
+        if (settings.tree_reuse_size or settings.staged_priority or settings.staged_ability
+                or settings.sequential_combat or settings.progressive_candidates):
             raise ValueError('Initial training contract requires fresh trees and complete final-action menus')
         if settings.max_search_ms:
             raise ValueError('Self-play requires a fixed work budget (max_search_ms=0)')

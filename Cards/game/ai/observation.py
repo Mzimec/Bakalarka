@@ -88,13 +88,18 @@ class PlayerObservationBuilder:
         # truncation limit. Keep values alive so temporary ids cannot be reused.
         key = (id(value), depth)
         if (entry := cache.get(key)) is not None:
-            if self._row_reads is not None:
-                self._row_reads.extend(entry.reads)
-            return entry.value
-        start = len(self._row_reads) if self._row_reads is not None else 0
-        result = self._describe(value, depth)
-        cache[key] = DescriptionProjection(value, result,
-            tuple(self._row_reads[start:]) if self._row_reads is not None else ())
+            if all(read.matches(self) for read in entry.reads):
+                return entry.value
+        previous = self._row_reads
+        if previous is None:
+            self._row_reads = []
+        start = len(self._row_reads)
+        try:
+            result = self._describe(value, depth)
+            reads = tuple(self._row_reads[start:])
+        finally:
+            self._row_reads = previous
+        cache[key] = DescriptionProjection(value, result, reads)
         return result
 
     def _describe(self, value, depth):
@@ -144,17 +149,30 @@ class PlayerObservationBuilder:
 
     def ability(self, definition):
         # Definitions are shared by copies of a card. Reuse only during one
-        # synchronous build for one observer; never across state changes or
-        # visibility permissions. Hold the object as well as its id.
+        # synchronous joint projection; never across state changes. Recheck
+        # visibility dependencies for each observer. Hold objects as well as IDs.
         """!
         @brief Describe or score a complete visible ability and explicit parameters.
         """
         cache = self._ability_descriptions
         if cache is not None and (entry := cache.get(id(definition))) is not None:
-            if self._row_reads is not None:
-                self._row_reads.extend(entry.reads)
-            return entry.value
-        start = len(self._row_reads) if self._row_reads is not None else 0
+            if all(read.matches(self) for read in entry.reads):
+                return entry.value
+        previous = self._row_reads
+        if previous is None:
+            self._row_reads = []
+        start = len(self._row_reads)
+        try:
+            result = self._ability(definition)
+            reads = tuple(self._row_reads[start:])
+        finally:
+            self._row_reads = previous
+        if cache is not None:
+            cache[id(definition)] = DescriptionProjection(definition, result, reads)
+        return result
+
+    def _ability(self, definition):
+        """! @brief Read a rule description inside its transitive visibility proof. """
         result = {"key": definition.key, "kind": type(definition).__name__,
                 "uses_stack": definition.uses_stack, "mana_ability": definition.is_mana_ability,
                 "sorcery_speed": definition.sorcery_speed,
@@ -163,9 +181,6 @@ class PlayerObservationBuilder:
                 "costs": self.describe(definition.cost_subdefs),
                 "effects": self.describe(definition.action_subdefs),
                 "parameters": self.describe(definition.subdefs)}
-        if cache is not None:
-            cache[id(definition)] = DescriptionProjection(definition, result,
-                tuple(self._row_reads[start:]) if self._row_reads is not None else ())
         return result
 
     def card(self, card):
@@ -241,7 +256,6 @@ class PlayerObservationBuilder:
             "text": card.definition.oracle_text,
             "cost": (mana := self._mana_values(card))[0], "casting_cost": mana[1],
             "mana_value": mana[2], "chosen_x": runtime.mana_x,
-            "power": card.get_power(state), "toughness": card.get_toughness(state),
             "damage_marked": runtime.damage_marked,
             "damage_by_deathtouch": runtime.damage_by_deathtouch,
             "summoning_sick": card.get_zone() == ZoneType.BATTLEFIELD and card.is_summoning_sick(state),
@@ -257,7 +271,8 @@ class PlayerObservationBuilder:
         return {'types': tuple(sorted(v.name for v in card.get_types(self.state))),
                 'subtypes': tuple(sorted(v.name for v in card.get_subtypes(self.state))),
                 'colors': card.get_stat(STAT_COLORS, self.state),
-                'keywords': tuple(sorted(card.get_stat(STAT_KEYWORDS, self.state) or ()))}
+                'keywords': tuple(sorted(card.get_stat(STAT_KEYWORDS, self.state) or ())),
+                'power': card.get_power(self.state), 'toughness': card.get_toughness(self.state)}
 
     def _mana_values(self, card):
         # Kept separate so the optional benchmark can substitute a projection
@@ -361,8 +376,12 @@ class PlayerObservationBuilder:
         """!
         @brief Construct the requested owned continuation or detached projection.
         """
-        self._ability_descriptions = {}
-        self._descriptions = {}
+        shared = self._shared_characteristics if self._projection_store is not None else None
+        # Share rule traversal only within the same synchronous joint projection.
+        # Every cached result rechecks transitive visibility gates, including
+        # negative references. Frozen outputs cannot mutate this working cache.
+        self._ability_descriptions = {} if shared is None else shared.setdefault('ability_descriptions', {})
+        self._descriptions = {} if shared is None else shared.setdefault('descriptions', {})
         try:
             return self._build(update_knowledge=update_knowledge)
         finally:

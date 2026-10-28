@@ -92,20 +92,29 @@ class CandidateFrontier:
     def __init__(self, stream, maximum):
         self.stream, self.maximum = iter(stream), maximum
         self.options, self.complete = [], False
+        self._prefixes = {}
 
-    def take(self, count):
+    def take(self, count, *, lookahead=True):
         """!
         @brief Advance the legal stream only far enough to admit the requested bounded prefix.
         """
         if type(count) is not int or count < 1 or count > self.maximum:
             raise ValueError('Candidate frontier width is outside its explicit work cap')
         self.width = count
-        while not self.complete and len(self.options) <= count:
+        while not self.complete and len(self.options) < count + bool(lookahead):
             try:
                 self.options.append(next(self.stream))
             except StopIteration:
                 self.complete = True
-        return tuple(self.options[:count]), self.complete and len(self.options) <= count
+        key = min(count, len(self.options))
+        prefix = self._prefixes.get(key)
+        if prefix is None:
+            # One immutable tuple per admitted width; subsequent reads neither
+            # restart generation nor allocate another copy of the same prefix.
+            if len(self._prefixes) >= 8:
+                self._prefixes.clear()
+            prefix = self._prefixes[key] = tuple(self.options[:count])
+        return prefix, self.complete and len(self.options) <= count
 
     def close(self):
         """!
@@ -197,12 +206,16 @@ class DeterministicCandidates:
     @var rank_window Rank window retained by this record.
     @var rank_windows Rank windows retained by this record.
     @var native_ordering Native ordering retained by this record.
+    @var attack_risk Enable experimental static combat-risk proposal groups.
+    @var combat_equivalence Generate declaration-role representatives before concrete alternatives.
     """
     initial_width: int = 4
     beam_width: int = 32
     rank_window: int = 0
     rank_windows: tuple = ()
     native_ordering: bool = False
+    attack_risk: bool = False
+    combat_equivalence: bool = False
 
     def __post_init__(self):
         if any(type(n) is not int or n < 2 for n in (self.initial_width, self.beam_width)):
@@ -212,6 +225,10 @@ class DeterministicCandidates:
         object.__setattr__(self, 'rank_windows', normalize_rank_windows(self.rank_windows))
         if type(self.native_ordering) is not bool:
             raise ValueError('native_ordering must be boolean')
+        if type(self.attack_risk) is not bool or self.attack_risk and not self.native_ordering:
+            raise ValueError('attack_risk requires native_ordering and must be boolean')
+        if type(self.combat_equivalence) is not bool or self.combat_equivalence and not self.native_ordering:
+            raise ValueError('combat_equivalence requires native_ordering and must be boolean')
         if self.native_ordering and (self.rank_window or self.rank_windows):
             raise ValueError('Native ordering replaces completed-batch ranking')
 
@@ -222,10 +239,29 @@ class DeterministicCandidates:
         """
         base = f'native-candidates-v1:{self.initial_width}:{self.beam_width}'
         if self.native_ordering:
-            return f'{base}:native-proposals-v1'
+            native = (f'{base}:native-proposals-v2:attack-risk-v1' if self.attack_risk else
+                      f'{base}:native-proposals-v1')
+            return f'{native}:combat-roles-v1' if self.combat_equivalence else native
         if self.rank_window or self.rank_windows:
             return f'{base}:rank-v1:{self.rank_window}:{self.rank_windows!r}'
         return base
+
+    def combat_reservoir_limit(self, request, width, maximum):
+        """!
+        @brief Bound root prefetch by the available declaration-role prefix.
+
+        Only bounded integer representatives are inspected, never a concrete
+        product. The local context is discarded before returning the limit.
+        """
+        if not self.combat_equivalence:
+            return maximum
+        from game.ai.combat_equivalence import CombatDeclarationEquivalence
+        from itertools import islice
+        context = CombatDeclarationEquivalence(request, blockers=type(request).__name__ == 'DeclareBlockersRequest')
+        if not context.valid or not context.reduced:
+            return maximum
+        count = sum(1 for _ in islice(context.representatives(), maximum))
+        return max(width, count)
 
     def generate(self, request, policy):
         """!
@@ -235,10 +271,16 @@ class DeterministicCandidates:
         from game.game_actions.generation.decision_abstraction.policies import DeclareAttackersPolicy, DeclareBlockersPolicy
         from game.ai.native_candidates import NativeCombatStrategy
         combat_strategy = NativeCombatStrategy if self.native_ordering else BeamCombatStrategy
+        if self.combat_equivalence:
+            from game.ai.combat_equivalence import EquivalentCombatStrategy
+            combat_strategy = EquivalentCombatStrategy
+        strategy_options = {'attack_risk': self.attack_risk} if self.native_ordering else {}
         if type(request) is DeclareAttackersRequest:
-            policy = replace(policy or DeclareAttackersPolicy(), strategy=combat_strategy(blockers=False, width=self.beam_width))
+            policy = replace(policy or DeclareAttackersPolicy(), strategy=combat_strategy(
+                blockers=False, width=self.beam_width, **strategy_options))
         elif type(request) is DeclareBlockersRequest:
-            policy = replace(policy or DeclareBlockersPolicy(), strategy=combat_strategy(blockers=True, width=self.beam_width))
+            policy = replace(policy or DeclareBlockersPolicy(), strategy=combat_strategy(
+                blockers=True, width=self.beam_width, **strategy_options))
         from game.ai.candidate_ranking import generation_family, ranked_batches, VisibleCandidateRanker
         window = dict(self.rank_windows).get(generation_family(request), self.rank_window)
         with candidate_ranking(native=self.native_ordering):

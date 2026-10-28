@@ -53,6 +53,7 @@ class SearchAgentConfig:
     projection_cache_size: int = 128
     staged_priority: bool = False
     staged_ability: bool = False
+    sequential_combat: bool | str = False
     structured_records: bool = True
     native_forced: bool = True
     progressive_candidates: bool = False
@@ -61,6 +62,8 @@ class SearchAgentConfig:
     candidate_rank_window: int = 0
     candidate_rank_windows: tuple = ()
     candidate_native_ordering: bool = False
+    candidate_attack_risk: bool = False
+    candidate_combat_equivalence: bool = False
     widening_constant: float = 0.0
     widening_exponent: float = 0.5
     tree_reuse_size: int = 0
@@ -73,6 +76,9 @@ class SearchAgentConfig:
     value_model: str = 'heuristic'
     neural_cache_size: int = 256
     neural_cache_bytes: int = 32*1024*1024
+    exact_policy_cache_size: int = 0
+    exact_policy_cache_bytes: int = 16*1024*1024
+    exact_policy_canonical_ids: bool = False
 
     @classmethod
     def parse(cls, data):
@@ -83,6 +89,15 @@ class SearchAgentConfig:
         return cls(**data)
 
     def __post_init__(self):
+        if (type(self.sequential_combat) is not bool
+                and (type(self.sequential_combat) is not str or self.sequential_combat not in {'attackers', 'blockers'})):
+            raise ValueError('sequential_combat must be boolean, attackers or blockers')
+        if self.sequential_combat and self.parallel_workers != 1:
+            raise ValueError('sequential_combat currently requires one search worker for its continuation plan')
+        if any(type(n) is not int or n < 0 for n in (self.exact_policy_cache_size, self.exact_policy_cache_bytes)):
+            raise ValueError('Exact policy cache limits must be nonnegative integers')
+        if type(self.exact_policy_canonical_ids) is not bool:
+            raise ValueError('exact_policy_canonical_ids must be boolean')
         if any(type(n) is not int or n<1 for n in (self.checkpoint_interval,self.checkpoint_min_visits)):
             raise ValueError('Checkpoint interval/visits must be positive integers')
         if type(self.checkpoint_continuous) is not bool:
@@ -120,6 +135,10 @@ class SearchAgentConfig:
             raise ValueError('Candidate ranking requires progressive_candidates')
         if type(self.candidate_native_ordering) is not bool:
             raise ValueError('candidate_native_ordering must be boolean')
+        if type(self.candidate_attack_risk) is not bool or self.candidate_attack_risk and not self.candidate_native_ordering:
+            raise ValueError('candidate_attack_risk requires native candidate ordering and must be boolean')
+        if type(self.candidate_combat_equivalence) is not bool or self.candidate_combat_equivalence and not self.candidate_native_ordering:
+            raise ValueError('candidate_combat_equivalence requires native candidate ordering and must be boolean')
         if self.candidate_native_ordering and (not self.progressive_candidates or
                 self.candidate_rank_window or self.candidate_rank_windows):
             raise ValueError('Native candidate ordering requires progressive_candidates without batch ranking')
@@ -225,8 +244,14 @@ class SearchGenerationPolicy:
     candidate_rank_window: int = 0
     candidate_rank_windows: tuple = ()
     candidate_native_ordering: bool = False
+    candidate_attack_risk: bool = False
+    candidate_combat_equivalence: bool = False
+    sequential_combat: bool | str = False
 
     def __post_init__(self):
+        if (type(self.sequential_combat) is not bool
+                and (type(self.sequential_combat) is not str or self.sequential_combat not in {'attackers', 'blockers'})):
+            raise ValueError('sequential_combat must be boolean, attackers or blockers')
         from game.ai.candidate_ranking import rank_window, normalize_rank_windows
         rank_window(self.candidate_rank_window)
         object.__setattr__(self, 'candidate_rank_windows', normalize_rank_windows(self.candidate_rank_windows))
@@ -237,7 +262,8 @@ class SearchGenerationPolicy:
             return None
         from game.ai.generation_candidates import DeterministicCandidates
         return DeterministicCandidates(self.candidate_initial_width, self.candidate_beam_width,
-            self.candidate_rank_window, self.candidate_rank_windows, self.candidate_native_ordering)
+            self.candidate_rank_window, self.candidate_rank_windows, self.candidate_native_ordering,
+            self.candidate_attack_risk, self.candidate_combat_equivalence)
 
     def __call__(self, request):
         from dataclasses import replace
@@ -252,10 +278,15 @@ def make_search_controller(config, origin, *, max_decisions):
     settings = SearchAgentConfig.parse(config)
     if not isinstance(origin, GameOrigin):
         raise ValueError("MCTS requires an explicit compatible GameOrigin (use play or run_config)")
-    policy = ObservationOpponentPolicy()
+    from game.ai.exact_policy_memory import ExactPolicyMemory
+    policy = ObservationOpponentPolicy(memory=ExactPolicyMemory(
+        settings.exact_policy_cache_size, settings.exact_policy_cache_bytes,
+        canonical_ids=settings.exact_policy_canonical_ids)
+        if settings.exact_policy_cache_size and settings.exact_policy_cache_bytes else None)
     generation_policy = SearchGenerationPolicy(settings.staged_priority, settings.staged_ability,
         settings.progressive_candidates, settings.candidate_initial_width, settings.candidate_beam_width,
-        settings.candidate_rank_window, settings.candidate_rank_windows, settings.candidate_native_ordering)
+        settings.candidate_rank_window, settings.candidate_rank_windows, settings.candidate_native_ordering,
+        settings.candidate_attack_risk, settings.candidate_combat_equivalence, settings.sequential_combat)
     if settings.world_backend == "current":
         from game.ai.current_position_worlds import CurrentPositionWorlds
         provider = CurrentPositionWorlds(origin, policy_for=generation_policy,

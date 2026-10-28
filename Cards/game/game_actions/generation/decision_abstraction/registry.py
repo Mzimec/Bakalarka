@@ -18,9 +18,11 @@ from .auxiliary import ObjectPipeline, OrderPipeline, BooleanPipeline, ScryPipel
 from .order_frames import OrderNextRequest, OrderNextPipeline
 from .priority_frames import PriorityAbilityRequest
 from .ability_frames import AbilityConstructionRequest, AbilityConstructionPipeline
+from .combat_frames import CombatNextRequest, CombatNextPipeline
 
 
 AUXILIARY_GENERATORS = {
+    CombatNextRequest: (CombatNextPipeline(), SelectionGenerationPolicy),
     OrderNextRequest: (OrderNextPipeline(), SelectionGenerationPolicy),
     StartingPlayerRequest: (ObjectPipeline(StartingPlayerOption), StartingPlayerPolicy),
     TriggerOrderRequest: (OrderPipeline(TriggerOrderOption), TriggerOrderPolicy),

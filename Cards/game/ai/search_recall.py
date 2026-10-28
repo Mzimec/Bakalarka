@@ -1,5 +1,5 @@
 """Untruncated per-player recall within a supported simulation's lifetime."""
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from functools import cached_property
 from hashlib import sha256
 import json
@@ -7,6 +7,7 @@ import json
 from game.ai.search_actions import PlayerAction, canonical_json
 from game.ai.search_observation import ActingPlayerObservation
 from game.ai.structured_values import StructuredJSON, RecallDigest, payload, decode, structural_key
+from game.ai.search_abstraction import KnowledgeSummary
 
 
 @dataclass(frozen=True, eq=False)
@@ -51,9 +52,23 @@ class PlayerRecall:
     @brief Immutable ordered recall with an incrementally chained identity digest.
     @var entries Ordered immutable recall facts, or configured entry capacity for a settings record.
     @var digest Typed structural digest of the immutable facts.
+    @var _knowledge Optional secondary policy index; excluded from recall equality and keys.
     """
     entries: tuple[RecallEntry, ...] = ()
     digest: str | RecallDigest = ""
+    _knowledge: KnowledgeSummary | None = field(default=None, repr=False, compare=False)
+
+    @cached_property
+    def knowledge(self):
+        """!
+        @brief Lazily index reviewed policy evidence without changing full recall identity.
+        """
+        if self._knowledge is not None:
+            return self._knowledge
+        summary = KnowledgeSummary()
+        for entry in self.entries:
+            summary = summary.append(entry)
+        return summary
 
     def append(self, kind, payload, *, store=None):
         """!
@@ -61,7 +76,11 @@ class PlayerRecall:
         """
         entry = RecallEntry(kind, StructuredJSON(payload, store))
         digest = RecallDigest(self.digest, kind, entry._json)
-        return PlayerRecall((*self.entries, entry), digest)
+        # Only maintain the secondary index once a consumer has requested it.
+        # Actions/events can share it; observations update just their own rows.
+        known = self.__dict__.get('knowledge', self._knowledge)
+        return PlayerRecall((*self.entries, entry), digest,
+                            known.append(entry) if known is not None else None)
 
 
 @dataclass(frozen=True)
