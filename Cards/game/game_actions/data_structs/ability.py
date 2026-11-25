@@ -8,6 +8,7 @@ from abc import ABC, abstractmethod
 from collections.abc import Callable, Iterable, Iterator, Mapping, Sequence
 from immutabledict import immutabledict
 from types import MappingProxyType
+from helper.static_definition import StaticDefinition, RuntimeBinding
 import copy
 
 if TYPE_CHECKING:
@@ -163,7 +164,7 @@ class SubAbilityVariable:
 
 
 @dataclass(frozen=True)
-class SubAbilityDefinition:
+class SubAbilityDefinition(StaticDefinition):
     """!
     @brief Defines either the cost part or the effect part of an ability.
     An `AbilityDefinition` is built from one or more cost sub-defs and
@@ -451,7 +452,7 @@ class SubAbilityComposer:
 
 
 @dataclass(frozen=True)
-class RuntimeSubAbility:
+class RuntimeSubAbility(RuntimeBinding):
     """!
     @brief Fully compiled cost or effect half of an ability, ready to generate actions.
     Produced by `SubAbilityComposer.compile`. Bundles the merged action
@@ -549,7 +550,7 @@ class RuntimeSubAbility:
 
 
 @dataclass(frozen=True)
-class AbilityDefinition(ABC):
+class AbilityDefinition(StaticDefinition, ABC):
     """!
     @brief Static data that describes how a card ability can be used.
     This is the card-authoring-level description of an ability (shared
@@ -1130,7 +1131,7 @@ class PlayLandAbility(PriorityActionAbility):
                               getattr(self.source, "zone_revision", None))
 
 
-class TriggerCondition(ABC):
+class TriggerCondition(StaticDefinition, ABC):
     """!
     @brief Base predicate used to decide whether an event should trigger an ability.
     """

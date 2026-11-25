@@ -3,9 +3,10 @@ from random import Random
 
 import pytest
 
-from game.ai.action_hierarchy import ActionHierarchy, ActionPath
-from game.ai.search_actions import PlayerAction, canonical_json
-from game.ai.information_set_search import InformationSetSearch, InformationSearchBudget
+from game.ai.decisions.action_hierarchy import (ActionHierarchy, ActionPath)
+from game.ai.decisions.search_actions import (PlayerAction, canonical_json)
+from game.ai.search.information_set_search import InformationSetSearch
+from game.ai.search.contracts import InformationSearchBudget
 from test_information_set_search import Tree, Score, first, choice
 
 
@@ -72,7 +73,7 @@ def test_play_presets_share_budgets_and_wire_the_requested_algorithm(name, selec
     import json
     from pathlib import Path
     from game.simulation.search_config import SearchAgentConfig, make_search_controller
-    from game.ai.game_origin import GameOrigin
+    from game.ai.sampling.game_origin import GameOrigin
     from game.cards.catalog import game_catalog
     from game.cards.decks import load_arena_starter
     settings = json.loads((Path(__file__).resolve().parents[1] / "configs" / f"mcts_{name}.json").read_text())
@@ -86,8 +87,8 @@ def test_play_presets_share_budgets_and_wire_the_requested_algorithm(name, selec
 @pytest.mark.parametrize("selection", ["uct", "puct", "hierarchical_puct"])
 def test_real_hidden_world_search_variants_handle_a_known_counterspell(selection):
     from benchmarks.information_set_search import world_factory
-    from game.ai.observation_policy import ObservationOpponentPolicy
-    from game.ai.action_priors import HeuristicActionPrior
+    from game.ai.evaluation.observation_policy import ObservationOpponentPolicy
+    from game.ai.evaluation.action_priors import HeuristicActionPrior
     factory = world_factory("known_answer")
     info = factory(0).start().player_information()
     result = InformationSetSearch(opponent_policy=ObservationOpponentPolicy(), selection=selection,

@@ -8,7 +8,7 @@ from statistics import median
 from time import perf_counter, process_time
 from unittest.mock import patch
 
-from game.ai.simulation_clone import SimulationClone
+from game.ai.simulation.simulation_clone import SimulationClone
 
 
 @contextmanager
@@ -47,8 +47,8 @@ def observation_reference():
 
 @contextmanager
 def mana_projection_experiment():
-    from game.ai.observation import PlayerObservationBuilder
-    from game.ai.observation_mana import native_mana_projection
+    from game.ai.information.observation import PlayerObservationBuilder
+    from game.ai.experiments.observation_mana import native_mana_projection
     original = PlayerObservationBuilder._mana_values
     def cached(builder, card):
         result = native_mana_projection(card, builder.state)
@@ -65,11 +65,14 @@ _REFERENCES = dict(primitive=primitive_reference, components=component_reference
 def search_probe(*, colors=('red', 'white'), kind='priority', native=False, repeats=4, iterations=16,
                  ablation='primitive'):
     from benchmarks.mcts_parallel import capture
-    from game.ai.decision_maker import PriorityDecisionRequest, DeclareAttackersRequest, DeclareBlockersRequest
-    from game.ai.information_set_search import InformationSetSearch, InformationSearchBudget
-    from game.ai.observation_policy import ObservationOpponentPolicy
-    from game.ai.action_priors import HeuristicActionPrior
-    from game.simulation.search_config import SearchGenerationPolicy
+    from game.ai.agents.decision_maker import (
+        PriorityDecisionRequest, DeclareAttackersRequest, DeclareBlockersRequest,
+    )
+    from game.ai.search.information_set_search import InformationSetSearch
+    from game.ai.search.contracts import InformationSearchBudget
+    from game.ai.evaluation.observation_policy import ObservationOpponentPolicy
+    from game.ai.evaluation.action_priors import HeuristicActionPrior
+    from game.ai.decisions.generation_policy import SearchGenerationPolicy
     request_kind = dict(priority=PriorityDecisionRequest, attackers=DeclareAttackersRequest,
                         blockers=DeclareBlockersRequest)[kind]
     recipes, _ = capture(*colors, 42 if colors[0] == 'red' else 43, 9, request_kind=request_kind)
@@ -119,8 +122,8 @@ def search_probe(*, colors=('red', 'white'), kind='priority', native=False, repe
 
 def copy_probe(*, colors=('red', 'white'), repeats=16, ablation='primitive'):
     from benchmarks.mcts_parallel import capture
-    from game.ai.simulation_world import copy_world
-    from game.ai.runtime_clone import DictionaryCopyPlans
+    from game.ai.simulation.simulation_world import copy_world
+    from game.ai.simulation.runtime_clone import DictionaryCopyPlans
     recipes, _ = capture(*colors, 42 if colors[0] == 'red' else 43, 9)
     sim = recipes(0)
     sim.factory.reuse = True

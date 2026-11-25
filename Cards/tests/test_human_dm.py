@@ -1,5 +1,5 @@
 """Human input regressions against the public, maintained console API."""
-from game.ai.decision_maker import PriorityDecisionRequest
+from game.ai.agents.decision_maker import PriorityDecisionRequest
 from game.game_actions import PassPriorityAction
 import pytest
 from game.console.human_input import ActionBuilderSession, HumanDecisionMaker, _resolve_command

@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 from dataclasses import replace
+from functools import lru_cache
+from immutabledict import immutabledict
 
 from game.cards.starter_cards import _spell, _slot
 from game.cards.starter_support import RuleEffect, ScryOperation
@@ -20,7 +22,8 @@ def opt_operations(state: object, context: object) -> object:
     yield DrawCardOperation(context)
 
 
-def control_catalog() -> dict:
+@lru_cache(maxsize=1)
+def _static_control_catalog():
     """!
     @brief Return fully implemented control definitions, without placeholders.
     """
@@ -43,4 +46,9 @@ def control_catalog() -> dict:
     )
     verdict = replace(verdict, colors=frozenset({ManaType.WHITE, ManaType.BLUE}),
                       color_identity=frozenset({ManaType.WHITE, ManaType.BLUE}))
-    return {card.name: card for card in (counterspell, opt, verdict)}
+    return immutabledict({card.name: card for card in (counterspell, opt, verdict)})
+
+
+def control_catalog() -> dict:
+    """Return a fresh lookup table referencing published control definitions."""
+    return dict(_static_control_catalog())

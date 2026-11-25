@@ -80,7 +80,7 @@ class ExecutionPlanPipeline(ExecutionPlanPipelineBase):
                 available.
         """
         for prepared in self.prepare(ctx, subability, strategy, state):
-            from game.ai.generation_candidates import target_preferences
+            from game.ai.decisions.generation_candidates import target_preferences
             with target_preferences(prepared.effects):
                 for binding in strategy.target_gen.generate(ctx, prepared.used_slots, state):
                     yield prepared.bind(binding)

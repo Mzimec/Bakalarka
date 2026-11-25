@@ -5,12 +5,12 @@ import pytest
 
 from benchmarks.search_hidden_worlds import public_position, catalog, beliefs
 from benchmarks.search_tactics import tactical_policy
-from game.ai.sampled_scenario import SampledScenario
-from game.ai.search_actions import PlayerActionBuilder, UnsupportedPlayerAction
-from game.ai.search_recall import PlayerRecall
-from game.ai.search_simulator import SearchSimulator, starter_scenario
-from game.ai.prefix_replay_simulator import PrefixReplaySimulator
-from game.ai.modular_agent import ModularAgent
+from game.ai.reference.sampled_scenario import SampledScenario
+from game.ai.decisions.search_actions import (PlayerActionBuilder, UnsupportedPlayerAction)
+from game.ai.information.search_recall import PlayerRecall
+from game.ai.simulation.search_simulator import (SearchSimulator, starter_scenario)
+from game.ai.reference.prefix_replay_simulator import PrefixReplaySimulator
+from game.ai.agents.modular_agent import ModularAgent
 
 
 def simulator(seed=0, *, backend=SearchSimulator, evidence=None):
@@ -135,7 +135,7 @@ def test_recall_has_no_64_event_window_and_copies_input():
 def test_action_adapters_reject_hidden_refs_unknown_objects_and_changed_incarnations():
     from game.game_state import Card
     from game.enums import ZoneType
-    from game.ai.decision_maker import PriorityDecisionRequest
+    from game.ai.agents.decision_maker import PriorityDecisionRequest
     from game.game_actions.generation.decision_abstraction.options import DiscardOption
     game = public_position((ModularAgent(), ModularAgent()))
     own, opponent = game.state.players
@@ -207,7 +207,7 @@ def test_player_input_has_no_runtime_objects_or_other_players_replay_data():
     from dataclasses import fields, is_dataclass
     info = simulator().start().player_information()
     def visit(value):
-        from game.ai.structured_values import StructuredJSON, RecallDigest, Value
+        from game.ai.information.structured_values import (StructuredJSON, RecallDigest, Value)
         if type(value) is StructuredJSON:
             visit(value.value)
             return
@@ -228,7 +228,7 @@ def test_player_input_has_no_runtime_objects_or_other_players_replay_data():
                 visit(item)
             return
         assert type(value).__module__ in {
-            "game.ai.search_recall", "game.ai.search_actions", "game.ai.search_observation"}
+            "game.ai.information.search_recall", "game.ai.decisions.search_actions", "game.ai.information.search_observation"}
         assert is_dataclass(value)
         for f in fields(value):
             visit(getattr(value, f.name))
@@ -239,7 +239,7 @@ def test_player_input_has_no_runtime_objects_or_other_players_replay_data():
 
 
 def test_ambiguous_projection_does_not_silently_merge_actions(monkeypatch):
-    from game.ai.search_actions import PlayerAction
+    from game.ai.decisions.search_actions import PlayerAction
     monkeypatch.setattr(PlayerActionBuilder, "action", lambda self, option: PlayerAction("same", "{}"))
     with pytest.raises(UnsupportedPlayerAction, match="same player identity"):
         simulator().start()

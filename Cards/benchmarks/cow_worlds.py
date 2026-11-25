@@ -13,10 +13,10 @@ from unittest.mock import patch
 
 from benchmarks.world_root_copy import capture_snapshot
 from benchmarks.prepared_worlds import CollectionTiming
-from game.ai.current_position_worlds import _PreparedWorld
-from game.ai.knowledge import PlayerKnowledge
-from game.ai.runtime_clone import RuntimeClone, DictionaryCopyPlans
-from game.ai.simulation_world import copy_world, immutable_world_values, prepare_cow_indexes
+from game.ai.sampling.current_position_worlds import _PreparedWorld
+from game.ai.information.knowledge import PlayerKnowledge
+from game.ai.simulation.runtime_clone import (RuntimeClone, DictionaryCopyPlans)
+from game.ai.simulation.simulation_world import (copy_world, immutable_world_values, prepare_cow_indexes)
 
 
 def timed(call):
@@ -97,7 +97,7 @@ def micro(turn, repetitions):
 def full_games(folder, repetitions, seed):
     from benchmarks.play_search import run
     from benchmarks.search_checkpoints import trace
-    from game.ai import current_position_worlds
+    from game.ai.sampling import current_position_worlds
     original = current_position_worlds._PreparedWorld
 
     def experimental(*args, **kwargs):

@@ -47,7 +47,7 @@ from game.cards.starter_support import (
     RuleEffect,
     EventCondition,
     FormulaModifier,
-    ScryOperation,
+    ScryEffect,
     UntapOperation,
     SkipUntapOperation,
     LoseLifeOperation,
@@ -223,7 +223,7 @@ def optional(effect: object) -> object:
         """!
         @brief Yield choices supported by this generation strategy.
         """
-        from game.ai.decision_maker import OptionalEffectRequest
+        from game.ai.agents.decision_maker import OptionalEffectRequest
         request = OptionalEffectRequest(state, context.controller, context, effect.get_info())
         if context.controller.decision_maker.decide(request).value.accept:
             yield from effect.to_operations(state, context)
@@ -478,7 +478,7 @@ def extension_catalog() -> dict:
         """!
         @brief scry_effect helper.
         """
-        return RuleEffect("scry", lambda s, c: (ScryOperation(c, amount),), info=f"Scry {amount}.")
+        return ScryEffect('scry', amount)
 
     triggers("Wall of Runes", self_trigger("runes_enter", (scry_effect(1),)))
     triggers("Octoprophet", self_trigger("octoprophet_enter", (scry_effect(2),)))

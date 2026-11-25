@@ -14,7 +14,7 @@ from game.game_actions.generation.decision_abstraction.requests import AbilityDe
 from game.game_actions.generation.decision_abstraction.policies import AbilityGenerationPolicy, PriorityGenerationPolicy
 from game.game_actions.generation.command_action_builder import ability_actions
 from game.console.command_choices import legal_plans
-from game.ai.modular_agent import CandidateGenerator
+from game.ai.agents.modular_agent import CandidateGenerator
 from game.game_actions.data_structs.game_action import PassPriorityAction, ConcedeAction
 
 

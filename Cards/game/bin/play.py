@@ -1,5 +1,6 @@
 from __future__ import annotations
 import argparse
+import json
 from pathlib import Path
 
 from game.cards.decks import ARENA_STARTERS, load_arena_starter
@@ -20,8 +21,31 @@ AI_CONFIG = {
     },
 }
 
+OLLAMA_SETTINGS = Path(__file__).resolve().parents[2] / 'configs/ollama_play.json'
 
-def main() -> int:
+
+class ConsoleLLMSelector:
+    """Show waiting/fallback status without exposing or changing model inputs."""
+
+    def __init__(self, selector):
+        self.selector = selector
+        self.fallbacks = 0
+
+    @property
+    def last_error(self):
+        return self.selector.last_error
+
+    def choose(self, observation, candidates):
+        if len(candidates) > 1:
+            print(f'Ollama ({self.selector.model}) is choosing among {len(candidates)} actions...', flush=True)
+        choice = self.selector.choose(observation, candidates)
+        if self.last_error:
+            self.fallbacks += 1
+            print(f'Ollama fallback to heuristic: {self.last_error}', flush=True)
+        return choice
+
+
+def main(argv=None) -> int:
     """!
     @brief Run one interactive human-versus-AI match.
     """
@@ -68,7 +92,10 @@ def main() -> int:
         type=Path,
         default=None,
     )
-    parser.add_argument("--ai-agent", choices=("modular", "mcts"), default="modular")
+    parser.add_argument("--ai-agent", choices=("modular", "mcts", "ollama"), default="modular")
+    parser.add_argument('--llm-settings', type=Path,
+                        help='Ollama settings JSON; defaults to configs/ollama_play.json.')
+    parser.add_argument('--llm-model', help='Override the local Ollama model name.')
     parser.add_argument("--mcts-known-decks", action="store_true",
                         help="Explicitly let experimental MCTS know both starting deck lists (not hands/order).")
     parser.add_argument("--mcts-settings", type=Path,
@@ -80,7 +107,9 @@ def main() -> int:
     parser.add_argument('--mcts-checkpoint', type=Path,
                         help='Load trained policy/value checkpoint (UCT uses value only).')
 
-    args = parser.parse_args()
+    args = parser.parse_args(argv)
+    if args.ai_agent != 'ollama' and (args.llm_settings or args.llm_model is not None):
+        parser.error('LLM flags require --ai-agent ollama')
     if args.ai_agent == "mcts" and not args.mcts_known_decks:
         parser.error("--ai-agent mcts requires --mcts-known-decks: both deck lists are an explicit model assumption")
     if args.ai_agent != "mcts" and (args.mcts_known_decks or args.mcts_settings
@@ -100,12 +129,11 @@ def main() -> int:
         if args.starting_player == "human"
         else 1
     )
-    ai_name = "MCTS" if args.ai_agent == "mcts" else "Modular"
+    ai_name = {'mcts': 'MCTS', 'modular': 'Modular', 'ollama': 'Ollama'}[args.ai_agent]
     ai_config = AI_CONFIG
     origin = None
     if args.ai_agent == "mcts":
-        import json
-        from game.ai.game_origin import GameOrigin
+        from game.ai.sampling.game_origin import GameOrigin
         from game.cards.catalog import game_catalog
         settings = json.loads(args.mcts_settings.read_text(encoding="utf-8")) if args.mcts_settings else {}
         if not isinstance(settings, dict):
@@ -121,8 +149,23 @@ def main() -> int:
         ai_config = {"type": "mcts", "mcts": {"deck_knowledge": "both_lists", **settings}}
         origin = GameOrigin((human_deck, ai_deck), game_catalog,
                             names=("Human", ai_name), starting_player_idx=starting_player)
+    elif args.ai_agent == 'ollama':
+        from game.ai.agents.llm_policy import make_llm_selector
+        try:
+            settings = json.loads((args.llm_settings or OLLAMA_SETTINGS).read_text(encoding='utf-8-sig'))
+            if not isinstance(settings, dict) or settings.get('provider', 'ollama') != 'ollama':
+                raise ValueError('Interactive Ollama mode requires an Ollama settings object')
+            if args.llm_model is not None:
+                settings['model'] = args.llm_model
+            make_llm_selector(settings).check_model()
+        except (OSError, ValueError, TypeError, KeyError) as exc:
+            parser.error(str(exc))
+        ai_config = {**AI_CONFIG, 'type': 'llm', 'llm': settings}
     ai = make_controller(ai_config, seed=None if args.seed is None else args.seed + 1,
                          max_decisions=args.max_decisions, search_origin=origin)
+    if args.ai_agent == 'ollama':
+        ai.selector = ConsoleLLMSelector(ai.selector)
+        print(f'Human vs local Ollama ({settings["model"]}). Enter help for console commands.', flush=True)
     if args.ai_agent == "mcts":
         print("Experimental MCTS: knows both starting deck lists; hands and library order remain hidden.")
         def show_search(request, detail):
@@ -175,6 +218,8 @@ def main() -> int:
 
     if result.error:
         print(result.error)
+    if args.ai_agent == 'ollama':
+        print(f'Ollama requests: {ai.selector.selector.requests}; heuristic fallbacks: {ai.selector.fallbacks}')
     for row in result.search_diagnostics:
         print(f"MCTS: {row['searched_decisions']}/{row['search_attempts']} searches usable, "
               f"{row['fallback_decisions']} fallbacks; decision p95={row['decision_ms_p95']:.0f} ms; "

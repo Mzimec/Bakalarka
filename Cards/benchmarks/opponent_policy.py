@@ -6,8 +6,8 @@ from pathlib import Path
 from time import perf_counter
 
 from benchmarks.search_tactics import tactical_scenario, tactical_policy
-from game.ai.observation_policy import ObservationOpponentPolicy
-from game.ai.search_simulator import SearchSimulator
+from game.ai.evaluation.observation_policy import ObservationOpponentPolicy
+from game.ai.simulation.search_simulator import SearchSimulator
 
 
 CASES = ("lethal_shock", "useful_pacifism", "redundant_pacifism", "attack_pacified", "counter_response")

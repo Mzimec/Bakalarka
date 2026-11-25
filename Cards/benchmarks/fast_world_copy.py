@@ -14,9 +14,9 @@ from unittest.mock import patch
 
 from benchmarks.search_edges import run
 from benchmarks.world_root_copy import capture_snapshot
-from game.ai import checkpoint_simulator, simulation_world
-from game.ai.current_position_worlds import _PreparedWorld
-from game.ai.knowledge import PlayerKnowledge
+from game.ai.simulation import (checkpoint_simulator, simulation_world)
+from game.ai.sampling.current_position_worlds import _PreparedWorld
+from game.ai.information.knowledge import PlayerKnowledge
 
 
 def main():

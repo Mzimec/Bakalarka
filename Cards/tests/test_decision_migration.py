@@ -3,7 +3,7 @@ from dataclasses import replace
 
 import pytest
 
-from game.ai.decision_maker import ModularDecisionMaker, DecisionResult
+from game.ai.agents.decision_maker import (ModularDecisionMaker, DecisionResult)
 from game.game_actions.generation.decision_abstraction.auxiliary import (
     StartingPlayerRequest, StartingPlayerPolicy, StartingPlayerOption,
     ScryRequest, TriggerOrderRequest, TriggerOrderPolicy, TriggerOrderOption,

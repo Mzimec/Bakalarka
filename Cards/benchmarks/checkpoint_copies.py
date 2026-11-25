@@ -12,7 +12,7 @@ from benchmarks.play_search import run
 from benchmarks.search_checkpoints import trace
 from benchmarks.prepared_worlds import CollectionTiming
 from benchmarks.search_edges import unprepared_copy
-from game.ai.checkpoint_simulator import _Checkpoint
+from game.ai.simulation.checkpoint_simulator import _Checkpoint
 
 
 def main():

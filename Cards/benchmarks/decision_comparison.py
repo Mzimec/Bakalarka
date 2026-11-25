@@ -25,8 +25,8 @@ def save(path, value):
 
 def worker(args):
     from benchmarks.environment import collect_environment
-    from game.ai.modular_agent import ModularAgent
-    from game.ai.simple_agent import SimpleAgent
+    from game.ai.agents.modular_agent import ModularAgent
+    from game.ai.agents.simple_agent import SimpleAgent
     from game.game_actions.generation.decision_abstraction.priority_availability import NonManaPriorityAvailability
     from game.simulation.match_runner import run_match
 

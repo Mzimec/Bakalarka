@@ -47,6 +47,9 @@ class State:
         """
         self._players = tuple(players)
         self.knowledge_token = object()  # Distinguish games without retaining their runtime graph in an agent.
+        # Rule events still execute when an owned perfect-information world
+        # opts out of viewer projections. Real games always start enabled.
+        self.record_player_information = True
 
         if not self._players:
             raise ValueError("A game state needs at least one player.")
@@ -108,6 +111,14 @@ class State:
         ):
             raise ValueError("Initial cards must have distinct, unregistered identities.")
 
+        from .card_repository import CardRepository
+        self._cards = CardRepository(cards)
+        self._card_states = self._cards.states
+        for player in self.players:
+            player._card_repository = self._cards
+            for zone in player._zone_map.values():
+                zone.bind(self._cards)
+
         for player in self.players:
             player._game_state = self
             self.player_register.register(player)
@@ -116,8 +127,27 @@ class State:
             self.register_card(card)
 
     @property
+    def cards(self):
+        """Stable physical card repository, distinct from live zone membership."""
+        return self._cards
+
+    @property
+    def card_states(self):
+        """Canonical dynamic card records of this world, indexed by stable key."""
+        return self._card_states
+
+    @property
     def turn_history(self):
         return self._turn_history
+
+    def observation_for(self, player):
+        """Return this world's reusable visibility window for a participant.
+
+        Consume it inside ``with view.read():`` while the engine is suspended.
+        Reads after mutation or rollback open a new lease on the same handle.
+        """
+        from game.ai.information.runtime_observation import player_view
+        return player_view(self, player)
 
     @property
     def turn_events(self):
@@ -149,6 +179,7 @@ class State:
             raise ValueError("Register cards through their owner's add_card method.")
 
         self.card_register.register(card)
+        self._cards.add(card)
         card._game_state = self
 
     def notify_card_changed(self, card: Card) -> None:

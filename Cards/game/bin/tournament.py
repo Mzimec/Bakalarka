@@ -1,5 +1,6 @@
 from __future__ import annotations
 import argparse
+import json
 from contextlib import nullcontext
 from datetime import datetime
 from pathlib import Path
@@ -8,6 +9,8 @@ from game.cards.decks import ARENA_STARTERS, load_arena_starter
 from game.simulation.match_runner import TournamentPlayer, run_tournament
 
 
+OLLAMA_SETTINGS = Path(__file__).resolve().parents[2] / "configs" / "ollama_play.json"
+MCTS_SETTINGS = Path(__file__).resolve().parents[2] / "configs" / "mcts_play_128_native.json"
 AGENT_CONFIGS = {
     "trivial": {"type": "trivial"},
     "simple": {
@@ -27,15 +30,16 @@ AGENT_CONFIGS = {
 }
 
 
-def main() -> int:
+def main(argv=None) -> int:
     """!
     @brief Run this command-line entry point.
     """
     parser = argparse.ArgumentParser()
+    agent_choices = (*AGENT_CONFIGS, "ollama", "mcts")
 
     parser.add_argument(
         "--agent1",
-        choices=AGENT_CONFIGS,
+        choices=agent_choices,
         default="modular"
     )
 
@@ -47,7 +51,7 @@ def main() -> int:
 
     parser.add_argument(
         "--agent2",
-        choices=AGENT_CONFIGS,
+        choices=agent_choices,
         default="simple"
     )
 
@@ -58,6 +62,12 @@ def main() -> int:
     )
 
     parser.add_argument("--rounds", type=int, default=10)
+    parser.add_argument("--llm-settings", type=Path,
+                        help="Ollama settings JSON. Defaults to configs/ollama_play.json.")
+    parser.add_argument("--mcts-settings", type=Path,
+                        help="MCTS settings JSON. Defaults to configs/mcts_play_128_native.json.")
+    parser.add_argument("--mcts-known-decks", action="store_true",
+                        help="Let MCTS know both starting deck lists. Hands and deck order stay hidden.")
     parser.add_argument("--seed", type=int, default=1)
     parser.add_argument("--max-turns", type=int, default=100)
     parser.add_argument("--max-decisions", type=int, default=10000)
@@ -78,20 +88,55 @@ def main() -> int:
         action="store_true",
     )
 
-    args = parser.parse_args()
+    args = parser.parse_args(argv)
     if (args.profile_functions or args.log_matches) and args.output is None:
         parser.error('--profile-functions/--log-matches require an explicit --output directory')
+
+    selected_agents = (args.agent1, args.agent2)
+    uses_ollama = "ollama" in selected_agents
+    if args.llm_settings is not None and not uses_ollama:
+        parser.error("--llm-settings requires an Ollama participant")
+    uses_mcts = "mcts" in selected_agents
+    if uses_mcts and not args.mcts_known_decks:
+        parser.error("MCTS requires --mcts-known-decks")
+    if not uses_mcts and (args.mcts_settings is not None or args.mcts_known_decks):
+        parser.error("MCTS flags require an MCTS participant")
+
+    agent_configs = AGENT_CONFIGS.copy()
+    if uses_mcts:
+        from game.simulation.search_config import SearchAgentConfig
+
+        try:
+            path = args.mcts_settings or MCTS_SETTINGS
+            settings = json.loads(path.read_text(encoding="utf-8-sig"))
+            SearchAgentConfig.parse(settings)
+        except (OSError, TypeError, ValueError) as exc:
+            parser.error(str(exc))
+        agent_configs["mcts"] = {"type": "mcts", "mcts": settings}
+
+    if uses_ollama:
+        from game.ai.agents.llm_policy import make_llm_selector
+
+        try:
+            path = args.llm_settings or OLLAMA_SETTINGS
+            settings = json.loads(path.read_text(encoding="utf-8-sig"))
+            if not isinstance(settings, dict) or settings.get("provider", "ollama") != "ollama":
+                raise ValueError("Tournament Ollama mode requires an Ollama settings object")
+            make_llm_selector(settings).check_model()
+        except (OSError, ValueError, TypeError, KeyError) as exc:
+            parser.error(str(exc))
+        agent_configs["ollama"] = {**AGENT_CONFIGS["modular"], "type": "llm", "llm": settings}
 
     players = (
         TournamentPlayer(
             name=args.agent1,
             deck=load_arena_starter(args.deck1),
-            controller=AGENT_CONFIGS[args.agent1],
+            controller=agent_configs[args.agent1],
         ),
         TournamentPlayer(
             name=args.agent2,
             deck=load_arena_starter(args.deck2),
-            controller=AGENT_CONFIGS[args.agent2],
+            controller=agent_configs[args.agent2],
         ),
     )
 

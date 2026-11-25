@@ -4,12 +4,12 @@ from random import Random
 
 import pytest
 
-from game.ai.game_origin import GameOrigin, GameOriginWorlds
-from game.ai.history_world_provider import HistoryWorldProvider
-from game.ai.incremental_world_provider import IncrementalWorldProvider
-from game.ai.mcts_agent import MCTSAgent
-from game.ai.observation_policy import ObservationOpponentPolicy
-from game.ai.search_simulator import SearchSimulator, HistorySamplingExhausted
+from game.ai.sampling.game_origin import (GameOrigin, GameOriginWorlds)
+from game.ai.sampling.history_world_provider import HistoryWorldProvider
+from game.ai.sampling.incremental_world_provider import IncrementalWorldProvider
+from game.ai.agents.mcts_agent import MCTSAgent
+from game.ai.evaluation.observation_policy import ObservationOpponentPolicy
+from game.ai.simulation.search_simulator import (SearchSimulator, HistorySamplingExhausted)
 from game.cards.decks import DeckList
 from game.game_loop.setup import SetupConfig, create_game, shuffle_library
 from test_game_setup import Controller
@@ -72,7 +72,8 @@ def test_fresh_runtime_definitions_rng_and_branches_are_isolated():
     recipe = origin()
     a, b = (recipe.scenario(7)((Controller(), Controller())) for _ in range(2))
     ca, cb = (next(iter(g.state.players[0].hand.values())) for g in (a, b))
-    assert ca is not cb and ca.definition is not cb.definition
+    assert ca is not cb and ca.definition is cb.definition
+    assert ca.state is not cb.state
     before = b.state.rng.getstate()
     a.state.rng.random()
     a.state.players[0].health = 1

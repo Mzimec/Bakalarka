@@ -7,10 +7,11 @@ from pathlib import Path
 
 from benchmarks.search_hidden_worlds import beliefs, catalog, public_position
 from benchmarks.search_tactics import tactical_policy
-from game.ai.information_set_search import InformationSetSearch, InformationSearchBudget
-from game.ai.sampled_scenario import HiddenZoneBelief, SampledScenario
-from game.ai.search_simulator import SearchSimulator
-from game.ai.observation_policy import ObservationOpponentPolicy
+from game.ai.search.information_set_search import InformationSetSearch
+from game.ai.search.contracts import InformationSearchBudget
+from game.ai.reference.sampled_scenario import (HiddenZoneBelief, SampledScenario)
+from game.ai.simulation.search_simulator import SearchSimulator
+from game.ai.evaluation.observation_policy import ObservationOpponentPolicy
 
 
 CASES = ("no_answer", "known_answer", "unknown_answer")

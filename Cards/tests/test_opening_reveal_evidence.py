@@ -5,15 +5,15 @@ from types import SimpleNamespace
 
 import pytest
 
-from game.ai.game_origin import GameOriginWorlds
-from game.ai.history_world_provider import HistoryWorldProvider
-from game.ai.knowledge import PlayerEvent
-from game.ai.opening_reveal_evidence import OpeningRevealEvidence
-from game.ai.opening_reveal_evidence import observed_mulligans
-from game.ai.scenario_world_provider import resume_to_information
-from game.ai.history_world_provider import UniformHistoryPolicy, sample_history_action
-from game.ai.information_set_search import SampledRootMismatch
-from game.ai.search_recall import PlayerRecall
+from game.ai.sampling.game_origin import GameOriginWorlds
+from game.ai.sampling.history_world_provider import HistoryWorldProvider
+from game.ai.information.knowledge import PlayerEvent
+from game.ai.sampling.opening_reveal_evidence import OpeningRevealEvidence
+from game.ai.sampling.opening_reveal_evidence import observed_mulligans
+from game.ai.sampling.scenario_world_provider import resume_to_information
+from game.ai.sampling.history_world_provider import (UniformHistoryPolicy, sample_history_action)
+from game.ai.search.contracts import SampledRootMismatch
+from game.ai.information.search_recall import PlayerRecall
 from game.game_loop.setup import shuffle_library
 from test_game_origin import origin, keep_pass
 
@@ -79,7 +79,7 @@ def test_native_first_opponent_play_conditions_public_card_without_forcing_their
     assert len(hands) > 1  # Only the public revealed card was constrained.
 
     # The same hand constraint cannot make an always-pass opponent play a land.
-    from game.ai.search_simulator import HistorySamplingExhausted
+    from game.ai.simulation.search_simulator import HistorySamplingExhausted
     never_play = lambda info: tuple(float(a == keep_pass(info)) for a in info.actions)
     with pytest.raises(HistorySamplingExhausted):
         HistoryWorldProvider(worlds, opponent_weights=never_play, max_attempts=2)(target)(9).start()

@@ -7,17 +7,17 @@ from contextlib import nullcontext
 from unittest.mock import patch
 
 from benchmarks.search_tactics import tactical_scenario
-from game.ai.generation_candidates import CandidateFrontier, DeterministicCandidates
-from game.ai.modular_agent import ModularAgent
-from game.ai.search_decision import DecisionProjector
-from game.ai.search_descriptors import ChoiceDescriptor
-from game.ai.search_recall import PlayerRecall
+from game.ai.decisions.generation_candidates import (CandidateFrontier, DeterministicCandidates)
+from game.ai.agents.modular_agent import ModularAgent
+from game.ai.decisions.search_decision import DecisionProjector
+from game.ai.decisions.search_descriptors import ChoiceDescriptor
+from game.ai.information.search_recall import PlayerRecall
 from game.cards.starter_cards import starter_catalog
 from game.enums import TurnPhase, ZoneType
 from game.game_actions.generation.decision_abstraction.requests import (
     DeclareAttackersRequest, DeclareBlockersRequest, PriorityDecisionRequest)
 from game.game_state import Card
-from game.simulation.search_config import SearchGenerationPolicy
+from game.ai.decisions.generation_policy import SearchGenerationPolicy
 
 
 def make_request(case):
@@ -93,10 +93,11 @@ def run(repeats=4, width=4):
 
 def run_search(repeats=2, iterations=16):
     """Same root/budgets, plus a strict cache-only ablation of identical work."""
-    from game.ai.search_simulator import SearchSimulator
-    from game.ai.observation_policy import ObservationOpponentPolicy
-    from game.ai.action_priors import HeuristicActionPrior
-    from game.ai.information_set_search import InformationSetSearch, InformationSearchBudget, _Run
+    from game.ai.simulation.search_simulator import SearchSimulator
+    from game.ai.evaluation.observation_policy import ObservationOpponentPolicy
+    from game.ai.evaluation.action_priors import HeuristicActionPrior
+    from game.ai.search.information_set_search import (InformationSetSearch, _Run)
+    from game.ai.search.contracts import InformationSearchBudget
     def recipe(controllers):
         game = tactical_scenario('useful_pacifism')(controllers)
         owner = game.state.players[1]
@@ -159,7 +160,7 @@ def run_search(repeats=2, iterations=16):
 
 def legacy_transition_key(run, sim, node, action):
     """Pre-fix key, solely for cache/work/latency ablations."""
-    from game.ai.search_simulator import SearchSimulator, SimulationNode
+    from game.ai.simulation.search_simulator import (SearchSimulator, SimulationNode)
     if run.searcher.transition_cache_size and isinstance(sim, SearchSimulator) and isinstance(node, SimulationNode):
         return sim, (node.history, node.decision), action
     return None
@@ -167,9 +168,10 @@ def legacy_transition_key(run, sim, node, action):
 
 def run_captured(color='red', repeats=2, iterations=16):
     from benchmarks.mcts_parallel import capture
-    from game.ai.information_set_search import InformationSetSearch, InformationSearchBudget, _Run
-    from game.ai.observation_policy import ObservationOpponentPolicy
-    from game.ai.action_priors import HeuristicActionPrior
+    from game.ai.search.information_set_search import (InformationSetSearch, _Run)
+    from game.ai.search.contracts import InformationSearchBudget
+    from game.ai.evaluation.observation_policy import ObservationOpponentPolicy
+    from game.ai.evaluation.action_priors import HeuristicActionPrior
     worlds, _ = capture(color, 'white' if color == 'red' else 'black', 42 if color == 'red' else 43, 9)
     variants = ('full', 'ranked_no_cache', 'native')
     rows = []

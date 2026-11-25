@@ -8,13 +8,13 @@ from unittest.mock import patch
 import pytest
 
 from benchmarks.search_tactics import CASES
-from game.ai.action_priors import HeuristicActionPrior
-from game.ai.exact_policy_memory import ExactPolicyMemory
-from game.ai.observation_policy import ObservationOpponentPolicy, remembered_counter_sources
-from game.ai.search_abstraction import CanonicalPlayerView, CanonicalPolicyView
-from game.ai.search_actions import PlayerAction
-from game.ai.search_recall import PlayerRecall
-from game.ai.structured_values import StructuredJSON
+from game.ai.evaluation.action_priors import HeuristicActionPrior
+from game.ai.evaluation.exact_policy_memory import ExactPolicyMemory
+from game.ai.evaluation.observation_policy import (ObservationOpponentPolicy, remembered_counter_sources)
+from game.ai.evaluation.search_abstraction import (CanonicalPlayerView, CanonicalPolicyView)
+from game.ai.decisions.search_actions import PlayerAction
+from game.ai.information.search_recall import PlayerRecall
+from game.ai.information.structured_values import StructuredJSON
 from runtime_write_guard import deny_writes
 from test_observation_policy import scenario
 
@@ -95,8 +95,8 @@ def test_native_ratings_priors_and_local_ties_match_reference(case, canonical_id
 
 def test_staged_ability_construction_keeps_parameters_and_payment_exact():
     from benchmarks.search_tactics import tactical_scenario
-    from game.simulation.search_config import SearchGenerationPolicy
-    from game.ai.search_simulator import SearchSimulator
+    from game.ai.decisions.generation_policy import SearchGenerationPolicy
+    from game.ai.simulation.search_simulator import SearchSimulator
     sim = SearchSimulator(tactical_scenario('useful_pacifism'), track_information=True,
                           policy_for=SearchGenerationPolicy(staged_priority=True, staged_ability=True))
     node = sim.start()
@@ -155,7 +155,7 @@ def test_irrelevant_nested_names_do_not_get_interpreted_as_combat_references():
 
 
 def test_cached_scores_never_allow_rerooting_on_a_different_full_recall():
-    from game.ai.search_tree_memory import SearchTreeMemory, TreeRow
+    from game.ai.search.search_tree_memory import (SearchTreeMemory, TreeRow)
     info = scenario('useful_pacifism')[1].player_information()
     other = replace(info, recall=info.recall.append('event', {'kind': 'different_history'}))
     policy = ObservationOpponentPolicy(memory=ExactPolicyMemory())
@@ -169,8 +169,8 @@ def test_cached_scores_never_allow_rerooting_on_a_different_full_recall():
 def test_cached_opponent_ratings_do_not_learn_root_private_hand():
     from benchmarks.search_hidden_worlds import beliefs, catalog, public_position
     from benchmarks.search_tactics import tactical_policy
-    from game.ai.sampled_scenario import SampledScenario
-    from game.ai.search_simulator import SearchSimulator
+    from game.ai.reference.sampled_scenario import SampledScenario
+    from game.ai.simulation.search_simulator import SearchSimulator
     policy = ObservationOpponentPolicy(memory=ExactPolicyMemory())
     inputs, outputs = [], []
     for name in ('Shock', 'Plains'):
@@ -189,7 +189,7 @@ def test_cached_opponent_ratings_do_not_learn_root_private_hand():
 
 def test_production_configuration_owns_one_policy_memory_and_reset_releases_it():
     from game.simulation.search_config import make_search_controller
-    from game.ai.game_origin import GameOrigin
+    from game.ai.sampling.game_origin import GameOrigin
     from game.cards.decks import load_arena_starter
     from game.cards.catalog import game_catalog
     origin = GameOrigin((load_arena_starter('red'), load_arena_starter('white')), game_catalog)
@@ -317,7 +317,7 @@ def test_counter_evidence_changes_cache_context_and_forgetting_restores_original
 
 
 def test_cache_limits_eviction_pickle_and_custom_evaluator_bypass():
-    from game.ai.state_value import StateValueEvaluator
+    from game.ai.evaluation.state_value import StateValueEvaluator
     info = scenario('useful_pacifism')[1].player_information()
     memory = ExactPolicyMemory(entries=1)
     policy = ObservationOpponentPolicy(memory=memory)
@@ -344,8 +344,9 @@ def test_cache_limits_eviction_pickle_and_custom_evaluator_bypass():
 @pytest.mark.parametrize('selection', ['uct', 'puct', 'hierarchical_puct'])
 @pytest.mark.parametrize('canonical_ids', [False, True])
 def test_native_search_same_work_same_results_and_no_approximate_visits(selection, canonical_ids):
-    from game.ai.information_set_search import InformationSetSearch, InformationSearchBudget
-    from game.ai.search_simulator import SearchSimulator
+    from game.ai.search.information_set_search import InformationSetSearch
+    from game.ai.search.contracts import InformationSearchBudget
+    from game.ai.simulation.search_simulator import SearchSimulator
     from benchmarks.search_tactics import tactical_scenario, tactical_policy
     from benchmarks.mcts_decision_latency import answer
     def factory(seed):
@@ -375,8 +376,9 @@ def test_native_search_same_work_same_results_and_no_approximate_visits(selectio
 
 @pytest.mark.parametrize('backend', ['thread', 'process'])
 def test_parallel_workers_keep_exact_results_with_locally_owned_memory(backend):
-    from game.ai.parallel_search import ParallelInformationSetSearch
-    from game.ai.information_set_search import InformationSetSearch, InformationSearchBudget
+    from game.ai.search.parallel_search import ParallelInformationSetSearch
+    from game.ai.search.information_set_search import InformationSetSearch
+    from game.ai.search.contracts import InformationSearchBudget
     from test_parallel_search import factory
     info = factory(0).start().player_information()
     results = []

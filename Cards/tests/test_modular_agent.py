@@ -1,16 +1,16 @@
 """Regression contracts for modular decisions, model isolation and configured runs."""
-from game.ai.decision_maker import DeclareAttackersRequest, PriorityDecisionRequest
+from game.ai.agents.decision_maker import (DeclareAttackersRequest, PriorityDecisionRequest)
 
 import json
 from pathlib import Path
 
 import pytest
 
-from game.ai.modular_agent import (
+from game.ai.agents.modular_agent import (
     ModularAgent, Candidate, CandidateGenerator, CombatPolicy, observation,
 )
-from game.ai.llm_policy import OllamaSelector
-from game.ai.simple_agent import SimpleAgent
+from game.ai.agents.llm_policy import OllamaSelector
+from game.ai.agents.simple_agent import SimpleAgent
 from game.cards.starter_cards import starter_catalog
 from game.enums import ZoneType as Z, TurnPhase as P
 from game.game_state import State, Player, Card

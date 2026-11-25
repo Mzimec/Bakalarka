@@ -103,7 +103,8 @@ def test_live_effect_amount_is_not_reused(board, dynamic, scoped):
         if dynamic:
             player.maximum_hand_size = 10
         else:
-            effect.amount = 10
+            # Corrupted extension input: normal writes are rejected at publication.
+            object.__setattr__(effect, 'amount', 10)
         new = next(source for source in state.get_mana_sources(player) if source.source is card)
         assert sum(new.produces.values()) == 10
         assert sum(old.produces.values()) != 10

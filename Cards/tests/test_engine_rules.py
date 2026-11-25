@@ -1,11 +1,11 @@
 """Cross-system regressions: complete turns, triggers, targeting and SBA boundaries."""
-from game.ai.decision_maker import DecisionResult, DeclareAttackersOption, DeclareBlockersOption
+from game.ai.agents.decision_maker import (DecisionResult, DeclareAttackersOption, DeclareBlockersOption)
 from game.game_actions import PassPriorityAction
 from dataclasses import replace
 import pytest
 from game.enums import CardType, TurnPhase as P, ZoneType as Z, ManaType
 from game.game_state import Card, CardDefinition, Player, State
-from game.ai.decision_maker import ModularDecisionMaker as DecisionMaker
+from game.ai.agents.decision_maker import ModularDecisionMaker as DecisionMaker
 from game.console.demo_game import create_demo_game, build_action
 from game.cards.demo_cards import BEAST, WATCHER
 from game.game_loop.minimal_game import ScriptedController

@@ -8,6 +8,9 @@ from game.game_actions.mana_effects import AddManaEffect
 from game.mana import source_template
 from game.rules.lands import mana_ability
 
+# Reflective writes below exercise cache guards against corrupted extension
+# data. Ordinary changes to published definitions are now rejected.
+
 
 def definition_with(*effects):
     base = mana_ability(ManaType.BLUE)
@@ -34,16 +37,17 @@ def test_mutable_effect_fields_invalidate_template_without_mutating_prior_output
     effect = AddManaEffect("output", ManaType.BLUE, 1)
     definition = definition_with(effect)
     before = source_template.static_mana_template(definition)
-    effect.amount = 3
-    effect.mana = ManaType.RED
+    object.__setattr__(effect, 'amount', 3)
+    object.__setattr__(effect, 'mana', ManaType.RED)
     after = source_template.static_mana_template(definition)
     assert after is not before
     assert sum(before.produces.values()) == 1
     assert sum(after.produces.values()) == 3
     assert next(iter(after.produces)).mana == frozenset({ManaType.RED})
-    effect._key = "missing"
+    object.__setattr__(effect, '_key', 'missing')
     assert source_template.static_mana_template(definition) is None
-    effect._key, effect.mana, effect.amount = "output", ManaType.BLUE, 1
+    for key, value in (('_key', 'output'), ('mana', ManaType.BLUE), ('amount', 1)):
+        object.__setattr__(effect, key, value)
     assert source_template.static_mana_template(definition).produces == before.produces
 
 
@@ -52,7 +56,7 @@ def test_invalid_or_empty_output_defers_to_original_path(amount):
     effect = AddManaEffect("output", ManaType.BLUE, 1)
     definition = definition_with(effect)
     assert source_template.static_mana_template(definition) is not None
-    effect.amount = amount
+    object.__setattr__(effect, 'amount', amount)
     assert source_template.static_mana_template(definition) is None
 
 
@@ -65,9 +69,9 @@ def test_dynamic_custom_and_overridden_effects_are_never_templates(monkeypatch):
     effect = AddManaEffect("output", ManaType.BLUE, 1)
     definition = definition_with(effect)
     assert source_template.static_mana_template(definition) is not None
-    effect.get_amount = lambda state, context: 5
+    object.__setattr__(effect, 'get_amount', lambda state, context: 5)
     assert source_template.static_mana_template(definition) is None
-    del effect.get_amount
+    object.__delattr__(effect, 'get_amount')
     monkeypatch.setattr(AddManaEffect, "get_amount", lambda *args: 6)
     assert source_template.static_mana_template(definition) is None
 
@@ -79,7 +83,7 @@ def test_changed_definition_and_unused_effect_keys_are_rechecked():
     part = replace(definition.action_subdefs[0], effects=frozenset({used, unused}))
     definition = replace(definition, action_subdefs=(part,))
     template = source_template.static_mana_template(definition)
-    unused.amount = 3
+    object.__setattr__(unused, 'amount', 3)
     assert source_template.static_mana_template(definition) is not template
     assert sum(source_template.static_mana_template(definition).produces.values()) == 1
     replacement = definition_with(AddManaEffect("new", ManaType.WHITE, 4))
@@ -114,7 +118,7 @@ def test_discovery_shares_templates_between_cards_but_observes_live_effect_chang
     assert len(first) == 2 and first[0].source is not first[1].source
     assert first[0].produces is first[1].produces
     assert state.get_mana_sources(player)[0].produces is first[0].produces
-    effect.amount = 3
+    object.__setattr__(effect, 'amount', 3)
     updated = state.get_mana_sources(player)
     assert sum(updated[0].produces.values()) == 3
     assert sum(first[0].produces.values()) == 1

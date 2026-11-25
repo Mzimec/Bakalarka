@@ -8,8 +8,8 @@ from statistics import median
 from timeit import timeit
 
 from benchmarks.environment import collect_environment
-from game.ai.modular_agent import ModularAgent
-from game.ai.simple_agent import SimpleAgent
+from game.ai.agents.modular_agent import ModularAgent
+from game.ai.agents.simple_agent import SimpleAgent
 from game.enums import CardType, ZoneType
 from game.game_loop.minimal_game import ScriptedController
 from game.game_state import State, Player, Card, CardDefinition

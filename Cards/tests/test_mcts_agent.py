@@ -2,13 +2,16 @@
 import pytest
 
 from benchmarks.search_tactics import tactical_scenario, tactical_policy
-from game.ai.decision_maker import PriorityDecisionRequest
-from game.ai.information_set_search import InformationSetSearch, InformationSearchBudget
-from game.ai.knowledge import PlayerEvent
-from game.ai.mcts_agent import MCTSAgent
-from game.ai.observation_policy import ObservationOpponentPolicy
-from game.ai.search_actions import PlayerAction
-from game.ai.search_simulator import SearchSimulator, ReplayDiverged, SimulationBudgetExceeded
+from game.ai.agents.decision_maker import PriorityDecisionRequest
+from game.ai.search.information_set_search import InformationSetSearch
+from game.ai.search.contracts import InformationSearchBudget
+from game.ai.information.knowledge import PlayerEvent
+from game.ai.agents.mcts_agent import MCTSAgent
+from game.ai.evaluation.observation_policy import ObservationOpponentPolicy
+from game.ai.decisions.search_actions import PlayerAction
+from game.ai.simulation.search_simulator import (
+    SearchSimulator, ReplayDiverged, SimulationBudgetExceeded,
+)
 
 
 def search():
@@ -102,7 +105,7 @@ def test_incomplete_search_uses_observation_policy_with_explicit_metrics():
 
 def test_sampled_scenario_evidence_has_identical_live_and_replay_projection():
     from benchmarks.search_hidden_worlds import public_position, catalog, beliefs
-    from game.ai.sampled_scenario import SampledScenario
+    from game.ai.reference.sampled_scenario import SampledScenario
     recipe = SampledScenario(public_position, catalog, beliefs(), observer=0, seed=9)
     expected = SearchSimulator(recipe, policy_for=tactical_policy, track_information=True).start().player_information()
     own = agent()

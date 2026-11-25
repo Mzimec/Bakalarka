@@ -10,13 +10,16 @@ import pytest
 from benchmarks.mcts_compact_observation import compact_reference
 from benchmarks.mcts_decision_latency import answer
 from benchmarks.search_tactics import tactical_scenario, tactical_policy
-from game.ai.action_priors import HeuristicActionPrior
-from game.ai.information_set_search import InformationSetSearch, InformationSearchBudget
-from game.ai.observation import observation
-from game.ai.observation_policy import ObservationOpponentPolicy
-from game.ai.search_observation import ActingPlayerObservation
-from game.ai.search_simulator import SearchSimulator
-from game.ai.structured_values import StructuredJSON, Value, ValueStore, decode, structural_key
+from game.ai.evaluation.action_priors import HeuristicActionPrior
+from game.ai.search.information_set_search import InformationSetSearch
+from game.ai.search.contracts import InformationSearchBudget
+from game.ai.information.observation import observation
+from game.ai.evaluation.observation_policy import ObservationOpponentPolicy
+from game.ai.information.search_observation import ActingPlayerObservation
+from game.ai.simulation.search_simulator import SearchSimulator
+from game.ai.information.structured_values import (
+    StructuredJSON, Value, ValueStore, decode, structural_key,
+)
 from runtime_write_guard import deny_writes
 
 
@@ -98,13 +101,18 @@ def test_joint_projection_shares_only_rows_with_matching_visibility_gates():
             assert b['battlefield'][index]['skip_untap'][2]['reference'] is None
 
 
-def test_readonly_field_indexes_are_charged_to_tree_memory():
-    from game.ai.search_tree_memory import _charge
-    with deny_writes():
+@pytest.mark.parametrize('weak', [False, True])
+def test_readonly_field_indexes_are_charged_to_tree_memory(weak):
+    from game.ai.search.search_tree_memory import _charge
+    from game.ai.experiments.weak_fact_views import weak_fact_views
+    with deny_writes(), weak_fact_views() if weak else nullcontext():
         value = StructuredJSON({'card': {'power': 3, 'keywords': ['flying']}}).value
-        before = _charge(value, set(), 10**9)
-        assert value.readonly['card']['keywords'] == ('flying',)
-        after = _charge(value, set(), 10**9)
+        before = _charge((value,), set(), 10**9)
+        view = value.readonly
+        card_view = view['card']
+        assert card_view['keywords'] == ('flying',)
+        # Include the actual retained consumers under either ownership model.
+        after = _charge((value, view, card_view), set(), 10**9)
         assert after > before + 2 * 100
 
 
@@ -133,7 +141,7 @@ def test_joint_rows_track_negative_visibility_and_private_last_known(dependency)
 
 def test_joint_projection_builds_public_row_once_and_new_boundary_is_fresh():
     from test_player_observation import board, add
-    from game.ai.observation import PlayerObservationBuilder
+    from game.ai.information.observation import PlayerObservationBuilder
     with deny_writes():
         state = board()
         card = add(state, 'Public', power=2, toughness=3)

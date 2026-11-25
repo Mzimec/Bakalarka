@@ -13,12 +13,13 @@ from time import perf_counter, process_time
 from benchmarks.world_root_copy import capture_snapshot
 from benchmarks.play_search import run as run_match
 from benchmarks.search_checkpoints import trace
-from game.ai.current_position_worlds import _PreparedWorld
-from game.ai.information_set_search import InformationSetSearch, InformationSearchBudget
-from game.ai.observation_policy import ObservationOpponentPolicy
-from game.ai.search_simulator import SearchSimulator
-from game.ai.checkpoint_simulator import CheckpointSimulator
-from game.simulation.search_config import search_generation_policy
+from game.ai.sampling.current_position_worlds import _PreparedWorld
+from game.ai.search.information_set_search import InformationSetSearch
+from game.ai.search.contracts import InformationSearchBudget
+from game.ai.evaluation.observation_policy import ObservationOpponentPolicy
+from game.ai.simulation.search_simulator import SearchSimulator
+from game.ai.simulation.checkpoint_simulator import CheckpointSimulator
+from game.ai.decisions.generation_policy import search_generation_policy
 
 
 def main():

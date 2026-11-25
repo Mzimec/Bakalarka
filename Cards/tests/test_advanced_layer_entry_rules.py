@@ -1,5 +1,5 @@
 """CR 613.6, 613.8 and 614.12: interaction tests through live resolution."""
-from game.ai.decision_maker import DecisionResult
+from game.ai.agents.decision_maker import DecisionResult
 from game.game_actions import PassPriorityAction
 from game.game_actions.data_structs.ability import ActivatedAbilityDefinition
 from dataclasses import replace
@@ -11,7 +11,7 @@ from game.enums import CardType as T, ZoneType as Z, CounterType as C, Layer as 
 from game.stat_type import (STAT_POWER as POWER, STAT_TOUGHNESS as TOUGHNESS, STAT_TYPES as TYPES,
                             STAT_KEYWORDS as KEYWORDS, STAT_STATIC_ABILITIES as STATIC)
 from game.game_state import State, Player, Card, CardDefinition
-from game.ai.decision_maker import ModularDecisionMaker as DecisionMaker
+from game.ai.agents.decision_maker import ModularDecisionMaker as DecisionMaker
 from game.game_state.continuous_rules import StaticContinuousRule
 from game.game_state.layers import lose_all_abilities_modifiers
 from game.game_state.modifier import (AddIntModifier, AddSetModifier, RemoveSetModifier, SetModifier,

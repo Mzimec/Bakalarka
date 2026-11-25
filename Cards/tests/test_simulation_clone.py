@@ -6,8 +6,36 @@ from unittest.mock import patch
 
 import pytest
 
-from game.ai.runtime_clone import RuntimeClone, DictionaryCopyPlans
-from game.ai.simulation_clone import SimulationClone
+from game.ai.simulation.runtime_clone import (RuntimeClone, DictionaryCopyPlans)
+from game.ai.simulation.simulation_clone import SimulationClone
+
+
+@pytest.mark.parametrize('copier', [RuntimeClone, SimulationClone])
+@pytest.mark.parametrize('layout', ['native', 'extra', 'missing', 'non_integer'])
+def test_bitset_copy_preserves_capacity_aliases_and_extension_layout(copier, layout):
+    from helper.query_system.object_register import BitSet
+    from runtime_write_guard import deny_writes
+    with deny_writes():
+        source = BitSet((1 << 300) | 1)
+        if layout == 'extra':
+            source.extra = [source]
+        elif layout == 'missing':
+            del source._all_bits_mask
+            source.extra = [source]  # Still three fields, but not the native layout.
+        elif layout == 'non_integer':
+            source._bits = [source]
+        clone, alias = copier().copy((source, source))
+        assert clone is alias and clone is not source
+        assert clone._max_elements == source._max_elements
+        assert clone.__dict__.keys() == source.__dict__.keys()
+        if layout in ('extra', 'missing'):
+            assert clone.extra is not source.extra and clone.extra[0] is clone
+        if layout == 'non_integer':
+            assert clone._bits is not source._bits and clone._bits[0] is clone
+        else:
+            assert clone._bits == source._bits
+            clone.remove(300)
+            assert source.contains(300) and not clone.contains(300)
 
 
 @pytest.mark.parametrize("copier", [RuntimeClone, SimulationClone])
@@ -213,11 +241,11 @@ def test_proven_primitive_path_and_warm_recipes_keep_callback_and_runtime_key_ow
 @pytest.mark.parametrize("seed", [7, 31])
 @pytest.mark.parametrize("reuse", [False, True])
 def test_fast_world_edges_match_generic_copy_with_sibling_branches(checkpoints, seed, reuse):
-    from game.ai import simulation_world, checkpoint_simulator
-    from game.ai.current_position_worlds import _PreparedWorld, _Snapshot
-    from game.ai.search_simulator import SearchSimulator
-    from game.ai.checkpoint_simulator import CheckpointSimulator
-    from game.simulation.search_config import search_generation_policy
+    from game.ai.simulation import (simulation_world, checkpoint_simulator)
+    from game.ai.sampling.current_position_worlds import (_PreparedWorld, _Snapshot)
+    from game.ai.simulation.search_simulator import SearchSimulator
+    from game.ai.simulation.checkpoint_simulator import CheckpointSimulator
+    from game.ai.decisions.generation_policy import search_generation_policy
     from test_current_position_worlds import position, prepare
     origin, live = position()
     _, _, snapshot = prepare(origin, live)

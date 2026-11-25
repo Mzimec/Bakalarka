@@ -3,11 +3,12 @@ import json
 import pytest
 
 from benchmarks.search_tactics import tactical_scenario, tactical_policy
-from game.ai.information_set_search import InformationSetSearch, InformationSearchBudget, _Run
-from game.ai.observation_policy import ObservationOpponentPolicy
-from game.ai.search_simulator import SearchSimulator
-from game.ai.runtime_clone import RuntimeClone, UnsupportedSnapshot, snapshot_failure_trace
-from game.ai.search_statistics import SearchStatistics
+from game.ai.search.information_set_search import (InformationSetSearch, _Run)
+from game.ai.search.contracts import InformationSearchBudget
+from game.ai.evaluation.observation_policy import ObservationOpponentPolicy
+from game.ai.simulation.search_simulator import SearchSimulator
+from game.ai.simulation.runtime_clone import (RuntimeClone, UnsupportedSnapshot, snapshot_failure_trace)
+from game.ai.search.search_statistics import SearchStatistics
 
 
 @pytest.mark.parametrize("case", ["lethal_shock", "answered_shock", "attack_pacified"])

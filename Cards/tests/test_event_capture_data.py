@@ -55,7 +55,7 @@ def test_lki_and_incarnations_are_visible_to_player_projection_before_trigger_ca
         assert event.payload["last_known"] is old
         return "visible"
 
-    monkeypatch.setattr("game.ai.knowledge.project_player_event", projection)
+    monkeypatch.setattr("game.ai.information.knowledge.project_player_event", projection)
     original = GameEvent("card_moved", source, payload={"from": "BATTLEFIELD", "to": "GRAVEYARD"})
     result = capture_event(state, original, before=(), after=(), information={id(source): old})
     assert len(seen) == 1 and "object_revisions" not in seen[0].payload

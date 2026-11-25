@@ -127,7 +127,7 @@ def test_mana_ability_defaults_to_immediate_resolution():
 def test_trigger_dispatch_starts_with_active_player_and_keeps_controller_pairs():
     dispatched = []
 
-    from game.ai.decision_maker import ModularDecisionMaker, DecisionResult, TriggerOrderOption
+    from game.ai.agents.decision_maker import (ModularDecisionMaker, DecisionResult, TriggerOrderOption)
     from tests.test_triggered_abilities import make_state, add_card, trigger_def
     from game.game_actions.resolution.event_bus import GameEvent
 

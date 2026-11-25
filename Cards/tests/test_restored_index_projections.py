@@ -2,7 +2,7 @@
 import pytest
 
 from benchmarks.core_reads import board
-from game.ai.simulation_world import copy_world
+from game.ai.simulation.simulation_world import copy_world
 from game.enums import CardType, CounterType, ZoneType
 from game.game_state import Card, CardDefinition
 from game.game_state.registers.card_register import IK_CONTROLLER, IK_POWER

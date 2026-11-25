@@ -4,7 +4,7 @@ Pregame changes deliberately do not emit gameplay draw/zone events. Special
 opening-hand abilities and alternative mulligan formats are outside this API.
 """
 
-from ..ai.decision_maker import MulliganRequest, MulliganBottomRequest, StartingPlayerRequest
+from game.ai.agents.decision_maker import (MulliganRequest, MulliganBottomRequest, StartingPlayerRequest)
 from dataclasses import dataclass
 from random import Random
 

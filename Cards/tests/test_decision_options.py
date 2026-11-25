@@ -1,10 +1,10 @@
 """Request generation stays lazy, legal and independent of state mutation."""
-from game.ai.decision_maker import DecisionResult
+from game.ai.agents.decision_maker import DecisionResult
 from game.game_actions import PassPriorityAction
 from game.game_actions.data_structs.ability import ActivatedAbilityDefinition, CastSpellAbilityDefinition, ManaAbilityDefinition
 import pytest
 from itertools import islice
-from game.ai.decision_maker import DecisionMaker
+from game.ai.agents.decision_maker import DecisionMaker
 from game.game_actions.generation.decision_abstraction.requests import *
 from game.game_actions.generation.decision_abstraction.decision_option import (
     AbilityGenerationPolicy, PriorityGenerationPolicy, SelectionGenerationPolicy,
@@ -256,7 +256,7 @@ def test_custom_block_strategy_still_obeys_menace(state):
 
 
 def test_modular_dispatch_calls_typed_override(state):
-    from game.ai.decision_maker import ModularDecisionMaker
+    from game.ai.agents.decision_maker import ModularDecisionMaker
     class MulliganAgain(ModularDecisionMaker):
         def decide_mulligan(self, request):
             self.seen = request

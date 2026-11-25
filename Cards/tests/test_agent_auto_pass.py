@@ -1,9 +1,9 @@
 """Autopass skips policy work, preserves legal choices and remains observable."""
 import pytest
 
-from game.ai.decision_maker import PriorityDecisionRequest
-from game.ai.simple_agent import SimpleAgent, DecisionLimitReached
-from game.ai.modular_agent import ModularAgent
+from game.ai.agents.decision_maker import PriorityDecisionRequest
+from game.ai.agents.simple_agent import (SimpleAgent, DecisionLimitReached)
+from game.ai.agents.modular_agent import ModularAgent
 from game.cards.starter_cards import starter_catalog
 from game.enums import TurnPhase, ZoneType
 from game.game_state import State, Player, Card
@@ -81,7 +81,7 @@ def test_unpayable_spell_does_not_trigger_a_second_generation_or_model_call(monk
 
     monkeypatch.setattr(agent.candidates, "generate", counted)
     monkeypatch.setattr(agent.selector, "choose", lambda *args: pytest.fail("Unexpected model call"))
-    monkeypatch.setattr("game.ai.modular_agent.observation", lambda *args: pytest.fail("Unexpected observation"))
+    monkeypatch.setattr("game.ai.agents.modular_agent.observation", lambda *args: pytest.fail("Unexpected observation"))
     result = agent.decide(PriorityDecisionRequest(state, player))
     assert isinstance(result.value, PassPriorityAction) and len(calls) == 1
     assert result.info["auto_pass_reason"] == "only_pass_candidate"
@@ -187,7 +187,7 @@ def test_autopass_preserves_seeded_game_events(tmp_path):
 
 @pytest.mark.parametrize("custom", ["subclass", "instance"])
 def test_early_autopass_never_bypasses_custom_candidate_generator(custom):
-    from game.ai.modular_agent import CandidateGenerator, Candidate
+    from game.ai.agents.modular_agent import (CandidateGenerator, Candidate)
     from game.game_actions.generation.decision_abstraction.priority_availability import NON_MANA_PRIORITY_AVAILABILITY
     calls = []
 

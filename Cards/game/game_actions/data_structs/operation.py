@@ -4,6 +4,7 @@ from __future__ import annotations
 
 from abc import abstractmethod, ABC
 from typing import TYPE_CHECKING
+from helper.static_definition import RuntimeBinding
 
 if TYPE_CHECKING:
     from ...game_state import State
@@ -11,7 +12,7 @@ if TYPE_CHECKING:
     from ..resolution.event_bus import GameEvent
 
 
-class Operation(ABC):
+class Operation(RuntimeBinding, ABC):
     """!
     @brief Base executable state change produced by an action intent.
     """

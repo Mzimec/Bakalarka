@@ -19,6 +19,16 @@ class PlayerRegister(IndexedRegister):
     and alive/dead state.
     """
 
+    def select_alive(self, alive=True):
+        """Materialize the synchronized native alive index in runtime-ID order."""
+        self.synchronise()
+        return tuple(self._native_objects(self._native_bucket(IK_ALIVE,alive)))
+
+    def has_inactive(self):
+        """Test the native lost-player index without a result tuple."""
+        self.synchronise()
+        return bool(self._native_bucket(IK_ALIVE,False))
+
     def __init__(self, state):
         """!
         @brief Initialize the player register.

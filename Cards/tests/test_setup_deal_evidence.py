@@ -3,11 +3,11 @@ from dataclasses import replace
 
 import pytest
 
-from game.ai.game_origin import GameOriginWorlds
-from game.ai.history_world_provider import HistoryWorldProvider
-from game.ai.incremental_world_provider import IncrementalWorldProvider
-from game.ai.search_recall import PlayerRecall
-from game.ai.setup_deal_evidence import SetupDealEvidence
+from game.ai.sampling.game_origin import GameOriginWorlds
+from game.ai.sampling.history_world_provider import HistoryWorldProvider
+from game.ai.sampling.incremental_world_provider import IncrementalWorldProvider
+from game.ai.information.search_recall import PlayerRecall
+from game.ai.sampling.setup_deal_evidence import SetupDealEvidence
 from game.cards.decks import DeckList
 from game.game_loop.setup import SetupConfig
 from test_game_origin import origin, keep_pass, weights

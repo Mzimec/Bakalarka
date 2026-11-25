@@ -8,12 +8,12 @@ result, and GameLoop advances phases until a player loses.
 
 from __future__ import annotations
 
-from game.ai.decision_maker import PriorityDecisionRequest
+from game.ai.agents.decision_maker import PriorityDecisionRequest
 
 from dataclasses import dataclass, field
 from collections.abc import Iterable
 
-from game.ai.decision_maker import ModularDecisionMaker, DecisionResult
+from game.ai.agents.decision_maker import (ModularDecisionMaker, DecisionResult)
 from game.game_actions import (
     PassPriorityAction,
     GameAction,

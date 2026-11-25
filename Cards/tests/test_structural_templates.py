@@ -47,7 +47,7 @@ def test_graph_and_effect_structure_reused_but_bindings_not_shared_mutably():
     again, fresh_slots = templates.prepared_effects(second, mapping)
     assert effects is again and len(fresh_slots) == 1
     effect, = definition.effects
-    effect.amount = 7
+    object.__setattr__(effect, 'amount', 7)  # Corrupted extension input.
     assert again.sequence[0].effect.amount == 7
 
 
@@ -55,7 +55,7 @@ def test_effect_key_change_rebuilds_maps_and_preserves_missing_key_error():
     definition = part()
     first = compile_parts(definition)
     effect, = definition.effects
-    effect._key = "renamed"
+    object.__setattr__(effect, '_key', 'renamed')
     second = compile_parts(definition)
     assert first.effects is not second.effects and "renamed" in second.effects
     with pytest.raises(KeyError):

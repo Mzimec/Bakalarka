@@ -3,15 +3,15 @@ import pytest
 from dataclasses import replace
 
 from benchmarks.pacifism_decisions import duplicate_pacifism, attack_pacified_creature, position, add
-from game.ai.modular_agent import observation
-from game.ai.state_value import StateValueEvaluator
-from game.ai.simple_agent import SimpleAgent
+from game.ai.agents.modular_agent import observation
+from game.ai.evaluation.state_value import StateValueEvaluator
+from game.ai.agents.simple_agent import SimpleAgent
 from game.enums import ZoneType as Z
 from game.cards.starter_cards import starter_catalog
 from game.game_state import Card
 from game.game_state.modifier import AddIntModifier
 from game.stat_type import STAT_POWER
-from game.ai.tactical_evaluation import redundant_restriction_aura
+from game.ai.evaluation.tactical_evaluation import redundant_restriction_aura
 
 
 @pytest.mark.parametrize("alternate", [False, True])

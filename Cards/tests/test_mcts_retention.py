@@ -5,9 +5,12 @@ from unittest.mock import patch
 
 import pytest
 
-from game.ai.information_set_search import InformationSetSearch, InformationSearchBudget
-from game.ai.search_tree_memory import SearchTreeMemory, TreeRow, RetainedNode, EdgeTable, EdgeStatistics
-from game.ai.structured_values import StructuredJSON
+from game.ai.search.information_set_search import InformationSetSearch
+from game.ai.search.contracts import InformationSearchBudget
+from game.ai.search.search_tree_memory import (
+    SearchTreeMemory, TreeRow, RetainedNode, EdgeTable, EdgeStatistics,
+)
+from game.ai.information.structured_values import StructuredJSON
 from runtime_write_guard import deny_writes
 
 
@@ -84,8 +87,8 @@ def test_real_search_reuses_objects_and_discards_only_horizon_dependent_counts(s
 @pytest.mark.parametrize('selection', ['uct', 'puct', 'hierarchical_puct'])
 @pytest.mark.parametrize('keep_statistics', [False, True])
 def test_rerooted_candidate_prefix_cannot_select_stale_retained_actions(selection, keep_statistics):
-    from game.ai.information_set_search import _Run
-    from game.ai.action_hierarchy import ActionHierarchy
+    from game.ai.search.information_set_search import _Run
+    from game.ai.decisions.action_hierarchy import ActionHierarchy
     from test_information_set_search import Tree, first
     tree = Tree({'root': {'children': {f'a{i}': 'win' for i in range(8)}}, 'win': {'winner': 0}})
     full = replace(tree.start().player_information(), candidate_model='test-frontier', candidate_width=8)
@@ -160,7 +163,7 @@ def test_changed_belief_retains_structure_but_never_reuses_old_outcomes(selectio
 @pytest.mark.parametrize('backend',['thread','process'])
 def test_parallel_belief_invalidation_zeroes_every_worker_slot(backend):
     from test_parallel_search import factory,planner
-    from game.ai.parallel_search import ParallelInformationSetSearch
+    from game.ai.search.parallel_search import ParallelInformationSetSearch
     search=planner(tree_reuse_size=8)
     info=factory(0).start().player_information()
     token=object()
@@ -177,12 +180,12 @@ def test_parallel_belief_invalidation_zeroes_every_worker_slot(backend):
 def test_neural_cache_reuses_exact_view_menu_and_immutable_outputs():
     pytest.importorskip('numpy')
     from test_self_play import position
-    from game.ai.training_model import PolicyValueModel, NeuralPrior, NeuralValue
-    from game.ai.training_features import encode_training
+    from game.ai.training.training_model import (PolicyValueModel, NeuralPrior, NeuralValue)
+    from game.ai.training.training_features import encode_training
     info,_=position()
     model=PolicyValueModel(hidden=4,seed=7)
     expected=PolicyValueModel(hidden=4,seed=7,cache_size=0)
-    with deny_writes(),patch('game.ai.training_features.encode_training',wraps=encode_training) as encode:
+    with deny_writes(),patch('game.ai.training.training_features.encode_training',wraps=encode_training) as encode:
         prior=NeuralPrior(model)(info)
         assert prior==NeuralPrior(expected)(info)
         baseline_calls=encode.call_count
@@ -203,7 +206,7 @@ def test_neural_cache_reuses_exact_view_menu_and_immutable_outputs():
 def test_training_invalidates_predictions_but_preserves_weight_independent_features():
     pytest.importorskip('numpy')
     from test_self_play import position, example
-    from game.ai.training_model import PolicyValueModel, NeuralPrior
+    from game.ai.training.training_model import (PolicyValueModel, NeuralPrior)
     info,_=position()
     row=example()
     model=PolicyValueModel(hidden=4)
@@ -227,7 +230,7 @@ def test_training_invalidates_predictions_but_preserves_weight_independent_featu
 def test_neural_cache_rejects_changed_private_view_and_can_be_disabled():
     pytest.importorskip('numpy')
     from test_self_play import position
-    from game.ai.training_model import PolicyValueModel, NeuralPrior
+    from game.ai.training.training_model import (PolicyValueModel, NeuralPrior)
     info,_=position()
     model=PolicyValueModel(hidden=4)
     NeuralPrior(model)(info)
@@ -253,9 +256,9 @@ def test_invalid_retention_limits_are_rejected(settings):
 
 def test_hot_continuous_checkpoints_preserve_every_view_recall_rng_and_branch():
     from test_current_position_worlds import position, prepare
-    from game.ai.current_position_worlds import _PreparedWorld
-    from game.ai.search_simulator import SearchSimulator
-    from game.ai.checkpoint_simulator import CheckpointSimulator
+    from game.ai.sampling.current_position_worlds import _PreparedWorld
+    from game.ai.simulation.search_simulator import SearchSimulator
+    from game.ai.simulation.checkpoint_simulator import CheckpointSimulator
     from benchmarks.search_tactics import tactical_policy
     origin,game=position()
     _,_,snapshot=prepare(origin,game)
@@ -293,10 +296,10 @@ def test_hot_continuous_checkpoints_preserve_every_view_recall_rng_and_branch():
 
 def test_native_construction_reroot_retains_visits_and_objects_with_fresh_worlds():
     from benchmarks.search_tactics import tactical_scenario
-    from game.ai.search_simulator import SearchSimulator
-    from game.ai.observation_policy import ObservationOpponentPolicy
-    from game.ai.action_priors import HeuristicActionPrior
-    from game.simulation.search_config import SearchGenerationPolicy
+    from game.ai.simulation.search_simulator import SearchSimulator
+    from game.ai.evaluation.observation_policy import ObservationOpponentPolicy
+    from game.ai.evaluation.action_priors import HeuristicActionPrior
+    from game.ai.decisions.generation_policy import SearchGenerationPolicy
     from game.game_state import Card
     from game.cards.starter_cards import starter_catalog
     from game.enums import ZoneType
@@ -340,8 +343,8 @@ def test_native_construction_reroot_retains_visits_and_objects_with_fresh_worlds
 
 def test_unsupported_checkpoint_copy_skips_cache_without_changing_trajectory():
     from benchmarks.search_tactics import tactical_scenario,tactical_policy
-    from game.ai.checkpoint_simulator import CheckpointSimulator,_Checkpoint
-    from game.ai.runtime_clone import UnsupportedSnapshot
+    from game.ai.simulation.checkpoint_simulator import (CheckpointSimulator, _Checkpoint)
+    from game.ai.simulation.runtime_clone import UnsupportedSnapshot
     sim=CheckpointSimulator(tactical_scenario('answered_shock'),track_information=True,
         policy_for=tactical_policy,checkpoint_limit=4,checkpoint_interval=1,checkpoint_min_visits=1)
     interior=[]

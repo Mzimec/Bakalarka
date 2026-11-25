@@ -1,15 +1,15 @@
 import pytest
 
-from game.ai.current_position_worlds import CurrentPositionWorlds
-from game.ai.search_decision import DecisionProjector
-from game.ai.search_recall import PlayerRecall
-from game.ai.decision_maker import PriorityDecisionRequest
-from game.ai.game_origin import GameOrigin
+from game.ai.sampling.current_position_worlds import CurrentPositionWorlds
+from game.ai.decisions.search_decision import DecisionProjector
+from game.ai.information.search_recall import PlayerRecall
+from game.ai.agents.decision_maker import PriorityDecisionRequest
+from game.ai.sampling.game_origin import GameOrigin
 from game.cards.decks import DeckList
 from game.cards.catalog import game_catalog
 from game.game_loop.setup import SetupConfig
 from game.enums import ZoneType, TurnPhase
-from game.simulation.search_config import search_generation_policy
+from game.ai.decisions.generation_policy import search_generation_policy
 from test_current_position_worlds import controllers
 
 
@@ -85,7 +85,9 @@ def test_unreviewed_hidden_resolved_effect_remains_an_explicit_snapshot_failure(
 
 
 def test_hidden_native_history_source_fails_before_graph_copy_without_reading_identity(monkeypatch):
-    from game.ai.runtime_clone import reject_unknown_history_sources, InaccessibleHistorySource, snapshot_failure_trace
+    from game.ai.simulation.runtime_clone import (
+        reject_unknown_history_sources, InaccessibleHistorySource, snapshot_failure_trace,
+    )
     from game.game_actions.resolution.event_bus import GameEvent
     from game.game_state.card import Card
     origin, game = position()
@@ -107,7 +109,7 @@ def test_hidden_native_history_source_fails_before_graph_copy_without_reading_id
 
 
 def test_history_preflight_preserves_extension_dispatch():
-    from game.ai.runtime_clone import reject_unknown_history_sources
+    from game.ai.simulation.runtime_clone import reject_unknown_history_sources
     from game.game_actions.resolution.event_bus import GameEvent
     class CustomEvent(GameEvent):
         pass

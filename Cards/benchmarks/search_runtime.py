@@ -8,9 +8,10 @@ from pathlib import Path
 import platform
 
 from benchmarks.search_tactics import tactical_scenario, tactical_policy
-from game.ai.information_set_search import InformationSetSearch, InformationSearchBudget
-from game.ai.observation_policy import ObservationOpponentPolicy
-from game.ai.search_simulator import SearchSimulator
+from game.ai.search.information_set_search import InformationSetSearch
+from game.ai.search.contracts import InformationSearchBudget
+from game.ai.evaluation.observation_policy import ObservationOpponentPolicy
+from game.ai.simulation.search_simulator import SearchSimulator
 
 
 def run(*, iterations=32):

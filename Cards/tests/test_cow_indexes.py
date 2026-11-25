@@ -7,7 +7,7 @@ from helper.query_system.object_register import (
     BitSet, IndexKey, IndexUpdate, RegisterUpdateContext, SimpleObjectIndexProvider,
 )
 from helper.query_system.cow_index import CowIndexProvider
-from game.ai.runtime_clone import RuntimeClone
+from game.ai.simulation.runtime_clone import RuntimeClone
 
 
 def update(key, remove=(), add=()):
@@ -116,10 +116,10 @@ def test_random_updates_match_plain_provider_including_clear_and_forks():
 @pytest.mark.parametrize("checkpoints", [0, 4])
 def test_native_replay_with_cow_matches_plain_worlds(seed, checkpoints):
     from test_current_position_worlds import position, prepare
-    from game.ai.current_position_worlds import _PreparedWorld
-    from game.ai.search_simulator import SearchSimulator
-    from game.ai.checkpoint_simulator import CheckpointSimulator
-    from game.simulation.search_config import search_generation_policy
+    from game.ai.sampling.current_position_worlds import _PreparedWorld
+    from game.ai.simulation.search_simulator import SearchSimulator
+    from game.ai.simulation.checkpoint_simulator import CheckpointSimulator
+    from game.ai.decisions.generation_policy import search_generation_policy
 
     origin, live = position()
     _, _, snapshot = prepare(origin, live)
@@ -148,8 +148,8 @@ def test_native_replay_with_cow_matches_plain_worlds(seed, checkpoints):
 
 def test_world_copy_rebinds_owner_and_isolates_native_card_mutation():
     from test_current_position_worlds import position, prepare, controllers
-    from game.ai.current_position_worlds import _PreparedWorld
-    from game.ai.simulation_world import copy_world
+    from game.ai.sampling.current_position_worlds import _PreparedWorld
+    from game.ai.simulation.simulation_world import copy_world
     from game.game_state.registers.card_register import IK_OWNER
     from game.enums import ZoneType
 

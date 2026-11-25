@@ -2,7 +2,7 @@ from unittest.mock import patch
 
 from runtime_write_guard import deny_writes
 from benchmarks.mcts_observation_reuse import observation_reference
-from game.ai.observation import PlayerObservationBuilder, observation
+from game.ai.information.observation import (PlayerObservationBuilder, observation)
 from game.enums import CounterType, ZoneType
 from game.stat_type import STAT_KEYWORDS, STAT_POWER
 from test_player_observation import board, add, find
@@ -65,7 +65,7 @@ def test_unknown_stat_readers_never_enter_persistent_cache():
         card = add(state, 'Dynamic')
         from immutabledict import immutabledict
         card._stats = immutabledict({**card.stats, STAT_KEYWORDS: Dynamic(frozenset(), STAT_KEYWORDS)})
-        from game.ai.observation_characteristics import native_characteristics
+        from game.ai.information.observation_characteristics import native_characteristics
         reader = lambda: {'keywords': [str(state.turn.number)]}
         first = native_characteristics(card, state, reader)
         state.turn.number += 1

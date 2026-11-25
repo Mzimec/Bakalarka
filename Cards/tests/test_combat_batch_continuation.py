@@ -3,16 +3,16 @@ from dataclasses import replace
 
 import pytest
 
-from game.ai.decision_maker import DecisionResult, ReplacementOrderRequest
-from game.ai.game_origin import GameOrigin
-from game.ai.search_actions import PlayerActionBuilder
-from game.ai.search_decision import DecisionProjector
+from game.ai.agents.decision_maker import (DecisionResult, ReplacementOrderRequest)
+from game.ai.sampling.game_origin import GameOrigin
+from game.ai.decisions.search_actions import PlayerActionBuilder
+from game.ai.decisions.search_decision import DecisionProjector
 from game.cards.catalog import game_catalog
 from game.cards.decks import DeckList
 from game.enums import TurnPhase, ZoneType
 from game.game_actions.generation.decision_abstraction.order_frames import OrderNextRequest
 from game.game_loop.setup import SetupConfig
-from game.simulation.search_config import search_generation_policy
+from game.ai.decisions.generation_policy import search_generation_policy
 from test_combat_search_continuation import Capture, phase_catalog
 
 
@@ -43,11 +43,16 @@ class BatchCapture(Capture):
 @pytest.mark.parametrize("count,prefix", [(2, None), (7, 0), (7, 3)])
 @pytest.mark.parametrize("phase_trigger", [False, True])
 @pytest.mark.parametrize("shield", [False, True])
-def test_native_damage_batch_preserves_prefix_deferred_triggers_and_world_isolation(count, prefix, phase_trigger, shield):
+@pytest.mark.parametrize("position_worker", [False, True])
+def test_native_damage_batch_preserves_prefix_deferred_triggers_and_world_isolation(count, prefix, phase_trigger, shield, position_worker):
     deck = DeckList("Combat frame", (("Charmed Stray", 8), ("Plains", 2)))
     origin = GameOrigin((deck, deck), phase_catalog if phase_trigger else game_catalog,
         starting_player_idx=0, config=SetupConfig(opening_hand_size=2, minimum_deck_size=10, maximum_copies=None))
     controllers = (BatchCapture(origin, prefix), BatchCapture(origin, prefix))
+    for controller in controllers:
+        controller.provider.position_world = position_worker
+        if position_worker:
+            controller.provider.reuse_world = True
     game = origin.scenario(42)(controllers)
     state = game.state
     state.turn.number = 9
@@ -77,6 +82,8 @@ def test_native_damage_batch_preserves_prefix_deferred_triggers_and_world_isolat
         sim = factory(seed)
         root = sim.start()
         assert root.player_information() == info
+        if position_worker:
+            assert sim.factory.worker_metrics['workers'] == 1
         assert sim.fork(root) == root
         node = sim.advance_action(root, action)
         # Finish remaining microchoices and phase triggers using the same engine.
@@ -85,6 +92,9 @@ def test_native_damage_batch_preserves_prefix_deferred_triggers_and_world_isolat
         assert node.observation(1)["players"][1]["life"] == 20-count+shield
         assert node.observation(0)["players"][0]["life"] == 20+count-shield
         assert sim.fork(node) == node
+        if position_worker:
+            assert sim.factory.worker_metrics['copies'] == 1
+            assert sim.factory.worker_metrics['copy_fallbacks'] == 0
     assert state.players[1].health == 20-count+shield
 
 

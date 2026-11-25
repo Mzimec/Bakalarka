@@ -11,9 +11,9 @@ from benchmarks.mcts_top_k import make_request, make_case
 
 def copies(repeats):
     """! @brief Alternate both attribute-copy paths on the same native ownership graph. """
-    from game.ai.simulation_world import copy_world, immutable_world_values
-    from game.ai.knowledge import PlayerKnowledge
-    from game.ai.observation import observation
+    from game.ai.simulation.simulation_world import (copy_world, immutable_world_values)
+    from game.ai.information.knowledge import PlayerKnowledge
+    from game.ai.information.observation import observation
     state = make_request('blockers').state
     constants = immutable_world_values(state)
     memories = (PlayerKnowledge(), PlayerKnowledge())
@@ -37,8 +37,8 @@ def copies(repeats):
 def recorded_copies(repeats, root=87):
     """! @brief Isolate restoration of one real sampled template, including all repairs. """
     from benchmarks.mcts_recorded_roots import capture
-    from game.ai.simulation_world import copy_world
-    from game.ai.observation import observation
+    from game.ai.simulation.simulation_world import copy_world
+    from game.ai.information.observation import observation
     captures = capture(Path(__file__).resolve().parents[1]/'runs/mcts-game-diagnostics-20261027.jsonl', [root])
     simulator = captures[root][1](123)
     simulator.start()
@@ -60,15 +60,16 @@ def recorded_copies(repeats, root=87):
 
 def declaration(case, sequential, iterations):
     """! @brief Time one complete live declaration, including every prefix callback. """
-    from game.ai.action_priors import HeuristicActionPrior
-    from game.ai.decision_maker import DecisionResult
-    from game.ai.information_set_search import InformationSetSearch, InformationSearchBudget
-    from game.ai.mcts_agent import MCTSAgent
-    from game.ai.modular_agent import ModularAgent
-    from game.ai.observation_policy import ObservationOpponentPolicy
-    from game.ai.search_simulator import SearchSimulator
-    from game.ai.search_descriptors import ChoiceDescriptor
-    from game.simulation.search_config import SearchGenerationPolicy
+    from game.ai.evaluation.action_priors import HeuristicActionPrior
+    from game.ai.agents.decision_maker import DecisionResult
+    from game.ai.search.information_set_search import InformationSetSearch
+    from game.ai.search.contracts import InformationSearchBudget
+    from game.ai.agents.mcts_agent import MCTSAgent
+    from game.ai.agents.modular_agent import ModularAgent
+    from game.ai.evaluation.observation_policy import ObservationOpponentPolicy
+    from game.ai.simulation.search_simulator import SearchSimulator
+    from game.ai.decisions.search_descriptors import ChoiceDescriptor
+    from game.ai.decisions.generation_policy import SearchGenerationPolicy
     policy = SearchGenerationPolicy(progressive_candidates=True, candidate_native_ordering=True,
                                     sequential_combat=sequential)
     def factory(seed):

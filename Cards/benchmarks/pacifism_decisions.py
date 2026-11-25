@@ -3,9 +3,9 @@ import json
 from datetime import datetime
 from pathlib import Path
 
-from game.ai.modular_agent import ModularAgent, observation
-from game.ai.simple_agent import SimpleAgent
-from game.ai.decision_maker import PriorityDecisionRequest, DeclareAttackersRequest
+from game.ai.agents.modular_agent import (ModularAgent, observation)
+from game.ai.agents.simple_agent import SimpleAgent
+from game.ai.agents.decision_maker import (PriorityDecisionRequest, DeclareAttackersRequest)
 from game.cards.starter_cards import starter_catalog
 from game.enums import ZoneType as Z, TurnPhase as P
 from game.game_state import State, Player, Card

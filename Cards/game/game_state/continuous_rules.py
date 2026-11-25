@@ -1,6 +1,7 @@
 """Bind static continuous rules to sources and maintain their live query matches."""
 
 from dataclasses import dataclass
+from helper.static_definition import StaticDefinition
 from .modifier import (
     ContinuousEffect,
     ContinuousEffectDefinition,
@@ -12,7 +13,7 @@ from ..enums import ZoneType
 
 
 @dataclass(frozen=True)
-class StaticContinuousRule:
+class StaticContinuousRule(StaticDefinition):
     """!
     @brief Declarative static continuous ability attached to a card definition.
 

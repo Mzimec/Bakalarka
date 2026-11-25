@@ -1,5 +1,5 @@
 """Forced choices, early feasibility checks and canonical global references."""
-from game.ai.decision_maker import PriorityDecisionRequest
+from game.ai.agents.decision_maker import PriorityDecisionRequest
 from dataclasses import replace
 import pytest
 

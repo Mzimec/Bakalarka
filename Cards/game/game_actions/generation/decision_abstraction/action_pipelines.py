@@ -144,7 +144,7 @@ class PriorityDecisionGenerationPipeline:
                 if equivalence is None:
                     equivalence = policy.equivalence.bind(request.state)
                 candidates = equivalence.representatives(candidates)
-            from ....ai.generation_candidates import ability_order
+            from game.ai.decisions.generation_candidates import ability_order
             for ability in ability_order(candidates, request.state, request.player):
                 yield ability, ability_policy
 

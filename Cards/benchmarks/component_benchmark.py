@@ -9,9 +9,9 @@ from time import perf_counter, process_time
 from benchmarks.profiler import ComponentProfiler
 from benchmarks.environment import collect_environment
 
-from game.ai.decision_maker import DecisionMaker
-from game.ai.modular_agent import ModularAgent
-from game.ai.simple_agent import SimpleAgent
+from game.ai.agents.decision_maker import DecisionMaker
+from game.ai.agents.modular_agent import ModularAgent
+from game.ai.agents.simple_agent import SimpleAgent
 
 from game.game_actions.resolution.operation_executor import OperationExecutor
 from game.game_actions.resolution.sba_resolver import SBAResolver
@@ -45,7 +45,7 @@ GAMES = 20
 
 
 def configure_profiler(profiler: ComponentProfiler):
-    from game.ai import modular_agent
+    from game.ai.agents import modular_agent
     from game.game_actions.data_structs.ability import SubAbilityComposer
     from game.game_actions.generation import structural_templates
     profiler.patch_function(modular_agent, "observation", "decision.observation")

@@ -2,8 +2,8 @@
 import pytest
 
 from benchmarks.priority_window import WindowAgent, diagnose, render
-from game.ai.modular_agent import CandidateGenerator, observation
-from game.ai.simple_agent import SimpleAgent
+from game.ai.agents.modular_agent import (CandidateGenerator, observation)
+from game.ai.agents.simple_agent import SimpleAgent
 from game.enums import TurnPhase
 from game.simulation.match_runner import run_match
 from game.game_actions.generation.exec_plan_gen_pipeline import ExecutionPlanPipeline

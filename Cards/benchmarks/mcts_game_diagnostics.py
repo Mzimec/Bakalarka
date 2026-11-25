@@ -68,7 +68,7 @@ class GameDiagnostics:
     @contextmanager
     def installed(self):
         """! @brief Time production searches without changing budgets or actions. """
-        from game.ai.information_set_search import InformationSetSearch
+        from game.ai.search.information_set_search import InformationSetSearch
         original = InformationSetSearch.search
 
         def search(planner, factory, information, **kwargs):
@@ -135,7 +135,7 @@ class GameDiagnostics:
 
     def replay_profiles(self):
         """! @brief Profile captured inputs after the match and verify identical search work. """
-        from game.ai.information_set_search import InformationSetSearch
+        from game.ai.search.information_set_search import InformationSetSearch
         for label, (planner, factory, info, kwargs, expected) in self.captures.items():
             components, profiler = Components(), cProfile.Profile()
             started = perf_counter()
@@ -162,7 +162,7 @@ class GameDiagnostics:
 
 def main():
     """! @brief Run the configured duel and optionally write its single explicit log. """
-    from game.ai.game_origin import GameOrigin
+    from game.ai.sampling.game_origin import GameOrigin
     from game.cards.catalog import game_catalog
     from game.cards.decks import load_arena_starter
     from game.simulation.config import make_controller

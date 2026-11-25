@@ -7,10 +7,11 @@ import pytest
 from runtime_write_guard import deny_writes
 from benchmarks.mcts_request_time import RequestProfiler, distribution, settings_for
 from benchmarks.search_tactics import tactical_scenario
-from game.ai.information_set_search import InformationSetSearch, InformationSearchBudget
-from game.ai.observation_policy import ObservationOpponentPolicy
-from game.ai.search_simulator import SearchSimulator
-from game.simulation.search_config import SearchGenerationPolicy
+from game.ai.search.information_set_search import InformationSetSearch
+from game.ai.search.contracts import InformationSearchBudget
+from game.ai.evaluation.observation_policy import ObservationOpponentPolicy
+from game.ai.simulation.search_simulator import SearchSimulator
+from game.ai.decisions.generation_policy import SearchGenerationPolicy
 
 
 @pytest.fixture(autouse=True)
@@ -54,7 +55,7 @@ def test_live_averages_do_not_dilute_search_with_forced_requests():
 
 @pytest.mark.parametrize('native', [False, True])
 def test_instrumentation_preserves_all_search_estimates_and_restores_hooks(native):
-    from game.ai.decision_maker import DecisionMaker
+    from game.ai.agents.decision_maker import DecisionMaker
     original = DecisionMaker.decide
     policy = SearchGenerationPolicy(progressive_candidates=native, candidate_native_ordering=native)
     results = []

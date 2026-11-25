@@ -7,12 +7,13 @@ from pathlib import Path
 from time import perf_counter
 
 from benchmarks.search_tactics import tactical_policy
-from game.ai.game_origin import GameOrigin, GameOriginWorlds
-from game.ai.incremental_world_provider import IncrementalWorldProvider
-from game.ai.information_set_search import InformationSetSearch, InformationSearchBudget
-from game.ai.mcts_agent import MCTSAgent
-from game.ai.observation_policy import ObservationOpponentPolicy
-from game.ai.setup_deal_evidence import SetupDealEvidence
+from game.ai.sampling.game_origin import (GameOrigin, GameOriginWorlds)
+from game.ai.sampling.incremental_world_provider import IncrementalWorldProvider
+from game.ai.search.information_set_search import InformationSetSearch
+from game.ai.search.contracts import InformationSearchBudget
+from game.ai.agents.mcts_agent import MCTSAgent
+from game.ai.evaluation.observation_policy import ObservationOpponentPolicy
+from game.ai.sampling.setup_deal_evidence import SetupDealEvidence
 from game.cards.catalog import game_catalog
 from game.cards.decks import load_arena_starter
 

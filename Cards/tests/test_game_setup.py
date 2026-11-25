@@ -1,5 +1,8 @@
 """Full pregame setup, ownership, London rounds, library order and first turn."""
-from game.ai.decision_maker import DecisionResult, MulliganBottomOption, MulliganBottomRequest, MulliganOption, MulliganRequest, StartingPlayerOption
+from game.ai.agents.decision_maker import (
+    DecisionResult, MulliganBottomOption, MulliganBottomRequest, MulliganOption, MulliganRequest,
+    StartingPlayerOption,
+)
 from pathlib import Path
 import pytest
 

@@ -1,7 +1,7 @@
 """Snapshot reuse must preserve LKI, custom modifiers and rollback semantics."""
 from dataclasses import replace
 import pytest
-from game.ai.decision_maker import ModularDecisionMaker
+from game.ai.agents.decision_maker import ModularDecisionMaker
 from game.game_state import State, Player, Card, CardDefinition
 from game.enums import CardType, ZoneType, CounterType
 from game.stat_type import STAT_POWER, STAT_KEYWORDS
@@ -188,7 +188,7 @@ def test_custom_counter_behavior_stays_live(board, monkeypatch):
 def test_constant_attachment_with_counters_reuses_and_tracks_in_place_grants(board, monkeypatch):
     from game.game_state.modifier import AddSetModifier
     state, card = board
-    # Definition containers can retain mutable modifier lists.
+    # Mutable authoring inputs are detached when a definition is published.
     bonuses = [AddIntModifier(4)]
     aura = Card(CardDefinition("Aura", types=frozenset({CardType.ENCHANTMENT}),
                                attach_mods={STAT_POWER: bonuses,
@@ -202,6 +202,13 @@ def test_constant_attachment_with_counters_reuses_and_tracks_in_place_grants(boa
         patch.setattr(event_bus, "_capture_single_card", lambda *args: pytest.fail("Attachment LKI rebuilt"))
         assert capture(board) is old
     bonuses[0] = AddIntModifier(8)
+    assert capture(board) is old
+    from game.stat_type import STAT_ATTACH_MODS
+    from helper.mutability_objs import ImmutableDict
+    aura.set_base_stat(STAT_ATTACH_MODS, ImmutableDict({
+        STAT_POWER: tuple(bonuses),
+        STAT_KEYWORDS: (AddSetModifier(frozenset({'flying'})),),
+    }))
     assert capture(board).power == 11
     aura.detach()
     assert capture(board).power == 3 and "flying" not in capture(board).keywords

@@ -6,18 +6,20 @@ from unittest.mock import patch
 import pytest
 
 from benchmarks.search_tactics import tactical_scenario, tactical_policy
-from game.ai.action_hierarchy import ActionHierarchy
-from game.ai.decision_maker import DecisionMaker, DecisionResult, PriorityDecisionRequest
-from game.ai.information_set_search import InformationSetSearch, InformationSearchBudget
-from game.ai.observation_policy import ObservationOpponentPolicy
-from game.ai.search_actions import PlayerActionBuilder
-from game.ai.search_candidates import CandidateOrdering, ProgressiveWidening
-from game.ai.search_descriptors import ChoiceDescriptor
-from game.ai.search_simulator import SearchSimulator, SimulationBudgetExceeded
+from game.ai.decisions.action_hierarchy import ActionHierarchy
+from game.ai.agents.decision_maker import (DecisionMaker, DecisionResult, PriorityDecisionRequest)
+from game.ai.search.information_set_search import InformationSetSearch
+from game.ai.search.contracts import InformationSearchBudget
+from game.ai.evaluation.observation_policy import ObservationOpponentPolicy
+from game.ai.decisions.search_actions import PlayerActionBuilder
+from game.ai.decisions.search_candidates import (CandidateOrdering, ProgressiveWidening)
+from game.ai.decisions.search_descriptors import ChoiceDescriptor
+from game.ai.simulation.search_simulator import (SearchSimulator, SimulationBudgetExceeded)
 from game.game_actions.data_structs.game_action import AbilityAction
 from game.game_actions.generation.decision_abstraction.policies import PriorityGenerationPolicy
 from game.game_actions.generation.decision_abstraction.priority_frames import PrioritySourceOption, PriorityAbilityRequest
-from game.simulation.search_config import SearchGenerationPolicy, SearchAgentConfig
+from game.ai.decisions.generation_policy import SearchGenerationPolicy
+from game.simulation.search_config import SearchAgentConfig
 
 
 @pytest.mark.parametrize("case", ["lethal_shock", "answered_shock", "attack_pacified"])
@@ -79,10 +81,10 @@ def test_projection_cache_replays_all_memories_and_binds_fresh_local_actions(cas
 
 def test_pass_action_adapter_does_not_scan_card_visibility():
     from game.game_actions.data_structs.game_action import PassPriorityAction
-    from game.ai.modular_agent import ModularAgent
+    from game.ai.agents.modular_agent import ModularAgent
     game = tactical_scenario("lethal_shock")((ModularAgent(), ModularAgent()))
     req = PriorityDecisionRequest(game.state, game.state.players[0])
-    with patch("game.ai.search_actions.PlayerObservationBuilder", side_effect=AssertionError("visibility scan")):
+    with patch("game.ai.decisions.search_actions.PlayerObservationBuilder", side_effect=AssertionError("visibility scan")):
         builder = PlayerActionBuilder(req)
         assert builder.context.request_context() is None
         assert builder.action(PassPriorityAction(req.player)).kind == "PassPriorityAction"
@@ -107,7 +109,8 @@ def test_forced_chain_cache_preserves_every_choice_leaf_and_hard_budget(advances
         inputs.append(seen)
     a, b = results
     assert replace(a, metrics=b.metrics) == b
-    ignored = {"elapsed_ms", "cpu_ms", "world_initialization_ms", "advance_ms", "forced_chain_hits", "forced_chain_steps"}
+    ignored = {"elapsed_ms", "cpu_ms", "world_initialization_ms", "advance_ms", "forced_chain_hits", "forced_chain_steps",
+               "trajectory_loop_ms", "trajectory_loop_cpu_ms"}
     assert {k: v for k, v in asdict(a.metrics).items() if k not in ignored} == {
         k: v for k, v in asdict(b.metrics).items() if k not in ignored}
     assert inputs[0] == inputs[1]
@@ -118,7 +121,7 @@ def test_forced_chain_cache_preserves_every_choice_leaf_and_hard_budget(advances
 
 @pytest.mark.parametrize("case", ["lethal_shock", "useful_pacifism", "redundant_pacifism"])
 def test_staged_sources_have_exactly_the_flat_legal_completions_without_execution(case):
-    from game.ai.modular_agent import ModularAgent
+    from game.ai.agents.modular_agent import ModularAgent
     game = tactical_scenario(case)((ModularAgent(), ModularAgent()))
     game.state.priority.current_player = owner = game.state.players[0]
     req = PriorityDecisionRequest(game.state, owner)
@@ -145,7 +148,7 @@ def test_staged_sources_have_exactly_the_flat_legal_completions_without_executio
 
 
 def test_source_discovery_only_consumes_one_witness_per_ability_and_closes_streams():
-    from game.ai.modular_agent import ModularAgent
+    from game.ai.agents.modular_agent import ModularAgent
     from game.game_actions.generation.decision_abstraction.action_pipelines import AbilityDecisionGenerationPipeline
     game = tactical_scenario("lethal_shock")((ModularAgent(), ModularAgent()))
     game.state.priority.current_player = game.state.players[0]
@@ -209,7 +212,7 @@ def test_source_prefix_consumes_advances_but_only_completed_action_consumes_dept
 
 
 def test_source_prior_does_not_hide_an_immediate_lethal_behind_a_bad_first_target():
-    from game.ai.action_priors import HeuristicActionPrior
+    from game.ai.evaluation.action_priors import HeuristicActionPrior
     policy = ObservationOpponentPolicy()
     def factory(seed):
         return SearchSimulator(tactical_scenario("lethal_shock"), policy_for=SearchGenerationPolicy(True),
@@ -290,8 +293,8 @@ def test_tree_memory_requires_same_session_exact_information_and_same_search_mod
 
 def test_reused_coverage_never_masks_failed_preparation_of_a_fresh_world_pool():
     from test_information_set_search import Tree, first
-    from game.ai.search_simulator import HistorySamplingExhausted
-    from game.ai.search_recall import PlayerRecall
+    from game.ai.simulation.search_simulator import HistorySamplingExhausted
+    from game.ai.information.search_recall import PlayerRecall
     factory = lambda seed: Tree({"root": {"children": {"go": "win"}}, "win": {"winner": 0}})
     planner = InformationSetSearch(opponent_policy=first, tree_reuse_size=4,
         budget=InformationSearchBudget(worlds=1, iterations=4, max_depth=1))

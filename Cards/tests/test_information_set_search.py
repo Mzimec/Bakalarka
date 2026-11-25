@@ -4,11 +4,12 @@ from types import SimpleNamespace
 
 import pytest
 
-from game.ai.information_set_search import InformationSetSearch, InformationSearchBudget
-from game.ai.search_actions import PlayerAction, canonical_json, UnsupportedPlayerAction
-from game.ai.search_observation import ActingPlayerObservation
-from game.ai.search_recall import PlayerInformation, PlayerRecall
-from game.ai.search_simulator import SimulationBudgetExceeded, ReplayDiverged
+from game.ai.search.information_set_search import InformationSetSearch
+from game.ai.search.contracts import InformationSearchBudget
+from game.ai.decisions.search_actions import (PlayerAction, canonical_json, UnsupportedPlayerAction)
+from game.ai.information.search_observation import ActingPlayerObservation
+from game.ai.information.search_recall import (PlayerInformation, PlayerRecall)
+from game.ai.simulation.search_simulator import (SimulationBudgetExceeded, ReplayDiverged)
 
 
 def choice(name):
@@ -139,8 +140,10 @@ def test_actual_actor_controls_consecutive_root_decisions_and_results_are_determ
     a, b = search(factory), search(factory)
     assert a.choice.kind == "plan" and a.value > .5
     assert replace(a, metrics=b.metrics) == b
-    assert replace(a.metrics, elapsed_ms=0, world_initialization_ms=0, advance_ms=0, cpu_ms=0) == replace(
-        b.metrics, elapsed_ms=0, world_initialization_ms=0, advance_ms=0, cpu_ms=0)
+    assert replace(a.metrics, elapsed_ms=0, world_initialization_ms=0, advance_ms=0, cpu_ms=0,
+                   trajectory_loop_ms=0, trajectory_loop_cpu_ms=0) == replace(
+        b.metrics, elapsed_ms=0, world_initialization_ms=0, advance_ms=0, cpu_ms=0,
+        trajectory_loop_ms=0, trajectory_loop_cpu_ms=0)
 
 
 def test_incomplete_trajectory_does_not_backpropagate_or_claim_coverage():
@@ -279,8 +282,10 @@ def test_guided_rollout_receives_only_player_information_and_is_reproducible():
     assert a.value == 1 and a.metrics.rollout_policy_choices == 1
     assert a.metrics.rollout_random_choices == 0 and seen[0] == seen[1]
     assert replace(a, metrics=b.metrics) == b
-    assert replace(a.metrics, elapsed_ms=0, world_initialization_ms=0, advance_ms=0, cpu_ms=0) == replace(
-        b.metrics, elapsed_ms=0, world_initialization_ms=0, advance_ms=0, cpu_ms=0)
+    assert replace(a.metrics, elapsed_ms=0, world_initialization_ms=0, advance_ms=0, cpu_ms=0,
+                   trajectory_loop_ms=0, trajectory_loop_cpu_ms=0) == replace(
+        b.metrics, elapsed_ms=0, world_initialization_ms=0, advance_ms=0, cpu_ms=0,
+        trajectory_loop_ms=0, trajectory_loop_cpu_ms=0)
 
 
 def test_full_rollout_exploration_never_invokes_guidance_and_bad_action_is_rejected():

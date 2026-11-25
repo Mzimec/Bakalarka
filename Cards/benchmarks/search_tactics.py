@@ -7,8 +7,8 @@ from pathlib import Path
 from random import Random
 from time import perf_counter
 
-from game.ai.perfect_information_search import PerfectInformationSearch, SearchBudget
-from game.ai.search_simulator import SearchSimulator
+from game.ai.reference.perfect_information_search import (PerfectInformationSearch, SearchBudget)
+from game.ai.simulation.search_simulator import SearchSimulator
 from game.game_actions.generation.decision_abstraction.requests import PriorityDecisionRequest
 from game.game_actions.generation.decision_abstraction.policies import PriorityGenerationPolicy
 

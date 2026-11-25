@@ -1,7 +1,7 @@
 """Incremental rosters preserve event-time eligibility and extension fallbacks."""
 from dataclasses import replace
 
-from game.ai.simulation_world import copy_world
+from game.ai.simulation.simulation_world import copy_world
 from game.enums import ZoneType
 from game.game_actions.data_structs.ability import TriggerAbilityDefinition
 from game.game_actions.resolution.cost_transaction import RuntimeCheckpoint

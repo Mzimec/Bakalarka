@@ -14,7 +14,7 @@ from game.game_state.modifier import (
 )
 from game.game_state.layers import SwitchPowerToughness
 from game.game_actions.resolution.cost_transaction import RuntimeCheckpoint
-from game.ai.simulation_world import copy_world
+from game.ai.simulation.simulation_world import copy_world
 from game.stat_type import STAT_POWER, STAT_TOUGHNESS, STAT_TYPES, STAT_KEYWORDS, STAT_ATTACH_MODS
 from game.target.continuous_targets import CardIncarnationsSpec
 

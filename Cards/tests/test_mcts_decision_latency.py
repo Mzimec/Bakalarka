@@ -4,10 +4,11 @@ import pytest
 from runtime_write_guard import deny_writes
 from benchmarks.mcts_decision_latency import Components, answer, detached_planner
 from benchmarks.search_tactics import tactical_scenario
-from game.ai.information_set_search import InformationSetSearch, InformationSearchBudget
-from game.ai.observation_policy import ObservationOpponentPolicy
-from game.ai.search_simulator import SearchSimulator
-from game.simulation.search_config import SearchGenerationPolicy
+from game.ai.search.information_set_search import InformationSetSearch
+from game.ai.search.contracts import InformationSearchBudget
+from game.ai.evaluation.observation_policy import ObservationOpponentPolicy
+from game.ai.simulation.search_simulator import SearchSimulator
+from game.ai.decisions.generation_policy import SearchGenerationPolicy
 
 
 def test_components_preserve_search_answer_and_work():
@@ -42,7 +43,7 @@ def test_components_preserve_search_answer_and_work():
 
 
 def test_component_hooks_restore_after_failure():
-    import game.ai.simulation_world as worlds
+    import game.ai.simulation.simulation_world as worlds
     original_copy, original_init = worlds.copy_world, SearchSimulator.__init__
     with deny_writes(), pytest.raises(RuntimeError):
         with Components().installed():

@@ -8,13 +8,14 @@ from __future__ import annotations
 from dataclasses import dataclass, field
 from collections import deque
 from copy import copy
+from helper.static_definition import StaticDefinition, RuntimeBinding
 
 from ...enums import ZoneType
 from ...operations.card_operations import DamagePlayerOperation, MoveCardOperation
 
 
 @dataclass(frozen=True)
-class ReplacementEffectDefinition:
+class ReplacementEffectDefinition(StaticDefinition):
     """!
     @brief Immutable definition of a replacement effect.
     Defines applicability, transformation, active zones, ordering priority,
@@ -85,7 +86,7 @@ class ReplacementEffectDefinition:
 
 
 @dataclass(eq=False)
-class ReplacementEffect:
+class ReplacementEffect(RuntimeBinding):
     """!
     @brief Runtime replacement effect bound to one source incarnation.
     Stores source revision and mutable usage/budget state so the same static
@@ -416,7 +417,7 @@ class ReplacementResolver:
                 )
 
                 if len(group) > 1:
-                    from ...ai.decision_maker import ReplacementOrderRequest
+                    from game.ai.agents.decision_maker import ReplacementOrderRequest
                     previous = getattr(state, "replacement_order_boundary", None)
                     state.replacement_order_boundary = ReplacementOrderingFrame(
                         operations, frame.player_order, position, tuple(ordered))
@@ -522,7 +523,7 @@ class ReplacementResolver:
                 operation,
             )
 
-            from ...ai.decision_maker import ReplacementRequest, ReplacementAcceptanceRequest
+            from game.ai.agents.decision_maker import (ReplacementRequest, ReplacementAcceptanceRequest)
             selected = (
                 player.decision_maker.decide(ReplacementRequest(state, player, operation, candidates)).value.selected
                 if player is not None and len(candidates) > 1 else candidates[0]

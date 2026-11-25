@@ -3,9 +3,9 @@ from unittest.mock import patch
 
 import pytest
 
-from game.ai.attack_candidates import AttackRisk, AttackRiskAssessment, RiskAttackersStrategy
-from game.ai.generation_candidates import CandidateFrontier, DeterministicCandidates
-from game.ai.search_descriptors import ChoiceDescriptor
+from game.ai.decisions.attack_candidates import (AttackRisk, AttackRiskAssessment, RiskAttackersStrategy)
+from game.ai.decisions.generation_candidates import (CandidateFrontier, DeterministicCandidates)
+from game.ai.decisions.search_descriptors import ChoiceDescriptor
 from game.game_actions.generation.decision_abstraction.requests import DeclareAttackersRequest
 from game.game_actions.generation.decision_abstraction.policies import DeclareAttackersPolicy
 from game.game_state import Card, CardDefinition, Player, State
@@ -103,7 +103,7 @@ def test_group_drafts_are_early_and_all_in_includes_zero_power_attackers():
 
 
 def test_first_prefix_never_starts_beam_or_exhaustive_enumeration():
-    from game.ai.generation_candidates import BeamCombatStrategy
+    from game.ai.decisions.generation_candidates import BeamCombatStrategy
     state = position()
     for power in range(1, 11):
         creature(state, 0, power, 4)
@@ -184,7 +184,8 @@ def test_evasion_and_other_defenders_remain_in_the_complete_legal_menu():
 def test_risk_config_round_trips_and_isolates_its_candidate_identity():
     from dataclasses import asdict
     import json
-    from game.simulation.search_config import SearchAgentConfig, SearchGenerationPolicy
+    from game.simulation.search_config import SearchAgentConfig
+    from game.ai.decisions.generation_policy import SearchGenerationPolicy
     settings = SearchAgentConfig(deck_knowledge='both_lists', progressive_candidates=True,
         candidate_native_ordering=True, candidate_attack_risk=True, widening_constant=4)
     assert SearchAgentConfig.parse(json.loads(json.dumps(asdict(settings)))) == settings
@@ -202,11 +203,12 @@ def test_risk_config_round_trips_and_isolates_its_candidate_identity():
 @pytest.mark.parametrize('selection', ['uct', 'puct', 'hierarchical_puct'])
 def test_risk_drafts_complete_real_native_search_and_preserve_terminal_wins(selection):
     from benchmarks.mcts_top_k import make_case
-    from game.ai.search_simulator import SearchSimulator
-    from game.ai.observation_policy import ObservationOpponentPolicy
-    from game.ai.action_priors import HeuristicActionPrior
-    from game.ai.information_set_search import InformationSetSearch, InformationSearchBudget
-    from game.simulation.search_config import SearchGenerationPolicy
+    from game.ai.simulation.search_simulator import SearchSimulator
+    from game.ai.evaluation.observation_policy import ObservationOpponentPolicy
+    from game.ai.evaluation.action_priors import HeuristicActionPrior
+    from game.ai.search.information_set_search import InformationSetSearch
+    from game.ai.search.contracts import InformationSearchBudget
+    from game.ai.decisions.generation_policy import SearchGenerationPolicy
     policy = SearchGenerationPolicy(progressive_candidates=True,
         candidate_native_ordering=True, candidate_attack_risk=True)
     def factory(seed):

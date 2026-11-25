@@ -1,10 +1,10 @@
 """Inspect should explain printed abilities, including static rules and triggers."""
-from game.ai.decision_maker import PriorityDecisionRequest
+from game.ai.agents.decision_maker import PriorityDecisionRequest
 
 import pytest
 
 from game.console.demo_game import ConsoleDecisionMaker, create_starter_demo_game
-from game.ai.simple_agent import SimpleAgent
+from game.ai.agents.simple_agent import SimpleAgent
 from game.game_state.card import Card
 from game.enums import ZoneType, TurnPhase
 from game.cards.starter_cards import starter_catalog

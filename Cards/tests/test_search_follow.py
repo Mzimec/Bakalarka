@@ -3,9 +3,9 @@ import pytest
 
 from benchmarks.search_quality import position
 from benchmarks.search_tactics import tactical_scenario, tactical_policy
-from game.ai.observation_policy import ObservationOpponentPolicy
-from game.ai.search_actions import PlayerAction
-from game.ai.search_simulator import SearchSimulator, SimulationBudgetExceeded
+from game.ai.evaluation.observation_policy import ObservationOpponentPolicy
+from game.ai.decisions.search_actions import PlayerAction
+from game.ai.simulation.search_simulator import (SearchSimulator, SimulationBudgetExceeded)
 
 
 @pytest.mark.parametrize("recipe", [tactical_scenario("lethal_shock"), position("double_block"), position("remove_before_attack")])

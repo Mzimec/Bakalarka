@@ -4,9 +4,11 @@ from dataclasses import replace
 
 import pytest
 
-from game.ai.generation_candidates import CandidateFrontier
-from game.ai.observation import PlayerObservationBuilder, observation
-from game.ai.structured_values import StructuredJSON, ValueStore, structural_key, _scalar_digest
+from game.ai.decisions.generation_candidates import CandidateFrontier
+from game.ai.information.observation import (PlayerObservationBuilder, observation)
+from game.ai.information.structured_values import (
+    StructuredJSON, ValueStore, structural_key, _scalar_digest,
+)
 from game.enums import CounterType, ZoneType
 from game.stat_type import STAT_POWER
 from runtime_write_guard import deny_writes
@@ -17,6 +19,53 @@ from test_player_observation import board, add, find
 def no_files():
     with deny_writes():
         yield
+
+
+def test_candidate_statistics_are_allocated_only_for_new_actions():
+    from types import SimpleNamespace
+    from game.ai.search import information_set_search as search
+    from game.ai.decisions.search_actions import PlayerAction
+    run = search._Run(search.InformationSetSearch(opponent_policy=lambda info: info.actions[0]), 0, 7)
+    actions = tuple(PlayerAction('test', str(i)) for i in range(3))
+    info = SimpleNamespace(fast_key='same-frontier', actions=actions[:2], candidate_model='native')
+    with patch.object(search, '_Statistics', wraps=search._Statistics) as constructor:
+        key, chosen, _ = run.tree_action(info)
+        rows = run.table[key]
+        rows.record(chosen, 0.5)
+        original = dict(rows)
+        run.tree_action(info)
+        assert constructor.call_count == 2
+        info.actions = actions
+        run.tree_action(info)
+        assert constructor.call_count == 3
+    assert all(rows[action] is stats for action, stats in original.items())
+    assert rows[chosen].visits == 1 and rows[chosen].total == 0.5
+    assert rows[actions[2]].visits == 0
+
+
+def test_forced_root_reuses_statistics_across_trajectories():
+    from types import SimpleNamespace
+    from game.ai.search import information_set_search as search
+    from game.ai.decisions.search_actions import PlayerAction
+    action = PlayerAction('PassPriorityAction', '{}')
+    info = SimpleNamespace(fast_key='forced', actions=(action,), menu_complete=True,
+                           candidate_model=None)
+    node = SimpleNamespace(terminal=False, cutoff=False, player_information=lambda: info,
+                           decision=SimpleNamespace(kind='PriorityDecisionRequest'))
+    run = search._Run(search.InformationSetSearch(opponent_policy=lambda info: action,
+                                                 compress_forced=True), 0, 7)
+    run.deadline = None
+    for repeat in range(2):
+        with patch.object(search, '_Statistics', wraps=search._Statistics) as constructor:
+            choices = run.trajectory_choices(node)
+            try:
+                assert next(choices) == action
+            finally:
+                choices.close()
+            assert constructor.call_count == (1 if repeat == 0 else 0)
+        run.table[info.fast_key].record(action, 0.25)
+    assert run.table[info.fast_key][action].visits == 2
+    assert run.table[info.fast_key][action].total == 0.5
 
 
 def test_native_numeric_rows_follow_modifiers_rollback_and_custom_readers():
@@ -119,7 +168,7 @@ def test_frontier_reuses_prefix_without_consuming_tail_and_bounds_tuple_cache():
 
 
 def test_live_widening_does_not_rebuild_unchanged_board_projection():
-    from game.ai.search_simulator import SearchSimulator
+    from game.ai.simulation.search_simulator import SearchSimulator
     from test_candidate_ranking import crowded
     from test_native_candidates import native_policy
     sim = SearchSimulator(crowded, policy_for=native_policy(), track_information=True,
@@ -188,9 +237,10 @@ def test_settled_leaf_is_scored_before_generating_unused_wider_menu():
 
 def test_forced_prefix_projection_reuse_preserves_answer_and_reduces_board_builds():
     from benchmarks.search_tactics import tactical_scenario, tactical_policy
-    from game.ai.search_simulator import SearchSimulator
-    from game.ai.information_set_search import InformationSetSearch, InformationSearchBudget
-    from game.ai.observation_policy import ObservationOpponentPolicy
+    from game.ai.simulation.search_simulator import SearchSimulator
+    from game.ai.search.information_set_search import InformationSetSearch
+    from game.ai.search.contracts import InformationSearchBudget
+    from game.ai.evaluation.observation_policy import ObservationOpponentPolicy
     class WithoutForced(dict):
         def setdefault(self, key, value):
             if len(value.views) == 1:

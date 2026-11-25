@@ -1,15 +1,7 @@
 """Explicit experimental MCTS composition shared by JSON configuration and play."""
 from dataclasses import dataclass, fields
 from math import isfinite, sqrt
-from functools import cached_property
 
-from game.ai.game_origin import GameOrigin, GameOriginWorlds
-from game.ai.history_world_provider import ExploratoryHistoryPolicy
-from game.ai.incremental_world_provider import IncrementalWorldProvider
-from game.ai.information_set_search import InformationSetSearch, InformationSearchBudget
-from game.ai.mcts_agent import MCTSAgent
-from game.ai.observation_policy import ObservationOpponentPolicy
-from game.ai.action_priors import HeuristicActionPrior, UniformActionPrior
 
 
 @dataclass(frozen=True)
@@ -32,6 +24,9 @@ class SearchAgentConfig:
     condition_draws: bool = True
     condition_opening_reveal: bool = True
     world_backend: str = "current"
+    search_backend: str = 'information_set'
+    pimc_leaf_policy: str = 'horizon'
+    information_set_leaf_policy: str = 'horizon'
     selection: str = "uct"
     prior: str = "uniform"
     exploration: float = sqrt(2)
@@ -42,6 +37,7 @@ class SearchAgentConfig:
     checkpoint_interval: int = 4
     checkpoint_continuous: bool = True
     checkpoint_min_visits: int = 2
+    checkpoint_admission: str = 'eager'
     reuse_world: bool = False
     trajectory_mode: str = "continuous"
     compress_forced: bool = True
@@ -55,6 +51,7 @@ class SearchAgentConfig:
     staged_ability: bool = False
     sequential_combat: bool | str = False
     structured_records: bool = True
+    runtime_observations: bool = False
     native_forced: bool = True
     progressive_candidates: bool = False
     candidate_initial_width: int = 4
@@ -89,6 +86,31 @@ class SearchAgentConfig:
         return cls(**data)
 
     def __post_init__(self):
+        if self.information_set_leaf_policy not in ('horizon', 'first_leaf'):
+            raise ValueError('information_set_leaf_policy must be horizon or first_leaf')
+        if self.information_set_leaf_policy != 'horizon' and self.search_backend != 'information_set':
+            raise ValueError('information_set_leaf_policy requires search_backend=information_set')
+        if self.pimc_leaf_policy not in ('horizon', 'first_leaf'):
+            raise ValueError('pimc_leaf_policy must be horizon or first_leaf')
+        if self.pimc_leaf_policy != 'horizon' and self.search_backend != 'pimc':
+            raise ValueError('pimc_leaf_policy requires search_backend=pimc')
+        if self.search_backend not in ('information_set', 'pimc'):
+            raise ValueError('search_backend must be information_set or pimc')
+        if self.search_backend == 'pimc' and (self.world_backend != 'current' or self.parallel_workers != 1
+                or self.selection not in ('uct', 'puct')
+                or self.prior != 'uniform' or self.value_model != 'heuristic' or self.model_checkpoint is not None
+                or self.runtime_observations or self.tree_reuse_size or self.checkpoint_limit
+                or self.candidate_rank_window or self.candidate_rank_windows
+                or self.sequential_combat or self.staged_priority or self.staged_ability
+                or self.trajectory_mode != 'continuous'):
+            raise ValueError('PIMC requires serial current worlds, uniform prior, native value, complete live choices '
+                             'and no information caches/checkpoints/tree reuse')
+        if type(self.runtime_observations) is not bool:
+            raise ValueError('runtime_observations must be boolean')
+        if self.runtime_observations and (self.simulator_views != 'search' or not self.structured_records
+                or self.parallel_workers != 1 or self.world_backend != 'current'
+                or self.value_model != 'heuristic' or self.prior not in {'uniform', 'heuristic'}):
+            raise ValueError('Runtime observations require serial current worlds, structured search views and native heuristic readers')
         if (type(self.sequential_combat) is not bool
                 and (type(self.sequential_combat) is not str or self.sequential_combat not in {'attackers', 'blockers'})):
             raise ValueError('sequential_combat must be boolean, attackers or blockers')
@@ -102,6 +124,8 @@ class SearchAgentConfig:
             raise ValueError('Checkpoint interval/visits must be positive integers')
         if type(self.checkpoint_continuous) is not bool:
             raise ValueError('checkpoint_continuous must be boolean')
+        if self.checkpoint_admission not in ('eager', 'resumed'):
+            raise ValueError('checkpoint_admission must be eager or resumed')
         if type(self.tree_reuse_bytes) is not int or self.tree_reuse_bytes < 0:
             raise ValueError('tree_reuse_bytes must be a nonnegative integer')
         if any(type(n) is not int or n < 0 for n in (self.neural_cache_size,self.neural_cache_bytes)):
@@ -128,7 +152,7 @@ class SearchAgentConfig:
             raise ValueError('progressive_candidates must be boolean')
         if any(type(n) is not int or n < 2 for n in (self.candidate_initial_width, self.candidate_beam_width)):
             raise ValueError('Candidate widths must be integers >= 2')
-        from game.ai.candidate_ranking import rank_window, normalize_rank_windows
+        from game.ai.decisions.candidate_ranking import (rank_window, normalize_rank_windows)
         rank_window(self.candidate_rank_window)
         object.__setattr__(self, 'candidate_rank_windows', normalize_rank_windows(self.candidate_rank_windows))
         if (self.candidate_rank_window or self.candidate_rank_windows) and not self.progressive_candidates:
@@ -216,134 +240,7 @@ class SearchAgentConfig:
             raise ValueError("condition_opening_reveal must be boolean")
 
 
-def search_generation_policy(request):
-    """Explicit automatic-payment menu, identical for live and replay players.
-
-Separate mana activations and concession are excluded; no heuristic top-k is
-applied. Replay rejects oversized menus; live emergency choices disable further
-search in that game and are logged. General parameter/candidate policies
-remain a separate extension, not silently borrowed from SimpleAgent.
-"""
-    from game.ai.decision_maker import PriorityDecisionRequest
-    from game.game_actions.generation.decision_abstraction.policies import PriorityGenerationPolicy
-    if isinstance(request, PriorityDecisionRequest):
-        # A private effect in a sampled opponent hand must not toggle a global
-        # symmetry guard and change the actor's menu. Search exposes concrete
-        # sources until equivalence has an actor-observation proof contract.
-        return PriorityGenerationPolicy(include_mana=False, include_concede=False, equivalence=None)
-    return None
-
-
-@dataclass(frozen=True)
-class SearchGenerationPolicy:
-    staged_priority: bool = False
-    staged_ability: bool = False
-    progressive_candidates: bool = False
-    candidate_initial_width: int = 4
-    candidate_beam_width: int = 32
-    candidate_rank_window: int = 0
-    candidate_rank_windows: tuple = ()
-    candidate_native_ordering: bool = False
-    candidate_attack_risk: bool = False
-    candidate_combat_equivalence: bool = False
-    sequential_combat: bool | str = False
-
-    def __post_init__(self):
-        if (type(self.sequential_combat) is not bool
-                and (type(self.sequential_combat) is not str or self.sequential_combat not in {'attackers', 'blockers'})):
-            raise ValueError('sequential_combat must be boolean, attackers or blockers')
-        from game.ai.candidate_ranking import rank_window, normalize_rank_windows
-        rank_window(self.candidate_rank_window)
-        object.__setattr__(self, 'candidate_rank_windows', normalize_rank_windows(self.candidate_rank_windows))
-
-    @cached_property
-    def candidate_model(self):
-        if not self.progressive_candidates:
-            return None
-        from game.ai.generation_candidates import DeterministicCandidates
-        return DeterministicCandidates(self.candidate_initial_width, self.candidate_beam_width,
-            self.candidate_rank_window, self.candidate_rank_windows, self.candidate_native_ordering,
-            self.candidate_attack_risk, self.candidate_combat_equivalence)
-
-    def __call__(self, request):
-        from dataclasses import replace
-        from game.ai.decision_maker import PriorityDecisionRequest
-        policy = search_generation_policy(request)
-        if isinstance(request, PriorityDecisionRequest) and self.staged_priority:
-            policy = replace(policy, staged_sources=True, staged_ability=self.staged_ability)
-        return policy
-
-
 def make_search_controller(config, origin, *, max_decisions):
-    settings = SearchAgentConfig.parse(config)
-    if not isinstance(origin, GameOrigin):
-        raise ValueError("MCTS requires an explicit compatible GameOrigin (use play or run_config)")
-    from game.ai.exact_policy_memory import ExactPolicyMemory
-    policy = ObservationOpponentPolicy(memory=ExactPolicyMemory(
-        settings.exact_policy_cache_size, settings.exact_policy_cache_bytes,
-        canonical_ids=settings.exact_policy_canonical_ids)
-        if settings.exact_policy_cache_size and settings.exact_policy_cache_bytes else None)
-    generation_policy = SearchGenerationPolicy(settings.staged_priority, settings.staged_ability,
-        settings.progressive_candidates, settings.candidate_initial_width, settings.candidate_beam_width,
-        settings.candidate_rank_window, settings.candidate_rank_windows, settings.candidate_native_ordering,
-        settings.candidate_attack_risk, settings.candidate_combat_equivalence, settings.sequential_combat)
-    if settings.world_backend == "current":
-        from game.ai.current_position_worlds import CurrentPositionWorlds
-        provider = CurrentPositionWorlds(origin, policy_for=generation_policy,
-            continuation_attempts=settings.max_attempts,
-            continuation_advances=settings.max_prefix_advances,
-            history_exploration=settings.history_exploration,
-            checkpoint_limit=settings.checkpoint_limit,
-            checkpoint_interval=settings.checkpoint_interval,
-            checkpoint_continuous=settings.checkpoint_continuous,
-            checkpoint_min_visits=settings.checkpoint_min_visits,
-            reuse_world=settings.reuse_world,
-            view_mode=settings.simulator_views,
-            structured_records=settings.structured_records,
-            native_forced=settings.native_forced,
-            projection_cache_size=settings.projection_cache_size,
-            max_options=settings.max_options, max_decisions=settings.max_simulator_decisions,
-            max_phases=settings.max_phases)
-    else:
-        worlds = GameOriginWorlds(origin, policy_for=generation_policy, max_options=settings.max_options,
-            max_decisions=settings.max_simulator_decisions, max_phases=settings.max_phases,
-            condition_draws=settings.condition_draws, condition_opening_reveal=settings.condition_opening_reveal)
-        provider = IncrementalWorldProvider(worlds, size=settings.population_size, seed=settings.search_seed,
-            opponent_weights=ExploratoryHistoryPolicy(policy, exploration=settings.history_exploration),
-            max_attempts=settings.max_attempts, max_prefix_advances=settings.max_prefix_advances)
-    prior = None
-    model = None
-    if settings.model_checkpoint is not None:
-        from game.ai.training_model import PolicyValueModel, NeuralPrior, NeuralValue
-        model = PolicyValueModel.load(settings.model_checkpoint)
-        model.configure_cache(settings.neural_cache_size,settings.neural_cache_bytes)
-    if settings.selection != "uct":
-        prior = (NeuralPrior(model) if settings.prior == 'neural' else
-                 HeuristicActionPrior(policy, temperature=settings.prior_temperature,
-                 uniform_mix=settings.prior_uniform_mix) if settings.prior == "heuristic" else UniformActionPrior())
-    search = InformationSetSearch(opponent_policy=policy, rollout_policy=policy,
-        selection=settings.selection, action_prior=prior, exploration=settings.exploration,
-        transition_cache_size=settings.transition_cache_size,
-        trajectory_mode=settings.trajectory_mode,
-        compress_forced=settings.compress_forced, require_root_coverage=settings.require_root_coverage,
-        force_initial_coverage=settings.force_initial_coverage,
-        max_time_ms=settings.max_search_ms,
-        min_trajectories=settings.min_trajectories,
-        widening_constant=settings.widening_constant, widening_exponent=settings.widening_exponent,
-        tree_reuse_size=settings.tree_reuse_size,
-        tree_reuse_bytes=settings.tree_reuse_bytes,
-        reuse_rolling_horizon=settings.reuse_rolling_horizon,
-        forced_chain_cache=settings.forced_chain_cache,
-        budget=InformationSearchBudget(
-        worlds=settings.worlds, iterations=settings.iterations, max_advances=settings.max_advances,
-        max_depth=settings.max_depth, max_extensions=settings.max_extensions))
-    if settings.value_model == 'neural':
-        search.evaluator = NeuralValue(model)
-    if model is not None:
-        search.invalidate_model(model.revision)
-    if settings.parallel_workers > 1:
-        from game.ai.parallel_search import ParallelInformationSetSearch
-        search = ParallelInformationSetSearch(search, workers=settings.parallel_workers, backend=settings.parallel_backend)
-    return MCTSAgent(world_provider=provider, search=search, fallback=policy,
-        policy_for=generation_policy, seed=settings.search_seed, max_options=settings.max_options,
-        max_decisions=max_decisions, search_setup=False, allow_incomplete_menu_fallback=True)
+    """Parse application settings, then build one isolated AI object graph."""
+    from game.ai.composition import SearchAgentBuilder
+    return SearchAgentBuilder(SearchAgentConfig.parse(config), origin, max_decisions).build()

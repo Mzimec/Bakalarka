@@ -3,8 +3,10 @@
 import json
 from pathlib import Path
 
-from game.ai.simple_agent import SimpleAgent
-from game.ai.modular_agent import ModularAgent, CandidateGenerator, CombatPolicy, ParameterPolicy
+from game.ai.agents.simple_agent import SimpleAgent
+from game.ai.agents.modular_agent import (
+    ModularAgent, CandidateGenerator, CombatPolicy, ParameterPolicy,
+)
 from game.cards.decks import load_arena_starter, DeckList
 from game.simulation.match_runner import run_match
 
@@ -21,8 +23,25 @@ def make_controller(config, *, seed, max_decisions, search_origin=None):
     """!
     @brief Compose a player controller and its bounded decision policies.
     """
-    known_keys(config, ("type", "candidates", "combat", "llm", "parameters", "payment", "candidate_limit", "auto_pass", "mcts"), "agent")
+    known_keys(config, ("type", "candidates", "combat", "llm", "parameters", "payment", "candidate_limit", "auto_pass", "mcts", "neural"), "agent")
     kind = config.get("type", "modular")
+    if kind == 'neural':
+        known_keys(config, ('type', 'neural'), 'neural policy agent')
+        settings = config.get('neural', {})
+        known_keys(settings, ('model_checkpoint', 'max_options', 'deck_knowledge'), 'neural policy')
+        if not isinstance(settings.get('model_checkpoint'), str) or not settings['model_checkpoint'].strip():
+            raise ValueError('Neural policy requires model_checkpoint')
+        from game.ai.composition import make_neural_policy_controller
+        from game.ai.training.training_model import PolicyValueModel
+        model = PolicyValueModel.load(settings['model_checkpoint'])
+        if model.feature_version >= 3 and settings.get('deck_knowledge') != 'both_lists':
+            raise ValueError('Deck-aware neural policy requires explicit deck_knowledge=both_lists')
+        if 'deck_knowledge' in settings and settings['deck_knowledge'] != 'both_lists':
+            raise ValueError('Unsupported neural deck knowledge')
+        return make_neural_policy_controller(model, origin=search_origin,
+            max_decisions=max_decisions, max_options=settings.get('max_options', 4096))
+    if 'neural' in config:
+        raise ValueError('Neural policy settings require agent type neural')
     if kind == "mcts":
         known_keys(config, ("type", "mcts"), "MCTS agent")
         from game.simulation.search_config import make_search_controller
@@ -43,7 +62,7 @@ def make_controller(config, *, seed, max_decisions, search_origin=None):
     if kind == "simple":
         return SimpleAgent(max_decisions=max_decisions, auto_pass=auto_pass)
     if kind == "trivial":
-        from game.ai.trivial_agent import TrivialAgent
+        from game.ai.agents.trivial_agent import TrivialAgent
         return TrivialAgent(max_decisions=max_decisions, auto_pass=auto_pass)
     if kind not in ("modular", "llm"):
         raise ValueError(f"Unknown agent type: {kind}.")
@@ -60,12 +79,9 @@ def make_controller(config, *, seed, max_decisions, search_origin=None):
     solver = SourceActivatingManaSolver() if payment == "automatic" else PoolManaSolver()
     selector = None
     if kind == "llm":
-        from game.ai.llm_policy import OllamaSelector
+        from game.ai.agents.llm_policy import make_llm_selector
         llm = config.get("llm", {})
-        known_keys(llm, ("model", "endpoint", "timeout", "max_requests", "include_priors"), "llm")
-        if "model" not in llm:
-            raise ValueError("LLM agent requires llm.model.")
-        selector = OllamaSelector(**llm, seed=seed)
+        selector = make_llm_selector(llm, seed=seed)
     return ModularAgent(candidates=CandidateGenerator(**proposal, mana_solver=solver,
                                                      parameters=ParameterPolicy(**parameters)),
                         combat=CombatPolicy(**combat), selector=selector,
@@ -123,11 +139,18 @@ def run_config(path, *, output=None, seed=None):
         deck.resolve(game_catalog())
     # Only agents explicitly declaring both_lists receive this recipe. It
     # contains declared composition/settings, never a match seed or live State.
-    from game.ai.game_origin import GameOrigin
+    from game.ai.sampling.game_origin import GameOrigin
     origin = GameOrigin(tuple(decks), game_catalog, names=tuple(names), starting_player_idx=starting)
-    controllers = [make_controller(player.get("agent", {}), seed=seed + index,
-                   max_decisions=limits["max_decisions"], search_origin=origin)
-                   for index, player in enumerate(players)]
+    controllers = []
+    for index, player in enumerate(players):
+        agent_config = player.get('agent', {})
+        if isinstance(agent_config, dict) and agent_config.get('type') == 'neural':
+            settings = agent_config.get('neural', {})
+            if isinstance(settings, dict) and isinstance(settings.get('model_checkpoint'), str):
+                agent_config = dict(agent_config, neural=dict(settings,
+                    model_checkpoint=str(path.parent / settings['model_checkpoint'])))
+        controllers.append(make_controller(agent_config, seed=seed + index,
+                           max_decisions=limits['max_decisions'], search_origin=origin))
     if output is None:
         output = path.parent / config["output"] if config.get("output") is not None else None
     if output is not None:

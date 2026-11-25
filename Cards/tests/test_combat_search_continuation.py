@@ -3,15 +3,17 @@ from dataclasses import asdict, replace
 
 import pytest
 
-from game.ai.current_position_worlds import CurrentPositionWorlds
-from game.ai.decision_maker import DecisionResult, DeclareAttackersRequest, DeclareBlockersRequest
-from game.ai.knowledge import PlayerKnowledge
-from game.ai.search_decision import DecisionProjector
-from game.ai.search_actions import PlayerActionBuilder
-from game.ai.search_recall import PlayerRecall
+from game.ai.sampling.current_position_worlds import CurrentPositionWorlds
+from game.ai.agents.decision_maker import (
+    DecisionResult, DeclareAttackersRequest, DeclareBlockersRequest,
+)
+from game.ai.information.knowledge import PlayerKnowledge
+from game.ai.decisions.search_decision import DecisionProjector
+from game.ai.decisions.search_actions import PlayerActionBuilder
+from game.ai.information.search_recall import PlayerRecall
 from game.cards.catalog import game_catalog
 from game.enums import TurnPhase, ZoneType
-from game.simulation.search_config import search_generation_policy
+from game.ai.decisions.generation_policy import search_generation_policy
 from test_current_position_worlds import position
 from test_game_setup import Controller
 
@@ -56,13 +58,18 @@ def phase_catalog():
 
 @pytest.mark.parametrize("blockers", [False, True])
 @pytest.mark.parametrize("phase_trigger", [False, True])
-def test_native_combat_root_matches_live_and_forks_with_pending_triggers(blockers, phase_trigger):
+@pytest.mark.parametrize("position_worker", [False, True])
+def test_native_combat_root_matches_live_and_forks_with_pending_triggers(blockers, phase_trigger, position_worker):
     origin, game = position()
     if phase_trigger:
         origin = replace(origin, catalog_factory=phase_catalog)
         game = origin.scenario(42)((Controller(), Controller()))
         game.state.turn.number = 9
     own = [Capture(origin), Capture(origin)]
+    for controller in own:
+        controller.provider.position_world = position_worker
+        if position_worker:
+            controller.provider.reuse_world = True
     state = game.state
     creatures = []
     for p in state.players:
@@ -84,9 +91,28 @@ def test_native_combat_root_matches_live_and_forks_with_pending_triggers(blocker
     sim = factory(123)
     root = sim.start()
     assert root.player_information() == info
+    if position_worker:
+        worker = sim.factory._worker[0]
+        handles = tuple(worker.cards.values())
+        reference = factory(123)
+        reference.factory.position = False
+        other = reference.start()
+        for candidate in root.player_information().actions:
+            assert sim.advance_action(root, candidate) == reference.advance_action(other, candidate)
+            assert sim.fork(root) == root
     child = sim.advance_action(root, action)
     assert child.decision.kind == ("TriggerOrderRequest" if phase_trigger else "PriorityDecisionRequest")
     assert sim.fork(root) == root and sim.fork(child) == child
+    if position_worker:
+        assert sim.factory._worker[0] is worker
+        assert tuple(worker.cards.values()) == handles
+        assert sim.factory.worker_metrics['workers'] == sim.factory.worker_metrics['copies'] == 1
+        assert sim.factory.worker_metrics['copy_fallbacks'] == 0
+        def interrupt(node):
+            raise KeyboardInterrupt
+        with pytest.raises(KeyboardInterrupt):
+            sim.follow_actions(interrupt, node=root)
+        assert sim.fork(root) == root
     # The actual selected declaration was applied once, and the sampled
     # declaration did not alter the already-running live match.
     assert state.combat.attackers == {creatures[0]: state.players[1]}
@@ -107,7 +133,7 @@ def test_manually_forged_declaration_without_engine_boundary_is_rejected():
 
 
 def test_native_scry_and_draw_keep_positions_across_current_world_samples():
-    from game.ai.decision_maker import ScryOption
+    from game.ai.agents.decision_maker import ScryOption
     from game.cards.starter_support import ScryOperation
     from game.game_actions.data_structs.game_action import ResolutionContext, FixedExecutionPlan, ScheduledResolution
     from game.operations.card_operations import DrawCardOperation

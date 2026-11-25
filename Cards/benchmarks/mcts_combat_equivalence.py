@@ -6,12 +6,12 @@ from statistics import median
 from time import perf_counter
 
 from benchmarks.mcts_top_k import make_request, make_case
-from game.ai.combat_equivalence import CombatDeclarationEquivalence
-from game.ai.generation_candidates import CandidateFrontier, DeterministicCandidates
-from game.ai.search_decision import DecisionProjector
-from game.ai.search_recall import PlayerRecall
-from game.ai.search_simulator import SearchSimulator
-from game.simulation.search_config import SearchGenerationPolicy
+from game.ai.decisions.combat_equivalence import CombatDeclarationEquivalence
+from game.ai.decisions.generation_candidates import (CandidateFrontier, DeterministicCandidates)
+from game.ai.decisions.search_decision import DecisionProjector
+from game.ai.information.search_recall import PlayerRecall
+from game.ai.simulation.search_simulator import SearchSimulator
+from game.ai.decisions.generation_policy import SearchGenerationPolicy
 
 
 class NoPrefetchModel:
@@ -89,9 +89,10 @@ def preparation(repeats):
 
 def searches(repeats, iterations):
     """Fixed work budgets, not an assertion of identical paths between role menus."""
-    from game.ai.action_priors import HeuristicActionPrior
-    from game.ai.observation_policy import ObservationOpponentPolicy
-    from game.ai.information_set_search import InformationSetSearch, InformationSearchBudget
+    from game.ai.evaluation.action_priors import HeuristicActionPrior
+    from game.ai.evaluation.observation_policy import ObservationOpponentPolicy
+    from game.ai.search.information_set_search import InformationSetSearch
+    from game.ai.search.contracts import InformationSearchBudget
     variants = ('native', 'native_no_prefetch', 'roles')
     for case in ('attackers', 'blockers'):
         rows = defaultdict(list)

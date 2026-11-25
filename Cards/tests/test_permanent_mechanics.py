@@ -1,5 +1,5 @@
 """CR 111, 301, 303, 306, 606, 704: regressions through the real pipeline."""
-from game.ai.decision_maker import DecisionResult, LegendOption
+from game.ai.agents.decision_maker import (DecisionResult, LegendOption)
 from game.game_actions import PassPriorityAction
 from game.game_actions.data_structs.ability import ActivatedAbilityDefinition
 from dataclasses import replace
@@ -10,7 +10,7 @@ from immutabledict import immutabledict
 
 from game.enums import CardType as T, CardSubtype as S, CounterType as C, ZoneType as Z, TurnPhase as P
 from game.game_state import Card, CardDefinition, Player, State
-from game.ai.decision_maker import ModularDecisionMaker as DecisionMaker
+from game.ai.agents.decision_maker import ModularDecisionMaker as DecisionMaker
 from game.game_state.modifier import AddIntModifier
 from game.stat_type import STAT_POWER, STAT_TOUGHNESS, STAT_TYPES
 from game.game_actions.data_structs.ability import SubAbilityDefinition, TriggerAbilityDefinition

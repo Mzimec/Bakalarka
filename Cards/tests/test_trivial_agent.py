@@ -3,8 +3,8 @@ import json
 
 import pytest
 
-from game.ai.simple_agent import DecisionLimitReached, SimpleAgent
-from game.ai.trivial_agent import TrivialAgent
+from game.ai.agents.simple_agent import (DecisionLimitReached, SimpleAgent)
+from game.ai.agents.trivial_agent import TrivialAgent
 from game.cards.starter_cards import starter_catalog
 from game.enums import TurnPhase, ZoneType
 from game.game_actions.data_structs.game_action import PassPriorityAction
@@ -67,7 +67,7 @@ def test_real_generation_uses_solver_without_scoring_or_observation(monkeypatch)
         add(state, player, "Island")
     spell = add(state, player, "Cloudkin Seer", ZoneType.HAND)
     monkeypatch.setattr(SimpleAgent, "score", lambda *args: pytest.fail("Scoring invoked"))
-    monkeypatch.setattr("game.ai.modular_agent.observation", lambda *args: pytest.fail("Observation built"))
+    monkeypatch.setattr("game.ai.agents.modular_agent.observation", lambda *args: pytest.fail("Observation built"))
     result = TrivialAgent().decide(PriorityDecisionRequest(state, player))
     assert result.value.source is spell
     assert result.value.validation_error(state) is None

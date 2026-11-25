@@ -8,14 +8,17 @@ from unittest.mock import patch
 import pytest
 
 from benchmarks.mcts_top_k import make_request, make_case
-from game.ai.combat_equivalence import CombatDeclarationEquivalence, CombatRoles
-from game.ai.generation_candidates import CandidateFrontier, DeterministicCandidates, BeamCombatStrategy
-from game.ai.search_descriptors import ChoiceDescriptor
+from game.ai.decisions.combat_equivalence import (CombatDeclarationEquivalence, CombatRoles)
+from game.ai.decisions.generation_candidates import (
+    CandidateFrontier, DeterministicCandidates, BeamCombatStrategy,
+)
+from game.ai.decisions.search_descriptors import ChoiceDescriptor
 from game.game_actions.generation.decision_abstraction.selection_strategies import FullAttackersStrategy, FullBlockersStrategy
 from game.game_actions.generation.decision_abstraction.requests import DeclareAttackersRequest, DeclareBlockersRequest
 from game.game_state import Card, CardDefinition
 from game.enums import CardType, ZoneType
-from game.simulation.search_config import SearchGenerationPolicy, SearchAgentConfig
+from game.ai.decisions.generation_policy import SearchGenerationPolicy
+from game.simulation.search_config import SearchAgentConfig
 from runtime_write_guard import deny_writes
 
 
@@ -219,7 +222,7 @@ def test_config_roundtrip_and_candidate_identity_distinguish_role_proposals():
 
 @pytest.mark.parametrize('case', ['attackers', 'blockers'])
 def test_root_reservoir_stops_at_role_boundary_and_replays_widening(case):
-    from game.ai.search_simulator import SearchSimulator
+    from game.ai.simulation.search_simulator import SearchSimulator
     policy = SearchGenerationPolicy(progressive_candidates=True, candidate_native_ordering=True,
         candidate_combat_equivalence=True)
     sim = SearchSimulator(lambda controllers: make_case(case, controllers)[0], policy_for=policy,
@@ -246,10 +249,11 @@ def test_reservoir_without_lookahead_does_not_enter_a_more_expensive_tail():
 @pytest.mark.parametrize('selection', ['uct', 'puct', 'hierarchical_puct'])
 @pytest.mark.parametrize('case', ['attackers', 'blockers'])
 def test_counted_prefixes_complete_real_search_without_fallback(selection, case):
-    from game.ai.search_simulator import SearchSimulator
-    from game.ai.observation_policy import ObservationOpponentPolicy
-    from game.ai.action_priors import HeuristicActionPrior
-    from game.ai.information_set_search import InformationSetSearch, InformationSearchBudget
+    from game.ai.simulation.search_simulator import SearchSimulator
+    from game.ai.evaluation.observation_policy import ObservationOpponentPolicy
+    from game.ai.evaluation.action_priors import HeuristicActionPrior
+    from game.ai.search.information_set_search import InformationSetSearch
+    from game.ai.search.contracts import InformationSearchBudget
     policy = SearchGenerationPolicy(progressive_candidates=True, candidate_native_ordering=True,
         candidate_combat_equivalence=True)
     def factory(seed):

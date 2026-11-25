@@ -54,6 +54,22 @@ class RuleEffect(Effect):
         return self.info
 
 
+class ScryEffect(Effect):
+    """Declarative library selection; execution remains in ScryOperation."""
+
+    def __init__(self, key: str, amount: int = 1) -> None:
+        super().__init__(key)
+        if type(amount) is not int or amount < 1:
+            raise ValueError('Scry amount must be a positive integer')
+        self.amount = amount
+
+    def to_operations(self, state: object, context: object) -> object:
+        yield ScryOperation(context, self.amount)
+
+    def get_info(self) -> str:
+        return f'Scry {self.amount}.'
+
+
 class EventCondition(TriggerCondition):
     """!
     @brief Evaluate a bound trigger against event-time source and controller data.
@@ -132,7 +148,7 @@ class ScryOperation(Operation):
         """
         player = self.context.controller
         viewed = tuple(reversed(tuple(player.deck.values())))[: self.amount]
-        from game.ai.decision_maker import ScryRequest
+        from game.ai.agents.decision_maker import ScryRequest
         choice = player.decision_maker.decide(ScryRequest(state, player, viewed)).value
         top, bottom = choice.top, choice.bottom
         top, bottom = tuple(top), tuple(bottom)
@@ -253,7 +269,7 @@ class ChooseMoveOperation(Operation):
         else:
             options = tuple(self.player.hand.values())
         count = min(self.amount, len(options))
-        from game.ai.decision_maker import AbilityResolutionRequest
+        from game.ai.agents.decision_maker import AbilityResolutionRequest
         request = AbilityResolutionRequest(
             state, self.player, self.context, options, count,
             "sacrifice" if self.sacrifice else "discard",

@@ -1,5 +1,5 @@
 """Commands construct one action without enumerating card/target combinations."""
-from game.ai.decision_maker import PriorityDecisionRequest
+from game.ai.agents.decision_maker import PriorityDecisionRequest
 import pytest
 
 from game.console.console_commands import CommandError, card_reference

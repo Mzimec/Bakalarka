@@ -1,5 +1,5 @@
-from game.ai.history_diagnostics import difference_path, recall_mismatch
-from game.ai.search_recall import PlayerRecall
+from game.ai.sampling.history_diagnostics import (difference_path, recall_mismatch)
+from game.ai.information.search_recall import PlayerRecall
 
 
 def test_mismatch_records_observer_field_path_without_private_values():

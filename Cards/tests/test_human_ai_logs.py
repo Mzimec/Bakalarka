@@ -6,7 +6,7 @@ import pytest
 
 from game.simulation.match_runner import run_match
 from game.reporting.readable_log import describe, render_match
-from game.ai.simple_agent import SimpleAgent
+from game.ai.agents.simple_agent import SimpleAgent
 from game.console.demo_game import ConsoleDecisionMaker
 
 

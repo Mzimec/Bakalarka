@@ -7,13 +7,14 @@ from time import perf_counter
 
 from benchmarks.search_quality import position
 from benchmarks.search_tactics import tactical_policy
-from game.ai.information_set_search import InformationSetSearch, InformationSearchBudget
-from game.ai.mcts_agent import MCTSAgent
-from game.ai.observation_policy import ObservationOpponentPolicy
-from game.ai.scenario_world_provider import ScenarioWorldProvider
-from game.ai.history_world_provider import HistoryWorldProvider
-from game.ai.incremental_world_provider import IncrementalWorldProvider
-from game.ai.search_simulator import SearchSimulator
+from game.ai.search.information_set_search import InformationSetSearch
+from game.ai.search.contracts import InformationSearchBudget
+from game.ai.agents.mcts_agent import MCTSAgent
+from game.ai.evaluation.observation_policy import ObservationOpponentPolicy
+from game.ai.sampling.scenario_world_provider import ScenarioWorldProvider
+from game.ai.sampling.history_world_provider import HistoryWorldProvider
+from game.ai.sampling.incremental_world_provider import IncrementalWorldProvider
+from game.ai.simulation.search_simulator import SearchSimulator
 
 
 def run(*, seed=42, iterations=16, provider_kind="fixed", population_size=4):

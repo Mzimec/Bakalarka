@@ -8,9 +8,9 @@ from statistics import median
 from time import perf_counter
 
 from benchmarks.live_history_search import simulator, scenario, passing
-from game.ai.history_world_provider import HistoryWorldProvider
-from game.ai.incremental_world_provider import IncrementalWorldProvider
-from game.ai.observation_policy import ObservationOpponentPolicy
+from game.ai.sampling.history_world_provider import HistoryWorldProvider
+from game.ai.sampling.incremental_world_provider import IncrementalWorldProvider
+from game.ai.evaluation.observation_policy import ObservationOpponentPolicy
 
 
 def targets():

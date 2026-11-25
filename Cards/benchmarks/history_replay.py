@@ -7,8 +7,8 @@ from statistics import median
 from time import perf_counter
 
 from benchmarks.search_tactics import tactical_scenario, tactical_policy
-from game.ai.scenario_world_provider import resume_to_information
-from game.ai.search_simulator import SearchSimulator
+from game.ai.sampling.scenario_world_provider import resume_to_information
+from game.ai.simulation.search_simulator import SearchSimulator
 
 
 def passing(info):

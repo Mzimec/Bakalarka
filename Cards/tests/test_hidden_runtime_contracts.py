@@ -6,16 +6,16 @@ from pathlib import Path
 
 import pytest
 
-from game.ai.decision_maker import PriorityDecisionRequest, ModularDecisionMaker
-from game.ai.search_actions import PlayerActionBuilder
-from game.ai.search_decision import DecisionProjector
-from game.ai.search_recall import PlayerRecall
-from game.ai.runtime_clone import RuntimeClone
+from game.ai.agents.decision_maker import (PriorityDecisionRequest, ModularDecisionMaker)
+from game.ai.decisions.search_actions import PlayerActionBuilder
+from game.ai.decisions.search_decision import DecisionProjector
+from game.ai.information.search_recall import PlayerRecall
+from game.ai.simulation.runtime_clone import RuntimeClone
 from game.game_actions.resolution.event_bus import GameEvent, capture_player_events
 from game.game_actions.resolution.event_definitions import EVENT_DEFINITIONS
 from game.game_actions.generation.decision_abstraction.auxiliary import ReplacementOrderRequest
 from game.game_actions.generation.decision_abstraction.order_frames import OrderDecisionFrame, OrderNextRequest
-from game.simulation.search_config import search_generation_policy
+from game.ai.decisions.generation_policy import search_generation_policy
 from game.enums import ZoneType, TurnPhase
 
 from test_search_context import public_position, add
@@ -111,7 +111,7 @@ def test_small_prefix_space_equals_exhaustive_orders_and_clone_is_isolated():
 
 @pytest.mark.parametrize("count", [7, 11])
 def test_large_live_order_exposes_linear_menus_and_keeps_runtime_unmodified(count):
-    from game.ai.decision_maker import DecisionResult
+    from game.ai.agents.decision_maker import DecisionResult
     class PickLast(ModularDecisionMaker):
         def __init__(self):
             self.sizes = []
@@ -131,7 +131,7 @@ def test_large_live_order_exposes_linear_menus_and_keeps_runtime_unmodified(coun
 
 @pytest.mark.parametrize("count", [7, 11])
 def test_large_simulated_order_is_forkable_and_no_damage_executes_before_completion(count):
-    from game.ai.search_simulator import SearchSimulator
+    from game.ai.simulation.search_simulator import SearchSimulator
     from game.game_actions.data_structs.game_action import ResolutionContext
     from game.operations.card_operations import DamagePlayerOperation
     from game.game_actions.resolution.replacement_effects import ReplacementResolver
@@ -156,7 +156,7 @@ def test_large_simulated_order_is_forkable_and_no_damage_executes_before_complet
 
 
 def test_public_dynamic_cost_effect_rebuilds_private_targets_after_sampling():
-    from game.ai.game_origin import GameOrigin
+    from game.ai.sampling.game_origin import GameOrigin
     from game.cards.decks import DeckList
     from game.cards.catalog import game_catalog
     from game.game_loop.setup import SetupConfig
@@ -188,7 +188,7 @@ def test_public_dynamic_cost_effect_rebuilds_private_targets_after_sampling():
 
 
 def test_observed_effect_collection_does_not_depend_on_register_slot_order():
-    from game.ai.observation import PlayerObservationBuilder
+    from game.ai.information.observation import PlayerObservationBuilder
     from game.game_state.registers.effect_register import EffectRegister
     game = public_position((ModularDecisionMaker(), ModularDecisionMaker()))
     add(game, "Warden of Evos Isle")
@@ -209,7 +209,7 @@ def test_observed_effect_collection_does_not_depend_on_register_slot_order():
 
 def test_dynamic_projection_does_not_erase_extension_owned_rule_state():
     from game.game_state.modifier import ContinuousEffectState
-    from game.ai.snapshot_effects import project_hidden_static_effects
+    from game.ai.information.snapshot_effects import project_hidden_static_effects
     game = public_position((ModularDecisionMaker(), ModularDecisionMaker()))
     add(game, "Warden of Evos Isle")
     state = game.state
@@ -223,8 +223,9 @@ def test_dynamic_projection_does_not_erase_extension_owned_rule_state():
 
 def test_fixed_work_search_recommendation_ignores_actual_hidden_static_membership():
     from test_snapshot_effects import position, prepare
-    from game.ai.information_set_search import InformationSetSearch, InformationSearchBudget
-    from game.ai.observation_policy import ObservationOpponentPolicy
+    from game.ai.search.information_set_search import InformationSetSearch
+    from game.ai.search.contracts import InformationSearchBudget
+    from game.ai.evaluation.observation_policy import ObservationOpponentPolicy
     origin, game = position()
     _, first, info = prepare(origin, game)
     other = game.state.players[1]

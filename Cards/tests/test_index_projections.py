@@ -1,6 +1,6 @@
 """Updating runtime flags must not rebuild unrelated card characteristics."""
 import pytest
-from game.ai.decision_maker import ModularDecisionMaker
+from game.ai.agents.decision_maker import ModularDecisionMaker
 from game.enums import ZoneType, CardType, ActivatableAbilityType
 from game.game_state import State, Player, Card, CardDefinition
 from game.game_state.registers.card_register import (
@@ -83,6 +83,11 @@ def test_mutable_zone_permissions_are_not_cached(board):
     assert card in state.query_cards(query)
     zones.clear()
     state.notify_card_changed(card)
+    assert card in state.query_cards(query)  # Detached immutable authoring input.
+    from dataclasses import replace
+    from game.stat_type import STAT_ABILITIES
+    changed = replace(definition, allowed_zones=frozenset())
+    card.set_base_stat(STAT_ABILITIES, ImmutableKeyedCollection({changed.key: changed}))
     assert card not in state.query_cards(query)
 
 
@@ -239,8 +244,8 @@ def test_layer_refresh_keeps_stack_x_live_without_a_stat_table_change(board):
 
 def test_partial_index_optimization_preserves_gameplay_log(tmp_path, monkeypatch):
     import json
-    from game.ai.simple_agent import SimpleAgent
-    from game.ai.modular_agent import ModularAgent
+    from game.ai.agents.simple_agent import SimpleAgent
+    from game.ai.agents.modular_agent import ModularAgent
     from game.game_state.card_snapshot_cache import CardSnapshotCache
     from game.game_state.registers.card_register import CardRegister
     from game.simulation.match_runner import run_match

@@ -10,8 +10,8 @@ from time import perf_counter, process_time
 from unittest.mock import patch
 from benchmarks.environment import collect_environment
 
-from game.ai.modular_agent import ModularAgent
-from game.ai.simple_agent import SimpleAgent
+from game.ai.agents.modular_agent import ModularAgent
+from game.ai.agents.simple_agent import SimpleAgent
 from game.game_actions.data_structs.ability import TriggerAbilityDefinition
 from game.game_actions.resolution import event_bus, operation_executor
 from game.game_actions.triggers import trigger_roster

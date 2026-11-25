@@ -12,12 +12,13 @@ if TYPE_CHECKING:
     from .game_action import ResolutionContext
 
 from helper.runtime_object import RuntimeObject
+from helper.static_definition import StaticDefinition
 from ...enums import *
 
 __all__ = ["Effect"]
 
 
-class Effect(RuntimeObject):
+class Effect(StaticDefinition, RuntimeObject):
     """!
     @brief Base class for ability effects that generate executable operations.
     An `Effect` is the declarative description of "what should happen"

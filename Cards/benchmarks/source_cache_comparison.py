@@ -15,8 +15,8 @@ from benchmarks.decision_comparison import save
 
 def worker(args):
     from benchmarks.environment import collect_environment
-    from game.ai.simple_agent import SimpleAgent
-    from game.ai.modular_agent import ModularAgent
+    from game.ai.agents.simple_agent import SimpleAgent
+    from game.ai.agents.modular_agent import ModularAgent
     from game.mana.source_cache import StaticManaSourceCache
     from game.simulation.match_runner import run_match
     if args.mode == "off":

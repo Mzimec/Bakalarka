@@ -7,17 +7,18 @@ from abc import ABC, abstractmethod
 from uuid import uuid4
 from helper.runtime_object import RuntimeObject
 
-from ..ai.decision_maker import DecisionMaker
+from game.ai.agents.decision_maker import DecisionMaker
 
 from ..constants import STARTING_HEALTH, HAND_SIZE
 from .battlefield import Battlefield, CardCollection
+from .card_repository import CardRepository
 
 if TYPE_CHECKING:
     from ..game_actions.data_structs.ability import GameAction
     from .card import Card
     from .state import State
     from .battlefield import CardCollection
-    from ..ai.decision_maker import DecisionMaker
+    from game.ai.agents.decision_maker import DecisionMaker
 
 from ..enums import *
 
@@ -64,8 +65,9 @@ class Player(RuntimeObject):
         self._idx = idx
         self._name = name if name is not None else f"Player {idx + 1}"
 
+        self._card_repository = CardRepository()
         self._zone_map: dict[ZoneType, CardCollection] = {
-            zone: Battlefield() if zone == ZoneType.BATTLEFIELD else CardCollection()
+            zone: (Battlefield if zone == ZoneType.BATTLEFIELD else CardCollection)(repository=self._card_repository)
             for zone in ZoneType
         }
 
@@ -364,5 +366,5 @@ class Player(RuntimeObject):
         @param state Current game state.
         @return Chosen action, including an explicit PassPriorityAction.
         """
-        from ..ai.decision_maker import PriorityDecisionRequest
+        from game.ai.agents.decision_maker import PriorityDecisionRequest
         return self.controller.decide(PriorityDecisionRequest(state, self)).value

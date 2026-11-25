@@ -17,16 +17,16 @@ from statistics import mean, median
 
 from benchmarks.mcts_recorded_roots import capture
 from benchmarks.mcts_decision_latency import Components, detached_planner
-from game.ai.search_candidates import ProgressiveWidening
+from game.ai.decisions.search_candidates import ProgressiveWidening
 
 
 def preparation(repeats=20):
     """! @brief Time bounded generation/projection without sampling or forward search. """
-    from game.ai.search_simulator import _Replay
-    from game.ai.generation_candidates import CandidateFrontier
-    from game.ai.search_decision import DecisionProjector
-    from game.ai.search_recall import PlayerRecall
-    from game.ai.observation_policy import ObservationOpponentPolicy
+    from game.ai.simulation.search_simulator import _Replay
+    from game.ai.decisions.generation_candidates import CandidateFrontier
+    from game.ai.decisions.search_decision import DecisionProjector
+    from game.ai.information.search_recall import PlayerRecall
+    from game.ai.evaluation.observation_policy import ObservationOpponentPolicy
     from game.game_actions.generation.decision_abstraction.requests import AbilityResolutionRequest
     from game.game_actions.data_structs.game_action import ResolutionContext
     from game.enums import ZoneType, CardType
@@ -129,7 +129,7 @@ class RequestStepMeasurement:
 
     def __init__(self, simulator, root, action, planner, seed, *, execution_breakdown=False):
         """! @brief Prepare a cold local selector outside all measured intervals. """
-        from game.ai.information_set_search import _Run
+        from game.ai.search.information_set_search import _Run
         self.simulator, self.root, self.action = simulator, root, action
         self.selector = _Run(planner, root.player_information().current.player, seed)
         self.calls, self.row = 0, {}
@@ -180,7 +180,7 @@ class RequestStepMeasurement:
 
     def execute(self):
         """! @brief Observe native menu entry, excluding prior sampling and restore. """
-        from game.ai.search_simulator import _Replay
+        from game.ai.simulation.search_simulator import _Replay
         simulator = self.simulator
         original = _Replay.decide
 

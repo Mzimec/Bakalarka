@@ -7,6 +7,7 @@ from dataclasses import dataclass, field
 from functools import total_ordering
 from collections.abc import Set
 from helper.change_tracking import TrackedDict, TrackedSet
+from helper.static_definition import StaticDefinition, RuntimeBinding
 
 if TYPE_CHECKING:
     from .state import State
@@ -86,7 +87,7 @@ class PlayerMoment:
         )
 
 
-class Duration(ABC):
+class Duration(StaticDefinition, ABC):
     """!
     @brief Interface describing when a continuous effect expires.
     """
@@ -182,7 +183,7 @@ class PermanentDuration(Duration):
 
 
 @dataclass(frozen=True)
-class AnchoredDuration(Duration):
+class AnchoredDuration(RuntimeBinding, Duration):
     """!
     @brief Duration tied to an anchor remaining in one of a set of zones.
     """
@@ -263,7 +264,7 @@ class DynamicTargetingStrategy(TargetingStrategy):
 
 
 @dataclass(frozen=True)
-class ContinuousEffectDefinition:
+class ContinuousEffectDefinition(RuntimeBinding):
     """!
     @brief Immutable definition of one continuous effect.
 
@@ -331,7 +332,7 @@ class ContinuousEffectState:
 
 
 @dataclass(frozen=True)
-class ContinuousEffect(RuntimeObject):
+class ContinuousEffect(RuntimeBinding, RuntimeObject):
     """!
     @brief Runtime continuous effect bound to a definition and mutable state.
     """
@@ -441,7 +442,7 @@ class ContinuousEffect(RuntimeObject):
 T = TypeVar("T")
 
 
-class Modifier(Generic[T], ABC):
+class Modifier(StaticDefinition, Generic[T], ABC):
     """!
     @brief Base interface for a characteristic transformation.
     """
@@ -579,7 +580,7 @@ class AddCollectionModifier(Generic[KT], AddModifier[KeyedCollection[KT]]):
     @brief Add keyed runtime objects to a keyed collection.
     """
 
-    value: list[KT]
+    value: tuple[KT, ...]
 
     def modify(self, original: KeyedCollection[KT]) -> KeyedCollection[KT]:
         """!

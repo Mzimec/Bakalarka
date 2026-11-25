@@ -681,7 +681,7 @@ class CombatState:
             if assigned is None:
                 controller = creature.get_controller(self.state)
                 if len(recipients) > 1 and amount:
-                    from ..ai.decision_maker import CombatDamageRequest
+                    from game.ai.agents.decision_maker import CombatDamageRequest
                     assigned = controller.decision_maker.decide(CombatDamageRequest(
                         self.state, controller, creature, tuple(recipients), amount,
                     )).value.assignments

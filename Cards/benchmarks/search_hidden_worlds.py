@@ -9,9 +9,9 @@ from random import Random
 from time import perf_counter
 
 from benchmarks.search_tactics import tactical_policy
-from game.ai.sampled_scenario import HiddenZoneBelief, SampledScenario
-from game.ai.search_observation import ActingPlayerObservation
-from game.ai.search_simulator import SearchSimulator
+from game.ai.reference.sampled_scenario import (HiddenZoneBelief, SampledScenario)
+from game.ai.information.search_observation import ActingPlayerObservation
+from game.ai.simulation.search_simulator import SearchSimulator
 
 
 def catalog():

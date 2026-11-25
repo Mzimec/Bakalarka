@@ -9,9 +9,9 @@ import sys
 from time import perf_counter, process_time
 
 from benchmarks.search_simulator import diagnostic_choice
-from game.ai.search_simulator import SearchSimulator, starter_scenario
-from game.ai.prefix_replay_simulator import PrefixReplaySimulator
-from game.ai.perfect_information_search import PerfectInformationSearch, SearchBudget
+from game.ai.simulation.search_simulator import (SearchSimulator, starter_scenario)
+from game.ai.reference.prefix_replay_simulator import PrefixReplaySimulator
+from game.ai.reference.perfect_information_search import (PerfectInformationSearch, SearchBudget)
 
 
 def timed(call):

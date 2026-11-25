@@ -12,6 +12,7 @@ from game.game_actions.data_structs.ability import ActivatedAbilityDefinition, C
 
 from collections.abc import Iterable
 from dataclasses import dataclass
+from functools import lru_cache
 from uuid import uuid4
 
 from immutabledict import immutabledict
@@ -1835,7 +1836,8 @@ STARTER_CATALOG = {
 }
 
 
-def starter_catalog() -> dict:
+@lru_cache(maxsize=1)
+def _static_starter_catalog():
     """!
     @brief Return a fresh name-to-definition mapping for Arena starter games.
     """
@@ -1845,10 +1847,16 @@ def starter_catalog() -> dict:
     from dataclasses import replace
 
     rules = starter_rules_text()
-    return {
+    from immutabledict import immutabledict
+    return immutabledict({
         name: replace(definition, oracle_text=rules[name] or "No printed abilities.")
         for name, definition in {**STARTER_CATALOG, **extension_catalog()}.items()
-    }
+    })
+
+
+def starter_catalog() -> dict:
+    """Return a fresh lookup table referencing one published definition catalog."""
+    return dict(_static_starter_catalog())
 
 
 __all__ = [

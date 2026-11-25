@@ -1,4 +1,4 @@
-from game.ai.decision_maker import PriorityDecisionRequest
+from game.ai.agents.decision_maker import PriorityDecisionRequest
 from game.game_actions import PassPriorityAction
 from game.game_loop.minimal_game import DealDamageAction, MinimalPlayer, MinimalState, ScriptedController, create_minimal_game
 

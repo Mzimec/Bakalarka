@@ -101,7 +101,7 @@ def test_global_rule_metadata_and_replaced_helpers_stay_live(board, monkeypatch)
 
 
 def test_runtime_copy_rebinds_cache_inputs_and_keeps_worlds_independent(board):
-    from game.ai.simulation_world import copy_world
+    from game.ai.simulation.simulation_world import copy_world
     state, card = board
     original = card.get_ability_defs(state)
     cloned, _ = copy_world(state, {})

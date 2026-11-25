@@ -212,13 +212,15 @@ def _capture_single_card(state: object, card: object) -> CardLastKnownInformatio
 
 def capture_player_events(state, event, information=None):
     """Freeze visibility at event time; deliver only when the event commits."""
+    if not getattr(state, 'record_player_information', True):
+        return _with_event_data(event, player_events=()) if event.player_events != () else event
     if event.player_events is not None:
         return event
     projections = []
     from .event_definitions import EVENT_DEFINITIONS
     definition = EVENT_DEFINITIONS.get(event.key)
     if definition is not None and definition.frozen_zone_projection:
-        from ...ai.knowledge import project_player_event
+        from game.ai.information.knowledge import project_player_event
         projection_source = event
         if information and id(event.source) in information:
                 projection_source = _with_event_data(event, payload={**event.payload, "last_known": information[id(event.source)]})
@@ -521,7 +523,7 @@ class TriggerProcessor:
         @param state Current game state.
         @param triggers Trigger abilities controlled by the player.
         """
-        from ...ai.decision_maker import TriggerOrderRequest, AbilityDecisionRequest
+        from game.ai.agents.decision_maker import (TriggerOrderRequest, AbilityDecisionRequest)
 
         decision_maker = controller.controller
         triggers = tuple(triggers)

@@ -82,6 +82,22 @@ class IndexedRegister(InMemoryObjectRegister):
         """
         return self._by_key.get(key)
 
+    def _native_bucket(self,index,value):
+        """Read an owned native index mask without a temporary Query/BitSet.
+
+        Native selectors synchronize before reading and materialize their
+        results before returning. Extensible queries retain query()/contains().
+        """
+        bucket = self.idx_provider.get_index_group(index).get(value)
+        return 0 if bucket is None else bucket._bits
+
+    def _native_objects(self,bits):
+        """Yield native mask IDs in the same ascending order as BitSet."""
+        while bits:
+            low = bits & -bits
+            yield self.storage.get(low.bit_length()-1)
+            bits ^= low
+
     def validate_new(self, obj):
         """!
         @brief Validate that an object may be registered here.

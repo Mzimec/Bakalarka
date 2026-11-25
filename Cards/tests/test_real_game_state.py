@@ -1,5 +1,5 @@
 """Examples of the real card/player data used by the playable game loop."""
-from game.ai.decision_maker import DecisionResult
+from game.ai.agents.decision_maker import DecisionResult
 from game.game_actions import PassPriorityAction
 from game.game_actions.data_structs.ability import ActivatedAbilityDefinition
 
@@ -9,7 +9,7 @@ from game.enums import CardType, ZoneType
 from game.game_actions.data_structs.ability import TriggerAbilityDefinition, TriggerCondition
 from game.game_actions.resolution.event_bus import GameEvent
 from game.game_state import Card, CardDefinition, Player, State
-from game.ai.decision_maker import ModularDecisionMaker as DecisionMaker
+from game.ai.agents.decision_maker import ModularDecisionMaker as DecisionMaker
 
 
 class PassingController(DecisionMaker):

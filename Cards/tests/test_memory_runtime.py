@@ -42,7 +42,7 @@ def test_match_and_tournament_defaults_never_write_and_can_log_in_memory():
 
 def test_cli_commands_and_config_have_no_implicit_log_destination(monkeypatch):
     from game.bin import match, tournament, self_play
-    from game.ai import self_play as training
+    from game.ai.training import self_play as training
     from game.simulation import config as config_module
     captured = []
     def play(colors,output,**kwargs):
@@ -79,9 +79,9 @@ def test_parallel_mcts_has_no_disk_spool(selection,backend):
 @pytest.mark.parametrize('with_log',[False,True])
 def test_real_neural_spawn_actors_transfer_snapshots_and_examples_without_files(monkeypatch,tmp_path,with_log):
     pytest.importorskip('numpy')
-    from game.ai import self_play
-    from game.ai.self_play_config import SelfPlayConfig
-    from game.ai.training_model import PolicyValueModel
+    from game.ai.training import self_play
+    from game.ai.training.self_play_config import SelfPlayConfig
+    from game.ai.training.training_model import PolicyValueModel
     monkeypatch.setattr(self_play,'ProcessPoolExecutor',guarded_process_pool)
     config = SelfPlayConfig(actors=2,generations=2,games_per_generation=2,evaluation_games=1,
         max_turns=1,collect_only=True,batch_size=1,bootstrap_generations=0,hidden=4,
@@ -106,7 +106,7 @@ def test_real_neural_spawn_actors_transfer_snapshots_and_examples_without_files(
 
 
 def test_actor_queue_backpressure_counts_out_of_order_completed_payloads(monkeypatch):
-    from game.ai import self_play
+    from game.ai.training import self_play
     class Pool:
         submitted = []
         def submit(self, function, job):
@@ -130,9 +130,9 @@ def test_actor_queue_backpressure_counts_out_of_order_completed_payloads(monkeyp
 
 def test_learning_roundtrip_stays_in_memory_and_advances_model_generation(monkeypatch):
     pytest.importorskip('numpy')
-    from game.ai import self_play
-    from game.ai.self_play_config import SelfPlayConfig
-    from game.ai.training_model import PolicyValueModel
+    from game.ai.training import self_play
+    from game.ai.training.self_play_config import SelfPlayConfig
+    from game.ai.training.training_model import PolicyValueModel
     from test_self_play import example
     row = example()
     revisions = []

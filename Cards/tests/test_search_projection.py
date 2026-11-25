@@ -3,16 +3,16 @@ from dataclasses import asdict, replace
 from hashlib import sha256
 import json
 
-from game.ai.observation import PlayerObservationBuilder
-from game.ai.search_actions import canonical_json
-from game.ai.search_observation import ActingPlayerObservation
-from game.ai.search_recall import PlayerInformation
-from game.ai.structured_values import text
+from game.ai.information.observation import PlayerObservationBuilder
+from game.ai.decisions.search_actions import canonical_json
+from game.ai.information.search_observation import ActingPlayerObservation
+from game.ai.information.search_recall import PlayerInformation
+from game.ai.information.structured_values import text
 from game.game_state import Card
 from game.enums import ZoneType, CounterType
 from benchmarks.search_tactics import tactical_scenario, tactical_policy
-from game.ai.modular_agent import ModularAgent
-from game.ai.search_simulator import SearchSimulator
+from game.ai.agents.modular_agent import ModularAgent
+from game.ai.simulation.search_simulator import SearchSimulator
 
 
 def test_build_reuse_matches_uncached_description_and_does_not_cross_observers_or_mutations():
@@ -76,10 +76,10 @@ def test_information_reuse_keeps_hashes_serialization_and_detached_policy_inputs
 
 
 def test_raw_view_projection_preserves_reference_json_roundtrip():
-    from game.ai.search_decision import DecisionProjector
-    from game.ai.search_recall import PlayerRecall
-    from game.ai.observation import decision_observation
-    from game.ai.decision_maker import PriorityDecisionRequest
+    from game.ai.decisions.search_decision import DecisionProjector
+    from game.ai.information.search_recall import PlayerRecall
+    from game.ai.information.observation import decision_observation
+    from game.ai.agents.decision_maker import PriorityDecisionRequest
     game = tactical_scenario("answered_shock")((ModularAgent(), ModularAgent()))
     request = PriorityDecisionRequest(game.state, game.state.players[0])
     options = tuple(request.option_space(tactical_policy(request)))
@@ -92,10 +92,10 @@ def test_raw_view_projection_preserves_reference_json_roundtrip():
 
 
 def test_retained_replay_view_is_normalized_and_detached_from_policy_information():
-    from game.ai.search_decision import DecisionProjector
-    from game.ai.search_recall import PlayerRecall
-    from game.ai.observation import decision_observation
-    from game.ai.decision_maker import PriorityDecisionRequest
+    from game.ai.decisions.search_decision import DecisionProjector
+    from game.ai.information.search_recall import PlayerRecall
+    from game.ai.information.observation import decision_observation
+    from game.ai.agents.decision_maker import PriorityDecisionRequest
     game = tactical_scenario("answered_shock")((ModularAgent(), ModularAgent()))
     request = PriorityDecisionRequest(game.state, game.state.players[0])
     options = tuple(request.option_space(tactical_policy(request)))
@@ -118,7 +118,7 @@ def test_retained_replay_view_is_normalized_and_detached_from_policy_information
 
 
 def test_replay_reuses_decoded_view_without_changing_reference_nodes(monkeypatch):
-    from game.ai import search_simulator
+    from game.ai.simulation import search_simulator
     original = search_simulator.DecisionProjector.build
     def roundtrip(projector):
         result = original(projector)

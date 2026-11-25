@@ -16,8 +16,8 @@ from benchmarks.mcts_matched_requests import RequestStepMeasurement, run
 @contextmanager
 def retained_indexes(enabled, copies=None):
     """! @brief Ablate only transferred index proofs, including checkpoint copies. """
-    import game.ai.simulation_world as worlds
-    import game.ai.checkpoint_simulator as checkpoints
+    import game.ai.simulation.simulation_world as worlds
+    import game.ai.simulation.checkpoint_simulator as checkpoints
     original = worlds.copy_world
     def copy(*args, **kwargs):
         result = original(*args, **dict(kwargs, retain_index_projections=enabled))
@@ -37,7 +37,7 @@ def endpoint(node):
 def measure_step(planner, factory, seed, ordinal, enabled):
     """! @brief Count characteristic reads before restore, during A and during B. """
     from game.game_state.registers.card_register import CardRegister
-    from game.ai.search_simulator import _Replay
+    from game.ai.simulation.search_simulator import _Replay
     reads, copies, phase = Counter(), [], ['initialize']
     original_read, original_decide = CardRegister._characteristic_index_values, _Replay.decide
     measurement = None

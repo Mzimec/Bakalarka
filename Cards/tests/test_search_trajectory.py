@@ -5,12 +5,14 @@ from unittest.mock import patch
 import pytest
 
 from benchmarks.search_tactics import tactical_scenario, tactical_policy
-from game.ai.information_set_search import InformationSetSearch, InformationSearchBudget, _Run
-from game.ai.observation_policy import ObservationOpponentPolicy
-from game.ai.search_simulator import SearchSimulator
+from game.ai.search.information_set_search import (InformationSetSearch, _Run)
+from game.ai.search.contracts import InformationSearchBudget
+from game.ai.evaluation.observation_policy import ObservationOpponentPolicy
+from game.ai.simulation.search_simulator import SearchSimulator
 
 
-def compare(factory, *, selection="uct", cache=256, budget=None):
+def compare(factory, *, selection="uct", cache=256, budget=None, leaf_policy='horizon',
+            runtime_observations=False):
     info = factory(0).start().player_information()
     rows, traces, inputs = [], [], []
     for mode in ("replay", "continuous"):
@@ -20,13 +22,21 @@ def compare(factory, *, selection="uct", cache=256, budget=None):
             trace.append((node, action, child))
             store(run, sim, node, action, child)
         policy = ObservationOpponentPolicy()
+        native_choose = ObservationOpponentPolicy.__call__
         def choose(info):
             observed.append(info)
             return policy(info)
-        search = InformationSetSearch(opponent_policy=choose, rollout_policy=choose,
+        def observe_native(instance, info):
+            observed.append(info)
+            return native_choose(instance, info)
+        active_policy = policy if runtime_observations else choose
+        search = InformationSetSearch(opponent_policy=active_policy, rollout_policy=active_policy,
+            leaf_policy=leaf_policy, runtime_observations=runtime_observations,
             selection=selection, transition_cache_size=cache, trajectory_mode=mode,
             budget=budget or InformationSearchBudget(worlds=2, iterations=6, max_advances=48, max_depth=3))
-        with patch.object(_Run, "store_transition", record):
+        from contextlib import nullcontext
+        with patch.object(_Run, "store_transition", record), (patch.object(
+                ObservationOpponentPolicy, '__call__', observe_native) if runtime_observations else nullcontext()):
             result = search.search(factory, info, seed=42)
         rows.append(result)
         traces.append(trace)
@@ -34,6 +44,7 @@ def compare(factory, *, selection="uct", cache=256, budget=None):
     a, b = rows
     assert replace(a, metrics=b.metrics) == b
     ignored = {"elapsed_ms", "cpu_ms", "world_initialization_ms", "advance_ms", "trajectory_runs",
+               "trajectory_loop_ms", "trajectory_loop_cpu_ms",
                "checkpoint_hits", "checkpoint_entries", "checkpoint_skipped_decisions",
                'checkpoint_copies','checkpoint_evictions','checkpoint_capture_ms',
                'checkpoint_copy_rejections',
@@ -64,8 +75,8 @@ def test_streamed_search_matches_every_transition_and_policy_input(case, selecti
 @pytest.mark.parametrize("checkpoints", [0, 8])
 def test_sampled_worlds_and_checkpoints_preserve_hidden_history(reuse, checkpoints):
     from test_current_position_worlds import position, prepare
-    from game.ai.current_position_worlds import _PreparedWorld
-    from game.ai.checkpoint_simulator import CheckpointSimulator
+    from game.ai.sampling.current_position_worlds import _PreparedWorld
+    from game.ai.simulation.checkpoint_simulator import CheckpointSimulator
     origin, game = position()
     _, _, snapshot = prepare(origin, game)
     initial_rng = game.state.rng.getstate()
@@ -131,7 +142,7 @@ def test_nested_resolution_choices_continue_without_replaying_operation_prefix()
 
 def test_production_configuration_selects_continuous_and_exposes_reference_mode():
     from game.simulation.search_config import make_search_controller
-    from game.ai.game_origin import GameOrigin
+    from game.ai.sampling.game_origin import GameOrigin
     from game.cards.decks import load_arena_starter
     from game.cards.catalog import game_catalog
     origin = GameOrigin((load_arena_starter("red"), load_arena_starter("white")), game_catalog)

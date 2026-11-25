@@ -26,7 +26,7 @@ def worker(config, output):
     import game
     # Failure-only instrumentation: preserve exception types/messages/control
     # flow and avoid tracing successful engine calls.
-    from game.ai.search_simulator import SimulationBudgetExceeded
+    from game.ai.simulation.search_simulator import SimulationBudgetExceeded
     import inspect
     original_init = SimulationBudgetExceeded.__init__
     limits = []
@@ -36,7 +36,8 @@ def worker(config, output):
         frame = inspect.currentframe().f_back
         try:
             while frame is not None:
-                if frame.f_code.co_name == "_decide" and frame.f_code.co_filename.replace("\\", "/").endswith("/ai/mcts_agent.py"):
+                if (frame.f_code.co_name == "_decide" and
+                        frame.f_code.co_filename.replace("\\", "/").endswith("/ai/agents/mcts_agent.py")):
                     request = frame.f_locals["request"]
                     detail.update(turn=request.state.turn.number, phase=request.state.turn.phase.name,
                                   request=type(request).__name__)

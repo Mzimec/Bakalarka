@@ -178,7 +178,7 @@ class EquivalenceContext:
             try:
                 # Keep all runtime metadata except identifiers and historical LKI.
                 runtime = {k: v for k, v in vars(card).items() if k not in {
-                    "_key", "runtime_id", "command_id", "_game_state", "_definition",
+                    "_key", "runtime_id", "command_id", "_game_state", "_definition", "_printed_definition",
                     "_stats", "_modifier_sources", "_state", "_incarnation_history",
                     # Derived read caches are not characteristics or identity
                     # observations. Their authoritative inputs/results are
@@ -186,8 +186,13 @@ class EquivalenceContext:
                     "_native_empty_sources", "_native_modifier_plan",
                     "_characteristic_values", "_ability_definition_cache",
                 }}
+                record_metadata = {'zone_revision', 'controlled_since', 'token_left_battlefield',
+                                   'loyalty_activated_turn', '_entry_copy_restore'}
+                runtime.update((name, getattr(card, name)) for name in record_metadata
+                               if hasattr(card, name))
                 values = {k: v for k, v in vars(card.state).items()
-                          if k not in {"_on_change", "_on_runtime_change", "zone_info", "attach_info"}}
+                          if k not in record_metadata | {"_on_change", "_on_runtime_change", "zone_info", "attach_info",
+                                                        "_stats", "_modifier_sources", "_incarnation_history", "_definition_override"}}
                 zone_info = dict(vars(card.state.zone_info))
                 from ...enums import CardType
                 from ...rules.lands import BASIC_LAND_MANA

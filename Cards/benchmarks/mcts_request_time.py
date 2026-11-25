@@ -57,8 +57,8 @@ class RequestProfiler:
 
     @contextmanager
     def installed(self):
-        from game.ai.decision_maker import DecisionMaker
-        from game.ai.search_simulator import SearchSimulator, _ReplayController
+        from game.ai.agents.decision_maker import DecisionMaker
+        from game.ai.simulation.search_simulator import (SearchSimulator, _ReplayController)
         from game.game_actions.resolution.action_processor import ActionProcessor
         original_decide, original_replay_decide = DecisionMaker.decide, _ReplayController.decide
         original_process, original_run = ActionProcessor.process, SearchSimulator._run_replay
@@ -170,7 +170,7 @@ def settings_for(variant, *, iterations=16, worlds=2, depth=4):
 
 def run_one(variant, *, colors=('red', 'white'), opponent='simple', seed=42, turns=12,
             iterations=16, worlds=2, depth=4):
-    from game.ai.game_origin import GameOrigin
+    from game.ai.sampling.game_origin import GameOrigin
     from game.cards.catalog import game_catalog
     from game.cards.decks import load_arena_starter
     from game.simulation.config import make_controller
@@ -241,12 +241,15 @@ def fixed_roots(*, colors=('red', 'white'), seed=42, repeats=2, iterations=16, w
                 stress=False):
     """Compare each algorithm on identical captured priority/attack/block states."""
     from benchmarks.mcts_parallel import capture
-    from game.ai.decision_maker import PriorityDecisionRequest, DeclareAttackersRequest, DeclareBlockersRequest
-    from game.ai.action_priors import HeuristicActionPrior
-    from game.ai.information_set_search import InformationSetSearch, InformationSearchBudget
-    from game.ai.observation_policy import ObservationOpponentPolicy
-    from game.simulation.search_config import SearchGenerationPolicy
-    from game.ai.search_simulator import SearchSimulator
+    from game.ai.agents.decision_maker import (
+        PriorityDecisionRequest, DeclareAttackersRequest, DeclareBlockersRequest,
+    )
+    from game.ai.evaluation.action_priors import HeuristicActionPrior
+    from game.ai.search.information_set_search import InformationSetSearch
+    from game.ai.search.contracts import InformationSearchBudget
+    from game.ai.evaluation.observation_policy import ObservationOpponentPolicy
+    from game.ai.decisions.generation_policy import SearchGenerationPolicy
+    from game.ai.simulation.search_simulator import SearchSimulator
     kinds = ((DeclareAttackersRequest, DeclareBlockersRequest) if stress else
              (PriorityDecisionRequest, DeclareAttackersRequest, DeclareBlockersRequest))
     for kind in kinds:

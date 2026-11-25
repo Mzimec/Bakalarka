@@ -5,18 +5,20 @@ from itertools import combinations, combinations_with_replacement
 import pytest
 
 from benchmarks.search_tactics import tactical_scenario
-from game.ai.modular_agent import ModularAgent
-from game.ai.decision_maker import DecisionMaker, DecisionResult, PriorityDecisionRequest
-from game.ai.search_descriptors import ChoiceDescriptor
-from game.ai.search_simulator import SearchSimulator
-from game.ai.information_set_search import InformationSetSearch, InformationSearchBudget
-from game.ai.observation_policy import ObservationOpponentPolicy
+from game.ai.agents.modular_agent import ModularAgent
+from game.ai.agents.decision_maker import (DecisionMaker, DecisionResult, PriorityDecisionRequest)
+from game.ai.decisions.search_descriptors import ChoiceDescriptor
+from game.ai.simulation.search_simulator import SearchSimulator
+from game.ai.search.information_set_search import InformationSetSearch
+from game.ai.search.contracts import InformationSearchBudget
+from game.ai.evaluation.observation_policy import ObservationOpponentPolicy
 from game.game_actions.generation.decision_abstraction.policies import PriorityGenerationPolicy
 from game.game_actions.generation.decision_abstraction.priority_frames import PrioritySourceOption
 from game.game_actions.generation.decision_abstraction.ability_frames import (
     AbilityConstructionFrame, AbilityConstructionOption, AbilityConstructionRequest,
 )
-from game.simulation.search_config import SearchGenerationPolicy, SearchAgentConfig
+from game.ai.decisions.generation_policy import SearchGenerationPolicy
+from game.simulation.search_config import SearchAgentConfig
 from game.target.target_selector import MinMaxTegetSelector
 
 
@@ -207,9 +209,9 @@ def test_unpayable_cost_target_prefixes_are_never_offered():
 
 
 def test_construction_identity_never_reflects_policies_or_runtime_frames():
-    from game.ai.search_actions import PlayerActionBuilder
-    from game.ai.search_decision import DecisionProjector
-    from game.ai.search_recall import PlayerRecall
+    from game.ai.decisions.search_actions import PlayerActionBuilder
+    from game.ai.decisions.search_decision import DecisionProjector
+    from game.ai.information.search_recall import PlayerRecall
     game, request = fixture("lethal_shock")
     source = next(o for o in request.option_space(SearchGenerationPolicy(True, True)(request))
                   if type(o) is PrioritySourceOption)
@@ -235,7 +237,7 @@ def test_construction_identity_never_reflects_policies_or_runtime_frames():
 
 
 def test_microchoice_budget_still_interrupts_without_paying_or_using_partial_results():
-    from game.ai.search_simulator import SimulationBudgetExceeded
+    from game.ai.simulation.search_simulator import SimulationBudgetExceeded
     simulator = SearchSimulator(tactical_scenario("lethal_shock"), policy_for=SearchGenerationPolicy(True, True),
                                 track_information=True, max_decisions=1)
     root = simulator.start()

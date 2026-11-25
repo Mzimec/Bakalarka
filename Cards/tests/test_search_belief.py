@@ -4,7 +4,7 @@ from random import Random
 
 import pytest
 
-from game.ai.belief import HiddenCardPool, KnownDeckModel
+from game.ai.sampling.belief import (HiddenCardPool, KnownDeckModel)
 
 
 def test_known_deck_removes_only_explicit_evidence_and_copies_inputs():

@@ -3,8 +3,8 @@ import json
 
 import pytest
 
-from game.ai.knowledge import PlayerKnowledge, PlayerEvent, event_view
-from game.ai.modular_agent import ModularAgent, observation
+from game.ai.information.knowledge import (PlayerKnowledge, PlayerEvent, event_view)
+from game.ai.agents.modular_agent import (ModularAgent, observation)
 from game.cards.starter_cards import starter_catalog
 from game.console.demo_game import create_demo_game
 from game.enums import ZoneType as Z, TurnPhase

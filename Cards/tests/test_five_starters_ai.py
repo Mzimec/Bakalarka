@@ -1,5 +1,7 @@
 """Mechanic regressions and experiment contracts for all five starter decks."""
-from game.ai.decision_maker import ScryOption, DecisionResult, DeclareBlockersRequest, PriorityDecisionRequest
+from game.ai.agents.decision_maker import (
+    ScryOption, DecisionResult, DeclareBlockersRequest, PriorityDecisionRequest,
+)
 from dataclasses import replace
 from types import SimpleNamespace
 import json
@@ -19,7 +21,7 @@ from game.game_actions.resolution.action_processor import ActionProcessor
 from game.game_actions.generation.command_action_builder import chosen_action
 from game.console.demo_game import build_action, ConsoleDecisionMaker
 from game.game_loop.game_loop import UntapPhaseController
-from game.ai.simple_agent import SimpleAgent
+from game.ai.agents.simple_agent import SimpleAgent
 from game.simulation.match_runner import run_match, run_tournament
 from game.rules.lands import basic_land
 from game.operations.card_operations import MoveCardOperation, DamageCreatureOperation, DamagePlayerOperation

@@ -1,8 +1,8 @@
 """Reuse display computation without retaining visibility or mutable rules."""
 import pytest
 
-from game.ai.observation import observation
-from game.ai.observation_mana import native_mana_projection
+from game.ai.information.observation import observation
+from game.ai.experiments.observation_mana import native_mana_projection
 from benchmarks.mcts_world_latency import mana_projection_experiment
 from game.enums import ZoneType
 from game.game_state.stat import ModifiableReferenceStat
@@ -90,7 +90,7 @@ def test_mana_cache_is_bounded_and_world_copies_get_empty_derived_cache():
         card.set_base_stat(STAT_GENERIC_COST_REDUCTION, amount)
         native_mana_projection(card, state)
     assert 0 < len(state._card_snapshots._mana_views) <= 256
-    from game.ai.simulation_world import copy_world
+    from game.ai.simulation.simulation_world import copy_world
     copied, _ = copy_world(state, ())
     assert not getattr(copied._card_snapshots, '_mana_views', {})
     assert state._card_snapshots._mana_views

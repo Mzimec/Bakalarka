@@ -42,7 +42,9 @@ def fixed_modifier(modifier):
         return set(vars(modifier)) == {"value"} and type(modifier.value) is int
     if cls is SetModifier:
         return (set(vars(modifier)) == {"value"}
-                and type(modifier.value) in (int, bool, str, type(None)))
+                and (type(modifier.value) in (int, bool, str, type(None))
+                     or type(modifier.value) in (frozenset, ImmutableSet)
+                     and all(type(item) is str or isinstance(item, Enum) for item in modifier.value)))
     if cls in (AddSetModifier, RemoveSetModifier):
         return (set(vars(modifier)) == {"value"}
                 and type(modifier.value) in (frozenset, ImmutableSet)

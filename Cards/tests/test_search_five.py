@@ -6,12 +6,13 @@ from unittest.mock import patch
 import pytest
 
 from benchmarks.search_tactics import tactical_scenario
-from game.ai.search_simulator import SearchSimulator, ForcedBoundary
-from game.ai.observation_policy import ObservationOpponentPolicy
-from game.ai.structured_values import StructuredJSON, ValueStore, RecallDigest, text
-from game.ai.search_recall import PlayerRecall
-from game.ai.information_set_search import InformationSetSearch, InformationSearchBudget
-from game.simulation.search_config import SearchGenerationPolicy
+from game.ai.simulation.search_simulator import (SearchSimulator, ForcedBoundary)
+from game.ai.evaluation.observation_policy import ObservationOpponentPolicy
+from game.ai.information.structured_values import (StructuredJSON, ValueStore, RecallDigest, text)
+from game.ai.information.search_recall import PlayerRecall
+from game.ai.search.information_set_search import InformationSetSearch
+from game.ai.search.contracts import InformationSearchBudget
+from game.ai.decisions.generation_policy import SearchGenerationPolicy
 
 
 def test_structured_payloads_share_subtrees_are_immutable_and_export_legacy_json():
@@ -28,9 +29,9 @@ def test_structured_payloads_share_subtrees_are_immutable_and_export_legacy_json
 
 
 def test_append_and_fast_information_keys_need_no_json_serialization():
-    from game.ai.search_actions import PlayerAction
-    from game.ai.search_observation import ActingPlayerObservation
-    from game.ai.search_recall import PlayerInformation
+    from game.ai.decisions.search_actions import PlayerAction
+    from game.ai.information.search_observation import ActingPlayerObservation
+    from game.ai.information.search_recall import PlayerInformation
     with patch('json.dumps', side_effect=AssertionError('Internal structured path serialized JSON')):
         current = ActingPlayerObservation(0, 'test', StructuredJSON({'self': 0}))
         action = PlayerAction('test', StructuredJSON({'n': 2}))
@@ -62,7 +63,7 @@ def test_structural_tie_break_matches_canonical_json_order():
     store = ValueStore()
     canonical = lambda value: json.dumps(value, sort_keys=True, separators=(',', ':'))
     assert [canonical(v) for v in sorted(values, key=lambda v: store.freeze(v).order)] == sorted(map(canonical, values))
-    from game.ai.structured_values import structural_key
+    from game.ai.information.structured_values import structural_key
     assert structural_key(values) == ValueStore(0).freeze((values,)).digest.hex()
 
 
@@ -169,7 +170,7 @@ def test_candidate_ranking_handles_player_targets_without_card_reads():
 
 @pytest.mark.parametrize('rolling', [False, True])
 def test_tree_reroot_requires_compatible_remaining_horizon_unless_explicitly_rolling(rolling):
-    from game.ai.search_tree_memory import SearchTreeMemory, TreeRow
+    from game.ai.search.search_tree_memory import (SearchTreeMemory, TreeRow)
     from test_information_set_search import Tree
     tree = Tree({'root': {'children': {'go': 'root'}}})
     info = tree.start().player_information()
@@ -211,7 +212,7 @@ def test_native_until_choice_stops_on_each_logical_work_boundary_and_can_fork():
 
 
 def test_frontier_is_lazy_and_closes_its_native_generation_context():
-    from game.ai.generation_candidates import CandidateFrontier
+    from game.ai.decisions.generation_candidates import CandidateFrontier
     seen, closed = [], []
     def values():
         try:
@@ -229,13 +230,13 @@ def test_frontier_is_lazy_and_closes_its_native_generation_context():
 
 
 def test_combat_beam_eventually_has_exactly_the_full_legal_menu_without_duplicates():
-    from game.ai.modular_agent import ModularAgent
-    from game.ai.generation_candidates import DeterministicCandidates
+    from game.ai.agents.modular_agent import ModularAgent
+    from game.ai.decisions.generation_candidates import DeterministicCandidates
     from game.game_actions.generation.decision_abstraction.requests import DeclareAttackersRequest
     from game.game_state import Card
     from game.cards.starter_cards import starter_catalog
     from game.enums import ZoneType
-    from game.ai.search_descriptors import ChoiceDescriptor
+    from game.ai.decisions.search_descriptors import ChoiceDescriptor
     game = tactical_scenario('attack_pacified')((ModularAgent(), ModularAgent()))
     player = game.state.players[0]
     for _ in range(3):
@@ -249,13 +250,13 @@ def test_combat_beam_eventually_has_exactly_the_full_legal_menu_without_duplicat
 
 
 def test_blocker_frontier_preserves_exhaustive_native_assignments():
-    from game.ai.modular_agent import ModularAgent
-    from game.ai.generation_candidates import DeterministicCandidates
+    from game.ai.agents.modular_agent import ModularAgent
+    from game.ai.decisions.generation_candidates import DeterministicCandidates
     from game.game_actions.generation.decision_abstraction.requests import DeclareBlockersRequest
     from game.game_state import Card
     from game.cards.starter_cards import starter_catalog
     from game.enums import ZoneType
-    from game.ai.search_descriptors import ChoiceDescriptor
+    from game.ai.decisions.search_descriptors import ChoiceDescriptor
     game = tactical_scenario('attack_pacified')((ModularAgent(), ModularAgent()))
     state = game.state
     groups = [[], []]

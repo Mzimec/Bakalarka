@@ -4,18 +4,18 @@ from types import MappingProxyType
 
 import pytest
 
-from game.ai.current_position_worlds import CurrentPositionWorlds, _Snapshot
-from game.ai.decision_maker import PriorityDecisionRequest
-from game.ai.game_origin import GameOrigin
-from game.ai.knowledge import PlayerKnowledge
-from game.ai.runtime_clone import RuntimeClone
-from game.ai.search_decision import DecisionProjector
-from game.ai.search_recall import PlayerRecall
+from game.ai.sampling.current_position_worlds import (CurrentPositionWorlds, _Snapshot)
+from game.ai.agents.decision_maker import PriorityDecisionRequest
+from game.ai.sampling.game_origin import GameOrigin
+from game.ai.information.knowledge import PlayerKnowledge
+from game.ai.simulation.runtime_clone import RuntimeClone
+from game.ai.decisions.search_decision import DecisionProjector
+from game.ai.information.search_recall import PlayerRecall
 from game.cards.catalog import game_catalog
 from game.cards.decks import DeckList
 from game.enums import TurnPhase, ZoneType, CounterType
 from game.game_loop.setup import SetupConfig
-from game.simulation.search_config import search_generation_policy
+from game.ai.decisions.generation_policy import search_generation_policy
 from test_game_setup import Controller
 
 

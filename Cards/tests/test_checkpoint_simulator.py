@@ -4,8 +4,8 @@ from random import Random
 import pytest
 
 from benchmarks.search_tactics import tactical_scenario, tactical_policy
-from game.ai.checkpoint_simulator import CheckpointSimulator, _copy_world
-from game.ai.search_simulator import SearchSimulator
+from game.ai.simulation.checkpoint_simulator import (CheckpointSimulator, _copy_world)
+from game.ai.simulation.search_simulator import SearchSimulator
 
 
 @pytest.mark.parametrize("case", ["lethal_shock", "answered_shock", "attack_pacified", "redundant_pacifism"])
@@ -33,8 +33,8 @@ def test_priority_checkpoints_match_strict_replay_across_branches(case):
 
 
 def test_world_copy_preserves_rng_and_registry_identity_without_sharing():
-    from game.ai.modular_agent import ModularAgent
-    from game.ai.knowledge import PlayerKnowledge
+    from game.ai.agents.modular_agent import ModularAgent
+    from game.ai.information.knowledge import PlayerKnowledge
     game = tactical_scenario("attack_pacified")((ModularAgent(), ModularAgent()))
     state = game.state
     state.rng = Random(19)
@@ -72,7 +72,7 @@ def test_zero_limit_is_strict_replay_and_invalid_limits_are_rejected():
 @pytest.mark.parametrize("seed", [7, 31])
 def test_current_root_checkpoint_keeps_sampled_draws_memories_and_phase_budget(seed):
     from test_current_position_worlds import position, prepare
-    from game.ai.search_recall import PlayerRecall
+    from game.ai.information.search_recall import PlayerRecall
     origin, game = position()
     prior = PlayerRecall().append("event", {"kind": "earlier_public_evidence"})
     _, _, snapshot = prepare(origin, game, recall=prior)
@@ -96,7 +96,7 @@ def test_current_root_checkpoint_keeps_sampled_draws_memories_and_phase_budget(s
 
 
 def test_cloned_mutable_mapping_view_tracks_changes_and_is_branch_local():
-    from game.ai.runtime_clone import RuntimeClone
+    from game.ai.simulation.runtime_clone import RuntimeClone
     from game.mana.mana_value import ManaPool
     from game.enums import ManaType
     from helper.dict_helper import MutableSetMapping
@@ -130,7 +130,7 @@ def test_follow_keeps_running_world_mutable_until_actual_suspension():
 
 
 def test_priority_request_without_native_continuation_marker_is_not_captured():
-    from game.ai.decision_maker import PriorityDecisionRequest
+    from game.ai.agents.decision_maker import PriorityDecisionRequest
     def factory(controllers):
         game = tactical_scenario("lethal_shock")(controllers)
         for _ in range(6):
@@ -150,7 +150,7 @@ def test_priority_request_without_native_continuation_marker_is_not_captured():
 @pytest.mark.parametrize("reuse", [False, True])
 def test_checkpoint_reuses_only_proven_root_constants_and_preserves_ownership(reuse):
     from game.game_state.registers.card_register import IK_OWNER
-    from game.ai.current_position_worlds import _PreparedWorld
+    from game.ai.sampling.current_position_worlds import _PreparedWorld
     from test_current_position_worlds import position, prepare
     origin, game = position()
     _, _, snapshot = prepare(origin, game)

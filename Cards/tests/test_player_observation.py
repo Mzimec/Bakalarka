@@ -3,9 +3,9 @@ from dataclasses import replace
 from types import SimpleNamespace
 import json
 
-from game.ai.observation import observation
-from game.ai.modular_agent import ModularAgent, Candidate
-from game.ai.llm_policy import OllamaSelector
+from game.ai.information.observation import observation
+from game.ai.agents.modular_agent import (ModularAgent, Candidate)
+from game.ai.agents.llm_policy import OllamaSelector
 from game.game_state import State, Player, Card, CardDefinition
 from game.enums import ZoneType as Z, CardType, CounterType, TurnPhase, SAVariableType
 from game.stat_type import STAT_POWER, STAT_KEYWORDS

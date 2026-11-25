@@ -402,7 +402,7 @@ class PermanentStateRule(StateBasedAction):
                 if controller is not player or len(cards) < 2:
                     continue
 
-                from ..ai.decision_maker import LegendRequest
+                from game.ai.agents.decision_maker import LegendRequest
                 keep = player.decision_maker.decide(LegendRequest(state, player, tuple(cards))).value.selected
 
                 if keep not in cards:

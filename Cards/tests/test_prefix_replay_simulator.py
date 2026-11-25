@@ -3,9 +3,9 @@ from dataclasses import replace
 
 import pytest
 
-from game.ai.search_simulator import SearchSimulator, starter_scenario
-from game.ai.prefix_replay_simulator import PrefixReplaySimulator
-from game.ai.perfect_information_search import PerfectInformationSearch, SearchBudget
+from game.ai.simulation.search_simulator import (SearchSimulator, starter_scenario)
+from game.ai.reference.prefix_replay_simulator import PrefixReplaySimulator
+from game.ai.reference.perfect_information_search import (PerfectInformationSearch, SearchBudget)
 from benchmarks.search_simulator import diagnostic_choice
 from benchmarks.search_tactics import tactical_scenario, tactical_policy, CASES
 
@@ -35,7 +35,7 @@ def test_search_outcome_values_variation_and_work_budget_match_reference(case):
 
 
 def test_full_observations_are_built_only_at_parent_and_returned_boundary(monkeypatch):
-    from game.ai.observation import PlayerObservationBuilder
+    from game.ai.information.observation import PlayerObservationBuilder
     slow = SearchSimulator(starter_scenario(seed=3))
     fast = PrefixReplaySimulator(starter_scenario(seed=3))
     a, b = slow.start(), fast.start()

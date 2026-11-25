@@ -15,15 +15,16 @@ from unittest.mock import patch
 from benchmarks.world_root_copy import capture_snapshot
 from benchmarks.search_simulator import diagnostic_choice
 from benchmarks.profiler import ComponentProfiler
-from game.ai.current_position_worlds import _PreparedWorld
-from game.ai.knowledge import PlayerKnowledge
-from game.ai.search_simulator import SearchSimulator, _Replay
-from game.ai.checkpoint_simulator import CheckpointSimulator, _Checkpoint
-from game.simulation.search_config import search_generation_policy
+from game.ai.sampling.current_position_worlds import _PreparedWorld
+from game.ai.information.knowledge import PlayerKnowledge
+from game.ai.simulation.search_simulator import (SearchSimulator, _Replay)
+from game.ai.simulation.checkpoint_simulator import (CheckpointSimulator, _Checkpoint)
+from game.ai.decisions.generation_policy import search_generation_policy
 
 
 def instrument(profiler):
-    from game.ai import simulation_world, search_decision
+    from game.ai.simulation import simulation_world
+    from game.ai.decisions import search_decision
     from game.game_actions.generation.decision_abstraction.option_space import DecisionOptionSpace
     profiler.patch_function(simulation_world, "copy_world", "restore")
     profiler.patch_function(simulation_world, "immutable_world_values", "copy_preparation")
@@ -112,7 +113,7 @@ def main():
 
 
 def unprepared_copy(checkpoint):
-    from game.ai.simulation_world import copy_world
+    from game.ai.simulation.simulation_world import copy_world
     return copy_world(checkpoint.state, checkpoint.knowledge)
 
 

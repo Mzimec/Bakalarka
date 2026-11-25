@@ -96,6 +96,9 @@ def entry_projection(state, operation):
 
         clones[original.key] = cloned
 
+    from .card_repository import CardRepository
+    projected._cards = CardRepository(clones.values())
+    projected._card_states = projected._cards.states
     incoming = clones[operation.card.key]
 
     # Copy effects may replace the printed definition before entry

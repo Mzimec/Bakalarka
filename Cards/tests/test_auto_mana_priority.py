@@ -1,5 +1,5 @@
 """End-to-end auto-payment, independent payment oracle and console shortcuts."""
-from game.ai.decision_maker import PriorityDecisionRequest
+from game.ai.agents.decision_maker import PriorityDecisionRequest
 from game.game_actions import PassPriorityAction
 from game.game_actions.data_structs.ability import ActivatedAbilityDefinition
 from dataclasses import replace

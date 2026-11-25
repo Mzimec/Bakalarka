@@ -2,6 +2,20 @@
 
 ## 1. Purpose
 
+The optional `search_backend="pimc"` is a separate perfect-information
+ensemble over sampled worlds. Real-player memory belongs to the live
+controller/sampler boundary; its simulation controllers do not own knowledge
+or recall. It does not replace the default information-set search or the
+tactical minimax reference. See
+[PIMC architecture and limits](experiments/mcts/MCTS_PIMC_MEMORY_BOUNDARY_20261109.md).
+
+Implementation ownership is grouped under `game.ai`: agents, decisions,
+information, evaluation, search, simulation, sampling, training, experiments
+and reference. Compose controllers through `SearchAgentBuilder`; application
+JSON validation remains in `game.simulation.search_config`. Shared search
+records belong to `game.ai.search.contracts`, not to one concrete algorithm.
+Package initializers stay lazy. See the [module map](../game/ai/README.md).
+
 This document describes the decision-making components used by the MtG engine.
 
 The engine distinguishes between two broad categories:

@@ -3,9 +3,10 @@ from dataclasses import asdict
 
 import pytest
 
-from game.ai.incremental_world_provider import IncrementalWorldProvider
-from game.ai.information_set_search import InformationSetSearch, InformationSearchBudget
-from game.ai.search_simulator import SimulationBudgetExceeded
+from game.ai.sampling.incremental_world_provider import IncrementalWorldProvider
+from game.ai.search.information_set_search import InformationSetSearch
+from game.ai.search.contracts import InformationSearchBudget
+from game.ai.simulation.search_simulator import SimulationBudgetExceeded
 from test_history_world_provider import SignalWorld, prior, weights, action, target_information
 
 
@@ -138,8 +139,8 @@ def test_mcts_metrics_count_one_population_preparation_for_entire_world_pool():
 
 def test_real_live_controller_resets_provider_when_reused_between_games():
     from benchmarks.search_tactics import tactical_scenario, tactical_policy
-    from game.ai.mcts_agent import MCTSAgent
-    from game.ai.decision_maker import PriorityDecisionRequest
+    from game.ai.agents.mcts_agent import MCTSAgent
+    from game.ai.agents.decision_maker import PriorityDecisionRequest
     resets = []
     class Provider:
         def reset(self):

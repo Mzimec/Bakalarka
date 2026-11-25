@@ -6,7 +6,7 @@ behavior/amount is observed during normal validation and resolution.
 """
 from __future__ import annotations
 from typing import Any, Callable
-from dataclasses import dataclass
+from dataclasses import dataclass, fields as dataclass_fields
 from immutabledict import immutabledict
 
 from ..data_structs.action_node import (
@@ -28,6 +28,68 @@ _SUFFIX_METHODS = {kind: kind.create_with_sufix for kind in
 _NORMALIZE = RuntimeSubAbility.normalize_effect_map
 _USED_SLOTS = RuntimeSubAbility.get_used_slots_in_esmap
 
+# Description dependencies deliberately extend the generation-only contract.
+# Source definitions remain editable; each lookup validates a fresh structural
+# version and finalizes only detached, deeply immutable data owned by the receipt.
+_DESCRIPTION_TYPES = (SubAbilityDefinition, AndActionNode, OrActionNode, EffectActionNode)
+_DESCRIPTION_FIELDS = {kind: tuple(field.name for field in dataclass_fields(kind))
+                       for kind in _DESCRIPTION_TYPES}
+_DESCRIPTION_DEFAULTS = {kind: tuple((name, vars(kind).get(name)) for name in names)
+                         for kind, names in _DESCRIPTION_FIELDS.items()}
+_MAP_PROTOCOL = {name: getattr(ImmutableEffectToSlotMap, name) for name in
+                 ('__iter__', '__len__', '__getitem__', '__getattribute__', 'items')}
+
+
+@dataclass(frozen=True, slots=True)
+class DescriptionStructure:
+    """!
+    @brief Finalized, owned description structure; no source/world references.
+    @var version Exact structural data, including ordered keys and suffixes.
+
+    This receipt freezes a detached version, not the mutable source definition.
+    A later lookup must revalidate the source; a changed structure yields a new
+    version. Mana, effects, slots and resolution speed are deliberately excluded
+    and must always be read live by the projector.
+    """
+    version: tuple
+
+
+def finalize_description_structure(part):
+    """!
+    @brief Extend native graph proofs to a detached description-only version.
+    @return (receipt, None), or (None, fallback reason) for unsupported protocols.
+
+    Uses the same native graph/map inspection as compiled_graph, but rechecks
+    map content on EVERY lookup. No assumption that an immutable wrapper's
+    private backing dictionary or a frozen dataclass can never be modified.
+    """
+    if type(part) is not SubAbilityDefinition:
+        return None, 'subdefinition_type'
+    for kind, names in _DESCRIPTION_FIELDS.items():
+        if (kind.__getattribute__ is not object.__getattribute__
+                or tuple(field.name for field in dataclass_fields(kind)) != names
+                or any(vars(kind).get(name) is not default
+                       for name, default in _DESCRIPTION_DEFAULTS[kind])):
+            return None, 'schema_protocol'
+    if any(getattr(ImmutableEffectToSlotMap, name) is not method for name, method in _MAP_PROTOCOL.items()):
+        return None, 'mapping_protocol'
+    signature = _node_signature(part.action_node, [64], [], [])
+    if signature is None:
+        return None, 'action_structure'
+    def owned(node):
+        if not node:
+            return ()
+        kind = node[0]
+        if kind is EffectActionNode:
+            return ('EffectActionNode', node[2])
+        if kind not in (AndActionNode, OrActionNode):
+            raise ValueError('Unsupported description node')
+        return (kind.__name__, tuple(owned(child) for child in node[2]))
+    try:
+        return DescriptionStructure(owned(signature)), None
+    except ValueError:
+        return None, 'action_structure'
+
 
 def _map_signature(mapping: object) -> tuple[object, ...] | None:
     """!
@@ -35,7 +97,11 @@ def _map_signature(mapping: object) -> tuple[object, ...] | None:
     @param mapping Mapping to inspect.
     @return Signature tuple, or `None` when the mapping is not cache-safe.
     """
-    if type(mapping) is not ImmutableEffectToSlotMap or len(mapping) > 64:
+    if (type(mapping) is not ImmutableEffectToSlotMap
+            or 'items' in vars(mapping)
+            or type(vars(mapping).get('_dict')) is not dict
+            or getattr(ImmutableEffectToSlotMap, '_dict', None) is not None
+            or len(mapping) > 64):
         return None
     if any(type(key) is not str or type(slots) is not frozenset
            or any(type(slot) is not str for slot in slots)

@@ -4,11 +4,11 @@ from dataclasses import replace
 import pytest
 
 from benchmarks.search_tactics import tactical_scenario, tactical_policy
-from game.ai.information_set_search import SampledRootMismatch
-from game.ai.observation_policy import ObservationOpponentPolicy
-from game.ai.scenario_world_provider import ScenarioWorldProvider
-from game.ai.search_recall import PlayerRecall
-from game.ai.search_simulator import SearchSimulator, SimulationBudgetExceeded
+from game.ai.search.contracts import SampledRootMismatch
+from game.ai.evaluation.observation_policy import ObservationOpponentPolicy
+from game.ai.sampling.scenario_world_provider import ScenarioWorldProvider
+from game.ai.information.search_recall import PlayerRecall
+from game.ai.simulation.search_simulator import (SearchSimulator, SimulationBudgetExceeded)
 
 
 def factory(seed):

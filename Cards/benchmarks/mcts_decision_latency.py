@@ -27,7 +27,7 @@ class Captured(BaseException):
 
 def detached_planner(planner):
     """Clone mutable tree counters without copying immutable observations."""
-    from game.ai.search_tree_memory import EdgeTable, EdgeStatistics
+    from game.ai.search.search_tree_memory import (EdgeTable, EdgeStatistics)
     result = copy(planner)
     result.tree_memory = memory = copy(planner.tree_memory)
     memory.nodes = {key: replace(node,
@@ -67,14 +67,14 @@ class Components:
 
     @contextmanager
     def installed(self):
-        import game.ai.simulation_world as worlds
-        import game.ai.checkpoint_simulator as checkpoints
-        from game.ai.observation import PlayerObservationBuilder
-        from game.ai.generation_candidates import CandidateFrontier
-        from game.ai.information_set_search import _Run
-        from game.ai.state_value import StateValueEvaluator
-        from game.ai.search_tree_memory import SearchTreeMemory
-        from game.ai.search_simulator import SearchSimulator
+        import game.ai.simulation.simulation_world as worlds
+        import game.ai.simulation.checkpoint_simulator as checkpoints
+        from game.ai.information.observation import PlayerObservationBuilder
+        from game.ai.decisions.generation_candidates import CandidateFrontier
+        from game.ai.search.information_set_search import _Run
+        from game.ai.evaluation.state_value import StateValueEvaluator
+        from game.ai.search.search_tree_memory import SearchTreeMemory
+        from game.ai.simulation.search_simulator import SearchSimulator
         original_init = SearchSimulator.__init__
 
         def initialize(sim, *args, **kwargs):
@@ -122,7 +122,7 @@ def profile_rows(profile, key, limit=25):
 
 
 def main():
-    from game.ai.information_set_search import InformationSetSearch
+    from game.ai.search.information_set_search import InformationSetSearch
     from game.simulation.search_config import SearchAgentConfig
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--slow-seconds', type=float, default=20)

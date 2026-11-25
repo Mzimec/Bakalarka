@@ -13,18 +13,19 @@ from pathlib import Path
 from statistics import median
 
 from benchmarks.engine_inner import fingerprint
-from game.ai.simple_agent import SimpleAgent
-from game.ai.knowledge import PlayerKnowledge
-from game.ai.game_origin import GameOrigin
-from game.ai.current_position_worlds import CurrentPositionWorlds
-from game.ai.search_decision import DecisionProjector
-from game.ai.search_recall import PlayerRecall
-from game.ai.decision_maker import PriorityDecisionRequest
-from game.ai.information_set_search import InformationSetSearch, InformationSearchBudget
-from game.ai.action_priors import HeuristicActionPrior
-from game.ai.observation_policy import ObservationOpponentPolicy
-from game.ai.parallel_search import ParallelInformationSetSearch
-from game.simulation.search_config import SearchGenerationPolicy
+from game.ai.agents.simple_agent import SimpleAgent
+from game.ai.information.knowledge import PlayerKnowledge
+from game.ai.sampling.game_origin import GameOrigin
+from game.ai.sampling.current_position_worlds import CurrentPositionWorlds
+from game.ai.decisions.search_decision import DecisionProjector
+from game.ai.information.search_recall import PlayerRecall
+from game.ai.agents.decision_maker import PriorityDecisionRequest
+from game.ai.search.information_set_search import InformationSetSearch
+from game.ai.search.contracts import InformationSearchBudget
+from game.ai.evaluation.action_priors import HeuristicActionPrior
+from game.ai.evaluation.observation_policy import ObservationOpponentPolicy
+from game.ai.search.parallel_search import ParallelInformationSetSearch
+from game.ai.decisions.generation_policy import SearchGenerationPolicy
 from game.cards.catalog import game_catalog
 from game.cards.decks import load_arena_starter
 

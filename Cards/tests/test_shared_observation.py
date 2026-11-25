@@ -1,4 +1,4 @@
-from game.ai.observation import observation
+from game.ai.information.observation import observation
 from test_player_observation import board, add, find
 from game.enums import ZoneType
 
@@ -31,7 +31,7 @@ def test_each_new_projection_gets_fresh_characteristics():
 
 
 def test_public_characteristics_are_read_once_per_joint_projection(monkeypatch):
-    from game.ai.observation import PlayerObservationBuilder
+    from game.ai.information.observation import PlayerObservationBuilder
     state = board()
     public = add(state, "Shared", power=2, toughness=2)
     calls = []

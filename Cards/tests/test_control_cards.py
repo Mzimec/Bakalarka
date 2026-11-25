@@ -1,11 +1,11 @@
 """Control spells through real casting, targeting, payment and resolution."""
-from game.ai.decision_maker import ScryOption, DecisionResult, PriorityDecisionRequest
+from game.ai.agents.decision_maker import (ScryOption, DecisionResult, PriorityDecisionRequest)
 
 from pathlib import Path
 from dataclasses import replace
 import pytest
 
-from game.ai.simple_agent import SimpleAgent
+from game.ai.agents.simple_agent import SimpleAgent
 from game.cards.catalog import game_catalog
 from game.cards.decks import DeckList
 from game.cards.starter_cards import _trigger

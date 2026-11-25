@@ -7,10 +7,10 @@ from statistics import median
 from time import perf_counter
 
 from benchmarks.world_root_copy import capture_snapshot
-from game.ai.observation import decision_observation
-from game.ai.search_decision import DecisionProjector
-from game.ai.search_recall import PlayerRecall
-from game.simulation.search_config import search_generation_policy
+from game.ai.information.observation import decision_observation
+from game.ai.decisions.search_decision import DecisionProjector
+from game.ai.information.search_recall import PlayerRecall
+from game.ai.decisions.generation_policy import search_generation_policy
 
 
 def main():

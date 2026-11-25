@@ -3,11 +3,12 @@ from random import Random
 
 import pytest
 
-from game.ai.current_position_worlds import _PreparedWorld, CurrentPositionWorlds
-from game.ai.search_simulator import SearchSimulator
-from game.ai.checkpoint_simulator import CheckpointSimulator
-from game.ai.simulation_world import copy_world
-from game.simulation.search_config import search_generation_policy, SearchAgentConfig
+from game.ai.sampling.current_position_worlds import (_PreparedWorld, CurrentPositionWorlds)
+from game.ai.simulation.search_simulator import SearchSimulator
+from game.ai.simulation.checkpoint_simulator import CheckpointSimulator
+from game.ai.simulation.simulation_world import copy_world
+from game.ai.decisions.generation_policy import search_generation_policy
+from game.simulation.search_config import SearchAgentConfig
 from test_current_position_worlds import position, prepare, controllers
 
 
@@ -75,8 +76,8 @@ def test_template_does_not_share_cards_registry_rng_or_knowledge_with_branches()
 def test_templates_are_per_simulator_even_for_the_same_seed_and_config_can_disable():
     origin, live = position()
     _, info, snapshot = prepare(origin, live)
-    from game.ai.decision_maker import PriorityDecisionRequest
-    from game.ai.search_recall import PlayerRecall
+    from game.ai.agents.decision_maker import PriorityDecisionRequest
+    from game.ai.information.search_recall import PlayerRecall
     factory = CurrentPositionWorlds(origin, reuse_world=True, policy_for=search_generation_policy).prepare(
         PriorityDecisionRequest(live.state, live.state.players[0]), info,
         PlayerRecall(), live.state.players[0].controller.knowledge)
@@ -117,7 +118,7 @@ def test_world_restore_retains_consumed_static_replacement_budget():
 
 def test_shared_constants_exclude_runtime_references_and_custom_mutable_values():
     from dataclasses import FrozenInstanceError
-    from game.ai.simulation_world import immutable_world_values
+    from game.ai.simulation.simulation_world import immutable_world_values
     from game.stat_type import STAT_POWER, STAT_CONTROLLER
     from game.game_state.stat import Stat
     from immutabledict import immutabledict
@@ -141,7 +142,7 @@ def test_shared_constants_exclude_runtime_references_and_custom_mutable_values()
 
 
 def test_fast_set_copy_rebinds_members_and_preserves_cycles():
-    from game.ai.runtime_clone import RuntimeClone
+    from game.ai.simulation.runtime_clone import RuntimeClone
     class Member:
         pass
     item = Member()
@@ -182,7 +183,7 @@ def test_live_replacement_budget_survives_sampling_and_repeated_restore():
 
 
 def test_bitset_copy_preserves_capacity_and_copies_custom_extra_state():
-    from game.ai.runtime_clone import RuntimeClone
+    from game.ai.simulation.runtime_clone import RuntimeClone
     from helper.query_system.object_register import BitSet
     original = BitSet((1 << 300) | 1)
     copied = RuntimeClone().copy(original)
@@ -196,7 +197,7 @@ def test_bitset_copy_preserves_capacity_and_copies_custom_extra_state():
 
 
 def test_dictionary_recipes_keep_cycles_callbacks_runtime_keys_and_bounded_cache():
-    from game.ai.runtime_clone import RuntimeClone, DictionaryCopyPlans
+    from game.ai.simulation.runtime_clone import (RuntimeClone, DictionaryCopyPlans)
     class Member:
         pass
     member = Member()

@@ -20,10 +20,11 @@ def capture(log_path, indices):
     """! @brief Regenerate logged player positions and verify their full information keys. """
     if not indices or any(type(index) is not int or index < 1 for index in indices):
         raise ValueError('Select at least one positive search index')
-    from game.ai.game_origin import GameOrigin
-    from game.ai.information_set_search import InformationSetSearch, InformationSearchResult, ActionEstimate
-    from game.ai.search_actions import PlayerAction
-    from game.ai.information_set_search import InformationSearchMetrics
+    from game.ai.sampling.game_origin import GameOrigin
+    from game.ai.search.information_set_search import InformationSetSearch
+    from game.ai.search.contracts import (InformationSearchResult, ActionEstimate)
+    from game.ai.decisions.search_actions import PlayerAction
+    from game.ai.search.contracts import InformationSearchMetrics
     from game.cards.catalog import game_catalog
     from game.cards.decks import load_arena_starter
     from game.simulation.config import make_controller
@@ -122,7 +123,7 @@ def capture(log_path, indices):
 
 def measure(captures):
     """! @brief Measure unchanged work, answer and exclusive components at captured roots. """
-    from game.ai.information_set_search import InformationSetSearch
+    from game.ai.search.information_set_search import InformationSetSearch
     for index, (planner, factory, info, kwargs) in captures.items():
         components = Components()
         started = perf_counter()

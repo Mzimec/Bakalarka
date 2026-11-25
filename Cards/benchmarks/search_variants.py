@@ -16,10 +16,11 @@ from time import perf_counter_ns, process_time_ns
 
 from benchmarks.engine_inner import fingerprint
 from benchmarks.information_set_search import CASES, world_factory
-from game.ai.action_priors import HeuristicActionPrior
-from game.ai.information_set_search import InformationSetSearch, InformationSearchBudget
-from game.ai.observation_policy import ObservationOpponentPolicy
-from game.ai.search_encoding import ActionEncoder, SCHEMA_VERSION
+from game.ai.evaluation.action_priors import HeuristicActionPrior
+from game.ai.search.information_set_search import InformationSetSearch
+from game.ai.search.contracts import InformationSearchBudget
+from game.ai.evaluation.observation_policy import ObservationOpponentPolicy
+from game.ai.evaluation.search_encoding import (ActionEncoder, SCHEMA_VERSION)
 
 VARIANTS = ("uct", "puct", "hierarchical_puct")
 

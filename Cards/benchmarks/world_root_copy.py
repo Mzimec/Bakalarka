@@ -11,16 +11,16 @@ from statistics import median
 from time import perf_counter, process_time
 
 from benchmarks.priority_window import WindowAgent
-from game.ai.simple_agent import SimpleAgent
-from game.ai.current_position_worlds import _Snapshot
-from game.ai.game_origin import GameOrigin
-from game.ai.search_decision import DecisionProjector
-from game.ai.search_recall import PlayerRecall
+from game.ai.agents.simple_agent import SimpleAgent
+from game.ai.sampling.current_position_worlds import _Snapshot
+from game.ai.sampling.game_origin import GameOrigin
+from game.ai.decisions.search_decision import DecisionProjector
+from game.ai.information.search_recall import PlayerRecall
 from game.cards.catalog import game_catalog
 from game.cards.decks import load_arena_starter
 from game.enums import TurnPhase
 from game.simulation.match_runner import run_match
-from game.simulation.search_config import search_generation_policy
+from game.ai.decisions.generation_policy import search_generation_policy
 
 
 def capture_snapshot(turn=9):

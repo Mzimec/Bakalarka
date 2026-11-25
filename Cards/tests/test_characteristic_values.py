@@ -12,7 +12,7 @@ from game.game_state.modifier import AddIntModifier, SetModifier, TimeStampedMod
 from game.game_state.layers import SwitchPowerToughness
 from game.game_state.registers.card_register import IK_POWER, IK_TYPE
 from game.game_actions.resolution.cost_transaction import RuntimeCheckpoint
-from game.ai.simulation_world import copy_world
+from game.ai.simulation.simulation_world import copy_world
 from game.stat_type import STAT_POWER, STAT_TOUGHNESS, STAT_TYPES, STAT_CONTROLLER
 from helper.query_system.query import EqQuery
 
@@ -76,6 +76,10 @@ def test_attachment_grants_and_detachment():
     assert card.get_power(state) == 7
     grants[0] = AddIntModifier(9)
     check(state, card)
+    assert card.get_stat(STAT_POWER, state) == 7  # Authoring inputs are detached.
+    from game.stat_type import STAT_ATTACH_MODS
+    from helper.mutability_objs import ImmutableDict
+    aura.set_base_stat(STAT_ATTACH_MODS, ImmutableDict({STAT_POWER: tuple(grants)}))
     assert card.get_stat(STAT_POWER, state) == 12
     aura.detach()
     assert card.get_power(state) == 3

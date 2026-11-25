@@ -3,8 +3,8 @@ import json
 
 import pytest
 
-from game.ai.decision_maker import ModularDecisionMaker, DecisionResult
-from game.ai.simple_agent import SimpleAgent
+from game.ai.agents.decision_maker import (ModularDecisionMaker, DecisionResult)
+from game.ai.agents.simple_agent import SimpleAgent
 from game.enums import CardType, TurnPhase, ZoneType
 from game.game_state import State, Player, Card, CardDefinition
 from game.game_actions.data_structs.ability import ActivatedAbilityDefinition
@@ -205,7 +205,7 @@ def test_aborted_human_decision_is_logged_separately_from_agent_time(tmp_path):
 
 
 def test_disabled_diagnostics_skip_measurement_and_observer_but_validate_results(state, monkeypatch):
-    import game.ai.decision_maker as decisions
+    import game.ai.agents.decision_maker as decisions
     request = MulliganRequest(state, state.active_player)
     rows = []
     with observe_decisions(lambda *args: rows.append(args)):
@@ -239,7 +239,7 @@ def test_disabled_scope_isolated_from_active_measurement_and_restored_after_fail
 
 def test_match_without_diagnostics_preserves_events_and_decision_budget(tmp_path, monkeypatch):
     import game.simulation.match_runner as runner
-    from game.ai.modular_agent import ModularAgent
+    from game.ai.agents.modular_agent import ModularAgent
     games, events = [], []
     for enabled in (True, False):
         path = tmp_path / f"stats-{enabled}.jsonl"

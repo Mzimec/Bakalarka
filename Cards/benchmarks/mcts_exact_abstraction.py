@@ -8,15 +8,16 @@ from time import perf_counter
 from benchmarks.mcts_top_k import make_request
 from benchmarks.mcts_decision_latency import answer
 from benchmarks.search_tactics import tactical_scenario, tactical_policy
-from game.ai.action_priors import HeuristicActionPrior
-from game.ai.exact_policy_memory import ExactPolicyMemory
-from game.ai.information_set_search import InformationSetSearch, InformationSearchBudget
-from game.ai.observation_policy import ObservationOpponentPolicy
-from game.ai.search_decision import DecisionProjector
-from game.ai.search_recall import PlayerRecall
-from game.ai.search_simulator import SearchSimulator
-from game.ai.structured_values import ValueStore
-from game.simulation.search_config import SearchGenerationPolicy
+from game.ai.evaluation.action_priors import HeuristicActionPrior
+from game.ai.evaluation.exact_policy_memory import ExactPolicyMemory
+from game.ai.search.information_set_search import InformationSetSearch
+from game.ai.search.contracts import InformationSearchBudget
+from game.ai.evaluation.observation_policy import ObservationOpponentPolicy
+from game.ai.decisions.search_decision import DecisionProjector
+from game.ai.information.search_recall import PlayerRecall
+from game.ai.simulation.search_simulator import SearchSimulator
+from game.ai.information.structured_values import ValueStore
+from game.ai.decisions.generation_policy import SearchGenerationPolicy
 
 
 def policy(mode):

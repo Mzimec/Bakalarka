@@ -5,7 +5,7 @@ from types import SimpleNamespace
 import pytest
 
 from benchmarks.mcts_step_components import ExecutionBreakdown
-from game.ai.search_simulator import _Replay
+from game.ai.simulation.search_simulator import _Replay
 from runtime_write_guard import deny_writes
 
 
@@ -57,9 +57,9 @@ def test_execution_hooks_restore_after_an_exception():
 def test_profiled_single_action_preserves_native_successor(kind, terminal):
     from benchmarks.mcts_matched_requests import RequestStepMeasurement
     from benchmarks.search_tactics import tactical_scenario
-    from game.ai.search_simulator import SearchSimulator
-    from game.ai.information_set_search import InformationSetSearch
-    from game.ai.observation_policy import ObservationOpponentPolicy
+    from game.ai.simulation.search_simulator import SearchSimulator
+    from game.ai.search.information_set_search import InformationSetSearch
+    from game.ai.evaluation.observation_policy import ObservationOpponentPolicy
     planner = InformationSetSearch(selection='puct', opponent_policy=ObservationOpponentPolicy())
     results = []
     with deny_writes():

@@ -4,6 +4,7 @@ from __future__ import annotations
 from typing import TYPE_CHECKING, override
 from dataclasses import dataclass, field, replace
 from helper.change_tracking import TrackedDict, TrackedSet
+from helper.static_definition import StaticDefinition, RuntimeBinding
 from .card_changes import CardChange
 from collections.abc import Mapping
 from uuid import uuid4
@@ -85,7 +86,7 @@ class AttachInfo:
 
 
 @dataclass(frozen=True)
-class CardDefinition:
+class CardDefinition(StaticDefinition):
     """!
     @brief Immutable printed card data shared by all runtime copies.
 
@@ -93,11 +94,13 @@ class CardDefinition:
     lives on `Card`; this object describes the card's printed/base definition.
     """
 
+    __static_root__ = True
+
     name: str
 
     # A prototype omitted cost means {0}; explicit None represents no mana cost.
     mana_cost: ManaValue | str | None = field(default_factory=ImmutableManaValue)
-    color_identity: set[ManaType] = field(default_factory=set)
+    color_identity: frozenset[ManaType] = field(default_factory=frozenset)
 
     types: frozenset[CardType] = field(default_factory=frozenset)
     subtypes: frozenset[CardSubtype] = field(default_factory=frozenset)
@@ -158,6 +161,10 @@ class CardDefinition:
                 ManaValue.parse(self.mana_cost),
             )
 
+        object.__setattr__(self, 'color_identity', frozenset(self.color_identity))
+        if self.mana_cost is not None:
+            object.__setattr__(self, 'mana_cost', self.mana_cost.to_immutable())
+
     def is_permanent(self) -> bool:
         """!
         @brief Return whether this definition represents a permanent card.
@@ -168,6 +175,17 @@ class CardDefinition:
             CardType.INSTANT not in self.types
             and CardType.SORCERY not in self.types
         )
+
+
+class BoundCardDefinition(RuntimeBinding, CardDefinition):
+    """World-owned recipe containing runtime bindings or extension callbacks.
+
+    Unlike published catalog metadata this graph is copied with its world.
+    """
+    __static_root__ = False
+
+
+CardDefinition.__runtime_binding_type__ = BoundCardDefinition
 
 
 @dataclass(frozen=True)
@@ -242,6 +260,11 @@ class CardRuntimeState:
         self.mana_x = 0
 
         self._anchored_modifiers: list[str] = []
+        self.zone_revision = 0
+        self.controlled_since = -1
+        self.token_left_battlefield = False
+        self.loyalty_activated_turn = None
+        self._definition_override = None
 
     @property
     def skip_untap(self):
@@ -319,6 +342,18 @@ class CardRuntimeState:
         )
 
 
+class _StateField:
+    """Compatibility access to a dynamic field owned by CardRuntimeState."""
+    def __init__(self, name):
+        self.name = name
+
+    def __get__(self, card, owner=None):
+        return self if card is None else getattr(card._state, self.name)
+
+    def __set__(self, card, value):
+        setattr(card._state, self.name, value)
+
+
 class Card(HasModifiableStats, Attachable):
     """!
     @brief Mutable runtime identity representing one physical/game card.
@@ -328,7 +363,35 @@ class Card(HasModifiableStats, Attachable):
     originate in `CardDefinition` and are exposed through modifiable stats.
     """
 
+    _stats = _StateField('_stats')
+    _modifier_sources = _StateField('_modifier_sources')
+    zone_revision = _StateField('zone_revision')
+    controlled_since = _StateField('controlled_since')
+    token_left_battlefield = _StateField('token_left_battlefield')
+    loyalty_activated_turn = _StateField('loyalty_activated_turn')
+    _entry_copy_restore = _StateField('_entry_copy_restore')
+    _incarnation_history = _StateField('_incarnation_history')
+
+    @property
+    def _definition(self):
+        return self.definition
+
+    @_definition.setter
+    def _definition(self, value):
+        if '_printed_definition' not in self.__dict__:
+            object.__setattr__(self, '_printed_definition', value)
+        self._state._definition_override = None if value is self._printed_definition else value
+
     def __setattr__(self, name, value):
+        if name == '_state' and (old := self.__dict__.get('_state')) is not None:
+            # Preserve the old API for extensions replacing only the status
+            # record. Complete records already carry their own metadata.
+            if '_stats' not in vars(value):
+                for field in ('_stats', '_modifier_sources', 'zone_revision', 'controlled_since',
+                              'token_left_battlefield', 'loyalty_activated_turn',
+                              '_entry_copy_restore', '_incarnation_history', '_definition_override'):
+                    if field in vars(old):
+                        object.__setattr__(value, field, vars(old)[field])
         object.__setattr__(self, name, value)
         # Replacement/copy projections replace whole immutable input tables.
         # Notify only the owning live register; shallow clones are not members.
@@ -336,6 +399,8 @@ class Card(HasModifiableStats, Attachable):
             self._invalidate_modifier_plan()
             state = self.__dict__.get("_game_state")
             if state is not None:
+                if name == '_state' and state.cards._cards.get(self.key) is self:
+                    state.card_states[self.key] = value
                 state.card_register.invalidate_layer_inputs(self)
         elif name in {"get_stat", "_get_modifier_pipeline", "modifiers_to_attach",
                       "get_trigger_defs", "get_controller", "get_zone"}:
@@ -345,6 +410,23 @@ class Card(HasModifiableStats, Attachable):
             state = self.__dict__.get("_game_state")
             if state is not None:
                 state._trigger_registry.invalidate(self)
+
+    def __copy__(self):
+        # Rule projections replace base fields on a shallow handle. Give them
+        # a separate record shell, preserving the old shallow-container contract.
+        result = object.__new__(type(self))
+        result.__dict__.update(self.__dict__)
+        from copyreg import _slotnames
+        for name in _slotnames(type(self)) or ():
+            if hasattr(self, name):
+                object.__setattr__(result, name, getattr(self, name))
+        record = object.__new__(type(self._state))
+        record.__dict__.update(vars(self._state))
+        for name in _slotnames(type(self._state)) or ():
+            if hasattr(self._state, name):
+                object.__setattr__(record, name, getattr(self._state, name))
+        object.__setattr__(result, '_state', record)
+        return result
 
     def __init__(
         self,
@@ -376,10 +458,16 @@ class Card(HasModifiableStats, Attachable):
                 "Card keys must be nonempty lowercase strings without dots."
             )
 
-        self._definition: CardDefinition = prototype
-
-        self._owner = owner
         self._game_state = None
+        self._state = (
+            CardRuntimeState.create_permanent_card_state(
+                on_change=self._notify_changed, on_runtime_change=self._notify_runtime_changed,
+            )
+            if prototype.is_permanent()
+            else CardRuntimeState(on_change=self._notify_changed, on_runtime_change=self._notify_runtime_changed)
+        )
+        self._definition = prototype
+        self._owner = owner
         self.is_token = is_token
         self.token_left_battlefield = False
         self.loyalty_activated_turn = None
@@ -390,14 +478,6 @@ class Card(HasModifiableStats, Attachable):
 
         # Turn in which this incarnation last entered or changed controller.
         self.controlled_since = -1
-
-        self._state = (
-            CardRuntimeState.create_permanent_card_state(
-                on_change=self._notify_changed, on_runtime_change=self._notify_runtime_changed,
-            )
-            if prototype.is_permanent()
-            else CardRuntimeState(on_change=self._notify_changed, on_runtime_change=self._notify_runtime_changed)
-        )
 
         # Base stats are initialized from the printed definition. Continuous
         # effects, counters and attachments are layered later through modifier
@@ -500,6 +580,8 @@ class Card(HasModifiableStats, Attachable):
         self.__dict__.pop("_native_modifier_plan", None)
         self.__dict__.pop("_native_empty_sources", None)
         runtime = self.__dict__.get("_state")
+        if runtime is not None and '_observation_fields_revision' in vars(runtime):
+            runtime._observation_fields_revision = object()
         if runtime is not None and runtime.attach_info.attached_to is not None:
             runtime.attach_info.attached_to.__dict__.pop("_native_modifier_plan", None)
 
@@ -550,7 +632,8 @@ class Card(HasModifiableStats, Attachable):
         Entry-copy effects may temporarily replace this definition for one
         battlefield incarnation.
         """
-        return self._definition
+        override = self._state._definition_override
+        return self._printed_definition if override is None else override
 
     @property
     def owner(self) -> Player:
@@ -717,7 +800,7 @@ class Card(HasModifiableStats, Attachable):
                     return value
             if empty or stat_t in SUPPORTED:
                 try:
-                    stat = self._stats[stat_t]
+                    stat = self._state._stats[stat_t]
                 except KeyError:
                     return None
                 # Avoid Mapping.get's extra Python call and the empty pipeline.
@@ -848,7 +931,7 @@ class Card(HasModifiableStats, Attachable):
         """!
         @brief Return the card's modifiable stat table.
         """
-        return self._stats
+        return self._state._stats
 
     # --------------------------------------------------------------
     # HasModifiers properties
@@ -860,7 +943,7 @@ class Card(HasModifiableStats, Attachable):
         """!
         @brief Return modifier sources contributing to derived characteristics.
         """
-        return self._modifier_sources
+        return self._state._modifier_sources
 
     # --------------------------------------------------------------
     # Attachable properties
@@ -930,6 +1013,11 @@ class Card(HasModifiableStats, Attachable):
         return f"{self.name} [{self.key}]"
 
     # ManaValue methods
+    def get_mana_fields(self, state):
+        """Read cached notation, payable notation and mana value from live stats."""
+        from .card_mana_fields import mana_fields
+        return mana_fields(self, state)
+
     def get_mana_cost(self, state: State) -> ManaValue:
         """!
         @brief Return the current mana-cost characteristic.
@@ -1285,3 +1373,9 @@ class Card(HasModifiableStats, Attachable):
                 state,
             )
         )
+
+
+# Capture the native implementations before any extension can replace them;
+# the optional mana-field cache is imported lazily to avoid a module cycle.
+_NATIVE_MANA_READERS = {name: getattr(Card, name) for name in
+    ('get_mana_cost', 'get_casting_cost', 'get_mana_value', 'get_stat', 'get_zone')}

@@ -9,6 +9,7 @@ from __future__ import annotations
 from collections import deque
 from random import Random
 from enum import Enum
+from helper.static_definition import is_static_definition
 from helper.runtime_object import ImmutableKeyedCollection
 from .cost_index_checkpoint import defer_index_groups, close_index_groups
 from .cost_runtime_journal import defer_runtime_contents, close_runtime_contents, unchanged_register_structure
@@ -74,6 +75,15 @@ class RuntimeCheckpoint:
                     self._restore.append(("object", value, vars(value).copy()))
             return
         if card_scope is not None:
+            # Scoped costs cannot introduce physical identities. Zone membership
+            # and scoped card records are watched separately; the repository
+            # must not make every other card's record part of the write scope.
+            repository = getattr(state, 'cards', None)
+            if repository is not None:
+                self._seen.add(id(repository._cards))
+                records = repository.states
+                self._seen.add(id(records))
+                self._restore.append(('dict', records, dict.copy(records)))
             # Native register synchronization replaces rows; it never mutates
             # the old membership mappings/frozensets in place. Preserve the
             # original row identities without traversing every card's values.
@@ -114,8 +124,9 @@ class RuntimeCheckpoint:
         seen = self._seen
         restore = self._restore
         from ...game_state.card import Card
+        from ...game_state.battlefield import CardCollection
         card_scope = self.card_scope
-        excluded = {"_controller", "definition", "_definition", "_stats",
+        excluded = {"_controller", "definition", "_definition", "_printed_definition", "_stats",
                     "_modifier_sources", "_native_card"}
         while pending:
             value = pending.pop()
@@ -185,6 +196,8 @@ class RuntimeCheckpoint:
             if kind == "tuple" or kind == "frozenset":
                 pending.extend(reversed(value if cls is tuple else tuple(value)))
             elif kind == "object":
+                if isinstance(value, type) or is_static_definition(value):
+                    continue
                 if card_scope is not None:
                     if type(value) is Card and value not in card_scope:
                         self.skipped_cards += 1
@@ -208,7 +221,7 @@ class RuntimeCheckpoint:
             elif kind == "dict":
                 if self._defer_indexes and defer_runtime_contents(self, value) is not None:
                     continue
-                saved = dict(value)
+                saved = dict(dict.items(value)) if isinstance(value, CardCollection) else dict(value)
                 restore.append((kind, value, saved))
                 pending.extend(reversed(saved.values()))
             elif kind == "list":

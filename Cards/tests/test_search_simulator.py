@@ -5,11 +5,13 @@ import random
 
 import pytest
 
-from game.ai.search_simulator import SearchSimulator, starter_scenario, ReplayDiverged, SimulationBudgetExceeded
-from game.ai.prefix_replay_simulator import PrefixReplaySimulator
-from game.ai.search_descriptors import ChoiceDescriptor, UnsupportedDescriptor, freeze
-from game.ai.modular_agent import ModularAgent
-from game.ai.observation import observation
+from game.ai.simulation.search_simulator import (
+    SearchSimulator, starter_scenario, ReplayDiverged, SimulationBudgetExceeded,
+)
+from game.ai.reference.prefix_replay_simulator import PrefixReplaySimulator
+from game.ai.decisions.search_descriptors import (ChoiceDescriptor, UnsupportedDescriptor, freeze)
+from game.ai.agents.modular_agent import ModularAgent
+from game.ai.information.observation import observation
 from game.console.demo_game import DemoGame
 from game.cards.starter_cards import starter_catalog
 from game.enums import ZoneType as Z, TurnPhase as P
@@ -319,9 +321,9 @@ def test_setup_starting_player_and_mulligan_bottom_are_real_decision_boundaries(
 
 
 def test_event_description_does_not_expose_other_players_projected_draws():
-    from game.ai.observation import PlayerObservationBuilder
+    from game.ai.information.observation import PlayerObservationBuilder
     from game.game_actions.resolution.event_bus import GameEvent
-    from game.ai.knowledge import PlayerEvent
+    from game.ai.information.knowledge import PlayerEvent
     game = position((ModularAgent(), ModularAgent()))
     event = GameEvent("card_drawn", player_events=((1, PlayerEvent("card_drawn", 1, "DRAW", 1, 1, "secret", "Secret card")),))
     data = PlayerObservationBuilder(game.state, game.state.players[0]).describe(event)

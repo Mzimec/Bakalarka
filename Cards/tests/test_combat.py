@@ -1,5 +1,5 @@
 """Combat rules exercised against real state, operations, replacements, and SBA."""
-from game.ai.decision_maker import CombatDamageOption, DecisionResult, PriorityDecisionRequest
+from game.ai.agents.decision_maker import (CombatDamageOption, DecisionResult, PriorityDecisionRequest)
 from game.game_actions import PassPriorityAction
 from itertools import product
 
@@ -14,7 +14,7 @@ from game.game_actions.resolution.operation_executor import OperationExecutor
 from game.game_actions.resolution.resolution_engine import ResolutionEngine
 from game.game_actions.resolution.sba_resolver import LethalCreaturesRule
 from game.game_state import Card, CardDefinition, Player, State
-from game.ai.decision_maker import ModularDecisionMaker as DecisionMaker
+from game.ai.agents.decision_maker import ModularDecisionMaker as DecisionMaker
 from game.stat_type import STAT_TYPES
 
 

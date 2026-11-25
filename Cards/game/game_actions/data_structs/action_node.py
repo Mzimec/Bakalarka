@@ -12,6 +12,7 @@ if TYPE_CHECKING:
     from ...mana.mana_value import ManaRequirement, ImmutableManaRequirement
 from ...enums import *
 from helper.dict_helper import MutableSetMapping
+from helper.static_definition import StaticDefinition
 
 
 __all__ = ["EffectToSlotMap", "ActionNode", "AndActionNode", "OrActionNode", "EffectActionNode"]
@@ -85,7 +86,7 @@ class ActionNodeOption:
     mana_req: ImmutableManaRequirement
 
 
-class ActionNode(ABC):
+class ActionNode(StaticDefinition, ABC):
 
     """!
     @brief Base node for describing which effects an ability can use.

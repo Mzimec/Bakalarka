@@ -2,10 +2,11 @@ from types import SimpleNamespace
 
 import pytest
 
-from game.ai.action_priors import HeuristicActionPrior, normalize_prior
-from game.ai.information_set_search import InformationSetSearch, InformationSearchBudget
+from game.ai.evaluation.action_priors import (HeuristicActionPrior, normalize_prior)
+from game.ai.search.information_set_search import InformationSetSearch
+from game.ai.search.contracts import InformationSearchBudget
 from game.simulation.search_config import SearchAgentConfig, make_search_controller
-from game.ai.game_origin import GameOrigin
+from game.ai.sampling.game_origin import GameOrigin
 from game.cards.catalog import game_catalog
 from game.cards.decks import load_arena_starter
 from test_information_set_search import Tree, Score, first, choice

@@ -17,8 +17,8 @@ from game.game_actions.generation.decision_abstraction.measurement import observ
 from pathlib import Path
 from typing import Any
 
-from game.ai.simple_agent import SimpleAgent, DecisionLimitReached
-from game.ai.trivial_agent import TrivialAgent
+from game.ai.agents.simple_agent import (SimpleAgent, DecisionLimitReached)
+from game.ai.agents.trivial_agent import TrivialAgent
 from game.cards.decks import ARENA_STARTERS, load_arena_starter
 from game.game_loop.setup import create_game
 from game.cards.catalog import game_catalog
@@ -802,17 +802,28 @@ def run_tournament(
 
     from game.simulation.config import make_controller
     
+    names = tuple(player.name for player in players)
+    decklists = tuple(player.deck for player in players)
+    uses_mcts = any(player.controller.get("type") == "mcts" for player in players)
+    if uses_mcts:
+        from game.ai.sampling.game_origin import GameOrigin
+
     results = []
 
     for repeat in range(games):
         match_seed = seed + repeat
 
         for starting_player in (0, 1):
+            origin = None
+            if uses_mcts:
+                origin = GameOrigin(decklists, game_catalog, names=names,
+                                    starting_player_idx=starting_player)
             controllers = tuple(
                 make_controller(
                     player.controller,
                     seed=match_seed + index,
                     max_decisions=max_decisions,
+                    search_origin=origin,
                 )
                 for index, player in enumerate(players)
             )
@@ -838,8 +849,8 @@ def run_tournament(
                     max_decisions=max_decisions,
                     controllers=controllers,
                     collect_decision_stats=collect_decision_stats,
-                    names=tuple(player.name for player in players),
-                    decklists=tuple(player.deck for player in players),
+                    names=names,
+                    decklists=decklists,
                     metadata={
                         "players": [
                             {

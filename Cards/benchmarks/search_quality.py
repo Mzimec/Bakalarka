@@ -9,9 +9,10 @@ from time import perf_counter
 
 from benchmarks.search_hidden_worlds import catalog
 from benchmarks.search_tactics import tactical_policy, tactical_scenario
-from game.ai.information_set_search import InformationSetSearch, InformationSearchBudget
-from game.ai.observation_policy import ObservationOpponentPolicy
-from game.ai.search_simulator import SearchSimulator
+from game.ai.search.information_set_search import InformationSetSearch
+from game.ai.search.contracts import InformationSearchBudget
+from game.ai.evaluation.observation_policy import ObservationOpponentPolicy
+from game.ai.simulation.search_simulator import SearchSimulator
 
 
 CASES = {"remove_before_attack": 12, "two_spells_mana": 6, "double_block": 1, "counter_lethal": 1}

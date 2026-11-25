@@ -2,7 +2,9 @@
 
 from __future__ import annotations
 
-from ..ai.decision_maker import DiscardRequest, DeclareAttackersRequest, DeclareBlockersRequest
+from game.ai.agents.decision_maker import (
+    DiscardRequest, DeclareAttackersRequest, DeclareBlockersRequest,
+)
 
 from dataclasses import dataclass, field
 from abc import ABC, abstractmethod

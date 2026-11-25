@@ -5,7 +5,7 @@ latency sample, not a playing-strength evaluation. Every settings override is
 printed; no run directory, model, temporary file or result file is written.
 """
 import argparse
-from collections import Counter
+from collections import Counter, defaultdict
 from dataclasses import asdict
 import json
 from pathlib import Path
@@ -14,7 +14,7 @@ from statistics import median
 from time import perf_counter, process_time
 
 from benchmarks.environment import source_fingerprint
-from game.ai.game_origin import GameOrigin
+from game.ai.sampling.game_origin import GameOrigin
 from game.cards.catalog import game_catalog
 from game.cards.decks import load_arena_starter
 from game.simulation.config import make_controller
@@ -32,6 +32,21 @@ def distribution(values):
         return dict(count=0)
     return dict(count=len(ordered), min=ordered[0], median=median(ordered),
                 max=ordered[-1], mean=sum(ordered)/len(ordered))
+
+
+def request_efficiency(samples):
+    """! @brief Weight throughput by actual total search time, including initialization. """
+    groups = defaultdict(list)
+    for sample in samples:
+        groups[sample['request']].append(sample)
+    return {kind: dict(searches=len(rows),
+        seconds=sum(row['elapsed_ms'] for row in rows)/1000,
+        completed=sum(row['iterations_completed'] for row in rows),
+        completed_per_second=(1000*sum(row['iterations_completed'] for row in rows)
+                              /sum(row['elapsed_ms'] for row in rows)
+                              if sum(row['elapsed_ms'] for row in rows) else 0),
+        search_ms=distribution([row['elapsed_ms'] for row in rows]))
+        for kind, rows in sorted(groups.items())}
 
 
 def play(settings, *, opponent, seed, swap, max_turns, progress_seconds=30):
@@ -52,7 +67,7 @@ def play(settings, *, opponent, seed, swap, max_turns, progress_seconds=30):
         nonlocal last
         metrics = (detail.get('search') or {}).get('metrics')
         if metrics:
-            samples.append(dict(turn=request.state.turn.number,
+            samples.append(dict(turn=request.state.turn.number, request=type(request).__name__,
                 **{k: metrics.get(k, 0) for k in (
                     'iterations_completed', 'iterations_started', 'worlds_built',
                     'root_actions', 'root_actions_visited', 'elapsed_ms', 'cpu_ms',
@@ -80,7 +95,8 @@ def play(settings, *, opponent, seed, swap, max_turns, progress_seconds=30):
         completed_trajectories_per_search=distribution([s['iterations_completed'] for s in samples]),
         root_coverage_per_search=distribution([
             s['root_actions_visited']/s['root_actions'] for s in samples if s['root_actions']]),
-        stop_reasons=dict(stop_reasons), fallback_reasons=dict(fallbacks), search_samples=samples)
+        stop_reasons=dict(stop_reasons), fallback_reasons=dict(fallbacks), search_samples=samples,
+        by_request=request_efficiency(samples))
 
 
 def main():

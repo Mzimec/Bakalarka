@@ -4,8 +4,8 @@ import sys
 
 import pytest
 
-from game.ai.game_origin import GameOrigin
-from game.ai.simple_agent import DecisionLimitReached
+from game.ai.sampling.game_origin import GameOrigin
+from game.ai.agents.simple_agent import DecisionLimitReached
 from game.cards.catalog import game_catalog
 from game.cards.decks import load_arena_starter
 from game.simulation.config import make_controller, run_config
@@ -45,7 +45,7 @@ def test_explicit_deck_context_required_and_match_seed_not_used_for_search():
 
 
 def test_full_history_backend_remains_an_explicit_reference():
-    from game.ai.incremental_world_provider import IncrementalWorldProvider
+    from game.ai.sampling.incremental_world_provider import IncrementalWorldProvider
     origin = GameOrigin((load_arena_starter("red"), load_arena_starter("white")), game_catalog)
     own = make_controller(explicit_config(world_backend="history"), seed=42, max_decisions=100, search_origin=origin)
     assert isinstance(own.world_provider, IncrementalWorldProvider)

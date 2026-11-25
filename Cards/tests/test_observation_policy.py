@@ -5,10 +5,10 @@ import json
 import pytest
 
 from benchmarks.search_tactics import tactical_scenario, tactical_policy
-from game.ai.observation_policy import ObservationOpponentPolicy
-from game.ai.search_simulator import SearchSimulator
-from game.ai.search_actions import PlayerAction
-from game.ai.visible_effects import effect_features
+from game.ai.evaluation.observation_policy import ObservationOpponentPolicy
+from game.ai.simulation.search_simulator import SearchSimulator
+from game.ai.decisions.search_actions import PlayerAction
+from game.ai.information.visible_effects import effect_features
 
 
 def scenario(case, wrapper=None):
@@ -113,7 +113,7 @@ def test_changing_inaccessible_hand_and_library_does_not_change_policy_input_or_
 
 def test_opponent_policy_does_not_learn_root_private_hand_between_calls():
     from benchmarks.search_hidden_worlds import beliefs, catalog, public_position
-    from game.ai.sampled_scenario import SampledScenario
+    from game.ai.reference.sampled_scenario import SampledScenario
     inputs, ratings = [], []
     policy = ObservationOpponentPolicy()
     for name in ("Shock", "Plains"):

@@ -3,8 +3,8 @@ from types import SimpleNamespace
 
 import pytest
 
-from game.ai.runtime_clone import RuntimeClone
-from game.ai.search_simulator import SearchSimulator, SimulationHistoryUnavailable
+from game.ai.simulation.runtime_clone import RuntimeClone
+from game.ai.simulation.search_simulator import (SearchSimulator, SimulationHistoryUnavailable)
 from game.game_actions.resolution.event_bus import GameEvent
 from game.game_state.turn_history import TurnHistory, TurnHistoryUnavailable
 from game.game_state.player import Player
@@ -162,11 +162,11 @@ def test_irrelevant_hidden_draw_definition_is_never_read_by_snapshot(monkeypatch
 
 
 def test_unknown_hidden_damage_provenance_still_requires_an_adapter():
-    from game.ai.current_position_worlds import CurrentPositionWorlds
-    from game.ai.decision_maker import PriorityDecisionRequest
-    from game.ai.search_decision import DecisionProjector
-    from game.ai.search_recall import PlayerRecall
-    from game.simulation.search_config import search_generation_policy
+    from game.ai.sampling.current_position_worlds import CurrentPositionWorlds
+    from game.ai.agents.decision_maker import PriorityDecisionRequest
+    from game.ai.decisions.search_decision import DecisionProjector
+    from game.ai.information.search_recall import PlayerRecall
+    from game.ai.decisions.generation_policy import search_generation_policy
     origin, game = position()
     state = game.state
     hidden = next(iter(state.players[1].hand.values()))
@@ -189,7 +189,8 @@ def test_raw_history_extension_fails_as_explicit_simulation_limitation():
 
 @pytest.mark.parametrize("stage", ["start", "advance"])
 def test_uncaptured_history_is_not_a_game_loss_or_world_sampling_rejection(stage):
-    from game.ai.information_set_search import InformationSetSearch, InformationSearchBudget
+    from game.ai.search.information_set_search import InformationSetSearch
+    from game.ai.search.contracts import InformationSearchBudget
     from test_information_set_search import Tree, first
     rows = {"root": {"children": {"a": "root", "b": "root"}}}
     root = Tree(rows).start().player_information()

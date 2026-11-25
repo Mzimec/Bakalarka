@@ -2,7 +2,7 @@
 
 Run from Cards/: python -m pytest tests/test_game_loop_integration.py -v
 """
-from game.ai.decision_maker import DecisionResult
+from game.ai.agents.decision_maker import DecisionResult
 
 
 import pytest

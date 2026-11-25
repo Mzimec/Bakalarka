@@ -2,27 +2,15 @@
 
 from __future__ import annotations
 
-from game.ai.decision_maker import (
-    AbilityDecisionRequest,
-    AbilityResolutionRequest,
-    DeclareAttackersRequest,
-    DeclareBlockersRequest,
-    DiscardRequest,
-    LegendRequest,
-    MulliganBottomRequest,
-    MulliganRequest,
-    OptionalEffectRequest,
-    PriorityDecisionRequest,
-    ReplacementAcceptanceRequest,
-    ReplacementOrderRequest,
-    ReplacementRequest,
-    ScryRequest,
-    StartingPlayerRequest,
-    TriggerOrderRequest,
-    DecisionMaker,
+from game.ai.agents.decision_maker import (
+    AbilityDecisionRequest, AbilityResolutionRequest, DeclareAttackersRequest,
+    DeclareBlockersRequest, DiscardRequest, LegendRequest, MulliganBottomRequest, MulliganRequest,
+    OptionalEffectRequest, PriorityDecisionRequest, ReplacementAcceptanceRequest,
+    ReplacementOrderRequest, ReplacementRequest, ScryRequest, StartingPlayerRequest,
+    TriggerOrderRequest, DecisionMaker,
 )
 
-from game.ai.decision_maker import DecisionResult
+from game.ai.agents.decision_maker import DecisionResult
 from game.game_actions.generation.decision_abstraction.options import (
     DeclareAttackersOption, DeclareBlockersOption, MulliganOption, MulliganBottomOption,
     DiscardOption, AbilityResolutionOption,
@@ -52,7 +40,7 @@ from game.game_actions.resolution.operation_executor import OperationExecutor
 from game.game_actions.resolution.resolution_engine import ResolutionEngine
 from game.game_loop.game_loop import GameLoop
 from game.game_state import Card, Player, State
-from game.ai.decision_maker import ModularDecisionMaker
+from game.ai.agents.decision_maker import ModularDecisionMaker
 from helper.query_system.query import EqQuery
 from game.game_state.registers.card_register import IK_ZONE, IK_CONTROLLER
 from game.cards.demo_cards import (

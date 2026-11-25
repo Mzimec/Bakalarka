@@ -3,10 +3,12 @@ from math import isfinite
 
 import pytest
 
-from game.ai.search_actions import PlayerAction, canonical_json
-from game.ai.search_encoding import (ActionEncoder, StateEncoder, EncodingContext, EncodedState,
-    EncodedAction, CARD_FEATURES, PLAYER_FEATURES, GLOBAL_FEATURES, ACTION_FEATURES, EFFECT_FEATURES)
-from game.ai.action_priors import EncodedActionPrior
+from game.ai.decisions.search_actions import (PlayerAction, canonical_json)
+from game.ai.evaluation.search_encoding import (
+    ActionEncoder, StateEncoder, EncodingContext, EncodedState, EncodedAction, CARD_FEATURES,
+    PLAYER_FEATURES, GLOBAL_FEATURES, ACTION_FEATURES, EFFECT_FEATURES,
+)
+from game.ai.evaluation.action_priors import EncodedActionPrior
 from benchmarks.information_set_search import world_factory
 
 

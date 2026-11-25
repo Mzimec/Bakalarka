@@ -141,7 +141,7 @@ class AbilityConstructionFrame:
             kwargs["prefix_binding"] = getattr(self, side + "_binding")
             if self.stage == side + "_targets":
                 kwargs["group_prefix"] = self.group_prefix
-        from ....ai.generation_candidates import target_preferences
+        from game.ai.decisions.generation_candidates import target_preferences
         with target_preferences(template.effects):
             bindings = generation.target_gen.generate(ctx, template.used_slots, state, **kwargs)
             yield from EXECUTION_PLAN_VALIDATOR.legal_plans(
@@ -252,8 +252,8 @@ class AbilityConstructionFrame:
             return
         candidates = tuple(resolver.candidates(self.ability.source, self.ability.controller, state, reserved))
         start = candidates.index(prefix[-1]) + (not selector.is_target_repeatable) if prefix else 0
-        from ....ai.generation_candidates import target_order
-        from ....ai.generation_candidates import target_preferences
+        from game.ai.decisions.generation_candidates import target_order
+        from game.ai.decisions.generation_candidates import target_preferences
         with target_preferences(template.effects):
             ordered = target_order(candidates[start:], self.ability.source, self.ability.controller, state, resolver)
         for target in ordered:

@@ -76,7 +76,7 @@ def defer_runtime_contents(checkpoint, value):
     def capture():
         if attribute is None:
             # Cards themselves are explicitly watched using the proven scope.
-            checkpoint._restore.append(("dict", value, dict(value)))
+            checkpoint._restore.append(("dict", value, dict(dict.items(value))))
         else:
             checkpoint.watch(data, root=True)
         if vars(value).get("_cost_before_write") is capture:

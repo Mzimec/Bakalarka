@@ -55,7 +55,7 @@ def assert_restored(checkpoint):
         if kind == "object":
             assert vars(obj) == saved, type(obj)
         elif kind == "dict":
-            assert dict(obj) == saved
+            assert dict(dict.items(obj)) == saved
         elif kind in ("list", "set"):
             assert obj == saved
         elif kind == "deque":

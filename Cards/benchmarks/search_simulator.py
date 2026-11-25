@@ -5,7 +5,7 @@ import json
 from pathlib import Path
 from time import perf_counter
 
-from game.ai.search_simulator import SearchSimulator, starter_scenario
+from game.ai.simulation.search_simulator import (SearchSimulator, starter_scenario)
 
 
 def diagnostic_choice(node):

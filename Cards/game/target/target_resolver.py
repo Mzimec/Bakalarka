@@ -263,7 +263,7 @@ class TargetResolver:
         """
         candidates = self.candidates(source, controller, state, reserved)
         if not selection_prefix:
-            from ..ai.generation_candidates import target_order
+            from game.ai.decisions.generation_candidates import target_order
             candidates = target_order(candidates, source, controller, state, self)
         if selection_prefix:
             yield from self.target_selector.generate_completions(candidates, selection_prefix)

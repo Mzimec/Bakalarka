@@ -10,14 +10,17 @@ import pytest
 
 np = pytest.importorskip('numpy')
 from benchmarks.search_tactics import tactical_scenario, tactical_policy
-from game.ai.search_simulator import SearchSimulator
-from game.ai.search_actions import canonical_json
-from game.ai.information_set_search import InformationSetSearch, InformationSearchBudget
-from game.ai.observation_policy import ObservationOpponentPolicy
-from game.ai.self_play_config import SelfPlayConfig
-from game.ai.self_play_data import EpisodeRecorder, TrainingExample, ReplayBuffer, visit_policy
-from game.ai.training_features import encode_training, STATE_SIZE, ACTION_SIZE
-from game.ai.training_model import PolicyValueModel, NeuralPrior, NeuralValue
+from game.ai.simulation.search_simulator import SearchSimulator
+from game.ai.decisions.search_actions import canonical_json
+from game.ai.search.information_set_search import InformationSetSearch
+from game.ai.search.contracts import InformationSearchBudget
+from game.ai.evaluation.observation_policy import ObservationOpponentPolicy
+from game.ai.training.self_play_config import SelfPlayConfig
+from game.ai.training.self_play_data import (
+    EpisodeRecorder, TrainingExample, ReplayBuffer, visit_policy,
+)
+from game.ai.training.training_features import (encode_training, STATE_SIZE, ACTION_SIZE)
+from game.ai.training.training_model import (PolicyValueModel, NeuralPrior, NeuralValue)
 
 
 def position():
@@ -212,7 +215,7 @@ def test_recorders_split_by_whole_episode_and_refuse_other_players_views():
 
 
 def test_seed_streams_do_not_feed_match_seeds_into_search():
-    from game.ai.self_play import _seed
+    from game.ai.training.self_play import _seed
     seeds = [_seed(42,domain,'0-play-0000') for domain in ('match','search-0','search-1','behavior-0','noise-0')]
     assert len(set(seeds)) == len(seeds)
     assert seeds == [_seed(42,domain,'0-play-0000') for domain in ('match','search-0','search-1','behavior-0','noise-0')]
@@ -231,8 +234,8 @@ def test_invalid_actor_training_contract_is_rejected(settings):
 
 
 def test_root_noise_only_changes_root_and_restores_prior_even_on_failure():
-    from game.ai.self_play_search import SelfPlaySearch
-    from game.ai.action_priors import UniformActionPrior
+    from game.ai.training.self_play_search import SelfPlaySearch
+    from game.ai.evaluation.action_priors import UniformActionPrior
     info,_ = position()
     other = replace(info,recall=info.recall.append('event',{'different':True}))
     uniform = UniformActionPrior()
@@ -251,7 +254,7 @@ def test_root_noise_only_changes_root_and_restores_prior_even_on_failure():
 
 
 def test_real_spawn_actors_keep_cutoff_games_out_of_replay_and_close_pool():
-    from game.ai.self_play import run_self_play
+    from game.ai.training.self_play import run_self_play
     config = SelfPlayConfig(actors=2,generations=1,games_per_generation=2,evaluation_games=0,
         max_turns=1,collect_only=True,batch_size=1,temperature=0,dirichlet_epsilon=0,
         mcts=dict(deck_knowledge='both_lists',selection='puct',prior='heuristic',

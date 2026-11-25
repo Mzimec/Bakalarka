@@ -1,9 +1,9 @@
 """Private positional evidence, composition constraints and invalidation."""
 import pytest
 
-from game.ai.library_positions import LibraryPositions
-from game.ai.runtime_clone import UnsupportedSnapshot
-from game.ai.search_recall import PlayerRecall
+from game.ai.sampling.library_positions import LibraryPositions
+from game.ai.simulation.runtime_clone import UnsupportedSnapshot
+from game.ai.information.search_recall import PlayerRecall
 
 
 def observe(recall, kind="PriorityDecisionRequest", *, size=5, revealed=(), hand=()):

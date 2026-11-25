@@ -4,12 +4,15 @@ from types import SimpleNamespace
 
 import pytest
 
-from game.ai.history_world_provider import HistoryWorldProvider, ExploratoryHistoryPolicy
-from game.ai.information_set_search import InformationSetSearch, InformationSearchBudget
-from game.ai.search_actions import PlayerAction, canonical_json
-from game.ai.search_observation import ActingPlayerObservation
-from game.ai.search_recall import PlayerInformation, PlayerRecall
-from game.ai.search_simulator import HistorySamplingExhausted, SimulationBudgetExceeded, ReplayDiverged
+from game.ai.sampling.history_world_provider import (HistoryWorldProvider, ExploratoryHistoryPolicy)
+from game.ai.search.information_set_search import InformationSetSearch
+from game.ai.search.contracts import InformationSearchBudget
+from game.ai.decisions.search_actions import (PlayerAction, canonical_json)
+from game.ai.information.search_observation import ActingPlayerObservation
+from game.ai.information.search_recall import (PlayerInformation, PlayerRecall)
+from game.ai.simulation.search_simulator import (
+    HistorySamplingExhausted, SimulationBudgetExceeded, ReplayDiverged,
+)
 
 
 def action(kind):
@@ -185,9 +188,9 @@ def test_exploratory_model_keeps_every_alternative_and_only_receives_actor_input
 
 def test_real_hidden_counter_reconditions_world_and_preserves_local_rebinding():
     from benchmarks.live_history_search import simulator, scenario, passing
-    from game.ai.observation_policy import ObservationOpponentPolicy
-    from game.ai.scenario_world_provider import ScenarioWorldProvider
-    from game.ai.information_set_search import SampledRootMismatch
+    from game.ai.evaluation.observation_policy import ObservationOpponentPolicy
+    from game.ai.sampling.scenario_world_provider import ScenarioWorldProvider
+    from game.ai.search.contracts import SampledRootMismatch
     policy = ObservationOpponentPolicy()
     seed = next(n for n in range(100) if "Counterspell" in scenario(n).samples[1].hand)
     sim = simulator(seed)

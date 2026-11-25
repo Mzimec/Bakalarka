@@ -98,12 +98,12 @@ class ExecutionBreakdown:
     @contextmanager
     def installed(self):
         """! @brief Temporarily instrument native components; restore even on failure. """
-        from game.ai.search_simulator import _Replay, _ReplayController, SimulationNode
-        from game.ai.search_recall import PlayerRecall
-        from game.ai.search_descriptors import ChoiceDescriptor
-        from game.ai.generation_candidates import CandidateFrontier
-        from game.ai.knowledge import PlayerKnowledge
-        from game.ai.checkpoint_simulator import _Checkpoint, _CheckpointReplay
+        from game.ai.simulation.search_simulator import (_Replay, _ReplayController, SimulationNode)
+        from game.ai.information.search_recall import PlayerRecall
+        from game.ai.decisions.search_descriptors import ChoiceDescriptor
+        from game.ai.decisions.generation_candidates import CandidateFrontier
+        from game.ai.information.knowledge import PlayerKnowledge
+        from game.ai.simulation.checkpoint_simulator import (_Checkpoint, _CheckpointReplay)
         from game.game_loop.game_loop import PriorityWindow
         from game.rules.combat import CombatState
         from game.game_state.state import State

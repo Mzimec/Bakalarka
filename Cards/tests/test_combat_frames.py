@@ -5,14 +5,14 @@ from unittest.mock import patch
 import pytest
 
 from benchmarks.mcts_top_k import make_request
-from game.ai.decision_maker import DecisionResult
-from game.ai.search_actions import PlayerActionBuilder
-from game.ai.search_decision import DecisionProjector
-from game.ai.search_descriptors import ChoiceDescriptor
-from game.ai.search_recall import PlayerRecall
+from game.ai.agents.decision_maker import DecisionResult
+from game.ai.decisions.search_actions import PlayerActionBuilder
+from game.ai.decisions.search_decision import DecisionProjector
+from game.ai.decisions.search_descriptors import ChoiceDescriptor
+from game.ai.information.search_recall import PlayerRecall
 from game.game_actions.generation.decision_abstraction.combat_frames import (
     CombatDecisionFrame, CombatNextRequest, CombatNextOption, choose_combat)
-from game.simulation.search_config import SearchGenerationPolicy
+from game.ai.decisions.generation_policy import SearchGenerationPolicy
 from runtime_write_guard import deny_writes
 
 
@@ -68,7 +68,7 @@ def test_invalid_prefixes_abort_and_global_blocking_constraints_keep_full_pipeli
 def test_each_live_prefix_is_a_native_sampled_root_with_private_recall_and_sibling_isolation(blockers, phase_trigger):
     from test_current_position_worlds import position, controllers
     from test_combat_search_continuation import Capture, phase_catalog
-    from game.ai.current_position_worlds import CurrentPositionWorlds
+    from game.ai.sampling.current_position_worlds import CurrentPositionWorlds
     from game.enums import TurnPhase, ZoneType
 
     origin, game = position()
@@ -122,9 +122,10 @@ def test_each_live_prefix_is_a_native_sampled_root_with_private_recall_and_sibli
         assert sim.fork(root) == root
         assert sim.advance_action(root, action) in children
         assert live == dict(state.combat.blockers if blockers else state.combat.attackers)
-    from game.ai.information_set_search import InformationSetSearch, InformationSearchBudget
-    from game.ai.observation_policy import ObservationOpponentPolicy
-    from game.ai.action_priors import HeuristicActionPrior
+    from game.ai.search.information_set_search import InformationSetSearch
+    from game.ai.search.contracts import InformationSearchBudget
+    from game.ai.evaluation.observation_policy import ObservationOpponentPolicy
+    from game.ai.evaluation.action_priors import HeuristicActionPrior
     search = InformationSetSearch(selection='puct', action_prior=HeuristicActionPrior(ObservationOpponentPolicy()),
         opponent_policy=ObservationOpponentPolicy(), rollout_policy=ObservationOpponentPolicy(),
         budget=InformationSearchBudget(worlds=1, iterations=4, max_depth=1, max_extensions=32, max_advances=512))
@@ -143,13 +144,13 @@ def test_configuration_is_opt_in_and_training_rejects_unimplemented_prefix_targe
     assert SearchAgentConfig(deck_knowledge='both_lists', sequential_combat='blockers').sequential_combat == 'blockers'
     with pytest.raises(ValueError):
         SearchAgentConfig(deck_knowledge='both_lists', sequential_combat='unknown')
-    from game.ai.self_play_config import SelfPlayConfig
+    from game.ai.training.self_play_config import SelfPlayConfig
     with pytest.raises(ValueError, match='complete final-action menus'):
         SelfPlayConfig(mcts={'deck_knowledge': 'both_lists', 'sequential_combat': True})
 
 
 def test_family_selection_keeps_native_attack_protocol_and_stages_only_blockers():
-    from game.ai.decision_maker import ModularDecisionMaker
+    from game.ai.agents.decision_maker import ModularDecisionMaker
     class Controller(ModularDecisionMaker):
         sequential_combat = 'blockers'
         def _decide(self, request):
@@ -178,8 +179,8 @@ def test_whole_live_declaration_uses_one_search_budget_and_discards_plan(case):
 
 def test_native_construction_shares_board_projection_but_keeps_each_new_prefix_context():
     from benchmarks.mcts_top_k import make_case
-    from game.ai.search_simulator import SearchSimulator, _Replay
-    from game.ai.observation import PlayerObservationBuilder
+    from game.ai.simulation.search_simulator import (SearchSimulator, _Replay)
+    from game.ai.information.observation import PlayerObservationBuilder
     original_build, original_views = PlayerObservationBuilder.build, _Replay._view_data
     def run(cached):
         views, calls = [], []

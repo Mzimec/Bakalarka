@@ -48,7 +48,7 @@ def deny_writes(*allowed_logs):
 
 def guarded_actor_init():
     global _enabled
-    from game.ai.self_play import actor_init
+    from game.ai.training.self_play import actor_init
     actor_init()
     _enabled = True
 
@@ -61,9 +61,9 @@ def guarded_process_pool(*args,**kwargs):
 def guarded_search_job(selection, backend):
     """Run real root parallel search under a guard in the coordinating process."""
     from test_parallel_search import factory, planner
-    from game.ai.parallel_search import ParallelInformationSetSearch
+    from game.ai.search.parallel_search import ParallelInformationSetSearch
     from unittest.mock import patch
-    with patch('game.ai.parallel_search.ProcessPoolExecutor',guarded_process_pool), deny_writes():
+    with patch('game.ai.search.parallel_search.ProcessPoolExecutor',guarded_process_pool), deny_writes():
         root = factory(0).start().player_information()
         with ParallelInformationSetSearch(planner(selection),workers=2,backend=backend) as search:
             result = search.search(factory,root,seed=42)
@@ -73,16 +73,16 @@ def guarded_search_job(selection, backend):
 def training_probe():
     """Optional full-game verification, stdout only, no new artifact directory."""
     from unittest.mock import patch
-    from game.ai.self_play import run_self_play
-    from game.ai.self_play_config import SelfPlayConfig
-    from game.ai.training_model import PolicyValueModel
+    from game.ai.training.self_play import run_self_play
+    from game.ai.training.self_play_config import SelfPlayConfig
+    from game.ai.training.training_model import PolicyValueModel
     config = SelfPlayConfig(actors=2,generations=2,games_per_generation=2,evaluation_games=0,
         max_turns=100,batch_size=2,updates_per_generation=1,hidden=4,
         validation_fraction=0,temperature=0,dirichlet_epsilon=0,
         replay_capacity=256,mcts=dict(deck_knowledge='both_lists',selection='puct',prior='heuristic',
             worlds=1,iterations=2,max_depth=1,max_extensions=16,max_advances=512,
             compress_forced=True,require_root_coverage=False,force_initial_coverage=False))
-    with patch('game.ai.self_play.ProcessPoolExecutor',guarded_process_pool), deny_writes():
+    with patch('game.ai.training.self_play.ProcessPoolExecutor',guarded_process_pool), deny_writes():
         result=run_self_play(config)
         assert result['status']=='trained' and result['optimizer_steps_added']==2
         assert PolicyValueModel.from_bytes(result['model_snapshot']).revision==result['model_revision']

@@ -1,9 +1,9 @@
 import pytest
 
-from game.ai import modular_agent
-from game.ai.modular_agent import ModularAgent, HeuristicSelector, Candidate
-from game.ai.simple_agent import SimpleAgent
-from game.ai.llm_policy import OllamaSelector
+from game.ai.agents import modular_agent
+from game.ai.agents.modular_agent import (ModularAgent, HeuristicSelector, Candidate)
+from game.ai.agents.simple_agent import SimpleAgent
+from game.ai.agents.llm_policy import OllamaSelector
 from game.game_state import State, Player
 
 

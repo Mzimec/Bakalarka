@@ -64,7 +64,7 @@ def main():
         target = folder / name
         target.mkdir()
         started = process_time()
-        from game.ai.current_position_worlds import _Snapshot
+        from game.ai.sampling.current_position_worlds import _Snapshot
         mode = (patch.object(_Snapshot, "_prepare_copy", unprepared_snapshot)
                 if args.snapshot_only and not reuse else nullcontext())
         profiler = cProfile.Profile() if args.profile else nullcontext()

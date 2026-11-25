@@ -111,6 +111,21 @@ class CardRegister(IndexedRegister):
     for a card identity even if the card is temporarily unregistered.
     """
 
+    def select_owned(self, owners, zones):
+        """Materialize native owner/zone intersection, preserving runtime-ID order.
+
+        Inputs are already frozen by the caller, before synchronization just
+        as for InQuery. No result mask or runtime objects are retained here.
+        """
+        self.synchronise()
+        owner_bits = 0
+        for owner in owners:
+            owner_bits |= self._native_bucket(IK_OWNER,owner)
+        zone_bits = 0
+        for zone in zones:
+            zone_bits |= self._native_bucket(IK_ZONE,zone)
+        return list(self._native_objects(owner_bits & zone_bits))
+
     def __init__(self, state):
         """!
         @brief Initialize the card register and its command-reference namespace.

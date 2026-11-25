@@ -8,12 +8,16 @@ import pytest
 from runtime_write_guard import deny_writes
 from benchmarks.search_tactics import tactical_scenario
 from benchmarks.mcts_top_k import make_request
-from game.ai.generation_candidates import CandidateFrontier, DeterministicCandidates, target_order
-from game.ai.search_descriptors import ChoiceDescriptor
-from game.ai.search_simulator import SearchSimulator
-from game.ai.observation_policy import ObservationOpponentPolicy
-from game.ai.information_set_search import InformationSetSearch, InformationSearchBudget
-from game.simulation.search_config import SearchGenerationPolicy, SearchAgentConfig
+from game.ai.decisions.generation_candidates import (
+    CandidateFrontier, DeterministicCandidates, target_order,
+)
+from game.ai.decisions.search_descriptors import ChoiceDescriptor
+from game.ai.simulation.search_simulator import SearchSimulator
+from game.ai.evaluation.observation_policy import ObservationOpponentPolicy
+from game.ai.search.information_set_search import InformationSetSearch
+from game.ai.search.contracts import InformationSearchBudget
+from game.ai.decisions.generation_policy import SearchGenerationPolicy
+from game.simulation.search_config import SearchAgentConfig
 from test_candidate_ranking import crowded
 
 
@@ -32,7 +36,7 @@ def native_policy(**kwargs):
 def test_native_first_choices_do_not_project_or_sort_complete_action_batches(case):
     request = make_request(case)
     model = DeterministicCandidates(4, 32, native_ordering=True)
-    with patch('game.ai.search_decision.DecisionProjector.build', side_effect=AssertionError('Projected candidates')):
+    with patch('game.ai.decisions.search_decision.DecisionProjector.build', side_effect=AssertionError('Projected candidates')):
         frontier = CandidateFrontier(model.generate(request, SearchGenerationPolicy()(request)), 4096)
         try:
             offered, complete = frontier.take(4)
@@ -102,7 +106,7 @@ def test_reservoir_admits_only_the_exact_requested_prefix_and_replays_it():
 
 
 def test_transition_reuse_ignores_only_frontier_width_within_the_same_world():
-    from game.ai.information_set_search import _Run
+    from game.ai.search.information_set_search import _Run
     factory = lambda: SearchSimulator(crowded, policy_for=native_policy(), track_information=True,
         structured_records=True, projection_cache_size=8)
     sim = factory()
@@ -224,7 +228,7 @@ def test_native_candidates_also_support_descriptor_only_simulators():
 @pytest.mark.parametrize('case', ['lethal_shock', 'useful_pacifism', 'answered_shock'])
 def test_native_ordering_composes_with_staged_ability_construction(case):
     from test_ability_construction import fixture, expand
-    from game.ai.generation_candidates import candidate_ranking
+    from game.ai.decisions.generation_candidates import candidate_ranking
     from game.game_actions.generation.decision_abstraction.policies import PriorityGenerationPolicy
     from game.game_actions.generation.decision_abstraction.priority_frames import PrioritySourceOption
     game, request = fixture(case)

@@ -1,5 +1,5 @@
 """Current trigger API: real zones, event-time capture, priority, and choices."""
-from game.ai.decision_maker import DecisionResult, TriggerOrderOption
+from game.ai.agents.decision_maker import (DecisionResult, TriggerOrderOption)
 from dataclasses import replace
 
 import pytest

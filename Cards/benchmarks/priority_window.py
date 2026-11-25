@@ -13,8 +13,8 @@ from time import perf_counter
 from benchmarks.component_benchmark import configure_profiler
 from benchmarks.environment import collect_environment
 from benchmarks.profiler import ComponentProfiler
-from game.ai.modular_agent import ModularAgent, CandidateGenerator, observation
-from game.ai.simple_agent import SimpleAgent
+from game.ai.agents.modular_agent import (ModularAgent, CandidateGenerator, observation)
+from game.ai.agents.simple_agent import SimpleAgent
 from game.enums import TurnPhase
 from game.simulation.match_runner import run_match
 

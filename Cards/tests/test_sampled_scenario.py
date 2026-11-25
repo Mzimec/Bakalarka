@@ -7,11 +7,11 @@ import pytest
 
 from benchmarks.search_hidden_worlds import beliefs, catalog, public_position, response_node, run_diagnostic
 from benchmarks.search_tactics import tactical_policy
-from game.ai.modular_agent import ModularAgent
-from game.ai.sampled_scenario import HiddenZoneBelief, SampledScenario
-from game.ai.search_observation import ActingPlayerObservation
-from game.ai.search_simulator import SearchSimulator
-from game.ai.prefix_replay_simulator import PrefixReplaySimulator
+from game.ai.agents.modular_agent import ModularAgent
+from game.ai.reference.sampled_scenario import (HiddenZoneBelief, SampledScenario)
+from game.ai.information.search_observation import ActingPlayerObservation
+from game.ai.simulation.search_simulator import SearchSimulator
+from game.ai.reference.prefix_replay_simulator import PrefixReplaySimulator
 
 
 def scenario(seed=0, evidence=None, factory=public_position, observer=0):

@@ -5,13 +5,13 @@ import pytest
 
 from benchmarks.search_hidden_worlds import public_position, catalog
 from benchmarks.search_tactics import tactical_policy
-from game.ai.modular_agent import ModularAgent
-from game.ai.search_actions import PlayerActionBuilder, UnsupportedPlayerAction
-from game.ai.search_simulator import SearchSimulator
-from game.ai.prefix_replay_simulator import PrefixReplaySimulator
-from game.ai.checkpoint_simulator import CheckpointSimulator
-from game.ai.decision_maker import PriorityDecisionRequest
-from game.ai.observation import PlayerObservationBuilder
+from game.ai.agents.modular_agent import ModularAgent
+from game.ai.decisions.search_actions import (PlayerActionBuilder, UnsupportedPlayerAction)
+from game.ai.simulation.search_simulator import SearchSimulator
+from game.ai.reference.prefix_replay_simulator import PrefixReplaySimulator
+from game.ai.simulation.checkpoint_simulator import CheckpointSimulator
+from game.ai.agents.decision_maker import PriorityDecisionRequest
+from game.ai.information.observation import PlayerObservationBuilder
 from game.enums import ZoneType as Z, TurnPhase
 from game.game_state import Card
 from game.game_actions.data_structs.game_action import ResolutionContext, FixedExecutionPlan, ScheduledResolution

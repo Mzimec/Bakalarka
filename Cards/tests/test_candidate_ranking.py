@@ -7,13 +7,15 @@ from unittest.mock import patch
 import pytest
 
 from benchmarks.search_tactics import tactical_scenario
-from game.ai.candidate_ranking import ranked_batches, normalize_rank_windows
-from game.ai.generation_candidates import CandidateFrontier, DeterministicCandidates
-from game.ai.observation_policy import ObservationOpponentPolicy
-from game.ai.search_descriptors import ChoiceDescriptor
-from game.ai.search_simulator import SearchSimulator
-from game.ai.information_set_search import InformationSetSearch, InformationSearchBudget
-from game.simulation.search_config import SearchAgentConfig, SearchGenerationPolicy
+from game.ai.decisions.candidate_ranking import (ranked_batches, normalize_rank_windows)
+from game.ai.decisions.generation_candidates import (CandidateFrontier, DeterministicCandidates)
+from game.ai.evaluation.observation_policy import ObservationOpponentPolicy
+from game.ai.decisions.search_descriptors import ChoiceDescriptor
+from game.ai.simulation.search_simulator import SearchSimulator
+from game.ai.search.information_set_search import InformationSetSearch
+from game.ai.search.contracts import InformationSearchBudget
+from game.simulation.search_config import SearchAgentConfig
+from game.ai.decisions.generation_policy import SearchGenerationPolicy
 from runtime_write_guard import deny_writes
 
 
@@ -101,7 +103,7 @@ def test_config_owns_profiles_round_trips_and_wires_the_controller():
     overrides['blockers'] = 999
     assert dict(config.candidate_rank_windows)['blockers'] == 16
     assert SearchAgentConfig.parse(json.loads(json.dumps(asdict(config)))) == config
-    from game.ai.game_origin import GameOrigin
+    from game.ai.sampling.game_origin import GameOrigin
     from game.cards.catalog import game_catalog
     from game.cards.decks import load_arena_starter
     from game.simulation.search_config import make_search_controller
@@ -116,7 +118,7 @@ def test_config_owns_profiles_round_trips_and_wires_the_controller():
 
 def test_family_override_can_disable_ranking_for_priority():
     policy = ranked_policy(candidate_rank_windows={'priority': 0})
-    with patch('game.ai.candidate_ranking.VisibleCandidateRanker.__call__', side_effect=AssertionError('Scored priority')):
+    with patch('game.ai.decisions.candidate_ranking.VisibleCandidateRanker.__call__', side_effect=AssertionError('Scored priority')):
         node = SearchSimulator(crowded, policy_for=policy, track_information=True).start()
     assert len(node.player_information().actions) == 2
 
@@ -146,7 +148,7 @@ def test_ranked_real_frontier_grows_searches_and_replays(selection):
 
 @pytest.mark.parametrize('blockers', [False, True])
 def test_ranked_combat_eventually_equals_the_full_native_menu(blockers):
-    from game.ai.modular_agent import ModularAgent
+    from game.ai.agents.modular_agent import ModularAgent
     from game.game_actions.generation.decision_abstraction.requests import DeclareAttackersRequest, DeclareBlockersRequest
     from game.game_state import Card
     from game.cards.starter_cards import starter_catalog
@@ -206,8 +208,8 @@ def test_ranked_top_two_include_pass_and_lethal_instead_of_the_first_creature_ta
 
 
 def test_live_agent_regenerates_a_selected_ranked_candidate_outside_its_initial_top_k():
-    from game.ai.mcts_agent import MCTSAgent
-    from game.ai.modular_agent import ModularAgent
+    from game.ai.agents.mcts_agent import MCTSAgent
+    from game.ai.agents.modular_agent import ModularAgent
     from test_mcts_agent import request
     policy = ranked_policy()
     initial = []

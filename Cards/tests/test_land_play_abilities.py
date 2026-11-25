@@ -1,5 +1,5 @@
 """Land abilities share discovery, generation and permission validation."""
-from game.ai.decision_maker import PriorityDecisionRequest
+from game.ai.agents.decision_maker import PriorityDecisionRequest
 import pytest
 from game.enums import CardType, ZoneType, TurnPhase
 from game.game_state import Card, CardDefinition, State, Player
@@ -112,8 +112,8 @@ def test_permission_can_name_player_other_than_owner(state):
 
 
 def test_simple_and_modular_agents_use_land_collector(state):
-    from game.ai.simple_agent import SimpleAgent
-    from game.ai.modular_agent import CandidateGenerator
+    from game.ai.agents.simple_agent import SimpleAgent
+    from game.ai.agents.modular_agent import CandidateGenerator
     permission = PlayLandAbilityDefinition(allowed_zones=frozenset({ZoneType.GRAVEYARD}))
     card = land(state, ZoneType.GRAVEYARD, [permission])
     assert SimpleAgent().decide(PriorityDecisionRequest(state, state.active_player)).value.card is card

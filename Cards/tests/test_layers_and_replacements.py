@@ -1,5 +1,8 @@
 """Ordering and interactions, using real registries, resolution and SBA."""
-from game.ai.decision_maker import ReplacementOrderOption, DecisionResult, ReplacementAcceptanceOption, ReplacementAcceptanceRequest, ReplacementOption, ReplacementOrderRequest, ReplacementRequest
+from game.ai.agents.decision_maker import (
+    ReplacementOrderOption, DecisionResult, ReplacementAcceptanceOption,
+    ReplacementAcceptanceRequest, ReplacementOption, ReplacementOrderRequest, ReplacementRequest,
+)
 from game.game_actions import PassPriorityAction
 from dataclasses import replace
 from copy import copy
@@ -10,7 +13,7 @@ from helper.query_system.query import EqQuery
 from game.enums import CardType as T, ZoneType as Z, Layer as L, CounterType as C, TurnPhase as P
 from game.stat_type import STAT_POWER as POWER, STAT_TOUGHNESS as TOUGHNESS, STAT_TYPES as TYPES, STAT_KEYWORDS as KEYWORDS
 from game.game_state import Card, CardDefinition, Player, State
-from game.ai.decision_maker import ModularDecisionMaker as DecisionMaker
+from game.ai.agents.decision_maker import ModularDecisionMaker as DecisionMaker
 from game.game_state.modifier import (ContinuousEffect, ContinuousEffectDefinition, ContinuousEffectState,
     PermanentDuration, TimeStampDuration, TimeStamp, DynamicTargetingStrategy, SetModifier,
     AddIntModifier, MultiplyIntModifier, AddSetModifier, RemoveSetModifier)

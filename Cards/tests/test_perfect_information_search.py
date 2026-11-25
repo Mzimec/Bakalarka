@@ -4,9 +4,11 @@ from dataclasses import replace
 
 import pytest
 
-from game.ai.perfect_information_search import PerfectInformationSearch, SearchBudget
-from game.ai.search_descriptors import ChoiceDescriptor
-from game.ai.search_simulator import DecisionAddress, RecordedChoice, SimulationNode, ReplayDiverged, SimulationBudgetExceeded
+from game.ai.reference.perfect_information_search import (PerfectInformationSearch, SearchBudget)
+from game.ai.decisions.search_descriptors import ChoiceDescriptor
+from game.ai.simulation.search_simulator import (
+    DecisionAddress, RecordedChoice, SimulationNode, ReplayDiverged, SimulationBudgetExceeded,
+)
 
 
 class Tree:
@@ -185,7 +187,7 @@ def test_actual_engine_tactics_and_replayed_principal_variation(case):
 
 def test_repeated_search_is_deterministic_and_keeps_root_unchanged():
     from benchmarks.search_tactics import tactical_scenario, tactical_policy
-    from game.ai.search_simulator import SearchSimulator
+    from game.ai.simulation.search_simulator import SearchSimulator
     simulator = SearchSimulator(tactical_scenario("lethal_shock"), policy_for=tactical_policy)
     root = simulator.start()
     before = root.observation(0)

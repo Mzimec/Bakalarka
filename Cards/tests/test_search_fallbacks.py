@@ -3,12 +3,14 @@ from types import SimpleNamespace
 
 import pytest
 
-from game.ai.information_set_search import InformationSetSearch, InformationSearchBudget
-from game.ai.current_position_worlds import CurrentPositionWorlds
-from game.ai.decision_maker import PriorityDecisionRequest
-from game.ai.search_decision import DecisionProjector
-from game.ai.search_recall import PlayerRecall
-from game.simulation.search_config import search_generation_policy, SearchAgentConfig
+from game.ai.search.information_set_search import InformationSetSearch
+from game.ai.search.contracts import InformationSearchBudget
+from game.ai.sampling.current_position_worlds import CurrentPositionWorlds
+from game.ai.agents.decision_maker import PriorityDecisionRequest
+from game.ai.decisions.search_decision import DecisionProjector
+from game.ai.information.search_recall import PlayerRecall
+from game.ai.decisions.generation_policy import search_generation_policy
+from game.simulation.search_config import SearchAgentConfig
 from test_information_set_search import Tree, Score, first
 from test_current_position_worlds import position, controllers
 
@@ -95,7 +97,7 @@ def test_standard_puct_does_not_spend_all_iterations_on_mandatory_menu_coverage(
 
 
 def test_time_budget_retains_completed_samples_and_exposes_partial_coverage(monkeypatch):
-    from game.ai.information_set_search import _Run
+    from game.ai.search.information_set_search import _Run
     # Deterministic clock boundary after three completed root simulations.
     monkeypatch.setattr(_Run, "time_exhausted", lambda run: run.completed >= 3)
     factory = lambda seed: Tree({"root": {"children": {str(i): "win" for i in range(20)}}, "win": {"winner": 0}})
@@ -108,7 +110,7 @@ def test_time_budget_retains_completed_samples_and_exposes_partial_coverage(monk
 
 
 def test_time_budget_before_world_initialization_cannot_invent_a_value(monkeypatch):
-    from game.ai.information_set_search import _Run
+    from game.ai.search.information_set_search import _Run
     monkeypatch.setattr(_Run, "time_exhausted", lambda run: True)
     result = InformationSetSearch(opponent_policy=first, require_root_coverage=False).search(
         lambda seed: chain(), chain().start().player_information())
@@ -117,7 +119,7 @@ def test_time_budget_before_world_initialization_cannot_invent_a_value(monkeypat
 
 
 def test_soft_deadline_allows_one_complete_attempt_before_honoring_the_clock(monkeypatch):
-    import game.ai.information_set_search as module
+    import game.ai.search.information_set_search as module
     ticks = iter([0.0])
     monkeypatch.setattr(module, "perf_counter", lambda: next(ticks, 1.0))
     factory = lambda seed: Tree({"root": {"children": {"a": "win", "b": "win"}}, "win": {"winner": 0}})
@@ -160,7 +162,7 @@ def test_continuation_uses_only_the_safe_anchor_and_exact_own_recall():
 
 
 def test_native_scry_continuation_conditions_only_the_players_observed_untouched_prefix():
-    from game.ai.game_origin import GameOrigin
+    from game.ai.sampling.game_origin import GameOrigin
     from game.cards.decks import DeckList
     from game.cards.catalog import game_catalog
     from game.game_loop.setup import SetupConfig
@@ -205,7 +207,7 @@ def test_native_scry_continuation_conditions_only_the_players_observed_untouched
 
 
 def test_native_player_loss_operations_have_visible_ordering_and_preserve_terminal_rules():
-    from game.ai.decision_maker import ReplacementOrderRequest
+    from game.ai.agents.decision_maker import ReplacementOrderRequest
     from game.operations.player_operations import LosePlayerOperation
     origin, game = position()
     player, other = game.state.players

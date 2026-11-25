@@ -6,11 +6,11 @@ import json
 
 from benchmarks.search_tactics import tactical_scenario
 from benchmarks.mcts_top_k import make_case
-from game.ai.attack_candidates import AttackRiskAssessment
-from game.ai.generation_candidates import CandidateFrontier, DeterministicCandidates
-from game.ai.search_decision import DecisionProjector
-from game.ai.search_recall import PlayerRecall
-from game.ai.modular_agent import ModularAgent
+from game.ai.decisions.attack_candidates import AttackRiskAssessment
+from game.ai.decisions.generation_candidates import (CandidateFrontier, DeterministicCandidates)
+from game.ai.decisions.search_decision import DecisionProjector
+from game.ai.information.search_recall import PlayerRecall
+from game.ai.agents.modular_agent import ModularAgent
 from game.enums import CardType, ZoneType
 from game.game_state import Card, CardDefinition
 from game.game_actions.generation.decision_abstraction.policies import DeclareAttackersPolicy
@@ -79,11 +79,12 @@ def generation(repeats=6, width=4):
 
 def searches(repeats=4, iterations=16):
     """Compare budgets on fixed worlds; ordering changes search work and results."""
-    from game.ai.action_priors import HeuristicActionPrior
-    from game.ai.observation_policy import ObservationOpponentPolicy
-    from game.ai.information_set_search import InformationSetSearch, InformationSearchBudget
-    from game.ai.search_simulator import SearchSimulator
-    from game.simulation.search_config import SearchGenerationPolicy
+    from game.ai.evaluation.action_priors import HeuristicActionPrior
+    from game.ai.evaluation.observation_policy import ObservationOpponentPolicy
+    from game.ai.search.information_set_search import InformationSetSearch
+    from game.ai.search.contracts import InformationSearchBudget
+    from game.ai.simulation.search_simulator import SearchSimulator
+    from game.ai.decisions.generation_policy import SearchGenerationPolicy
     for case in ('unblocked_10', 'mixed_10'):
         for repeat in range(repeats):
             for variant in ('previous', 'risk') if repeat % 2 == 0 else ('risk', 'previous'):

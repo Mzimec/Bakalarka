@@ -16,6 +16,17 @@ Cards/
     game_loop/       Turn loop, setup and minimal runnable game
     mana/            Mana representation, source discovery and planning
     ai/              Player information, policies, sampled worlds and MCTS
+      agents/        Live controllers and decision interface
+      decisions/     Legal action descriptors and candidate generation
+      information/   Visible views, player memory and incremental identities
+      evaluation/    Values, policies, encoders and evaluation caches
+      search/        Shared contracts, IS-MCTS/PIMC, trees and trajectories
+      simulation/    Native replay, copies, workers and checkpoints
+      sampling/      World recipes, hidden-card evidence and providers
+      training/      Explicit self-play and model training
+      experiments/   Disabled opt-in prototypes
+      reference/     Tactical/scenario regression references
+      composition.py AI object-graph builder
     simulation/      Match and tournament orchestration
     reporting/       Human-readable match report rendering
     paths.py         Shared data and artifact paths
@@ -24,7 +35,9 @@ Cards/
   data/
     decks/arena_anb/  The five counted decklists
     *.json           Offline card characteristics and rules text
-  docs/              Central Markdown documentation, guides and specifications
+  docs/              Current guides and specifications
+    experiments/mcts/ Dated measurements and development reports
+    generated/       Large generated diagnostic tables
   benchmarks/        Maintained profiling and regression tools
   configs/           Match, search and self-play configurations
   runs/              Retained historical numeric results and output logs
@@ -65,10 +78,18 @@ use the new module paths listed below; old flat module paths were removed.
 
 ## Engine development
 
+The AI source layout was organized on 2026-11-10. For every module's owner,
+classes and importing callers, see the [AI map](../game/ai/README.md) and
+[static inventory](generated/AI_MODULES_20261110.md). Python imports now use
+the owner package, for example `game.ai.information.runtime_digest`.
+Search JSON settings and the `game.bin` entry points remain unchanged.
+
 See [PROJECT_ROADMAP.md](PROJECT_ROADMAP.md) for staged work and
 [AI_SEARCH.md](AI_SEARCH.md) for current search ownership and interfaces.
 Mana planning is imported from `game.mana.mana_solver`.
-Markdown documentation belongs under `docs`; dependency environments are excluded
-from source cleanup. Historical Python snapshots and one-shot scripts under
+Documentation belongs under `docs`; `game/ai/README.md` and `benchmarks/README.md`
+provide local navigation into their source areas. See the
+[documentation index](README.md) and [AI module map](../game/ai/README.md).
+Dependency environments are excluded from source cleanup. Historical Python snapshots and one-shot scripts under
 `runs` were removed; retained results are data rather than runtime dependencies.
 

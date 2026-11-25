@@ -7,6 +7,7 @@ from collections.abc import Iterator, Set
 from dataclasses import dataclass
 from typing import Callable
 from helper.query_system.query import Query
+from helper.static_definition import StaticDefinition
 
 if TYPE_CHECKING:
     from ..game_state import Card, State, Player
@@ -15,7 +16,7 @@ if TYPE_CHECKING:
 __all__ = ["TargetSpec", "QueryTargetSpec", "PlayerQueryTargetSpec", "SelfSpec"]
 
 
-class TargetSpec(ABC):
+class TargetSpec(StaticDefinition, ABC):
     """!
     @brief Base object that discovers legal target candidates.
     """

@@ -1,5 +1,5 @@
 """Integration examples for incremental commands and the expanded engine rules."""
-from game.ai.decision_maker import DecisionResult, PriorityDecisionRequest
+from game.ai.agents.decision_maker import (DecisionResult, PriorityDecisionRequest)
 from pathlib import Path
 
 import pytest

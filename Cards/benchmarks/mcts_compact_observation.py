@@ -9,11 +9,11 @@ from unittest.mock import patch
 
 @contextmanager
 def compact_reference():
-    from game.ai.search_actions import PlayerAction
-    from game.ai.search_observation import ActingPlayerObservation
-    from game.ai.search_recall import RecallEntry
-    from game.ai.search_simulator import SimulationNode
-    from game.ai.observation import PlayerObservationBuilder
+    from game.ai.decisions.search_actions import PlayerAction
+    from game.ai.information.search_observation import ActingPlayerObservation
+    from game.ai.information.search_recall import RecallEntry
+    from game.ai.simulation.search_simulator import SimulationNode
+    from game.ai.information.observation import PlayerObservationBuilder
     initialize = PlayerObservationBuilder.__init__
 
     def legacy_builder(self, *args, **kwargs):

@@ -7,13 +7,13 @@ import cloudpickle
 import pytest
 
 from benchmarks.search_tactics import tactical_scenario, tactical_policy
-from game.ai.information_set_search import (
-    InformationSetSearch, InformationSearchBudget, ActionEstimate,
-    InformationSearchResult, InformationSearchMetrics,
+from game.ai.search.information_set_search import InformationSetSearch
+from game.ai.search.contracts import (
+    InformationSearchBudget, ActionEstimate, InformationSearchResult, InformationSearchMetrics,
 )
-from game.ai.observation_policy import ObservationOpponentPolicy
-from game.ai.parallel_search import ParallelInformationSetSearch, merge_results
-from game.ai.search_simulator import SearchSimulator
+from game.ai.evaluation.observation_policy import ObservationOpponentPolicy
+from game.ai.search.parallel_search import (ParallelInformationSetSearch, merge_results)
+from game.ai.simulation.search_simulator import SearchSimulator
 from game.simulation.search_config import SearchAgentConfig
 
 
@@ -30,7 +30,7 @@ def planner(selection='puct', **kwargs):
 
 
 def test_one_worker_is_exact_serial_without_transport_or_executor(monkeypatch):
-    import game.ai.parallel_search as module
+    import game.ai.search.parallel_search as module
     monkeypatch.setattr(module, '_codec', lambda: pytest.fail('Serial mode must not serialize'))
     root = factory(0).start().player_information()
     base = planner()
@@ -107,8 +107,8 @@ def test_invalid_parallel_configuration_is_rejected(settings):
 
 def test_snapshot_transport_strips_identity_recipes_and_provider_captures():
     from test_current_position_worlds import position, prepare
-    from game.ai.current_position_worlds import CurrentPositionWorlds
-    from game.simulation.search_config import search_generation_policy
+    from game.ai.sampling.current_position_worlds import CurrentPositionWorlds
+    from game.ai.decisions.generation_policy import search_generation_policy
     origin, game = position()
     request, info, snapshot = prepare(origin, game)
     provider = CurrentPositionWorlds(origin, policy_for=search_generation_policy)
@@ -190,7 +190,7 @@ def test_play_cli_overrides_workers_and_backend(monkeypatch):
 
 @pytest.mark.parametrize('staged', [False, True])
 def test_spawn_supports_native_construction_and_incremental_candidate_menus(staged):
-    from game.simulation.search_config import SearchGenerationPolicy
+    from game.ai.decisions.generation_policy import SearchGenerationPolicy
     from game.game_state import Card
     from game.cards.starter_cards import starter_catalog
     from game.enums import ZoneType
@@ -223,9 +223,9 @@ def test_spawn_root_matching_does_not_require_a_fixed_python_hash_seed(tmp_path)
     from pathlib import Path
     script = tmp_path/'unseeded_probe.py'
     script.write_text('''from benchmarks.mcts_parallel import capture
-from game.ai.parallel_search import ParallelInformationSetSearch
-from game.ai.information_set_search import InformationSetSearch, InformationSearchBudget
-from game.ai.observation_policy import ObservationOpponentPolicy
+from game.ai.search.parallel_search import ParallelInformationSetSearch
+from game.ai.search.information_set_search import InformationSetSearch, InformationSearchBudget
+from game.ai.evaluation.observation_policy import ObservationOpponentPolicy
 def main():
     worlds, info = capture('blue', 'black', 43, 13)
     policy = ObservationOpponentPolicy()
@@ -246,8 +246,8 @@ if __name__ == '__main__':
 
 
 def test_live_match_closes_its_pool_and_preserves_diagnostics():
-    from game.ai.game_origin import GameOrigin
-    from game.ai.simple_agent import SimpleAgent
+    from game.ai.sampling.game_origin import GameOrigin
+    from game.ai.agents.simple_agent import SimpleAgent
     from game.cards.catalog import game_catalog
     from game.cards.decks import load_arena_starter
     from game.simulation.search_config import make_search_controller
@@ -264,9 +264,9 @@ def test_live_match_closes_its_pool_and_preserves_diagnostics():
 
 
 def test_long_recall_transport_is_iterative_and_preserves_keys_without_json(monkeypatch):
-    from game.ai.search_recall import PlayerRecall
-    from game.ai.structured_values import RecallDigest
-    import game.ai.structured_values as values
+    from game.ai.information.search_recall import PlayerRecall
+    from game.ai.information.structured_values import RecallDigest
+    import game.ai.information.structured_values as values
     recall = PlayerRecall()
     for turn in range(2200):
         recall = recall.append('event', {'turn': turn})

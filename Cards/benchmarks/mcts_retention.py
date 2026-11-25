@@ -18,9 +18,10 @@ def semantics(result):
 
 
 def search_sample(component, enabled, factory, info, iterations):
-    from game.ai.information_set_search import InformationSetSearch, InformationSearchBudget
-    from game.ai.observation_policy import ObservationOpponentPolicy
-    from game.ai.action_priors import HeuristicActionPrior
+    from game.ai.search.information_set_search import InformationSetSearch
+    from game.ai.search.contracts import InformationSearchBudget
+    from game.ai.evaluation.observation_policy import ObservationOpponentPolicy
+    from game.ai.evaluation.action_priors import HeuristicActionPrior
     policy=ObservationOpponentPolicy()
     search=InformationSetSearch(opponent_policy=policy,rollout_policy=policy,
         selection='puct',action_prior=HeuristicActionPrior(policy),compress_forced=True,
@@ -29,7 +30,7 @@ def search_sample(component, enabled, factory, info, iterations):
         budget=InformationSearchBudget(worlds=2,iterations=iterations,max_depth=4,
                                       max_extensions=8,max_advances=4096))
     if component in ('neural','payload'):
-        from game.ai.training_model import PolicyValueModel, NeuralPrior, NeuralValue
+        from game.ai.training.training_model import (PolicyValueModel, NeuralPrior, NeuralValue)
         model=PolicyValueModel(hidden=8,seed=7,cache_size=256 if enabled or component=='payload' else 0)
         search.action_prior,search.evaluator=NeuralPrior(model),NeuralValue(model)
         if component=='payload' and not enabled:
@@ -54,7 +55,7 @@ def search_sample(component, enabled, factory, info, iterations):
 
 def checkpoint_sample(enabled, restores):
     from benchmarks.search_tactics import tactical_scenario,tactical_policy
-    from game.ai.checkpoint_simulator import CheckpointSimulator
+    from game.ai.simulation.checkpoint_simulator import CheckpointSimulator
     sim=CheckpointSimulator(tactical_scenario('answered_shock'),track_information=True,
         policy_for=tactical_policy,structured_records=True,max_phases=64,checkpoint_limit=8,
         checkpoint_interval=1,checkpoint_min_visits=1,checkpoint_continuous=enabled)
