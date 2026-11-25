@@ -1,0 +1,1017 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites name="pytest tests"><testsuite name="pytest" errors="0" failures="17" skipped="0" tests="26" time="3.676" timestamp="2026-10-25T22:12:51.458674+01:00" hostname="LAPTOP-1G5IBH9P"><testcase classname="tests.test_parallel_search" name="test_one_worker_is_exact_serial_without_transport_or_executor" time="0.187" /><testcase classname="tests.test_parallel_search" name="test_real_workers_preserve_native_legality_and_global_work_caps[uct-thread]" time="0.014"><failure message="_pickle.PicklingError: Could not pickle object as excessively deep recursion required.">self = &lt;cloudpickle.cloudpickle.Pickler object at 0x00000275AA253F50&gt;
+obj = (&lt;game.ai.information_set_search.InformationSetSearch object at 0x00000275AA17E960&gt;, &lt;function factory at 0x00000275A9...ind='PassPriorityAction', _json=StructuredJSON(e2f27fa1ce70087b7324b8ad41e99775d8d66cc6)), (2053695854357871005,), ...)
+
+    def dump(self, obj):
+        try:
+&gt;           return super().dump(obj)
+                   ^^^^^^^^^^^^^^^^^
+
+.venv\Lib\site-packages\cloudpickle\cloudpickle.py:1313: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = StructuredJSON(c8ffa3791bf02a672a33516adb928bc74fee1ea8)
+
+    def __reduce__(self):
+        # Pickle's default object traversal recurses through every previous
+        # digest. Long games must travel to spawned workers without depending
+        # on Python's recursion limit or eagerly exporting legacy JSON hashes.
+        rows, cursor = [], self
+        while isinstance(cursor, RecallDigest):
+            rows.append((cursor.kind, cursor.entry, cursor.fast, cursor.__dict__.get('text')))
+            cursor = cursor.previous
+&gt;       return _restore_recall_digest, (cursor, tuple(reversed(rows)))
+                                                      ^^^^^^^^^^^^^^
+E       RecursionError: maximum recursion depth exceeded while calling a Python object
+
+Cards\game\ai\structured_values.py:204: RecursionError
+
+The above exception was the direct cause of the following exception:
+
+backend = 'thread', selection = 'uct'
+
+    @pytest.mark.parametrize('backend', ['thread', 'process'])
+    @pytest.mark.parametrize('selection', ['uct', 'puct', 'hierarchical_puct'])
+    def test_real_workers_preserve_native_legality_and_global_work_caps(backend, selection):
+        root = factory(0).start().player_information()
+        with ParallelInformationSetSearch(planner(selection), workers=2, backend=backend) as parallel:
+&gt;           result = parallel.search(factory, root, seed=42)
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Cards\tests\test_parallel_search.py:49: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+Cards\game\ai\parallel_search.py:205: in search
+    return self._search(world_factory, root_information, seed, fallback, reuse_context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Cards\game\ai\parallel_search.py:233: in _search
+    payload = codec.dumps((worker, factory, information, worker_rng.getrandbits(64),
+.venv\Lib\site-packages\cloudpickle\cloudpickle.py:1544: in dumps
+    cp.dump(obj)
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = &lt;cloudpickle.cloudpickle.Pickler object at 0x00000275AA253F50&gt;
+obj = (&lt;game.ai.information_set_search.InformationSetSearch object at 0x00000275AA17E960&gt;, &lt;function factory at 0x00000275A9...ind='PassPriorityAction', _json=StructuredJSON(e2f27fa1ce70087b7324b8ad41e99775d8d66cc6)), (2053695854357871005,), ...)
+
+    def dump(self, obj):
+        try:
+            return super().dump(obj)
+        except RecursionError as e:
+            msg = "Could not pickle object as excessively deep recursion required."
+&gt;           raise pickle.PicklingError(msg) from e
+E           _pickle.PicklingError: Could not pickle object as excessively deep recursion required.
+
+.venv\Lib\site-packages\cloudpickle\cloudpickle.py:1316: PicklingError</failure></testcase><testcase classname="tests.test_parallel_search" name="test_real_workers_preserve_native_legality_and_global_work_caps[uct-process]" time="0.012"><failure message="_pickle.PicklingError: Could not pickle object as excessively deep recursion required.">self = &lt;cloudpickle.cloudpickle.Pickler object at 0x00000275AA250050&gt;
+obj = (&lt;game.ai.information_set_search.InformationSetSearch object at 0x00000275AA2CDA30&gt;, &lt;function factory at 0x00000275A9...ind='PassPriorityAction', _json=StructuredJSON(e2f27fa1ce70087b7324b8ad41e99775d8d66cc6)), (2053695854357871005,), ...)
+
+    def dump(self, obj):
+        try:
+&gt;           return super().dump(obj)
+                   ^^^^^^^^^^^^^^^^^
+
+.venv\Lib\site-packages\cloudpickle\cloudpickle.py:1313: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = StructuredJSON(c8ffa3791bf02a672a33516adb928bc74fee1ea8)
+
+    def __reduce__(self):
+        # Pickle's default object traversal recurses through every previous
+        # digest. Long games must travel to spawned workers without depending
+        # on Python's recursion limit or eagerly exporting legacy JSON hashes.
+        rows, cursor = [], self
+        while isinstance(cursor, RecallDigest):
+            rows.append((cursor.kind, cursor.entry, cursor.fast, cursor.__dict__.get('text')))
+            cursor = cursor.previous
+&gt;       return _restore_recall_digest, (cursor, tuple(reversed(rows)))
+                                                      ^^^^^^^^^^^^^^
+E       RecursionError: maximum recursion depth exceeded while calling a Python object
+
+Cards\game\ai\structured_values.py:204: RecursionError
+
+The above exception was the direct cause of the following exception:
+
+backend = 'process', selection = 'uct'
+
+    @pytest.mark.parametrize('backend', ['thread', 'process'])
+    @pytest.mark.parametrize('selection', ['uct', 'puct', 'hierarchical_puct'])
+    def test_real_workers_preserve_native_legality_and_global_work_caps(backend, selection):
+        root = factory(0).start().player_information()
+        with ParallelInformationSetSearch(planner(selection), workers=2, backend=backend) as parallel:
+&gt;           result = parallel.search(factory, root, seed=42)
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Cards\tests\test_parallel_search.py:49: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+Cards\game\ai\parallel_search.py:205: in search
+    return self._search(world_factory, root_information, seed, fallback, reuse_context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Cards\game\ai\parallel_search.py:233: in _search
+    payload = codec.dumps((worker, factory, information, worker_rng.getrandbits(64),
+.venv\Lib\site-packages\cloudpickle\cloudpickle.py:1544: in dumps
+    cp.dump(obj)
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = &lt;cloudpickle.cloudpickle.Pickler object at 0x00000275AA250050&gt;
+obj = (&lt;game.ai.information_set_search.InformationSetSearch object at 0x00000275AA2CDA30&gt;, &lt;function factory at 0x00000275A9...ind='PassPriorityAction', _json=StructuredJSON(e2f27fa1ce70087b7324b8ad41e99775d8d66cc6)), (2053695854357871005,), ...)
+
+    def dump(self, obj):
+        try:
+            return super().dump(obj)
+        except RecursionError as e:
+            msg = "Could not pickle object as excessively deep recursion required."
+&gt;           raise pickle.PicklingError(msg) from e
+E           _pickle.PicklingError: Could not pickle object as excessively deep recursion required.
+
+.venv\Lib\site-packages\cloudpickle\cloudpickle.py:1316: PicklingError</failure></testcase><testcase classname="tests.test_parallel_search" name="test_real_workers_preserve_native_legality_and_global_work_caps[puct-thread]" time="0.013"><failure message="_pickle.PicklingError: Could not pickle object as excessively deep recursion required.">self = &lt;cloudpickle.cloudpickle.Pickler object at 0x00000275A9FD9D90&gt;
+obj = (&lt;game.ai.information_set_search.InformationSetSearch object at 0x00000275AA3386B0&gt;, &lt;function factory at 0x00000275A9...ind='PassPriorityAction', _json=StructuredJSON(e2f27fa1ce70087b7324b8ad41e99775d8d66cc6)), (2053695854357871005,), ...)
+
+    def dump(self, obj):
+        try:
+&gt;           return super().dump(obj)
+                   ^^^^^^^^^^^^^^^^^
+
+.venv\Lib\site-packages\cloudpickle\cloudpickle.py:1313: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = StructuredJSON(c8ffa3791bf02a672a33516adb928bc74fee1ea8)
+
+    def __reduce__(self):
+        # Pickle's default object traversal recurses through every previous
+        # digest. Long games must travel to spawned workers without depending
+        # on Python's recursion limit or eagerly exporting legacy JSON hashes.
+        rows, cursor = [], self
+        while isinstance(cursor, RecallDigest):
+            rows.append((cursor.kind, cursor.entry, cursor.fast, cursor.__dict__.get('text')))
+            cursor = cursor.previous
+&gt;       return _restore_recall_digest, (cursor, tuple(reversed(rows)))
+                                                      ^^^^^^^^^^^^^^
+E       RecursionError: maximum recursion depth exceeded while calling a Python object
+
+Cards\game\ai\structured_values.py:204: RecursionError
+
+The above exception was the direct cause of the following exception:
+
+backend = 'thread', selection = 'puct'
+
+    @pytest.mark.parametrize('backend', ['thread', 'process'])
+    @pytest.mark.parametrize('selection', ['uct', 'puct', 'hierarchical_puct'])
+    def test_real_workers_preserve_native_legality_and_global_work_caps(backend, selection):
+        root = factory(0).start().player_information()
+        with ParallelInformationSetSearch(planner(selection), workers=2, backend=backend) as parallel:
+&gt;           result = parallel.search(factory, root, seed=42)
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Cards\tests\test_parallel_search.py:49: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+Cards\game\ai\parallel_search.py:205: in search
+    return self._search(world_factory, root_information, seed, fallback, reuse_context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Cards\game\ai\parallel_search.py:233: in _search
+    payload = codec.dumps((worker, factory, information, worker_rng.getrandbits(64),
+.venv\Lib\site-packages\cloudpickle\cloudpickle.py:1544: in dumps
+    cp.dump(obj)
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = &lt;cloudpickle.cloudpickle.Pickler object at 0x00000275A9FD9D90&gt;
+obj = (&lt;game.ai.information_set_search.InformationSetSearch object at 0x00000275AA3386B0&gt;, &lt;function factory at 0x00000275A9...ind='PassPriorityAction', _json=StructuredJSON(e2f27fa1ce70087b7324b8ad41e99775d8d66cc6)), (2053695854357871005,), ...)
+
+    def dump(self, obj):
+        try:
+            return super().dump(obj)
+        except RecursionError as e:
+            msg = "Could not pickle object as excessively deep recursion required."
+&gt;           raise pickle.PicklingError(msg) from e
+E           _pickle.PicklingError: Could not pickle object as excessively deep recursion required.
+
+.venv\Lib\site-packages\cloudpickle\cloudpickle.py:1316: PicklingError</failure></testcase><testcase classname="tests.test_parallel_search" name="test_real_workers_preserve_native_legality_and_global_work_caps[puct-process]" time="0.013"><failure message="_pickle.PicklingError: Could not pickle object as excessively deep recursion required.">self = &lt;cloudpickle.cloudpickle.Pickler object at 0x00000275AA2522D0&gt;
+obj = (&lt;game.ai.information_set_search.InformationSetSearch object at 0x00000275AA35B1D0&gt;, &lt;function factory at 0x00000275A9...ind='PassPriorityAction', _json=StructuredJSON(e2f27fa1ce70087b7324b8ad41e99775d8d66cc6)), (2053695854357871005,), ...)
+
+    def dump(self, obj):
+        try:
+&gt;           return super().dump(obj)
+                   ^^^^^^^^^^^^^^^^^
+
+.venv\Lib\site-packages\cloudpickle\cloudpickle.py:1313: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = StructuredJSON(c8ffa3791bf02a672a33516adb928bc74fee1ea8)
+
+    def __reduce__(self):
+        # Pickle's default object traversal recurses through every previous
+        # digest. Long games must travel to spawned workers without depending
+        # on Python's recursion limit or eagerly exporting legacy JSON hashes.
+        rows, cursor = [], self
+        while isinstance(cursor, RecallDigest):
+            rows.append((cursor.kind, cursor.entry, cursor.fast, cursor.__dict__.get('text')))
+            cursor = cursor.previous
+&gt;       return _restore_recall_digest, (cursor, tuple(reversed(rows)))
+                                                      ^^^^^^^^^^^^^^
+E       RecursionError: maximum recursion depth exceeded while calling a Python object
+
+Cards\game\ai\structured_values.py:204: RecursionError
+
+The above exception was the direct cause of the following exception:
+
+backend = 'process', selection = 'puct'
+
+    @pytest.mark.parametrize('backend', ['thread', 'process'])
+    @pytest.mark.parametrize('selection', ['uct', 'puct', 'hierarchical_puct'])
+    def test_real_workers_preserve_native_legality_and_global_work_caps(backend, selection):
+        root = factory(0).start().player_information()
+        with ParallelInformationSetSearch(planner(selection), workers=2, backend=backend) as parallel:
+&gt;           result = parallel.search(factory, root, seed=42)
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Cards\tests\test_parallel_search.py:49: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+Cards\game\ai\parallel_search.py:205: in search
+    return self._search(world_factory, root_information, seed, fallback, reuse_context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Cards\game\ai\parallel_search.py:233: in _search
+    payload = codec.dumps((worker, factory, information, worker_rng.getrandbits(64),
+.venv\Lib\site-packages\cloudpickle\cloudpickle.py:1544: in dumps
+    cp.dump(obj)
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = &lt;cloudpickle.cloudpickle.Pickler object at 0x00000275AA2522D0&gt;
+obj = (&lt;game.ai.information_set_search.InformationSetSearch object at 0x00000275AA35B1D0&gt;, &lt;function factory at 0x00000275A9...ind='PassPriorityAction', _json=StructuredJSON(e2f27fa1ce70087b7324b8ad41e99775d8d66cc6)), (2053695854357871005,), ...)
+
+    def dump(self, obj):
+        try:
+            return super().dump(obj)
+        except RecursionError as e:
+            msg = "Could not pickle object as excessively deep recursion required."
+&gt;           raise pickle.PicklingError(msg) from e
+E           _pickle.PicklingError: Could not pickle object as excessively deep recursion required.
+
+.venv\Lib\site-packages\cloudpickle\cloudpickle.py:1316: PicklingError</failure></testcase><testcase classname="tests.test_parallel_search" name="test_real_workers_preserve_native_legality_and_global_work_caps[hierarchical_puct-thread]" time="0.013"><failure message="_pickle.PicklingError: Could not pickle object as excessively deep recursion required.">self = &lt;cloudpickle.cloudpickle.Pickler object at 0x00000275A9FDA5D0&gt;
+obj = (&lt;game.ai.information_set_search.InformationSetSearch object at 0x00000275AA34D490&gt;, &lt;function factory at 0x00000275A9...ind='PassPriorityAction', _json=StructuredJSON(e2f27fa1ce70087b7324b8ad41e99775d8d66cc6)), (2053695854357871005,), ...)
+
+    def dump(self, obj):
+        try:
+&gt;           return super().dump(obj)
+                   ^^^^^^^^^^^^^^^^^
+
+.venv\Lib\site-packages\cloudpickle\cloudpickle.py:1313: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = StructuredJSON(c8ffa3791bf02a672a33516adb928bc74fee1ea8)
+
+    def __reduce__(self):
+        # Pickle's default object traversal recurses through every previous
+        # digest. Long games must travel to spawned workers without depending
+        # on Python's recursion limit or eagerly exporting legacy JSON hashes.
+        rows, cursor = [], self
+        while isinstance(cursor, RecallDigest):
+            rows.append((cursor.kind, cursor.entry, cursor.fast, cursor.__dict__.get('text')))
+            cursor = cursor.previous
+&gt;       return _restore_recall_digest, (cursor, tuple(reversed(rows)))
+                                                      ^^^^^^^^^^^^^^
+E       RecursionError: maximum recursion depth exceeded while calling a Python object
+
+Cards\game\ai\structured_values.py:204: RecursionError
+
+The above exception was the direct cause of the following exception:
+
+backend = 'thread', selection = 'hierarchical_puct'
+
+    @pytest.mark.parametrize('backend', ['thread', 'process'])
+    @pytest.mark.parametrize('selection', ['uct', 'puct', 'hierarchical_puct'])
+    def test_real_workers_preserve_native_legality_and_global_work_caps(backend, selection):
+        root = factory(0).start().player_information()
+        with ParallelInformationSetSearch(planner(selection), workers=2, backend=backend) as parallel:
+&gt;           result = parallel.search(factory, root, seed=42)
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Cards\tests\test_parallel_search.py:49: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+Cards\game\ai\parallel_search.py:205: in search
+    return self._search(world_factory, root_information, seed, fallback, reuse_context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Cards\game\ai\parallel_search.py:233: in _search
+    payload = codec.dumps((worker, factory, information, worker_rng.getrandbits(64),
+.venv\Lib\site-packages\cloudpickle\cloudpickle.py:1544: in dumps
+    cp.dump(obj)
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = &lt;cloudpickle.cloudpickle.Pickler object at 0x00000275A9FDA5D0&gt;
+obj = (&lt;game.ai.information_set_search.InformationSetSearch object at 0x00000275AA34D490&gt;, &lt;function factory at 0x00000275A9...ind='PassPriorityAction', _json=StructuredJSON(e2f27fa1ce70087b7324b8ad41e99775d8d66cc6)), (2053695854357871005,), ...)
+
+    def dump(self, obj):
+        try:
+            return super().dump(obj)
+        except RecursionError as e:
+            msg = "Could not pickle object as excessively deep recursion required."
+&gt;           raise pickle.PicklingError(msg) from e
+E           _pickle.PicklingError: Could not pickle object as excessively deep recursion required.
+
+.venv\Lib\site-packages\cloudpickle\cloudpickle.py:1316: PicklingError</failure></testcase><testcase classname="tests.test_parallel_search" name="test_real_workers_preserve_native_legality_and_global_work_caps[hierarchical_puct-process]" time="0.013"><failure message="_pickle.PicklingError: Could not pickle object as excessively deep recursion required.">self = &lt;cloudpickle.cloudpickle.Pickler object at 0x00000275A9FDABD0&gt;
+obj = (&lt;game.ai.information_set_search.InformationSetSearch object at 0x00000275AA348BF0&gt;, &lt;function factory at 0x00000275A9...ind='PassPriorityAction', _json=StructuredJSON(e2f27fa1ce70087b7324b8ad41e99775d8d66cc6)), (2053695854357871005,), ...)
+
+    def dump(self, obj):
+        try:
+&gt;           return super().dump(obj)
+                   ^^^^^^^^^^^^^^^^^
+
+.venv\Lib\site-packages\cloudpickle\cloudpickle.py:1313: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = StructuredJSON(c8ffa3791bf02a672a33516adb928bc74fee1ea8)
+
+    def __reduce__(self):
+        # Pickle's default object traversal recurses through every previous
+        # digest. Long games must travel to spawned workers without depending
+        # on Python's recursion limit or eagerly exporting legacy JSON hashes.
+        rows, cursor = [], self
+        while isinstance(cursor, RecallDigest):
+            rows.append((cursor.kind, cursor.entry, cursor.fast, cursor.__dict__.get('text')))
+            cursor = cursor.previous
+&gt;       return _restore_recall_digest, (cursor, tuple(reversed(rows)))
+                                                      ^^^^^^^^^^^^^^
+E       RecursionError: maximum recursion depth exceeded while calling a Python object
+
+Cards\game\ai\structured_values.py:204: RecursionError
+
+The above exception was the direct cause of the following exception:
+
+backend = 'process', selection = 'hierarchical_puct'
+
+    @pytest.mark.parametrize('backend', ['thread', 'process'])
+    @pytest.mark.parametrize('selection', ['uct', 'puct', 'hierarchical_puct'])
+    def test_real_workers_preserve_native_legality_and_global_work_caps(backend, selection):
+        root = factory(0).start().player_information()
+        with ParallelInformationSetSearch(planner(selection), workers=2, backend=backend) as parallel:
+&gt;           result = parallel.search(factory, root, seed=42)
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Cards\tests\test_parallel_search.py:49: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+Cards\game\ai\parallel_search.py:205: in search
+    return self._search(world_factory, root_information, seed, fallback, reuse_context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Cards\game\ai\parallel_search.py:233: in _search
+    payload = codec.dumps((worker, factory, information, worker_rng.getrandbits(64),
+.venv\Lib\site-packages\cloudpickle\cloudpickle.py:1544: in dumps
+    cp.dump(obj)
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = &lt;cloudpickle.cloudpickle.Pickler object at 0x00000275A9FDABD0&gt;
+obj = (&lt;game.ai.information_set_search.InformationSetSearch object at 0x00000275AA348BF0&gt;, &lt;function factory at 0x00000275A9...ind='PassPriorityAction', _json=StructuredJSON(e2f27fa1ce70087b7324b8ad41e99775d8d66cc6)), (2053695854357871005,), ...)
+
+    def dump(self, obj):
+        try:
+            return super().dump(obj)
+        except RecursionError as e:
+            msg = "Could not pickle object as excessively deep recursion required."
+&gt;           raise pickle.PicklingError(msg) from e
+E           _pickle.PicklingError: Could not pickle object as excessively deep recursion required.
+
+.venv\Lib\site-packages\cloudpickle\cloudpickle.py:1316: PicklingError</failure></testcase><testcase classname="tests.test_parallel_search" name="test_merge_is_visit_weighted_and_can_achieve_coverage_jointly" time="0.011" /><testcase classname="tests.test_parallel_search" name="test_worker_rule_error_propagates_and_pool_is_cleaned[thread]" time="0.053"><failure message="_pickle.PicklingError: Could not pickle object as excessively deep recursion required.">self = &lt;cloudpickle.cloudpickle.Pickler object at 0x00000275A8FB4890&gt;
+obj = (&lt;game.ai.information_set_search.InformationSetSearch object at 0x00000275AA2CE690&gt;, &lt;function test_worker_rule_error_...ind='PassPriorityAction', _json=StructuredJSON(e2f27fa1ce70087b7324b8ad41e99775d8d66cc6)), (7106521602475165645,), ...)
+
+    def dump(self, obj):
+        try:
+&gt;           return super().dump(obj)
+                   ^^^^^^^^^^^^^^^^^
+
+.venv\Lib\site-packages\cloudpickle\cloudpickle.py:1313: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = StructuredJSON(c8ffa3791bf02a672a33516adb928bc74fee1ea8)
+
+    def __reduce__(self):
+        # Pickle's default object traversal recurses through every previous
+        # digest. Long games must travel to spawned workers without depending
+        # on Python's recursion limit or eagerly exporting legacy JSON hashes.
+        rows, cursor = [], self
+        while isinstance(cursor, RecallDigest):
+            rows.append((cursor.kind, cursor.entry, cursor.fast, cursor.__dict__.get('text')))
+            cursor = cursor.previous
+&gt;       return _restore_recall_digest, (cursor, tuple(reversed(rows)))
+                                                      ^^^^^^^^^^^^^^
+E       RecursionError: maximum recursion depth exceeded while calling a Python object
+
+Cards\game\ai\structured_values.py:204: RecursionError
+
+The above exception was the direct cause of the following exception:
+
+backend = 'thread'
+
+    @pytest.mark.parametrize('backend', ['thread', 'process'])
+    def test_worker_rule_error_propagates_and_pool_is_cleaned(backend):
+        root = factory(0).start().player_information()
+        def broken(seed):
+            raise RuntimeError('intentional worker rule failure')
+        with ParallelInformationSetSearch(planner(), workers=2, backend=backend) as parallel:
+            with pytest.raises(RuntimeError, match='intentional worker rule failure'):
+&gt;               parallel.search(broken, root)
+
+Cards\tests\test_parallel_search.py:94: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+Cards\game\ai\parallel_search.py:205: in search
+    return self._search(world_factory, root_information, seed, fallback, reuse_context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Cards\game\ai\parallel_search.py:233: in _search
+    payload = codec.dumps((worker, factory, information, worker_rng.getrandbits(64),
+.venv\Lib\site-packages\cloudpickle\cloudpickle.py:1544: in dumps
+    cp.dump(obj)
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = &lt;cloudpickle.cloudpickle.Pickler object at 0x00000275A8FB4890&gt;
+obj = (&lt;game.ai.information_set_search.InformationSetSearch object at 0x00000275AA2CE690&gt;, &lt;function test_worker_rule_error_...ind='PassPriorityAction', _json=StructuredJSON(e2f27fa1ce70087b7324b8ad41e99775d8d66cc6)), (7106521602475165645,), ...)
+
+    def dump(self, obj):
+        try:
+            return super().dump(obj)
+        except RecursionError as e:
+            msg = "Could not pickle object as excessively deep recursion required."
+&gt;           raise pickle.PicklingError(msg) from e
+E           _pickle.PicklingError: Could not pickle object as excessively deep recursion required.
+
+.venv\Lib\site-packages\cloudpickle\cloudpickle.py:1316: PicklingError</failure></testcase><testcase classname="tests.test_parallel_search" name="test_worker_rule_error_propagates_and_pool_is_cleaned[process]" time="0.014"><failure message="_pickle.PicklingError: Could not pickle object as excessively deep recursion required.">self = &lt;cloudpickle.cloudpickle.Pickler object at 0x00000275AA252B10&gt;
+obj = (&lt;game.ai.information_set_search.InformationSetSearch object at 0x00000275AA26A900&gt;, &lt;function test_worker_rule_error_...ind='PassPriorityAction', _json=StructuredJSON(e2f27fa1ce70087b7324b8ad41e99775d8d66cc6)), (7106521602475165645,), ...)
+
+    def dump(self, obj):
+        try:
+&gt;           return super().dump(obj)
+                   ^^^^^^^^^^^^^^^^^
+
+.venv\Lib\site-packages\cloudpickle\cloudpickle.py:1313: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = StructuredJSON(c8ffa3791bf02a672a33516adb928bc74fee1ea8)
+
+    def __reduce__(self):
+        # Pickle's default object traversal recurses through every previous
+        # digest. Long games must travel to spawned workers without depending
+        # on Python's recursion limit or eagerly exporting legacy JSON hashes.
+        rows, cursor = [], self
+        while isinstance(cursor, RecallDigest):
+            rows.append((cursor.kind, cursor.entry, cursor.fast, cursor.__dict__.get('text')))
+            cursor = cursor.previous
+&gt;       return _restore_recall_digest, (cursor, tuple(reversed(rows)))
+                                                      ^^^^^^^^^^^^^^
+E       RecursionError: maximum recursion depth exceeded while calling a Python object
+
+Cards\game\ai\structured_values.py:204: RecursionError
+
+The above exception was the direct cause of the following exception:
+
+backend = 'process'
+
+    @pytest.mark.parametrize('backend', ['thread', 'process'])
+    def test_worker_rule_error_propagates_and_pool_is_cleaned(backend):
+        root = factory(0).start().player_information()
+        def broken(seed):
+            raise RuntimeError('intentional worker rule failure')
+        with ParallelInformationSetSearch(planner(), workers=2, backend=backend) as parallel:
+            with pytest.raises(RuntimeError, match='intentional worker rule failure'):
+&gt;               parallel.search(broken, root)
+
+Cards\tests\test_parallel_search.py:94: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+Cards\game\ai\parallel_search.py:205: in search
+    return self._search(world_factory, root_information, seed, fallback, reuse_context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Cards\game\ai\parallel_search.py:233: in _search
+    payload = codec.dumps((worker, factory, information, worker_rng.getrandbits(64),
+.venv\Lib\site-packages\cloudpickle\cloudpickle.py:1544: in dumps
+    cp.dump(obj)
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = &lt;cloudpickle.cloudpickle.Pickler object at 0x00000275AA252B10&gt;
+obj = (&lt;game.ai.information_set_search.InformationSetSearch object at 0x00000275AA26A900&gt;, &lt;function test_worker_rule_error_...ind='PassPriorityAction', _json=StructuredJSON(e2f27fa1ce70087b7324b8ad41e99775d8d66cc6)), (7106521602475165645,), ...)
+
+    def dump(self, obj):
+        try:
+            return super().dump(obj)
+        except RecursionError as e:
+            msg = "Could not pickle object as excessively deep recursion required."
+&gt;           raise pickle.PicklingError(msg) from e
+E           _pickle.PicklingError: Could not pickle object as excessively deep recursion required.
+
+.venv\Lib\site-packages\cloudpickle\cloudpickle.py:1316: PicklingError</failure></testcase><testcase classname="tests.test_parallel_search" name="test_invalid_parallel_configuration_is_rejected[settings0]" time="0.001" /><testcase classname="tests.test_parallel_search" name="test_invalid_parallel_configuration_is_rejected[settings1]" time="0.001" /><testcase classname="tests.test_parallel_search" name="test_invalid_parallel_configuration_is_rejected[settings2]" time="0.001" /><testcase classname="tests.test_parallel_search" name="test_invalid_parallel_configuration_is_rejected[settings3]" time="0.001" /><testcase classname="tests.test_parallel_search" name="test_invalid_parallel_configuration_is_rejected[settings4]" time="0.001" /><testcase classname="tests.test_parallel_search" name="test_snapshot_transport_strips_identity_recipes_and_provider_captures" time="0.048" /><testcase classname="tests.test_parallel_search" name="test_spawn_workers_run_a_sanitized_current_position_snapshot" time="0.021"><failure message="_pickle.PicklingError: Could not pickle object as excessively deep recursion required.">self = &lt;cloudpickle.cloudpickle.Pickler object at 0x00000275AA250950&gt;
+obj = (&lt;game.ai.information_set_search.InformationSetSearch object at 0x00000275AA025E20&gt;, &lt;function CurrentPositionWorlds._...ind='PassPriorityAction', _json=StructuredJSON(e2f27fa1ce70087b7324b8ad41e99775d8d66cc6)), (2053695854357871005,), ...)
+
+    def dump(self, obj):
+        try:
+&gt;           return super().dump(obj)
+                   ^^^^^^^^^^^^^^^^^
+
+.venv\Lib\site-packages\cloudpickle\cloudpickle.py:1313: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = StructuredJSON(9fc69429f410219c12c6447928bcc91517ad9af0)
+
+    def __reduce__(self):
+        # Pickle's default object traversal recurses through every previous
+        # digest. Long games must travel to spawned workers without depending
+        # on Python's recursion limit or eagerly exporting legacy JSON hashes.
+        rows, cursor = [], self
+        while isinstance(cursor, RecallDigest):
+            rows.append((cursor.kind, cursor.entry, cursor.fast, cursor.__dict__.get('text')))
+            cursor = cursor.previous
+&gt;       return _restore_recall_digest, (cursor, tuple(reversed(rows)))
+                                                      ^^^^^^^^^^^^^^
+E       RecursionError: maximum recursion depth exceeded while calling a Python object
+
+Cards\game\ai\structured_values.py:204: RecursionError
+
+The above exception was the direct cause of the following exception:
+
+    def test_spawn_workers_run_a_sanitized_current_position_snapshot():
+        from test_current_position_worlds import position, prepare
+        origin, game = position()
+        worlds, info, snapshot = prepare(origin, game)
+        before = game.state.rng.getstate()
+        with ParallelInformationSetSearch(planner(), workers=2) as parallel:
+&gt;           result = parallel.search(worlds, info, seed=42)
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Cards\tests\test_parallel_search.py:129: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+Cards\game\ai\parallel_search.py:205: in search
+    return self._search(world_factory, root_information, seed, fallback, reuse_context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Cards\game\ai\parallel_search.py:233: in _search
+    payload = codec.dumps((worker, factory, information, worker_rng.getrandbits(64),
+.venv\Lib\site-packages\cloudpickle\cloudpickle.py:1544: in dumps
+    cp.dump(obj)
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = &lt;cloudpickle.cloudpickle.Pickler object at 0x00000275AA250950&gt;
+obj = (&lt;game.ai.information_set_search.InformationSetSearch object at 0x00000275AA025E20&gt;, &lt;function CurrentPositionWorlds._...ind='PassPriorityAction', _json=StructuredJSON(e2f27fa1ce70087b7324b8ad41e99775d8d66cc6)), (2053695854357871005,), ...)
+
+    def dump(self, obj):
+        try:
+            return super().dump(obj)
+        except RecursionError as e:
+            msg = "Could not pickle object as excessively deep recursion required."
+&gt;           raise pickle.PicklingError(msg) from e
+E           _pickle.PicklingError: Could not pickle object as excessively deep recursion required.
+
+.venv\Lib\site-packages\cloudpickle\cloudpickle.py:1316: PicklingError</failure></testcase><testcase classname="tests.test_parallel_search" name="test_reuse_is_per_worker_and_invalidated_by_model_or_session_change" time="0.015"><failure message="_pickle.PicklingError: Could not pickle object as excessively deep recursion required.">self = &lt;cloudpickle.cloudpickle.Pickler object at 0x00000275A8FB4F50&gt;
+obj = (&lt;game.ai.information_set_search.InformationSetSearch object at 0x00000275AA061640&gt;, &lt;function factory at 0x00000275A9...ind='PassPriorityAction', _json=StructuredJSON(e2f27fa1ce70087b7324b8ad41e99775d8d66cc6)), (2053695854357871005,), ...)
+
+    def dump(self, obj):
+        try:
+&gt;           return super().dump(obj)
+                   ^^^^^^^^^^^^^^^^^
+
+.venv\Lib\site-packages\cloudpickle\cloudpickle.py:1313: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = StructuredJSON(c8ffa3791bf02a672a33516adb928bc74fee1ea8)
+
+    def __reduce__(self):
+        # Pickle's default object traversal recurses through every previous
+        # digest. Long games must travel to spawned workers without depending
+        # on Python's recursion limit or eagerly exporting legacy JSON hashes.
+        rows, cursor = [], self
+        while isinstance(cursor, RecallDigest):
+            rows.append((cursor.kind, cursor.entry, cursor.fast, cursor.__dict__.get('text')))
+            cursor = cursor.previous
+&gt;       return _restore_recall_digest, (cursor, tuple(reversed(rows)))
+                                                      ^^^^^^^^^^^^^^
+E       RecursionError: maximum recursion depth exceeded while calling a Python object
+
+Cards\game\ai\structured_values.py:204: RecursionError
+
+The above exception was the direct cause of the following exception:
+
+    def test_reuse_is_per_worker_and_invalidated_by_model_or_session_change():
+        root = factory(0).start().player_information()
+        context = object()
+        with ParallelInformationSetSearch(planner(tree_reuse_size=32), workers=2) as parallel:
+&gt;           first = parallel.search(factory, root, seed=42, reuse_context=context)
+                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Cards\tests\test_parallel_search.py:138: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+Cards\game\ai\parallel_search.py:205: in search
+    return self._search(world_factory, root_information, seed, fallback, reuse_context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Cards\game\ai\parallel_search.py:233: in _search
+    payload = codec.dumps((worker, factory, information, worker_rng.getrandbits(64),
+.venv\Lib\site-packages\cloudpickle\cloudpickle.py:1544: in dumps
+    cp.dump(obj)
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = &lt;cloudpickle.cloudpickle.Pickler object at 0x00000275A8FB4F50&gt;
+obj = (&lt;game.ai.information_set_search.InformationSetSearch object at 0x00000275AA061640&gt;, &lt;function factory at 0x00000275A9...ind='PassPriorityAction', _json=StructuredJSON(e2f27fa1ce70087b7324b8ad41e99775d8d66cc6)), (2053695854357871005,), ...)
+
+    def dump(self, obj):
+        try:
+            return super().dump(obj)
+        except RecursionError as e:
+            msg = "Could not pickle object as excessively deep recursion required."
+&gt;           raise pickle.PicklingError(msg) from e
+E           _pickle.PicklingError: Could not pickle object as excessively deep recursion required.
+
+.venv\Lib\site-packages\cloudpickle\cloudpickle.py:1316: PicklingError</failure></testcase><testcase classname="tests.test_parallel_search" name="test_uneven_budgets_and_effective_workers_do_not_multiply_work" time="0.020"><failure message="_pickle.PicklingError: Could not pickle object as excessively deep recursion required.">self = &lt;cloudpickle.cloudpickle.Pickler object at 0x00000275AA252690&gt;
+obj = (&lt;game.ai.information_set_search.InformationSetSearch object at 0x00000275AA152C60&gt;, &lt;function factory at 0x00000275A9...ind='PassPriorityAction', _json=StructuredJSON(e2f27fa1ce70087b7324b8ad41e99775d8d66cc6)), (7106521602475165645,), ...)
+
+    def dump(self, obj):
+        try:
+&gt;           return super().dump(obj)
+                   ^^^^^^^^^^^^^^^^^
+
+.venv\Lib\site-packages\cloudpickle\cloudpickle.py:1313: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = StructuredJSON(c8ffa3791bf02a672a33516adb928bc74fee1ea8)
+
+    def __reduce__(self):
+        # Pickle's default object traversal recurses through every previous
+        # digest. Long games must travel to spawned workers without depending
+        # on Python's recursion limit or eagerly exporting legacy JSON hashes.
+        rows, cursor = [], self
+        while isinstance(cursor, RecallDigest):
+            rows.append((cursor.kind, cursor.entry, cursor.fast, cursor.__dict__.get('text')))
+            cursor = cursor.previous
+&gt;       return _restore_recall_digest, (cursor, tuple(reversed(rows)))
+                                                      ^^^^^^^^^^^^^^
+E       RecursionError: maximum recursion depth exceeded while calling a Python object
+
+Cards\game\ai\structured_values.py:204: RecursionError
+
+The above exception was the direct cause of the following exception:
+
+    def test_uneven_budgets_and_effective_workers_do_not_multiply_work():
+        root = factory(0).start().player_information()
+        base = planner()
+        base.budget = replace(base.budget, iterations=5, max_advances=7)
+        with ParallelInformationSetSearch(base, workers=3, backend='thread') as parallel:
+&gt;           result = parallel.search(factory, root)
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Cards\tests\test_parallel_search.py:153: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+Cards\game\ai\parallel_search.py:205: in search
+    return self._search(world_factory, root_information, seed, fallback, reuse_context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Cards\game\ai\parallel_search.py:233: in _search
+    payload = codec.dumps((worker, factory, information, worker_rng.getrandbits(64),
+.venv\Lib\site-packages\cloudpickle\cloudpickle.py:1544: in dumps
+    cp.dump(obj)
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = &lt;cloudpickle.cloudpickle.Pickler object at 0x00000275AA252690&gt;
+obj = (&lt;game.ai.information_set_search.InformationSetSearch object at 0x00000275AA152C60&gt;, &lt;function factory at 0x00000275A9...ind='PassPriorityAction', _json=StructuredJSON(e2f27fa1ce70087b7324b8ad41e99775d8d66cc6)), (7106521602475165645,), ...)
+
+    def dump(self, obj):
+        try:
+            return super().dump(obj)
+        except RecursionError as e:
+            msg = "Could not pickle object as excessively deep recursion required."
+&gt;           raise pickle.PicklingError(msg) from e
+E           _pickle.PicklingError: Could not pickle object as excessively deep recursion required.
+
+.venv\Lib\site-packages\cloudpickle\cloudpickle.py:1316: PicklingError</failure></testcase><testcase classname="tests.test_parallel_search" name="test_expired_common_deadline_keeps_one_attempt_per_worker_without_disabling_timer" time="0.018"><failure message="_pickle.PicklingError: Could not pickle object as excessively deep recursion required.">self = &lt;cloudpickle.cloudpickle.Pickler object at 0x00000275AA253DD0&gt;
+obj = (&lt;game.ai.information_set_search.InformationSetSearch object at 0x00000275AA2495E0&gt;, &lt;function factory at 0x00000275A9...ind='PassPriorityAction', _json=StructuredJSON(e2f27fa1ce70087b7324b8ad41e99775d8d66cc6)), (7106521602475165645,), ...)
+
+    def dump(self, obj):
+        try:
+&gt;           return super().dump(obj)
+                   ^^^^^^^^^^^^^^^^^
+
+.venv\Lib\site-packages\cloudpickle\cloudpickle.py:1313: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = StructuredJSON(c8ffa3791bf02a672a33516adb928bc74fee1ea8)
+
+    def __reduce__(self):
+        # Pickle's default object traversal recurses through every previous
+        # digest. Long games must travel to spawned workers without depending
+        # on Python's recursion limit or eagerly exporting legacy JSON hashes.
+        rows, cursor = [], self
+        while isinstance(cursor, RecallDigest):
+            rows.append((cursor.kind, cursor.entry, cursor.fast, cursor.__dict__.get('text')))
+            cursor = cursor.previous
+&gt;       return _restore_recall_digest, (cursor, tuple(reversed(rows)))
+                                                      ^^^^^^^^^^^^^^
+E       RecursionError: maximum recursion depth exceeded while calling a Python object
+
+Cards\game\ai\structured_values.py:204: RecursionError
+
+The above exception was the direct cause of the following exception:
+
+    def test_expired_common_deadline_keeps_one_attempt_per_worker_without_disabling_timer():
+        root = factory(0).start().player_information()
+        with ParallelInformationSetSearch(planner(max_time_ms=.01, min_trajectories=1), workers=2) as parallel:
+&gt;           result = parallel.search(factory, root)
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Cards\tests\test_parallel_search.py:166: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+Cards\game\ai\parallel_search.py:205: in search
+    return self._search(world_factory, root_information, seed, fallback, reuse_context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Cards\game\ai\parallel_search.py:233: in _search
+    payload = codec.dumps((worker, factory, information, worker_rng.getrandbits(64),
+.venv\Lib\site-packages\cloudpickle\cloudpickle.py:1544: in dumps
+    cp.dump(obj)
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = &lt;cloudpickle.cloudpickle.Pickler object at 0x00000275AA253DD0&gt;
+obj = (&lt;game.ai.information_set_search.InformationSetSearch object at 0x00000275AA2495E0&gt;, &lt;function factory at 0x00000275A9...ind='PassPriorityAction', _json=StructuredJSON(e2f27fa1ce70087b7324b8ad41e99775d8d66cc6)), (7106521602475165645,), ...)
+
+    def dump(self, obj):
+        try:
+            return super().dump(obj)
+        except RecursionError as e:
+            msg = "Could not pickle object as excessively deep recursion required."
+&gt;           raise pickle.PicklingError(msg) from e
+E           _pickle.PicklingError: Could not pickle object as excessively deep recursion required.
+
+.venv\Lib\site-packages\cloudpickle\cloudpickle.py:1316: PicklingError</failure></testcase><testcase classname="tests.test_parallel_search" name="test_play_cli_overrides_workers_and_backend" time="0.030" /><testcase classname="tests.test_parallel_search" name="test_spawn_supports_native_construction_and_incremental_candidate_menus[False]" time="0.033"><failure message="_pickle.PicklingError: Could not pickle object as excessively deep recursion required.">self = &lt;cloudpickle.cloudpickle.Pickler object at 0x00000275AA2522D0&gt;
+obj = (&lt;game.ai.information_set_search.InformationSetSearch object at 0x00000275AA349760&gt;, &lt;function test_spawn_supports_nat...ind='PassPriorityAction', _json=StructuredJSON(e2f27fa1ce70087b7324b8ad41e99775d8d66cc6)), (2053695854357871005,), ...)
+
+    def dump(self, obj):
+        try:
+&gt;           return super().dump(obj)
+                   ^^^^^^^^^^^^^^^^^
+
+.venv\Lib\site-packages\cloudpickle\cloudpickle.py:1313: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = StructuredJSON(52496f89a15746cea7a89bfc45b93318d418060c)
+
+    def __reduce__(self):
+        # Pickle's default object traversal recurses through every previous
+        # digest. Long games must travel to spawned workers without depending
+        # on Python's recursion limit or eagerly exporting legacy JSON hashes.
+        rows, cursor = [], self
+        while isinstance(cursor, RecallDigest):
+            rows.append((cursor.kind, cursor.entry, cursor.fast, cursor.__dict__.get('text')))
+            cursor = cursor.previous
+&gt;       return _restore_recall_digest, (cursor, tuple(reversed(rows)))
+                                                      ^^^^^^^^^^^^^^
+E       RecursionError: maximum recursion depth exceeded while calling a Python object
+
+Cards\game\ai\structured_values.py:204: RecursionError
+
+The above exception was the direct cause of the following exception:
+
+staged = False
+
+    @pytest.mark.parametrize('staged', [False, True])
+    def test_spawn_supports_native_construction_and_incremental_candidate_menus(staged):
+        from game.simulation.search_config import SearchGenerationPolicy
+        from game.game_state import Card
+        from game.cards.starter_cards import starter_catalog
+        from game.enums import ZoneType
+        policy = SearchGenerationPolicy(staged, staged, True, 2)
+        def scenario(controllers):
+            game = tactical_scenario('useful_pacifism')(controllers)
+            owner = game.state.players[1]
+            for _ in range(8):
+                owner.add_card(Card(starter_catalog()['Impassioned Orator'], owner), ZoneType.BATTLEFIELD)
+            return game
+        def worlds(seed):
+            return SearchSimulator(scenario, policy_for=policy, track_information=True, structured_records=True)
+        sim = worlds(0)
+        root = sim.start()
+        base = planner(widening_constant=2)
+        base.budget = replace(base.budget, max_depth=1, max_advances=512)
+        with ParallelInformationSetSearch(base, workers=2) as parallel:
+&gt;           result = parallel.search(worlds, root.player_information(), seed=42)
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Cards\tests\test_parallel_search.py:211: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+Cards\game\ai\parallel_search.py:205: in search
+    return self._search(world_factory, root_information, seed, fallback, reuse_context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Cards\game\ai\parallel_search.py:233: in _search
+    payload = codec.dumps((worker, factory, information, worker_rng.getrandbits(64),
+.venv\Lib\site-packages\cloudpickle\cloudpickle.py:1544: in dumps
+    cp.dump(obj)
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = &lt;cloudpickle.cloudpickle.Pickler object at 0x00000275AA2522D0&gt;
+obj = (&lt;game.ai.information_set_search.InformationSetSearch object at 0x00000275AA349760&gt;, &lt;function test_spawn_supports_nat...ind='PassPriorityAction', _json=StructuredJSON(e2f27fa1ce70087b7324b8ad41e99775d8d66cc6)), (2053695854357871005,), ...)
+
+    def dump(self, obj):
+        try:
+            return super().dump(obj)
+        except RecursionError as e:
+            msg = "Could not pickle object as excessively deep recursion required."
+&gt;           raise pickle.PicklingError(msg) from e
+E           _pickle.PicklingError: Could not pickle object as excessively deep recursion required.
+
+.venv\Lib\site-packages\cloudpickle\cloudpickle.py:1316: PicklingError</failure></testcase><testcase classname="tests.test_parallel_search" name="test_spawn_supports_native_construction_and_incremental_candidate_menus[True]" time="0.031"><failure message="_pickle.PicklingError: Could not pickle object as excessively deep recursion required.">self = &lt;cloudpickle.cloudpickle.Pickler object at 0x00000275A8FB5010&gt;
+obj = (&lt;game.ai.information_set_search.InformationSetSearch object at 0x00000275AA17E090&gt;, &lt;function test_spawn_supports_nat...ind='PassPriorityAction', _json=StructuredJSON(e2f27fa1ce70087b7324b8ad41e99775d8d66cc6)), (2053695854357871005,), ...)
+
+    def dump(self, obj):
+        try:
+&gt;           return super().dump(obj)
+                   ^^^^^^^^^^^^^^^^^
+
+.venv\Lib\site-packages\cloudpickle\cloudpickle.py:1313: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = StructuredJSON(52496f89a15746cea7a89bfc45b93318d418060c)
+
+    def __reduce__(self):
+        # Pickle's default object traversal recurses through every previous
+        # digest. Long games must travel to spawned workers without depending
+        # on Python's recursion limit or eagerly exporting legacy JSON hashes.
+        rows, cursor = [], self
+        while isinstance(cursor, RecallDigest):
+            rows.append((cursor.kind, cursor.entry, cursor.fast, cursor.__dict__.get('text')))
+            cursor = cursor.previous
+&gt;       return _restore_recall_digest, (cursor, tuple(reversed(rows)))
+                                                      ^^^^^^^^^^^^^^
+E       RecursionError: maximum recursion depth exceeded while calling a Python object
+
+Cards\game\ai\structured_values.py:204: RecursionError
+
+The above exception was the direct cause of the following exception:
+
+staged = True
+
+    @pytest.mark.parametrize('staged', [False, True])
+    def test_spawn_supports_native_construction_and_incremental_candidate_menus(staged):
+        from game.simulation.search_config import SearchGenerationPolicy
+        from game.game_state import Card
+        from game.cards.starter_cards import starter_catalog
+        from game.enums import ZoneType
+        policy = SearchGenerationPolicy(staged, staged, True, 2)
+        def scenario(controllers):
+            game = tactical_scenario('useful_pacifism')(controllers)
+            owner = game.state.players[1]
+            for _ in range(8):
+                owner.add_card(Card(starter_catalog()['Impassioned Orator'], owner), ZoneType.BATTLEFIELD)
+            return game
+        def worlds(seed):
+            return SearchSimulator(scenario, policy_for=policy, track_information=True, structured_records=True)
+        sim = worlds(0)
+        root = sim.start()
+        base = planner(widening_constant=2)
+        base.budget = replace(base.budget, max_depth=1, max_advances=512)
+        with ParallelInformationSetSearch(base, workers=2) as parallel:
+&gt;           result = parallel.search(worlds, root.player_information(), seed=42)
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Cards\tests\test_parallel_search.py:211: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+Cards\game\ai\parallel_search.py:205: in search
+    return self._search(world_factory, root_information, seed, fallback, reuse_context)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Cards\game\ai\parallel_search.py:233: in _search
+    payload = codec.dumps((worker, factory, information, worker_rng.getrandbits(64),
+.venv\Lib\site-packages\cloudpickle\cloudpickle.py:1544: in dumps
+    cp.dump(obj)
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = &lt;cloudpickle.cloudpickle.Pickler object at 0x00000275A8FB5010&gt;
+obj = (&lt;game.ai.information_set_search.InformationSetSearch object at 0x00000275AA17E090&gt;, &lt;function test_spawn_supports_nat...ind='PassPriorityAction', _json=StructuredJSON(e2f27fa1ce70087b7324b8ad41e99775d8d66cc6)), (2053695854357871005,), ...)
+
+    def dump(self, obj):
+        try:
+            return super().dump(obj)
+        except RecursionError as e:
+            msg = "Could not pickle object as excessively deep recursion required."
+&gt;           raise pickle.PicklingError(msg) from e
+E           _pickle.PicklingError: Could not pickle object as excessively deep recursion required.
+
+.venv\Lib\site-packages\cloudpickle\cloudpickle.py:1316: PicklingError</failure></testcase><testcase classname="tests.test_parallel_search" name="test_spawn_root_matching_does_not_require_a_fixed_python_hash_seed" time="1.522"><failure message="AssertionError: Traceback (most recent call last):&#10;    File &quot;C:\Users\stepa\Documents\Bakalarka\Bakalarka\.venv\Lib\site-packages\cloudpickle\cloudpickle.py&quot;, line 1313, in dump&#10;      return super().dump(obj)&#10;             ^^^^^^^^^^^^^^^^^&#10;    File &quot;C:\Users\stepa\Documents\Bakalarka\Bakalarka\Cards\game\ai\structured_values.py&quot;, line 204, in __reduce__&#10;      return _restore_recall_digest, (cursor, tuple(reversed(rows)))&#10;                                                    ^^^^^^^^^^^^^^&#10;  RecursionError: maximum recursion depth exceeded while calling a Python object&#10;  &#10;  The above exception was the direct cause of the following exception:&#10;  &#10;  Traceback (most recent call last):&#10;    File &quot;C:\Users\stepa\AppData\Local\Temp\mtg-pytest-3itpohjm\tests\test_spawn_root_matching_does_0\unseeded_probe.py&quot;, line 16, in &lt;module&gt;&#10;      main()&#10;    File &quot;C:\Users\stepa\AppData\Local\Temp\mtg-pytest-3itpohjm\tests\test_spawn_root_matching_does_0\unseeded_probe.py&quot;, line 13, in main&#10;      result = parallel.search(worlds, info, seed=42)&#10;               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^&#10;    File &quot;C:\Users\stepa\Documents\Bakalarka\Bakalarka\Cards\game\ai\parallel_search.py&quot;, line 205, in search&#10;      return self._search(world_factory, root_information, seed, fallback, reuse_context)&#10;             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^&#10;    File &quot;C:\Users\stepa\Documents\Bakalarka\Bakalarka\Cards\game\ai\parallel_search.py&quot;, line 233, in _search&#10;      payload = codec.dumps((worker, factory, information, worker_rng.getrandbits(64),&#10;                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^&#10;    File &quot;C:\Users\stepa\Documents\Bakalarka\Bakalarka\.venv\Lib\site-packages\cloudpickle\cloudpickle.py&quot;, line 1544, in dumps&#10;      cp.dump(obj)&#10;    File &quot;C:\Users\stepa\Documents\Bakalarka\Bakalarka\.venv\Lib\site-packages\cloudpickle\cloudpickle.py&quot;, line 1316, in dump&#10;      raise pickle.PicklingError(msg) from e&#10;  _pickle.PicklingError: Could not pickle object as excessively deep recursion required.&#10;  &#10;assert not 1&#10; +  where 1 = CompletedProcess(args=['C:\\Users\\stepa\\Documents\\Bakalarka\\Bakalarka\\.venv\\Scripts\\python.exe', 'C:\\Users\\st...e.PicklingError(msg) from e\n_pickle.PicklingError: Could not pickle object as excessively deep recursion required.\n').returncode">tmp_path = WindowsPath('C:/Users/stepa/AppData/Local/Temp/mtg-pytest-3itpohjm/tests/test_spawn_root_matching_does_0')
+
+    def test_spawn_root_matching_does_not_require_a_fixed_python_hash_seed(tmp_path):
+        import subprocess
+        import sys
+        from pathlib import Path
+        script = tmp_path/'unseeded_probe.py'
+        script.write_text('''from benchmarks.mcts_parallel import capture
+    from game.ai.parallel_search import ParallelInformationSetSearch
+    from game.ai.information_set_search import InformationSetSearch, InformationSearchBudget
+    from game.ai.observation_policy import ObservationOpponentPolicy
+    def main():
+        worlds, info = capture('blue', 'black', 43, 13)
+        policy = ObservationOpponentPolicy()
+        base = InformationSetSearch(opponent_policy=policy, rollout_policy=policy,
+            compress_forced=True, require_root_coverage=False,
+            budget=InformationSearchBudget(worlds=1, iterations=8, max_depth=2,
+                max_advances=512, max_extensions=32))
+        with ParallelInformationSetSearch(base, workers=2) as parallel:
+            result = parallel.search(worlds, info, seed=42)
+            assert not result.used_fallback
+    if __name__ == '__main__':
+        main()
+    ''', encoding='utf-8')
+        env = dict(os.environ, PYTHONPATH=str(Path(__file__).resolve().parents[1]))
+        env.pop('PYTHONHASHSEED', None)
+        completed = subprocess.run([sys.executable, str(script)], env=env, capture_output=True, text=True, timeout=60)
+&gt;       assert not completed.returncode, completed.stdout+completed.stderr
+E       AssertionError: Traceback (most recent call last):
+E           File "C:\Users\stepa\Documents\Bakalarka\Bakalarka\.venv\Lib\site-packages\cloudpickle\cloudpickle.py", line 1313, in dump
+E             return super().dump(obj)
+E                    ^^^^^^^^^^^^^^^^^
+E           File "C:\Users\stepa\Documents\Bakalarka\Bakalarka\Cards\game\ai\structured_values.py", line 204, in __reduce__
+E             return _restore_recall_digest, (cursor, tuple(reversed(rows)))
+E                                                           ^^^^^^^^^^^^^^
+E         RecursionError: maximum recursion depth exceeded while calling a Python object
+E         
+E         The above exception was the direct cause of the following exception:
+E         
+E         Traceback (most recent call last):
+E           File "C:\Users\stepa\AppData\Local\Temp\mtg-pytest-3itpohjm\tests\test_spawn_root_matching_does_0\unseeded_probe.py", line 16, in &lt;module&gt;
+E             main()
+E           File "C:\Users\stepa\AppData\Local\Temp\mtg-pytest-3itpohjm\tests\test_spawn_root_matching_does_0\unseeded_probe.py", line 13, in main
+E             result = parallel.search(worlds, info, seed=42)
+E                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E           File "C:\Users\stepa\Documents\Bakalarka\Bakalarka\Cards\game\ai\parallel_search.py", line 205, in search
+E             return self._search(world_factory, root_information, seed, fallback, reuse_context)
+E                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E           File "C:\Users\stepa\Documents\Bakalarka\Bakalarka\Cards\game\ai\parallel_search.py", line 233, in _search
+E             payload = codec.dumps((worker, factory, information, worker_rng.getrandbits(64),
+E                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E           File "C:\Users\stepa\Documents\Bakalarka\Bakalarka\.venv\Lib\site-packages\cloudpickle\cloudpickle.py", line 1544, in dumps
+E             cp.dump(obj)
+E           File "C:\Users\stepa\Documents\Bakalarka\Bakalarka\.venv\Lib\site-packages\cloudpickle\cloudpickle.py", line 1316, in dump
+E             raise pickle.PicklingError(msg) from e
+E         _pickle.PicklingError: Could not pickle object as excessively deep recursion required.
+E         
+E       assert not 1
+E        +  where 1 = CompletedProcess(args=['C:\\Users\\stepa\\Documents\\Bakalarka\\Bakalarka\\.venv\\Scripts\\python.exe', 'C:\\Users\\st...e.PicklingError(msg) from e\n_pickle.PicklingError: Could not pickle object as excessively deep recursion required.\n').returncode
+
+Cards\tests\test_parallel_search.py:245: AssertionError</failure></testcase><testcase classname="tests.test_parallel_search" name="test_live_match_closes_its_pool_and_preserves_diagnostics" time="0.053"><failure message="AssertionError: assert ('error' == 'turn_limit'&#10;  &#10;  - turn_limit&#10;  + error)">def test_live_match_closes_its_pool_and_preserves_diagnostics():
+        from game.ai.game_origin import GameOrigin
+        from game.ai.simple_agent import SimpleAgent
+        from game.cards.catalog import game_catalog
+        from game.cards.decks import load_arena_starter
+        from game.simulation.search_config import make_search_controller
+        from game.simulation.match_runner import run_match
+        origin = GameOrigin((load_arena_starter('red'), load_arena_starter('white')), game_catalog,
+                            names=('Search','Simple'), starting_player_idx=0)
+        own = make_search_controller(dict(deck_knowledge='both_lists', parallel_workers=2,
+            worlds=1, iterations=4, max_depth=1, max_advances=128), origin, max_decisions=1000)
+        result = run_match(tuple(deck.name for deck in origin.decks), None, seed=42, starting_player=0,
+            max_turns=1, controllers=(own, SimpleAgent()), names=origin.names, decklists=origin.decks)
+&gt;       assert result.status == 'turn_limit' and not result.error
+E       AssertionError: assert ('error' == 'turn_limit'
+E         
+E         - turn_limit
+E         + error)
+
+Cards\tests\test_parallel_search.py:261: AssertionError</failure></testcase><testcase classname="tests.test_parallel_search" name="test_long_recall_transport_is_iterative_and_preserves_keys_without_json" time="0.072"><failure message="_pickle.PicklingError: Could not pickle object as excessively deep recursion required.">self = &lt;cloudpickle.cloudpickle.Pickler object at 0x00000275A9F29C10&gt;
+obj = PlayerRecall(entries=(RecallEntry(kind='event', _json=StructuredJSON(f59b16414082c3a716689b4c384135d93af3654e)), Recal...ucturedJSON(1fb98ab50f428c37b2ac80788966746059e913da))), digest=RecallDigest(9fbcc18f519e4f0a98b8b2b623dd35968df8fb52))
+
+    def dump(self, obj):
+        try:
+&gt;           return super().dump(obj)
+                   ^^^^^^^^^^^^^^^^^
+
+.venv\Lib\site-packages\cloudpickle\cloudpickle.py:1313: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = StructuredJSON(f59b16414082c3a716689b4c384135d93af3654e)
+
+    def __reduce__(self):
+        # Pickle's default object traversal recurses through every previous
+        # digest. Long games must travel to spawned workers without depending
+        # on Python's recursion limit or eagerly exporting legacy JSON hashes.
+        rows, cursor = [], self
+        while isinstance(cursor, RecallDigest):
+            rows.append((cursor.kind, cursor.entry, cursor.fast, cursor.__dict__.get('text')))
+            cursor = cursor.previous
+&gt;       return _restore_recall_digest, (cursor, tuple(reversed(rows)))
+                                                      ^^^^^^^^^^^^^^
+E       RecursionError: maximum recursion depth exceeded while calling a Python object
+
+Cards\game\ai\structured_values.py:204: RecursionError
+
+The above exception was the direct cause of the following exception:
+
+monkeypatch = &lt;_pytest.monkeypatch.MonkeyPatch object at 0x00000275AA413B60&gt;
+
+    def test_long_recall_transport_is_iterative_and_preserves_keys_without_json(monkeypatch):
+        from game.ai.search_recall import PlayerRecall
+        from game.ai.structured_values import RecallDigest
+        import game.ai.structured_values as values
+        recall = PlayerRecall()
+        for turn in range(2200):
+            recall = recall.append('event', {'turn': turn})
+        assert 'text' not in recall.digest.__dict__
+        with monkeypatch.context() as patch:
+            patch.setattr(values.json, 'dumps', lambda *a, **kw: pytest.fail('Transport must not export JSON'))
+&gt;           restored = cloudpickle.loads(cloudpickle.dumps(recall, protocol=5))
+                                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Cards\tests\test_parallel_search.py:276: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+.venv\Lib\site-packages\cloudpickle\cloudpickle.py:1544: in dumps
+    cp.dump(obj)
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = &lt;cloudpickle.cloudpickle.Pickler object at 0x00000275A9F29C10&gt;
+obj = PlayerRecall(entries=(RecallEntry(kind='event', _json=StructuredJSON(f59b16414082c3a716689b4c384135d93af3654e)), Recal...ucturedJSON(1fb98ab50f428c37b2ac80788966746059e913da))), digest=RecallDigest(9fbcc18f519e4f0a98b8b2b623dd35968df8fb52))
+
+    def dump(self, obj):
+        try:
+            return super().dump(obj)
+        except RecursionError as e:
+            msg = "Could not pickle object as excessively deep recursion required."
+&gt;           raise pickle.PicklingError(msg) from e
+E           _pickle.PicklingError: Could not pickle object as excessively deep recursion required.
+
+.venv\Lib\site-packages\cloudpickle\cloudpickle.py:1316: PicklingError</failure></testcase></testsuite></testsuites>

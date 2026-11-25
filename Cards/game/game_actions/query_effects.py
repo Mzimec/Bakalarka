@@ -1,5 +1,6 @@
 """Effects which affect a query result at resolution, without selecting targets."""
 
+from __future__ import annotations
 from .data_structs.effect import Effect
 from .data_structs.operation import Operation
 from ..operations.card_operations import MoveCardOperation
@@ -8,16 +9,14 @@ from ..operations.card_operations import MoveCardOperation
 class MoveMatchingCardsOperation(Operation):
     """!
     @brief Move every card matching a runtime query to one destination zone.
-
     Unlike targeted effects, the affected cards are not selected when the
     action is generated. The query is evaluated against the live game state
     when this operation resolves.
     """
 
-    def __init__(self, context, spec, destination):
+    def __init__(self, context: object, spec: object, destination: object) -> None:
         """!
         @brief Create an operation that moves all cards matching a specification.
-
         @param context Bound resolution context.
         @param spec Target specification used as a runtime card query.
         @param destination Destination zone for each matching card.
@@ -26,14 +25,12 @@ class MoveMatchingCardsOperation(Operation):
         self.spec = spec
         self.destination = destination
 
-    def execute(self, state):
+    def execute(self, state: object) -> list[object]:
         """!
         @brief Evaluate the query and move the resulting cards.
-
         The complete result is snapshotted before any card is moved. This
         prevents earlier zone changes in the same operation from changing which
         later cards belong to the original query result.
-
         @param state Current game state.
         @return Events produced by the individual card moves.
         """
@@ -64,22 +61,23 @@ class MoveMatchingCardsOperation(Operation):
 class MoveMatchingCardsEffect(Effect):
     """!
     @brief Declarative effect that moves all cards matching a runtime query.
-
     @var spec
         Specification evaluated when the generated operation resolves.
     @var destination
         Zone to which matching cards are moved.
     """
 
-    def __init__(self, key, spec, destination):
+    def __init__(self, key: str, spec: object, destination: object) -> None:
+        """!
+        @brief Initialize this object.
+        """
         super().__init__(key)
         self.spec = spec
         self.destination = destination
 
-    def to_operations(self, state, context):
+    def to_operations(self, state: object, context: object) -> object:
         """!
         @brief Generate the runtime query-and-move operation.
-
         @param state Current game state.
         @param context Bound resolution context.
         """
@@ -89,7 +87,7 @@ class MoveMatchingCardsEffect(Effect):
             self.destination,
         )
 
-    def get_info(self):
+    def get_info(self) -> str:
         """!
         @brief Return a human-readable description of this effect.
         """

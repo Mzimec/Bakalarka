@@ -1,5 +1,6 @@
 """Reusable declarative effects; runtime operations are created at resolution."""
 
+from __future__ import annotations
 from .data_structs.effect import Effect
 from ..enums import ZoneType
 from ..operations.card_operations import DamagePlayerOperation, MoveCardOperation, TapCardOperation
@@ -8,24 +9,24 @@ from ..operations.card_operations import DamagePlayerOperation, MoveCardOperatio
 class DamagePlayerEffect(Effect):
     """!
     @brief Deal fixed damage to players selected through one target slot.
-
     @var amount
         Damage dealt per selected target occurrence.
     @var slot_key
         Target slot containing the affected players.
     """
 
-    def __init__(self, key: str, amount: int, slot_key: str):
+    def __init__(self, key: str, amount: int, slot_key: str) -> None:
+        """!
+        @brief Initialize this object.
+        """
         super().__init__(key)
         self.amount = amount
         self.slot_key = slot_key
 
-    def to_operations(self, state, context):
+    def to_operations(self, state: object, context: object) -> object:
         """!
         @brief Generate one damage operation for each selected player.
-
         Target multiplicity scales the total damage assigned to that player.
-
         @param state Current game state.
         @param context Bound resolution context containing selected targets.
         """
@@ -37,7 +38,7 @@ class DamagePlayerEffect(Effect):
                     self.amount * count,
                 )
 
-    def get_info(self):
+    def get_info(self) -> str:
         """!
         @brief Return a human-readable description of this effect.
         """
@@ -47,19 +48,20 @@ class DamagePlayerEffect(Effect):
 class MoveSourceEffect(Effect):
     """!
     @brief Move the effect's own source to a configured destination zone.
-
     @var destination
         Zone to which the source should move on resolution.
     """
 
-    def __init__(self, key: str, destination: ZoneType):
+    def __init__(self, key: str, destination: ZoneType) -> None:
+        """!
+        @brief Initialize this object.
+        """
         super().__init__(key)
         self.destination = destination
 
-    def to_operations(self, state, context):
+    def to_operations(self, state: object, context: object) -> object:
         """!
         @brief Generate the source zone-change operation.
-
         @param state Current game state.
         @param context Bound resolution context.
         """
@@ -69,7 +71,7 @@ class MoveSourceEffect(Effect):
             self.destination,
         )
 
-    def get_info(self):
+    def get_info(self) -> str:
         """!
         @brief Return a human-readable description of this effect.
         """
@@ -81,13 +83,11 @@ class TapSourceEffect(Effect):
     @brief Tap the effect's source as a cost or resolution instruction.
     """
 
-    def validation_error(self, state, context):
+    def validation_error(self, state: object, context: object) -> str | None:
         """!
         @brief Validate whether the source can currently be tapped.
-
         This is primarily used by cost validation before the corresponding
         `TapCardOperation` is materialized and executed.
-
         @param state Current game state.
         @param context Bound resolution context.
         @return Validation message on failure, otherwise `None`.
@@ -103,10 +103,9 @@ class TapSourceEffect(Effect):
 
         return None
 
-    def to_operations(self, state, context):
+    def to_operations(self, state: object, context: object) -> object:
         """!
         @brief Generate the operation that taps the source.
-
         @param state Current game state.
         @param context Bound resolution context.
         """
@@ -115,7 +114,7 @@ class TapSourceEffect(Effect):
             context.source,
         )
 
-    def get_info(self):
+    def get_info(self) -> str:
         """!
         @brief Return a human-readable description of this effect.
         """

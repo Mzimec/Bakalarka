@@ -16,10 +16,8 @@ if TYPE_CHECKING:
 class CardLastKnownInformation:
     """!
     @brief Snapshot of card characteristics needed by zone-change triggers.
-
     Stores the relevant pre-event characteristics so triggers can inspect
     an object as it existed before leaving its previous zone.
-
     @var card
         Runtime card object the snapshot belongs to.
     @var controller
@@ -65,11 +63,11 @@ class CardLastKnownInformation:
     toughness: int | None = None
     counters: Mapping = field(default_factory=dict)
     subtypes: frozenset = frozenset()
+    face_down: bool = False
 
-    def __post_init__(self):
+    def __post_init__(self) -> None:
         """!
         @brief Freeze incarnation-local values before the live card is reset.
-
         A copied mapping is essential: the live counter collection is cleared
         on a zone change and must never rewrite an already captured snapshot.
         """
@@ -82,10 +80,8 @@ class CardLastKnownInformation:
 class GameEvent:
     """!
     @brief Immutable game event with triggers captured at event time.
-
     `triggered_abilities` stores the triggers detected when the event
     occurred rather than recomputing them later during dispatch.
-
     @var key
         Event type identifier.
     @var source
@@ -103,8 +99,9 @@ class GameEvent:
     controller: Any | None = None
     payload: Mapping[str, Any] = field(default_factory=dict)
     triggered_abilities: tuple | None = field(default=None, repr=False, compare=False)
+    player_events: tuple | None = field(default=None, repr=False, compare=False)
 
-    def __post_init__(self):
+    def __post_init__(self) -> None:
         """!
         @brief Freeze the payload mapping after event construction.
         """
@@ -115,42 +112,90 @@ class GameEvent:
         )
 
 
-def capture_trigger_roster(state):
-    """!
-    @brief Snapshot all currently available triggered abilities.
+_UNCHANGED = object()
 
+
+def _with_event_data(event, *, payload=_UNCHANGED, triggered_abilities=_UNCHANGED,
+                     player_events=_UNCHANGED):
+    """Copy native event fields without dataclass reflection; preserve extensions.
+
+    Construction still freezes a fresh payload, exactly as replace() does.
+    Subclasses retain their constructor, additional fields and post-init hooks.
+    """
+    if type(event) is GameEvent:
+        return GameEvent(
+            event.key, event.source, event.controller,
+            event.payload if payload is _UNCHANGED else payload,
+            event.triggered_abilities if triggered_abilities is _UNCHANGED else triggered_abilities,
+            event.player_events if player_events is _UNCHANGED else player_events,
+        )
+    changes = {key: value for key, value in (
+        ("payload", payload), ("triggered_abilities", triggered_abilities), ("player_events", player_events)
+    ) if value is not _UNCHANGED}
+    return replace(event, **changes)
+
+
+def capture_trigger_roster(state: object) -> tuple:
+    """!
+    @brief Snapshot source/controller bindings for currently available triggers.
     @param state Current game state.
-    @return Tuple of triggered abilities visible at capture time.
+    @return Lightweight bindings, or runtime abilities from custom getters/factories.
     """
     getter = getattr(state, "get_triggered_abilities", None)
+    from ..triggers.trigger_roster import capture_native_roster
+    # Respect external states and either compatibility getter override.
+    from ...game_state.state import State
+    if (getattr(getter, "__func__", None) is State.get_triggered_abilities
+            and getattr(getattr(state, "get_trigger_abilities", None), "__func__", None)
+            is State.get_trigger_abilities
+            and getattr(getattr(state, "query_cards", None), "__func__", None) is State.query_cards):
+        return capture_native_roster(state)
     return tuple(getter(None)) if getter is not None else ()
 
 
-def capture_card_information(state):
+def capture_card_information(state: object, cards: object | None = None) -> dict[int, CardLastKnownInformation]:
     """!
-    @brief Capture last-known information for every card in the game state.
-
+    @brief Capture last-known information for selected cards, or the full fallback.
     @param state Current game state.
+    @param cards Explicit dependency set; None requests every live card.
     @return Mapping from card identity to its current LKI snapshot.
     """
-    getter = getattr(state, "get_cards", None)
+    if cards is None:
+        getter = getattr(state, "get_cards", None)
 
-    if getter is None:
-        return {}
+        if getter is None:
+            return {}
 
-    return {id(card): capture_single_card(state, card) for card in getter()}
+        cards = getter()
+
+    return {
+        id(card): capture_single_card(state, card)
+        for card in cards
+    }
 
 
-def capture_single_card(state, card):
+def capture_single_card(state: object, card: object) -> CardLastKnownInformation:
     """!
     @brief Snapshot evaluated characteristics without keeping live collections.
     @param state Game whose continuous effects determine these characteristics.
     @param card Object to capture before its incarnation changes.
     @return Immutable last-known information for this incarnation.
     """
-    from ...stat_type import STAT_COLORS, STAT_KEYWORDS
-
     state.refresh_continuous_effects()
+    cache = getattr(state, "_card_snapshots", None)
+    if cache is not None:
+        return cache.capture(state, card, _capture_single_card)
+    return _capture_single_card(state, card)
+
+
+def _capture_single_card(state: object, card: object) -> CardLastKnownInformation:
+    """!
+    @brief Capture one card without using the optional snapshot cache.
+    @param state Current game state.
+    @param card Card to capture.
+    @return Last-known card information.
+    """
+    from ...stat_type import STAT_COLORS, STAT_KEYWORDS
     return CardLastKnownInformation(
         card, card.get_controller(state), card.get_zone(),
         frozenset(card.get_types(state)), card.zone_revision,
@@ -161,21 +206,42 @@ def capture_single_card(state, card):
         triggers=tuple(card.get_trigger_defs(state).values()),
         power=card.get_power(state), toughness=card.get_toughness(state),
         counters=card.state.counters, subtypes=frozenset(card.get_subtypes(state)),
+        face_down=card.state.face_down,
     )
 
 
+def capture_player_events(state, event, information=None):
+    """Freeze visibility at event time; deliver only when the event commits."""
+    if not getattr(state, 'record_player_information', True):
+        return _with_event_data(event, player_events=()) if event.player_events != () else event
+    if event.player_events is not None:
+        return event
+    projections = []
+    from .event_definitions import EVENT_DEFINITIONS
+    definition = EVENT_DEFINITIONS.get(event.key)
+    if definition is not None and definition.frozen_zone_projection:
+        from game.ai.information.knowledge import project_player_event
+        projection_source = event
+        if information and id(event.source) in information:
+                projection_source = _with_event_data(event, payload={**event.payload, "last_known": information[id(event.source)]})
+        for player in getattr(state, "players", ()):
+            # Capture is a rule/visibility operation. Delivery is conditional on
+            # controller hooks, capture is not: a simulated opponent may later
+            # need its own event-time view even if the live controller was Simple.
+            projected = project_player_event(projection_source, state, player)
+            if projected is not None:
+                projections.append((player.idx, projected))
+    return _with_event_data(event, player_events=tuple(projections))
 
-def capture_event(state, event, before=None, information=None, after=None):
+
+def capture_event(state: object, event: GameEvent, before: object | None = None, information: object | None = None, after: object | None = None) -> GameEvent:
     """!
     @brief Bind triggered abilities to an event when that event occurs.
-
     Uses trigger rosters from before and after the mutation so zone-change
     triggers can follow look-back rules. Last-known card information is
     attached to the event and trigger where available.
-
     Operations may supply shared `before`, `information`, and `after`
     snapshots when several events belong to the same simultaneous batch.
-
     @param state Current game state after the event's mutation.
     @param event Event whose triggers should be captured.
     @param before Optional trigger roster captured before the mutation.
@@ -184,31 +250,42 @@ def capture_event(state, event, before=None, information=None, after=None):
     @return Event with `triggered_abilities` populated.
     """
     if event.triggered_abilities is not None:
-        return event
+        return capture_player_events(state, event)
 
-    from ..data_structs.ability import TriggerAbility
+    from ..triggers.trigger_roster import event_key_possible
 
-    # Attach source LKI directly to zone-change events when available.
-    if information and id(event.source) in information:
-        event = replace(
-            event,
-            payload={
-                **event.payload,
-                "last_known": information[id(event.source)],
-            },
-        )
-
+    # Player projections see source LKI before any later batch mutation.
+    # Build the final trigger payload once, rather than copying first for LKI
+    # and again for incarnation references. Already captured player events stay
+    # attached to the original mutation, as before.
+    if type(event) is GameEvent:
+        payload = dict(event.payload)
+        if information and id(event.source) in information:
+            payload["last_known"] = information[id(event.source)]
+        event = capture_player_events(state, event, information)
+    else:
+        # An extension's post-init may have observable behavior. Retain the
+        # original sequence of LKI, observation and incarnation copies.
+        if information and id(event.source) in information:
+            event = replace(event, payload={**event.payload, "last_known": information[id(event.source)]})
+        event = capture_player_events(state, event)
+        payload = dict(event.payload)
     references = {}
-    def remember(value):
+    def remember(value: object) -> None:
+        """!
+        @brief Record zone revisions reachable from an event value.
+        @param value Event value to inspect.
+        """
         if hasattr(value, "zone_revision"):
             references[id(value)] = value.zone_revision
         elif isinstance(value, (tuple, list)):
             for item in value:
                 remember(item)
     remember(event.source)
-    for value in event.payload.values():
+    for value in payload.values():
         remember(value)
-    event = replace(event, payload={**event.payload, "object_revisions": MappingProxyType(references)})
+    payload["object_revisions"] = MappingProxyType(references)
+    event = _with_event_data(event, payload=payload)
 
     after = capture_trigger_roster(state) if after is None else after
     before = after if before is None else before
@@ -233,7 +310,8 @@ def capture_event(state, event, before=None, information=None, after=None):
     # Evaluate look-back triggers against the pre-event roster and ordinary
     # triggers against the post-event roster.
     for roster, is_before in ((before, True), (after, False)):
-        for ability in roster:
+        select = getattr(roster, "for_event", None)
+        for ability in select(event) if select is not None else roster:
             definition = ability.definition
             look_back = getattr(
                 definition.condition,
@@ -246,12 +324,14 @@ def capture_event(state, event, before=None, information=None, after=None):
             if use_before != is_before:
                 continue
 
-            trigger = TriggerAbility(
-                definition,
+            if not event_key_possible(definition, event):
+                continue
+
+            trigger = definition.to_ability(
                 ability.source,
                 ability.controller,
-                event,
-                (information or {}).get(id(ability.source)),
+                event=event,
+                source_last_known=(information or {}).get(id(ability.source)),
             )
 
             # A look-back roster describes the old incarnation even if its
@@ -266,7 +346,7 @@ def capture_event(state, event, before=None, information=None, after=None):
 
     from ..triggers.runtime_triggers import collect_runtime
     triggers.extend(collect_runtime(state, event))
-    return replace(
+    return _with_event_data(
         event,
         triggered_abilities=tuple(triggers),
     )
@@ -275,12 +355,11 @@ def capture_event(state, event, before=None, information=None, after=None):
 class EventBus:
     """!
     @brief Publish events and preserve triggers captured at event time.
-
     Captured triggers remain attached to their originating event even if
     their source later changes zone or otherwise changes characteristics.
     """
 
-    def __init__(self):
+    def __init__(self) -> None:
         """!
         @brief Create an empty event bus.
         """
@@ -293,27 +372,37 @@ class EventBus:
     ) -> GameEvent:
         """!
         @brief Publish an event and optionally capture its triggers.
-
         When a game state is supplied, uncaptured events are bound to their
         triggers before publication and also recorded in the current turn's
         event history.
-
         @param event Event to publish.
         @param state Optional current game state.
         @return The published event, possibly replaced by a captured version.
         """
-        if state is not None and event.triggered_abilities is None:
+        if state is not None and (event.triggered_abilities is None or event.player_events is None):
             event = capture_event(state, event)
 
         self.emitted_events.append(event)
 
         if state is not None and hasattr(state, "turn"):
             # Reset turn-local event history when entering a new turn.
-            if getattr(state, "_history_turn", None) != state.turn.number:
-                state._history_turn = state.turn.number
-                state.turn_events = []
+            record = getattr(state, "record_turn_event", None)
+            if record is not None:
+                record(event)
+            else:
+                if getattr(state, "_history_turn", None) != state.turn.number:
+                    state._history_turn = state.turn.number
+                    state.turn_events = []
+                state.turn_events.append(event)
 
-            state.turn_events.append(event)
+        if state is not None:
+            # Publication happens after successful cost transactions. Observers
+            # receive copied, viewer-filtered evidence, never raw engine events.
+            projections = dict(event.player_events or ())
+            for player in getattr(state, "players", ()):
+                receive = getattr(getattr(player, "controller", None), "receive_player_event", None)
+                if receive is not None and player.idx in projections:
+                    receive(projections[player.idx], game_token=state.knowledge_token, player=player.idx)
 
         return event
 
@@ -324,11 +413,9 @@ class EventBus:
     ) -> list[TriggerAbility]:
         """!
         @brief Collect triggered abilities produced by the supplied events.
-
         Prefer triggers already captured at event time. Events created by
         legacy or external code without capture fall back to evaluation
         against the current game state.
-
         @param state Current game state.
         @param events Events whose triggers should be collected.
         @return List of matching trigger abilities.
@@ -352,16 +439,14 @@ class EventBus:
 class TriggerProcessor:
     """!
     @brief Put pending triggers onto the stack in APNAP order.
-
     Players are processed starting with the active player and continuing
     in turn order. Each player chooses the ordering and required choices
     for triggers they control before those triggers are placed on the stack.
     """
 
-    def __init__(self, engine=None):
+    def __init__(self, engine: object | None = None) -> None:
         """!
         @brief Create a trigger processor.
-
         @param engine Resolution engine used for triggered mana abilities,
                which resolve immediately instead of using the stack.
         """
@@ -374,7 +459,6 @@ class TriggerProcessor:
     ) -> None:
         """!
         @brief Process pending triggers in active-player/nonactive-player order.
-
         @param state Current game state.
         @param triggers Pending trigger abilities.
         """
@@ -432,113 +516,31 @@ class TriggerProcessor:
     ) -> None:
         """!
         @brief Let one controller order and complete choices for its triggers.
-
         Illegal triggers with no legal action are skipped. Triggered mana
         abilities resolve immediately; all other trigger actions are pushed
         onto the stack.
-
         @param controller Player controlling the pending triggers.
         @param state Current game state.
         @param triggers Trigger abilities controlled by the player.
         """
-        from ..generation.command_action_builder import ability_actions
-        from ...game_state.player import DecisionMaker
+        from game.ai.agents.decision_maker import (TriggerOrderRequest, AbilityDecisionRequest)
 
         decision_maker = controller.controller
-        callback = getattr(
-            decision_maker,
-            "process_triggers",
-            None,
-        )
-
         triggers = tuple(triggers)
-        if (
-            not any(
-                getattr(
-                    getattr(trigger, "definition", None),
-                    "is_mana_ability",
-                    False,
-                )
-                for trigger in triggers
-            )
-            and callback is not None
-            and getattr(callback, "__func__", None)
-            is not DecisionMaker.process_triggers
-        ):
-            # Existing controllers may own both trigger ordering and target
-            # selection themselves. Remove triggers for which no legal action
-            # can currently be generated.
-            legal = [
-                trigger
-                for trigger in triggers
-                if not hasattr(trigger, "definition")
-                or next(
-                    ability_actions(trigger, state),
-                    None,
-                )
-                is not None
-            ]
-
-            if legal:
-                callback(state, legal)
-
-            return
-
-        ordered = list(triggers)
-        choose_order = getattr(
-            decision_maker,
-            "order_triggers",
-            None,
-        )
-
-        if choose_order is not None:
-            chosen = list(
-                choose_order(
-                    state,
-                    tuple(ordered),
-                )
-            )
-
-            # Ordering may change, but the controller must return exactly
-            # the same pending trigger objects.
-            if sorted(map(id, chosen)) != sorted(map(id, ordered)):
-                raise ValueError(
-                    "Trigger order must contain every pending trigger exactly once."
-                )
-
-            ordered = chosen
+        ordered = decision_maker.decide(TriggerOrderRequest(state, controller, triggers)).value.items
+        if sorted(map(id, ordered)) != sorted(map(id, triggers)):
+            raise ValueError("Trigger order must contain every pending trigger exactly once.")
 
         for trigger in ordered:
-            options = ability_actions(trigger, state)
-
-            choose_action = getattr(
-                decision_maker,
-                "choose_trigger_action",
-                None,
-            )
-
-            if choose_action is None:
-                action = next(options, None)
-            else:
-                choices = list(options)
-
-                # A mandatory trigger requiring impossible choices is removed.
-                if not choices:
-                    continue
-
-                action = choose_action(
-                    state,
-                    trigger,
-                    choices,
-                )
-
-                if not any(action is choice for choice in choices):
-                    raise ValueError(
-                        "Choose one of the legal actions for the mandatory trigger."
-                    )
-
-            if action is None:
+            request = AbilityDecisionRequest(state, controller, trigger)
+            choices = tuple(request.options)
+            if not choices:
                 continue
+            action = decision_maker.decide(
+                AbilityDecisionRequest(state, controller, trigger, choices)
+            ).value
+            if not any(action == choice for choice in choices):
+                raise ValueError("Choose one of the legal actions for the mandatory trigger.")
 
             for intent in action.get_intents():
                 # Trigger execution should not separately process cost intents.

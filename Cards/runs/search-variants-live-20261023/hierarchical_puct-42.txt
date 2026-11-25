@@ -1,0 +1,1038 @@
+Goblins Everywhere! (Goblins Everywhere!) vs Keep the Peace (Keep the Peace)
+Result: win | Winner: hierarchical_puct | Player turn: 19
+Elapsed wall time: 58.595 s
+Seed: 42 | Starting player: 0
+Player turns are numbered individually. Interactive time includes waiting for input.
+
+Decision timing (wall time; includes option generation and input/model waits):
+  hierarchical_puct [MCTSAgent, agent]: 243 decisions, average 239.138 ms, total 58.111 s, errors 0, auto-passes 0
+    Active option generation: 1.567 s; other decision work: 56.543 s (split recorded for 243 decisions)
+    AbilityDecisionRequest: n=9, average 10.643 ms; observed options 1.00; space size 1.00 (known for 9 decisions)
+      1 observed options: n=9, average 10.643 ms
+    DeclareAttackersRequest: n=10, average 2736.985 ms; observed options 410.90; space size 1.00 (known for 1 decisions)
+      1 observed options: n=1, average 2.142 ms
+      1001+ observed options: n=1, average 5256.454 ms
+      101-1000 observed options: n=6, average 3394.718 ms
+      11-100 observed options: n=2, average 871.475 ms
+    DeclareBlockersRequest: n=6, average 797.136 ms; observed options 95.17; space size 1.00 (known for 3 decisions)
+      1 observed options: n=3, average 6.868 ms
+      101-1000 observed options: n=3, average 1587.403 ms
+    MulliganRequest: n=1, average 3.341 ms; observed options 2.00; space size 2.00 (known for 1 decisions)
+      2-10 observed options: n=1, average 3.341 ms
+    PriorityDecisionRequest: n=210, average 122.844 ms; observed options 10.62; space size 1.00 (known for 194 decisions)
+      1 observed options: n=194, average 6.024 ms
+      101-1000 observed options: n=6, average 2952.920 ms
+      11-100 observed options: n=10, average 691.110 ms
+    ReplacementOrderRequest: n=2, average 8.129 ms; observed options 4.00; space size 4.00 (known for 2 decisions)
+      2-10 observed options: n=2, average 8.129 ms
+    TriggerOrderRequest: n=5, average 9.030 ms; observed options 2.40; space size 2.40 (known for 5 decisions)
+      1 observed options: n=2, average 4.826 ms
+      2-10 observed options: n=3, average 11.832 ms
+  Simple [SimpleAgent, agent]: 227 decisions, average 0.349 ms, total 0.079 s, errors 0, auto-passes 193
+    Active option generation: 0.056 s; other decision work: 0.023 s (split recorded for 227 decisions)
+    DeclareAttackersRequest: n=9, average 0.169 ms; observed options 1.00; space size unknown
+      1 observed options: n=9, average 0.169 ms
+    DeclareBlockersRequest: n=4, average 0.364 ms; observed options 1.00; space size unknown
+      1 observed options: n=4, average 0.364 ms
+    MulliganBottomRequest: n=1, average 0.053 ms; observed options 0.00; space size unknown
+      0 observed options: n=1, average 0.053 ms
+    MulliganRequest: n=2, average 0.031 ms; observed options 0.00; space size unknown
+      0 observed options: n=2, average 0.031 ms
+    PriorityDecisionRequest: n=208, average 0.365 ms; observed options 0.46; space size 1.13 (known for 71 decisions)
+      0 observed options: n=129, average 0.087 ms
+      1 observed options: n=64, average 0.735 ms
+      2-10 observed options: n=15, average 1.179 ms
+    ReplacementOrderRequest: n=3, average 0.058 ms; observed options 1.00; space size unknown
+      1 observed options: n=3, average 0.058 ms
+  Observed options are consumed yields, not unique actions. Size refers to the policy-filtered space.
+  Generation times only active option-stream next() calls, including nested expansion once. Other decision work includes policy, discovery outside streams, validation and measurement overhead; it is not pure scoring time. Precomputed choices were generated before this measurement.
+
+
+Turn 1
+  [untap] hierarchical_puct decides MulliganRequest: 3.341 ms; observed options: 2; space size: 2; success
+  [untap] Simple decides MulliganRequest: 0.047 ms; observed options: 0; space size: unknown; success
+  [untap] Simple decides MulliganBottomRequest: 0.053 ms; observed options: 0; space size: unknown; success
+  [untap] Simple decides MulliganRequest: 0.015 ms; observed options: 0; space size: unknown; success
+  [upkeep] hierarchical_puct decides PriorityDecisionRequest: 2.429 ms; observed options: 1; space size: 1; success
+  [upkeep] Simple decides PriorityDecisionRequest: 0.771 ms; observed options: 1; space size: 1; success
+  [precombat main] hierarchical_puct decides PriorityDecisionRequest: 457.920 ms; observed options: 48; space size: unknown; success
+  [precombat main] Card moved: hierarchical_puct; Mountain [c41] — card: Mountain [c41]; from: HAND; last known: kind: CardLastKnownInformation; previous controller: hierarchical_puct; to: BATTLEFIELD
+  [precombat main] hierarchical_puct plays land Mountain [c41] — lands played: 1; last known: kind: CardLastKnownInformation
+  [precombat main] Resolution: hierarchical_puct; Mountain [c41]; play_land; success: True
+  [precombat main] hierarchical_puct decides PriorityDecisionRequest: 365.194 ms; observed options: 32; space size: unknown; success
+  [precombat main] Card tapped: hierarchical_puct; Mountain [c41] — last known: kind: CardLastKnownInformation
+  [precombat main] Mana added: hierarchical_puct; Mountain [c41] — amount: 1; last known: kind: CardLastKnownInformation; mana: RED
+  [precombat main] hierarchical_puct activates Mountain [c41] — ability: mana_red; last known: kind: CardLastKnownInformation
+  [precombat main] Mana paid: hierarchical_puct; Tin Street Cadet [c2] — last known: kind: CardLastKnownInformation; payment: RED: 1
+  [precombat main] Card moved: hierarchical_puct; Tin Street Cadet [c2] — card: Tin Street Cadet [c2]; from: HAND; last known: kind: CardLastKnownInformation; previous controller: hierarchical_puct; to: STACK
+  [precombat main] hierarchical_puct casts Tin Street Cadet [c2] — ability: cast:Tin Street Cadet
+  [precombat main] hierarchical_puct decides PriorityDecisionRequest: 2.587 ms; observed options: 1; space size: 1; success
+  [precombat main] Simple decides PriorityDecisionRequest: 0.518 ms; observed options: 1; space size: 1; success
+  [precombat main] Card moved: hierarchical_puct; Tin Street Cadet [c2] — card: Tin Street Cadet [c2]; from: STACK; last known: kind: CardLastKnownInformation; previous controller: hierarchical_puct; to: BATTLEFIELD
+  [precombat main] Resolution: hierarchical_puct; Tin Street Cadet [c2]; cast:Tin Street Cadet; success: True
+  [precombat main] hierarchical_puct decides PriorityDecisionRequest: 3.143 ms; observed options: 1; space size: 1; success
+  [precombat main] Simple decides PriorityDecisionRequest: 0.450 ms; observed options: 1; space size: 1; success
+  [begin combat] hierarchical_puct decides PriorityDecisionRequest: 2.084 ms; observed options: 1; space size: 1; success
+  [begin combat] Simple decides PriorityDecisionRequest: 0.448 ms; observed options: 1; space size: 1; success
+  [declare attackers] hierarchical_puct decides DeclareAttackersRequest: 2.142 ms; observed options: 1; space size: 1; success
+  [declare attackers] hierarchical_puct decides PriorityDecisionRequest: 2.098 ms; observed options: 1; space size: 1; success
+  [declare attackers] Simple decides PriorityDecisionRequest: 0.445 ms; observed options: 1; space size: 1; success
+  [end combat] hierarchical_puct decides PriorityDecisionRequest: 2.199 ms; observed options: 1; space size: 1; success
+  [end combat] Simple decides PriorityDecisionRequest: 0.395 ms; observed options: 1; space size: 1; success
+  [postcombat main] hierarchical_puct decides PriorityDecisionRequest: 2.928 ms; observed options: 1; space size: 1; success
+  [postcombat main] Simple decides PriorityDecisionRequest: 0.387 ms; observed options: 1; space size: 1; success
+  [end step] hierarchical_puct decides PriorityDecisionRequest: 2.058 ms; observed options: 1; space size: 1; success
+  [end step] Simple decides PriorityDecisionRequest: 0.417 ms; observed options: 1; space size: 1; success
+
+Turn 2
+  [upkeep] Simple decides PriorityDecisionRequest: 0.381 ms; observed options: 1; space size: 1; success
+  [upkeep] hierarchical_puct decides PriorityDecisionRequest: 2.067 ms; observed options: 1; space size: 1; success
+  [draw] Card moved: Simple; Plains [c101] — card: Plains [c101]; from: DECK; last known: kind: CardLastKnownInformation; previous controller: Simple; to: HAND
+  [draw] Card drawn: Simple; Plains [c101] — card: Plains [c101]; last known: kind: CardLastKnownInformation
+  [draw] Resolution: -; -; -; success: True
+  [draw] Simple decides PriorityDecisionRequest: 0.422 ms; observed options: 1; space size: 1; success
+  [draw] hierarchical_puct decides PriorityDecisionRequest: 2.177 ms; observed options: 1; space size: 1; success
+  [precombat main] Simple chooses land: source: Plains [c97]
+  [precombat main] Simple decides PriorityDecisionRequest: 0.508 ms; observed options: 2; space size: unknown; success
+  [precombat main] Card moved: Simple; Plains [c97] — card: Plains [c97]; from: HAND; last known: kind: CardLastKnownInformation; previous controller: Simple; to: BATTLEFIELD
+  [precombat main] Simple plays land Plains [c97] — lands played: 1; last known: kind: CardLastKnownInformation
+  [precombat main] Resolution: Simple; Plains [c97]; play_land; success: True
+  [precombat main] Simple decides PriorityDecisionRequest: 1.389 ms; observed options: 1; space size: 1; success
+  [precombat main] hierarchical_puct decides PriorityDecisionRequest: 2.322 ms; observed options: 1; space size: 1; success
+  [begin combat] Simple decides PriorityDecisionRequest: 0.689 ms; observed options: 1; space size: 1; success
+  [begin combat] hierarchical_puct decides PriorityDecisionRequest: 2.251 ms; observed options: 1; space size: 1; success
+  [declare attackers] Simple chooses attack: attackers: none
+  [declare attackers] Simple decides DeclareAttackersRequest: 0.122 ms; observed options: 1; space size: unknown; success
+  [declare attackers] Simple decides PriorityDecisionRequest: 0.741 ms; observed options: 1; space size: 1; success
+  [declare attackers] hierarchical_puct decides PriorityDecisionRequest: 2.932 ms; observed options: 1; space size: 1; success
+  [end combat] Simple decides PriorityDecisionRequest: 0.855 ms; observed options: 1; space size: 1; success
+  [end combat] hierarchical_puct decides PriorityDecisionRequest: 2.372 ms; observed options: 1; space size: 1; success
+  [postcombat main] Simple decides PriorityDecisionRequest: 1.131 ms; observed options: 1; space size: 1; success
+  [postcombat main] hierarchical_puct decides PriorityDecisionRequest: 2.361 ms; observed options: 1; space size: 1; success
+  [end step] Simple decides PriorityDecisionRequest: 0.697 ms; observed options: 1; space size: 1; success
+  [end step] hierarchical_puct decides PriorityDecisionRequest: 2.302 ms; observed options: 1; space size: 1; success
+
+Turn 3
+  [upkeep] hierarchical_puct decides PriorityDecisionRequest: 2.315 ms; observed options: 1; space size: 1; success
+  [upkeep] Simple decides PriorityDecisionRequest: 0.742 ms; observed options: 1; space size: 1; success
+  [draw] Card moved: hierarchical_puct; Nest Robber [c9] — card: Nest Robber [c9]; from: DECK; last known: kind: CardLastKnownInformation; previous controller: hierarchical_puct; to: HAND
+  [draw] Card drawn: hierarchical_puct; Nest Robber [c9] — card: Nest Robber [c9]; last known: kind: CardLastKnownInformation
+  [draw] Resolution: -; -; -; success: True
+  [draw] hierarchical_puct decides PriorityDecisionRequest: 2.585 ms; observed options: 1; space size: 1; success
+  [draw] Simple decides PriorityDecisionRequest: 0.772 ms; observed options: 1; space size: 1; success
+  [precombat main] hierarchical_puct decides PriorityDecisionRequest: 676.270 ms; observed options: 70; space size: unknown; success
+  [precombat main] Card moved: hierarchical_puct; Mountain [c48] — card: Mountain [c48]; from: HAND; last known: kind: CardLastKnownInformation; previous controller: hierarchical_puct; to: BATTLEFIELD
+  [precombat main] hierarchical_puct plays land Mountain [c48] — lands played: 1; last known: kind: CardLastKnownInformation
+  [precombat main] Resolution: hierarchical_puct; Mountain [c48]; play_land; success: True
+  [precombat main] hierarchical_puct decides PriorityDecisionRequest: 529.613 ms; observed options: 60; space size: unknown; success
+  [precombat main] Card tapped: hierarchical_puct; Mountain [c41] — last known: kind: CardLastKnownInformation
+  [precombat main] Mana added: hierarchical_puct; Mountain [c41] — amount: 1; last known: kind: CardLastKnownInformation; mana: RED
+  [precombat main] hierarchical_puct activates Mountain [c41] — ability: mana_red; last known: kind: CardLastKnownInformation
+  [precombat main] Card tapped: hierarchical_puct; Mountain [c48] — last known: kind: CardLastKnownInformation
+  [precombat main] Mana added: hierarchical_puct; Mountain [c48] — amount: 1; last known: kind: CardLastKnownInformation; mana: RED
+  [precombat main] hierarchical_puct activates Mountain [c48] — ability: mana_red; last known: kind: CardLastKnownInformation
+  [precombat main] Mana paid: hierarchical_puct; Nest Robber [c8] — last known: kind: CardLastKnownInformation; payment: RED: 2
+  [precombat main] Card moved: hierarchical_puct; Nest Robber [c8] — card: Nest Robber [c8]; from: HAND; last known: kind: CardLastKnownInformation; previous controller: hierarchical_puct; to: STACK
+  [precombat main] hierarchical_puct casts Nest Robber [c8] — ability: cast:Nest Robber
+  [precombat main] hierarchical_puct decides PriorityDecisionRequest: 3.171 ms; observed options: 1; space size: 1; success
+  [precombat main] Simple decides PriorityDecisionRequest: 0.958 ms; observed options: 1; space size: 1; success
+  [precombat main] Card moved: hierarchical_puct; Nest Robber [c8] — card: Nest Robber [c8]; from: STACK; last known: kind: CardLastKnownInformation; previous controller: hierarchical_puct; to: BATTLEFIELD
+  [precombat main] Resolution: hierarchical_puct; Nest Robber [c8]; cast:Nest Robber; success: True
+  [precombat main] hierarchical_puct decides PriorityDecisionRequest: 4.073 ms; observed options: 1; space size: 1; success
+  [precombat main] Simple decides PriorityDecisionRequest: 0.832 ms; observed options: 1; space size: 1; success
+  [begin combat] hierarchical_puct decides PriorityDecisionRequest: 2.539 ms; observed options: 1; space size: 1; success
+  [begin combat] Simple decides PriorityDecisionRequest: 0.680 ms; observed options: 1; space size: 1; success
+  [declare attackers] hierarchical_puct decides DeclareAttackersRequest: 750.725 ms; observed options: 92; space size: unknown; success
+  [declare attackers] Card tapped: hierarchical_puct; Tin Street Cadet [c2]
+  [declare attackers] hierarchical_puct attacks with Tin Street Cadet [c2] — attacker: Tin Street Cadet [c2]; defender: Simple
+  [declare attackers] Card tapped: hierarchical_puct; Nest Robber [c8]
+  [declare attackers] hierarchical_puct attacks with Nest Robber [c8] — attacker: Nest Robber [c8]; defender: Simple
+  [declare attackers] Attackers declared: hierarchical_puct; - — attackers: Tin Street Cadet [c2], Nest Robber [c8]
+  [declare attackers] hierarchical_puct decides PriorityDecisionRequest: 2.823 ms; observed options: 1; space size: 1; success
+  [declare attackers] Simple decides PriorityDecisionRequest: 0.886 ms; observed options: 1; space size: 1; success
+  [declare blockers] Simple chooses block: blockers: none
+  [declare blockers] Simple decides DeclareBlockersRequest: 0.207 ms; observed options: 1; space size: unknown; success
+  [declare blockers] hierarchical_puct decides PriorityDecisionRequest: 2.650 ms; observed options: 1; space size: 1; success
+  [declare blockers] Simple decides PriorityDecisionRequest: 0.798 ms; observed options: 1; space size: 1; success
+  [second combat damage] Simple decides ReplacementOrderRequest: 0.031 ms; observed options: 1; space size: unknown; success
+  [second combat damage] Damage dealt: hierarchical_puct; Tin Street Cadet [c2] — amount: 1; combat: True; last known: kind: CardLastKnownInformation; life loss: 1; source revision: 3; target: Simple; target object: Simple; target revision: -
+  [second combat damage] Damage dealt: hierarchical_puct; Nest Robber [c8] — amount: 2; combat: True; last known: kind: CardLastKnownInformation; life loss: 2; source revision: 3; target: Simple; target object: Simple; target revision: -
+  [second combat damage] hierarchical_puct decides PriorityDecisionRequest: 2.622 ms; observed options: 1; space size: 1; success
+  [second combat damage] Simple decides PriorityDecisionRequest: 0.696 ms; observed options: 1; space size: 1; success
+  [end combat] hierarchical_puct decides PriorityDecisionRequest: 2.938 ms; observed options: 1; space size: 1; success
+  [end combat] Simple decides PriorityDecisionRequest: 0.872 ms; observed options: 1; space size: 1; success
+  [postcombat main] hierarchical_puct decides PriorityDecisionRequest: 3.436 ms; observed options: 1; space size: 1; success
+  [postcombat main] Simple decides PriorityDecisionRequest: 0.698 ms; observed options: 1; space size: 1; success
+  [end step] hierarchical_puct decides PriorityDecisionRequest: 2.430 ms; observed options: 1; space size: 1; success
+  [end step] Simple decides PriorityDecisionRequest: 0.688 ms; observed options: 1; space size: 1; success
+
+Turn 4
+  [upkeep] Simple decides PriorityDecisionRequest: 0.711 ms; observed options: 1; space size: 1; success
+  [upkeep] hierarchical_puct decides PriorityDecisionRequest: 2.628 ms; observed options: 1; space size: 1; success
+  [draw] Card moved: Simple; Plains [c120] — card: Plains [c120]; from: DECK; last known: kind: CardLastKnownInformation; previous controller: Simple; to: HAND
+  [draw] Card drawn: Simple; Plains [c120] — card: Plains [c120]; last known: kind: CardLastKnownInformation
+  [draw] Resolution: -; -; -; success: True
+  [draw] Simple decides PriorityDecisionRequest: 1.042 ms; observed options: 1; space size: 1; success
+  [draw] hierarchical_puct decides PriorityDecisionRequest: 2.714 ms; observed options: 1; space size: 1; success
+  [precombat main] Simple chooses land: source: Plains [c101]
+  [precombat main] Simple decides PriorityDecisionRequest: 0.528 ms; observed options: 2; space size: unknown; success
+  [precombat main] Card moved: Simple; Plains [c101] — card: Plains [c101]; from: HAND; last known: kind: CardLastKnownInformation; previous controller: Simple; to: BATTLEFIELD
+  [precombat main] Simple plays land Plains [c101] — lands played: 1; last known: kind: CardLastKnownInformation
+  [precombat main] Resolution: Simple; Plains [c101]; play_land; success: True
+  [precombat main] Simple chooses action: ability: cast:Moorland Inquisitor; source: Moorland Inquisitor [c74]; targets: none
+  [precombat main] Simple decides PriorityDecisionRequest: 2.042 ms; observed options: 3; space size: 3; success
+  [precombat main] Card tapped: Simple; Plains [c97] — last known: kind: CardLastKnownInformation
+  [precombat main] Mana added: Simple; Plains [c97] — amount: 1; last known: kind: CardLastKnownInformation; mana: WHITE
+  [precombat main] Simple activates Plains [c97] — ability: mana_white; last known: kind: CardLastKnownInformation
+  [precombat main] Card tapped: Simple; Plains [c101] — last known: kind: CardLastKnownInformation
+  [precombat main] Mana added: Simple; Plains [c101] — amount: 1; last known: kind: CardLastKnownInformation; mana: WHITE
+  [precombat main] Simple activates Plains [c101] — ability: mana_white; last known: kind: CardLastKnownInformation
+  [precombat main] Mana paid: Simple; Moorland Inquisitor [c74] — last known: kind: CardLastKnownInformation; payment: WHITE: 2
+  [precombat main] Card moved: Simple; Moorland Inquisitor [c74] — card: Moorland Inquisitor [c74]; from: HAND; last known: kind: CardLastKnownInformation; previous controller: Simple; to: STACK
+  [precombat main] Simple casts Moorland Inquisitor [c74] — ability: cast:Moorland Inquisitor
+  [precombat main] Simple decides PriorityDecisionRequest: 0.490 ms; observed options: 1; space size: 1; success
+  [precombat main] hierarchical_puct decides PriorityDecisionRequest: 3.259 ms; observed options: 1; space size: 1; success
+  [precombat main] Card moved: Simple; Moorland Inquisitor [c74] — card: Moorland Inquisitor [c74]; from: STACK; last known: kind: CardLastKnownInformation; previous controller: Simple; to: BATTLEFIELD
+  [precombat main] Resolution: Simple; Moorland Inquisitor [c74]; cast:Moorland Inquisitor; success: True
+  [precombat main] Simple decides PriorityDecisionRequest: 1.164 ms; observed options: 1; space size: 1; success
+  [precombat main] hierarchical_puct decides PriorityDecisionRequest: 3.199 ms; observed options: 1; space size: 1; success
+  [begin combat] Simple decides PriorityDecisionRequest: 0.734 ms; observed options: 1; space size: 1; success
+  [begin combat] hierarchical_puct decides PriorityDecisionRequest: 2.960 ms; observed options: 1; space size: 1; success
+  [declare attackers] Simple chooses attack: attackers: none
+  [declare attackers] Simple decides DeclareAttackersRequest: 0.123 ms; observed options: 1; space size: unknown; success
+  [declare attackers] Simple decides PriorityDecisionRequest: 0.649 ms; observed options: 1; space size: 1; success
+  [declare attackers] hierarchical_puct decides PriorityDecisionRequest: 2.936 ms; observed options: 1; space size: 1; success
+  [end combat] Simple decides PriorityDecisionRequest: 0.662 ms; observed options: 1; space size: 1; success
+  [end combat] hierarchical_puct decides PriorityDecisionRequest: 3.247 ms; observed options: 1; space size: 1; success
+  [postcombat main] Simple decides PriorityDecisionRequest: 0.896 ms; observed options: 1; space size: 1; success
+  [postcombat main] hierarchical_puct decides PriorityDecisionRequest: 2.921 ms; observed options: 1; space size: 1; success
+  [end step] Simple decides PriorityDecisionRequest: 0.684 ms; observed options: 1; space size: 1; success
+  [end step] hierarchical_puct decides PriorityDecisionRequest: 2.967 ms; observed options: 1; space size: 1; success
+
+Turn 5
+  [upkeep] hierarchical_puct decides PriorityDecisionRequest: 3.014 ms; observed options: 1; space size: 1; success
+  [upkeep] Simple decides PriorityDecisionRequest: 0.692 ms; observed options: 1; space size: 1; success
+  [draw] Card moved: hierarchical_puct; Mountain [c57] — card: Mountain [c57]; from: DECK; last known: kind: CardLastKnownInformation; previous controller: hierarchical_puct; to: HAND
+  [draw] Card drawn: hierarchical_puct; Mountain [c57] — card: Mountain [c57]; last known: kind: CardLastKnownInformation
+  [draw] Resolution: -; -; -; success: True
+  [draw] hierarchical_puct decides PriorityDecisionRequest: 3.116 ms; observed options: 1; space size: 1; success
+  [draw] Simple decides PriorityDecisionRequest: 0.749 ms; observed options: 1; space size: 1; success
+  [precombat main] hierarchical_puct decides PriorityDecisionRequest: 728.095 ms; observed options: 82; space size: unknown; success
+  [precombat main] Card moved: hierarchical_puct; Mountain [c57] — card: Mountain [c57]; from: HAND; last known: kind: CardLastKnownInformation; previous controller: hierarchical_puct; to: BATTLEFIELD
+  [precombat main] hierarchical_puct plays land Mountain [c57] — lands played: 1; last known: kind: CardLastKnownInformation
+  [precombat main] Resolution: hierarchical_puct; Mountain [c57]; play_land; success: True
+  [precombat main] hierarchical_puct decides PriorityDecisionRequest: 812.556 ms; observed options: 84; space size: unknown; success
+  [precombat main] Card tapped: hierarchical_puct; Mountain [c41] — last known: kind: CardLastKnownInformation
+  [precombat main] Mana added: hierarchical_puct; Mountain [c41] — amount: 1; last known: kind: CardLastKnownInformation; mana: RED
+  [precombat main] hierarchical_puct activates Mountain [c41] — ability: mana_red; last known: kind: CardLastKnownInformation
+  [precombat main] Card tapped: hierarchical_puct; Mountain [c48] — last known: kind: CardLastKnownInformation
+  [precombat main] Mana added: hierarchical_puct; Mountain [c48] — amount: 1; last known: kind: CardLastKnownInformation; mana: RED
+  [precombat main] hierarchical_puct activates Mountain [c48] — ability: mana_red; last known: kind: CardLastKnownInformation
+  [precombat main] Mana paid: hierarchical_puct; Nest Robber [c9] — last known: kind: CardLastKnownInformation; payment: RED: 2
+  [precombat main] Card moved: hierarchical_puct; Nest Robber [c9] — card: Nest Robber [c9]; from: HAND; last known: kind: CardLastKnownInformation; previous controller: hierarchical_puct; to: STACK
+  [precombat main] hierarchical_puct casts Nest Robber [c9] — ability: cast:Nest Robber
+  [precombat main] hierarchical_puct decides PriorityDecisionRequest: 3.505 ms; observed options: 1; space size: 1; success
+  [precombat main] Simple decides PriorityDecisionRequest: 0.839 ms; observed options: 1; space size: 1; success
+  [precombat main] Card moved: hierarchical_puct; Nest Robber [c9] — card: Nest Robber [c9]; from: STACK; last known: kind: CardLastKnownInformation; previous controller: hierarchical_puct; to: BATTLEFIELD
+  [precombat main] Resolution: hierarchical_puct; Nest Robber [c9]; cast:Nest Robber; success: True
+  [precombat main] hierarchical_puct decides PriorityDecisionRequest: 4.150 ms; observed options: 1; space size: 1; success
+  [precombat main] Simple decides PriorityDecisionRequest: 0.826 ms; observed options: 1; space size: 1; success
+  [begin combat] hierarchical_puct decides PriorityDecisionRequest: 3.276 ms; observed options: 1; space size: 1; success
+  [begin combat] Simple decides PriorityDecisionRequest: 0.717 ms; observed options: 1; space size: 1; success
+  [declare attackers] hierarchical_puct decides DeclareAttackersRequest: 1429.491 ms; observed options: 266; space size: unknown; success
+  [declare attackers] Card tapped: hierarchical_puct; Nest Robber [c8]
+  [declare attackers] hierarchical_puct attacks with Nest Robber [c8] — attacker: Nest Robber [c8]; defender: Simple
+  [declare attackers] Card tapped: hierarchical_puct; Nest Robber [c9]
+  [declare attackers] hierarchical_puct attacks with Nest Robber [c9] — attacker: Nest Robber [c9]; defender: Simple
+  [declare attackers] Attackers declared: hierarchical_puct; - — attackers: Nest Robber [c8], Nest Robber [c9]
+  [declare attackers] hierarchical_puct decides PriorityDecisionRequest: 3.456 ms; observed options: 1; space size: 1; success
+  [declare attackers] Simple decides PriorityDecisionRequest: 0.775 ms; observed options: 1; space size: 1; success
+  [declare blockers] Simple chooses block: blockers: Moorland Inquisitor [c74], Nest Robber [c8]
+  [declare blockers] Simple decides DeclareBlockersRequest: 0.242 ms; observed options: 1; space size: unknown; success
+  [declare blockers] Simple blocks with Moorland Inquisitor [c74] — attacker: Nest Robber [c8]; blocker: Moorland Inquisitor [c74]
+  [declare blockers] Attacker blocked: hierarchical_puct; Nest Robber [c8] — blockers: Moorland Inquisitor [c74]
+  [declare blockers] Blockers declared: Simple; - — blockers: Moorland Inquisitor [c74], Nest Robber [c8]
+  [declare blockers] hierarchical_puct decides PriorityDecisionRequest: 3.157 ms; observed options: 1; space size: 1; success
+  [declare blockers] Simple decides PriorityDecisionRequest: 0.653 ms; observed options: 1; space size: 1; success
+  [second combat damage] Simple decides ReplacementOrderRequest: 0.030 ms; observed options: 1; space size: unknown; success
+  [second combat damage] Damage dealt: Simple; Moorland Inquisitor [c74] — amount: 2; combat: True; last known: kind: CardLastKnownInformation; life loss: 0; source revision: 3; target: Nest Robber; target object: Nest Robber [c8]; target revision: 3
+  [second combat damage] Damage dealt: hierarchical_puct; Nest Robber [c8] — amount: 2; combat: True; last known: kind: CardLastKnownInformation; life loss: 0; source revision: 3; target: Moorland Inquisitor; target object: Moorland Inquisitor [c74]; target revision: 3
+  [second combat damage] Damage dealt: hierarchical_puct; Nest Robber [c9] — amount: 2; combat: True; last known: kind: CardLastKnownInformation; life loss: 2; source revision: 3; target: Simple; target object: Simple; target revision: -
+  [second combat damage] Card moved: hierarchical_puct; Nest Robber [c8] — card: Nest Robber [c8]; from: BATTLEFIELD; last known: kind: CardLastKnownInformation; previous controller: hierarchical_puct; to: GRAVEYARD
+  [second combat damage] Card moved: Simple; Moorland Inquisitor [c74] — card: Moorland Inquisitor [c74]; from: BATTLEFIELD; last known: kind: CardLastKnownInformation; previous controller: Simple; to: GRAVEYARD
+  [second combat damage] hierarchical_puct decides PriorityDecisionRequest: 3.231 ms; observed options: 1; space size: 1; success
+  [second combat damage] Simple decides PriorityDecisionRequest: 0.506 ms; observed options: 1; space size: 1; success
+  [end combat] hierarchical_puct decides PriorityDecisionRequest: 3.254 ms; observed options: 1; space size: 1; success
+  [end combat] Simple decides PriorityDecisionRequest: 0.419 ms; observed options: 1; space size: 1; success
+  [postcombat main] hierarchical_puct decides PriorityDecisionRequest: 4.082 ms; observed options: 1; space size: 1; success
+  [postcombat main] Simple decides PriorityDecisionRequest: 0.466 ms; observed options: 1; space size: 1; success
+  [end step] hierarchical_puct decides PriorityDecisionRequest: 3.123 ms; observed options: 1; space size: 1; success
+  [end step] Simple decides PriorityDecisionRequest: 0.445 ms; observed options: 1; space size: 1; success
+
+Turn 6
+  [upkeep] Simple decides PriorityDecisionRequest: 0.809 ms; observed options: 1; space size: 1; success
+  [upkeep] hierarchical_puct decides PriorityDecisionRequest: 3.298 ms; observed options: 1; space size: 1; success
+  [draw] Card moved: Simple; Hallowed Priest [c68] — card: Hallowed Priest [c68]; from: DECK; last known: kind: CardLastKnownInformation; previous controller: Simple; to: HAND
+  [draw] Card drawn: Simple; Hallowed Priest [c68] — card: Hallowed Priest [c68]; last known: kind: CardLastKnownInformation
+  [draw] Resolution: -; -; -; success: True
+  [draw] Simple decides PriorityDecisionRequest: 0.876 ms; observed options: 1; space size: 1; success
+  [draw] hierarchical_puct decides PriorityDecisionRequest: 3.423 ms; observed options: 1; space size: 1; success
+  [precombat main] Simple chooses land: source: Plains [c102]
+  [precombat main] Simple decides PriorityDecisionRequest: 0.575 ms; observed options: 2; space size: unknown; success
+  [precombat main] Card moved: Simple; Plains [c102] — card: Plains [c102]; from: HAND; last known: kind: CardLastKnownInformation; previous controller: Simple; to: BATTLEFIELD
+  [precombat main] Simple plays land Plains [c102] — lands played: 1; last known: kind: CardLastKnownInformation
+  [precombat main] Resolution: Simple; Plains [c102]; play_land; success: True
+  [precombat main] Simple chooses action: ability: cast:Hallowed Priest; source: Hallowed Priest [c68]; targets: none
+  [precombat main] Simple decides PriorityDecisionRequest: 2.307 ms; observed options: 3; space size: 3; success
+  [precombat main] Card tapped: Simple; Plains [c97] — last known: kind: CardLastKnownInformation
+  [precombat main] Mana added: Simple; Plains [c97] — amount: 1; last known: kind: CardLastKnownInformation; mana: WHITE
+  [precombat main] Simple activates Plains [c97] — ability: mana_white; last known: kind: CardLastKnownInformation
+  [precombat main] Card tapped: Simple; Plains [c101] — last known: kind: CardLastKnownInformation
+  [precombat main] Mana added: Simple; Plains [c101] — amount: 1; last known: kind: CardLastKnownInformation; mana: WHITE
+  [precombat main] Simple activates Plains [c101] — ability: mana_white; last known: kind: CardLastKnownInformation
+  [precombat main] Mana paid: Simple; Hallowed Priest [c68] — last known: kind: CardLastKnownInformation; payment: WHITE: 2
+  [precombat main] Card moved: Simple; Hallowed Priest [c68] — card: Hallowed Priest [c68]; from: HAND; last known: kind: CardLastKnownInformation; previous controller: Simple; to: STACK
+  [precombat main] Simple casts Hallowed Priest [c68] — ability: cast:Hallowed Priest
+  [precombat main] Simple decides PriorityDecisionRequest: 0.803 ms; observed options: 1; space size: 1; success
+  [precombat main] hierarchical_puct decides PriorityDecisionRequest: 3.869 ms; observed options: 1; space size: 1; success
+  [precombat main] Card moved: Simple; Hallowed Priest [c68] — card: Hallowed Priest [c68]; from: STACK; last known: kind: CardLastKnownInformation; previous controller: Simple; to: BATTLEFIELD
+  [precombat main] Resolution: Simple; Hallowed Priest [c68]; cast:Hallowed Priest; success: True
+  [precombat main] Simple decides PriorityDecisionRequest: 1.132 ms; observed options: 1; space size: 1; success
+  [precombat main] hierarchical_puct decides PriorityDecisionRequest: 3.650 ms; observed options: 1; space size: 1; success
+  [begin combat] Simple decides PriorityDecisionRequest: 0.705 ms; observed options: 1; space size: 1; success
+  [begin combat] hierarchical_puct decides PriorityDecisionRequest: 3.661 ms; observed options: 1; space size: 1; success
+  [declare attackers] Simple chooses attack: attackers: none
+  [declare attackers] Simple decides DeclareAttackersRequest: 0.128 ms; observed options: 1; space size: unknown; success
+  [declare attackers] Simple decides PriorityDecisionRequest: 0.780 ms; observed options: 1; space size: 1; success
+  [declare attackers] hierarchical_puct decides PriorityDecisionRequest: 3.674 ms; observed options: 1; space size: 1; success
+  [end combat] Simple decides PriorityDecisionRequest: 0.940 ms; observed options: 1; space size: 1; success
+  [end combat] hierarchical_puct decides PriorityDecisionRequest: 3.621 ms; observed options: 1; space size: 1; success
+  [postcombat main] Simple decides PriorityDecisionRequest: 1.020 ms; observed options: 1; space size: 1; success
+  [postcombat main] hierarchical_puct decides PriorityDecisionRequest: 3.637 ms; observed options: 1; space size: 1; success
+  [end step] Simple decides PriorityDecisionRequest: 0.724 ms; observed options: 1; space size: 1; success
+  [end step] hierarchical_puct decides PriorityDecisionRequest: 3.959 ms; observed options: 1; space size: 1; success
+
+Turn 7
+  [upkeep] hierarchical_puct decides PriorityDecisionRequest: 3.715 ms; observed options: 1; space size: 1; success
+  [upkeep] Simple decides PriorityDecisionRequest: 0.765 ms; observed options: 1; space size: 1; success
+  [draw] Card moved: hierarchical_puct; Nest Robber [c7] — card: Nest Robber [c7]; from: DECK; last known: kind: CardLastKnownInformation; previous controller: hierarchical_puct; to: HAND
+  [draw] Card drawn: hierarchical_puct; Nest Robber [c7] — card: Nest Robber [c7]; last known: kind: CardLastKnownInformation
+  [draw] Resolution: -; -; -; success: True
+  [draw] hierarchical_puct decides PriorityDecisionRequest: 3.912 ms; observed options: 1; space size: 1; success
+  [draw] Simple decides PriorityDecisionRequest: 0.815 ms; observed options: 1; space size: 1; success
+  [precombat main] hierarchical_puct decides PriorityDecisionRequest: 1081.629 ms; observed options: 104; space size: unknown; success
+  [precombat main] Card tapped: hierarchical_puct; Mountain [c41] — last known: kind: CardLastKnownInformation
+  [precombat main] Mana added: hierarchical_puct; Mountain [c41] — amount: 1; last known: kind: CardLastKnownInformation; mana: RED
+  [precombat main] hierarchical_puct activates Mountain [c41] — ability: mana_red; last known: kind: CardLastKnownInformation
+  [precombat main] Card tapped: hierarchical_puct; Mountain [c48] — last known: kind: CardLastKnownInformation
+  [precombat main] Mana added: hierarchical_puct; Mountain [c48] — amount: 1; last known: kind: CardLastKnownInformation; mana: RED
+  [precombat main] hierarchical_puct activates Mountain [c48] — ability: mana_red; last known: kind: CardLastKnownInformation
+  [precombat main] Mana paid: hierarchical_puct; Nest Robber [c7] — last known: kind: CardLastKnownInformation; payment: RED: 2
+  [precombat main] Card moved: hierarchical_puct; Nest Robber [c7] — card: Nest Robber [c7]; from: HAND; last known: kind: CardLastKnownInformation; previous controller: hierarchical_puct; to: STACK
+  [precombat main] hierarchical_puct casts Nest Robber [c7] — ability: cast:Nest Robber
+  [precombat main] hierarchical_puct decides PriorityDecisionRequest: 4.499 ms; observed options: 1; space size: 1; success
+  [precombat main] Simple decides PriorityDecisionRequest: 0.948 ms; observed options: 1; space size: 1; success
+  [precombat main] Card moved: hierarchical_puct; Nest Robber [c7] — card: Nest Robber [c7]; from: STACK; last known: kind: CardLastKnownInformation; previous controller: hierarchical_puct; to: BATTLEFIELD
+  [precombat main] Resolution: hierarchical_puct; Nest Robber [c7]; cast:Nest Robber; success: True
+  [precombat main] hierarchical_puct decides PriorityDecisionRequest: 5.304 ms; observed options: 1; space size: 1; success
+  [precombat main] Simple decides PriorityDecisionRequest: 0.839 ms; observed options: 1; space size: 1; success
+  [begin combat] hierarchical_puct decides PriorityDecisionRequest: 3.920 ms; observed options: 1; space size: 1; success
+  [begin combat] Simple decides PriorityDecisionRequest: 0.809 ms; observed options: 1; space size: 1; success
+  [declare attackers] hierarchical_puct decides DeclareAttackersRequest: 1744.236 ms; observed options: 302; space size: unknown; success
+  [declare attackers] Card tapped: hierarchical_puct; Tin Street Cadet [c2]
+  [declare attackers] hierarchical_puct attacks with Tin Street Cadet [c2] — attacker: Tin Street Cadet [c2]; defender: Simple
+  [declare attackers] Attackers declared: hierarchical_puct; - — attackers: Tin Street Cadet [c2]
+  [declare attackers] hierarchical_puct decides PriorityDecisionRequest: 4.156 ms; observed options: 1; space size: 1; success
+  [declare attackers] Simple decides PriorityDecisionRequest: 0.875 ms; observed options: 1; space size: 1; success
+  [declare blockers] Simple chooses block: blockers: Hallowed Priest [c68], Tin Street Cadet [c2]
+  [declare blockers] Simple decides DeclareBlockersRequest: 0.201 ms; observed options: 1; space size: unknown; success
+  [declare blockers] Simple blocks with Hallowed Priest [c68] — attacker: Tin Street Cadet [c2]; blocker: Hallowed Priest [c68]
+  [declare blockers] Attacker blocked: hierarchical_puct; Tin Street Cadet [c2] — blockers: Hallowed Priest [c68]
+  [declare blockers] Blockers declared: Simple; - — blockers: Hallowed Priest [c68], Tin Street Cadet [c2]
+  [declare blockers] Trigger detected: hierarchical_puct; Tin Street Cadet [c2]; cadet_blocked
+  [declare blockers] hierarchical_puct decides TriggerOrderRequest: 3.822 ms; observed options: 1; space size: 1; success
+  [declare blockers] hierarchical_puct decides AbilityDecisionRequest: 3.883 ms; observed options: 1; space size: 1; success
+  [declare blockers] hierarchical_puct decides PriorityDecisionRequest: 3.997 ms; observed options: 1; space size: 1; success
+  [declare blockers] Simple chooses action: ability: cast:Tactical Advantage; source: Tactical Advantage [c89]; targets: Hallowed Priest [c68]
+  [declare blockers] Simple decides PriorityDecisionRequest: 1.010 ms; observed options: 2; space size: 2; success
+  [declare blockers] Card tapped: Simple; Plains [c102] — last known: kind: CardLastKnownInformation
+  [declare blockers] Mana added: Simple; Plains [c102] — amount: 1; last known: kind: CardLastKnownInformation; mana: WHITE
+  [declare blockers] Simple activates Plains [c102] — ability: mana_white; last known: kind: CardLastKnownInformation
+  [declare blockers] Mana paid: Simple; Tactical Advantage [c89] — last known: kind: CardLastKnownInformation; payment: WHITE: 1
+  [declare blockers] Card moved: Simple; Tactical Advantage [c89] — card: Tactical Advantage [c89]; from: HAND; last known: kind: CardLastKnownInformation; previous controller: Simple; to: STACK
+  [declare blockers] Simple casts Tactical Advantage [c89] — ability: cast:Tactical Advantage
+  [declare blockers] Simple decides PriorityDecisionRequest: 0.089 ms; observed options: 0; space size: unknown; success
+  [declare blockers] hierarchical_puct decides PriorityDecisionRequest: 4.638 ms; observed options: 1; space size: 1; success
+  [declare blockers] Temporary effect applied: Simple; Tactical Advantage [c89] — last known: kind: CardLastKnownInformation; targets: Hallowed Priest [c68]
+  [declare blockers] Card moved: Simple; Tactical Advantage [c89] — card: Tactical Advantage [c89]; from: STACK; last known: kind: CardLastKnownInformation; previous controller: Simple; to: GRAVEYARD
+  [declare blockers] Resolution: Simple; Tactical Advantage [c89]; cast:Tactical Advantage; success: True
+  [declare blockers] hierarchical_puct decides PriorityDecisionRequest: 6.282 ms; observed options: 1; space size: 1; success
+  [declare blockers] Simple decides PriorityDecisionRequest: 0.118 ms; observed options: 0; space size: unknown; success
+  [declare blockers] Card moved: hierarchical_puct; Goblin [c121] — card: Goblin [c121]; created token: True; from: -; previous controller: hierarchical_puct; to: BATTLEFIELD
+  [declare blockers] Resolution: hierarchical_puct; Tin Street Cadet [c2]; cadet_blocked; success: True
+  [declare blockers] hierarchical_puct decides PriorityDecisionRequest: 4.606 ms; observed options: 1; space size: 1; success
+  [declare blockers] Simple decides PriorityDecisionRequest: 0.086 ms; observed options: 0; space size: unknown; success
+  [second combat damage] Damage dealt: Simple; Hallowed Priest [c68] — amount: 3; combat: True; last known: kind: CardLastKnownInformation; life loss: 0; source revision: 3; target: Tin Street Cadet; target object: Tin Street Cadet [c2]; target revision: 3
+  [second combat damage] Damage dealt: hierarchical_puct; Tin Street Cadet [c2] — amount: 1; combat: True; last known: kind: CardLastKnownInformation; life loss: 0; source revision: 3; target: Hallowed Priest; target object: Hallowed Priest [c68]; target revision: 3
+  [second combat damage] Card moved: hierarchical_puct; Tin Street Cadet [c2] — card: Tin Street Cadet [c2]; from: BATTLEFIELD; last known: kind: CardLastKnownInformation; previous controller: hierarchical_puct; to: GRAVEYARD
+  [second combat damage] hierarchical_puct decides PriorityDecisionRequest: 4.389 ms; observed options: 1; space size: 1; success
+  [second combat damage] Simple decides PriorityDecisionRequest: 0.085 ms; observed options: 0; space size: unknown; success
+  [end combat] hierarchical_puct decides PriorityDecisionRequest: 4.336 ms; observed options: 1; space size: 1; success
+  [end combat] Simple decides PriorityDecisionRequest: 0.100 ms; observed options: 0; space size: unknown; success
+  [postcombat main] hierarchical_puct decides PriorityDecisionRequest: 5.755 ms; observed options: 1; space size: 1; success
+  [postcombat main] Simple decides PriorityDecisionRequest: 0.085 ms; observed options: 0; space size: unknown; success
+  [end step] hierarchical_puct decides PriorityDecisionRequest: 4.321 ms; observed options: 1; space size: 1; success
+  [end step] Simple decides PriorityDecisionRequest: 0.084 ms; observed options: 0; space size: unknown; success
+
+Turn 8
+  [upkeep] Simple decides PriorityDecisionRequest: 0.078 ms; observed options: 0; space size: unknown; success
+  [upkeep] hierarchical_puct decides PriorityDecisionRequest: 4.342 ms; observed options: 1; space size: 1; success
+  [draw] Card moved: Simple; Plains [c107] — card: Plains [c107]; from: DECK; last known: kind: CardLastKnownInformation; previous controller: Simple; to: HAND
+  [draw] Card drawn: Simple; Plains [c107] — card: Plains [c107]; last known: kind: CardLastKnownInformation
+  [draw] Resolution: -; -; -; success: True
+  [draw] Simple decides PriorityDecisionRequest: 0.087 ms; observed options: 0; space size: unknown; success
+  [draw] hierarchical_puct decides PriorityDecisionRequest: 4.402 ms; observed options: 1; space size: 1; success
+  [precombat main] Simple chooses land: source: Plains [c107]
+  [precombat main] Simple decides PriorityDecisionRequest: 0.657 ms; observed options: 2; space size: unknown; success
+  [precombat main] Card moved: Simple; Plains [c107] — card: Plains [c107]; from: HAND; last known: kind: CardLastKnownInformation; previous controller: Simple; to: BATTLEFIELD
+  [precombat main] Simple plays land Plains [c107] — lands played: 1; last known: kind: CardLastKnownInformation
+  [precombat main] Resolution: Simple; Plains [c107]; play_land; success: True
+  [precombat main] Simple chooses action: ability: cast:Hallowed Priest; source: Hallowed Priest [c69]; targets: none
+  [precombat main] Simple decides PriorityDecisionRequest: 1.124 ms; observed options: 2; space size: 2; success
+  [precombat main] Card tapped: Simple; Plains [c97] — last known: kind: CardLastKnownInformation
+  [precombat main] Mana added: Simple; Plains [c97] — amount: 1; last known: kind: CardLastKnownInformation; mana: WHITE
+  [precombat main] Simple activates Plains [c97] — ability: mana_white; last known: kind: CardLastKnownInformation
+  [precombat main] Card tapped: Simple; Plains [c101] — last known: kind: CardLastKnownInformation
+  [precombat main] Mana added: Simple; Plains [c101] — amount: 1; last known: kind: CardLastKnownInformation; mana: WHITE
+  [precombat main] Simple activates Plains [c101] — ability: mana_white; last known: kind: CardLastKnownInformation
+  [precombat main] Mana paid: Simple; Hallowed Priest [c69] — last known: kind: CardLastKnownInformation; payment: WHITE: 2
+  [precombat main] Card moved: Simple; Hallowed Priest [c69] — card: Hallowed Priest [c69]; from: HAND; last known: kind: CardLastKnownInformation; previous controller: Simple; to: STACK
+  [precombat main] Simple casts Hallowed Priest [c69] — ability: cast:Hallowed Priest
+  [precombat main] Simple decides PriorityDecisionRequest: 0.071 ms; observed options: 0; space size: unknown; success
+  [precombat main] hierarchical_puct decides PriorityDecisionRequest: 4.845 ms; observed options: 1; space size: 1; success
+  [precombat main] Card moved: Simple; Hallowed Priest [c69] — card: Hallowed Priest [c69]; from: STACK; last known: kind: CardLastKnownInformation; previous controller: Simple; to: BATTLEFIELD
+  [precombat main] Resolution: Simple; Hallowed Priest [c69]; cast:Hallowed Priest; success: True
+  [precombat main] Simple decides PriorityDecisionRequest: 0.062 ms; observed options: 0; space size: unknown; success
+  [precombat main] hierarchical_puct decides PriorityDecisionRequest: 4.597 ms; observed options: 1; space size: 1; success
+  [begin combat] Simple decides PriorityDecisionRequest: 0.060 ms; observed options: 0; space size: unknown; success
+  [begin combat] hierarchical_puct decides PriorityDecisionRequest: 4.968 ms; observed options: 1; space size: 1; success
+  [declare attackers] Simple chooses attack: attackers: Hallowed Priest [c68]
+  [declare attackers] Simple decides DeclareAttackersRequest: 0.166 ms; observed options: 1; space size: unknown; success
+  [declare attackers] Card tapped: Simple; Hallowed Priest [c68]
+  [declare attackers] Simple attacks with Hallowed Priest [c68] — attacker: Hallowed Priest [c68]; defender: hierarchical_puct
+  [declare attackers] Attackers declared: Simple; - — attackers: Hallowed Priest [c68]
+  [declare attackers] Simple decides PriorityDecisionRequest: 0.062 ms; observed options: 0; space size: unknown; success
+  [declare attackers] hierarchical_puct decides PriorityDecisionRequest: 4.699 ms; observed options: 1; space size: 1; success
+  [declare blockers] hierarchical_puct decides DeclareBlockersRequest: 1137.347 ms; observed options: 195; space size: unknown; success
+  [declare blockers] hierarchical_puct blocks with Goblin [c121] — attacker: Hallowed Priest [c68]; blocker: Goblin [c121]
+  [declare blockers] Attacker blocked: Simple; Hallowed Priest [c68] — blockers: Goblin [c121]
+  [declare blockers] Blockers declared: hierarchical_puct; - — blockers: Goblin [c121], Hallowed Priest [c68]
+  [declare blockers] Simple decides PriorityDecisionRequest: 0.082 ms; observed options: 0; space size: unknown; success
+  [declare blockers] hierarchical_puct decides PriorityDecisionRequest: 4.878 ms; observed options: 1; space size: 1; success
+  [second combat damage] Damage dealt: hierarchical_puct; Goblin [c121] — amount: 1; combat: True; last known: kind: CardLastKnownInformation; life loss: 0; source revision: 1; target: Hallowed Priest; target object: Hallowed Priest [c68]; target revision: 3
+  [second combat damage] Damage dealt: Simple; Hallowed Priest [c68] — amount: 1; combat: True; last known: kind: CardLastKnownInformation; life loss: 0; source revision: 3; target: Goblin; target object: Goblin [c121]; target revision: 1
+  [second combat damage] Card moved: Simple; Hallowed Priest [c68] — card: Hallowed Priest [c68]; from: BATTLEFIELD; last known: kind: CardLastKnownInformation; previous controller: Simple; to: GRAVEYARD
+  [second combat damage] Card moved: hierarchical_puct; Goblin [c121] — card: Goblin [c121]; from: BATTLEFIELD; last known: kind: CardLastKnownInformation; previous controller: hierarchical_puct; to: GRAVEYARD
+  [second combat damage] Simple decides PriorityDecisionRequest: 0.067 ms; observed options: 0; space size: unknown; success
+  [second combat damage] hierarchical_puct decides PriorityDecisionRequest: 4.652 ms; observed options: 1; space size: 1; success
+  [end combat] Simple decides PriorityDecisionRequest: 0.060 ms; observed options: 0; space size: unknown; success
+  [end combat] hierarchical_puct decides PriorityDecisionRequest: 4.434 ms; observed options: 1; space size: 1; success
+  [postcombat main] Simple decides PriorityDecisionRequest: 0.109 ms; observed options: 0; space size: unknown; success
+  [postcombat main] hierarchical_puct decides PriorityDecisionRequest: 4.397 ms; observed options: 1; space size: 1; success
+  [end step] Simple decides PriorityDecisionRequest: 0.059 ms; observed options: 0; space size: unknown; success
+  [end step] hierarchical_puct decides PriorityDecisionRequest: 4.550 ms; observed options: 1; space size: 1; success
+
+Turn 9
+  [upkeep] hierarchical_puct decides PriorityDecisionRequest: 4.427 ms; observed options: 1; space size: 1; success
+  [upkeep] Simple decides PriorityDecisionRequest: 0.066 ms; observed options: 0; space size: unknown; success
+  [draw] Card moved: hierarchical_puct; Mountain [c44] — card: Mountain [c44]; from: DECK; last known: kind: CardLastKnownInformation; previous controller: hierarchical_puct; to: HAND
+  [draw] Card drawn: hierarchical_puct; Mountain [c44] — card: Mountain [c44]; last known: kind: CardLastKnownInformation
+  [draw] Resolution: -; -; -; success: True
+  [draw] hierarchical_puct decides PriorityDecisionRequest: 4.683 ms; observed options: 1; space size: 1; success
+  [draw] Simple decides PriorityDecisionRequest: 0.064 ms; observed options: 0; space size: unknown; success
+  [precombat main] hierarchical_puct decides PriorityDecisionRequest: 694.502 ms; observed options: 56; space size: unknown; success
+  [precombat main] Card moved: hierarchical_puct; Mountain [c44] — card: Mountain [c44]; from: HAND; last known: kind: CardLastKnownInformation; previous controller: hierarchical_puct; to: BATTLEFIELD
+  [precombat main] hierarchical_puct plays land Mountain [c44] — lands played: 1; last known: kind: CardLastKnownInformation
+  [precombat main] Resolution: hierarchical_puct; Mountain [c44]; play_land; success: True
+  [precombat main] hierarchical_puct decides PriorityDecisionRequest: 619.825 ms; observed options: 48; space size: unknown; success
+  [precombat main] Card tapped: hierarchical_puct; Mountain [c41] — last known: kind: CardLastKnownInformation
+  [precombat main] Mana added: hierarchical_puct; Mountain [c41] — amount: 1; last known: kind: CardLastKnownInformation; mana: RED
+  [precombat main] hierarchical_puct activates Mountain [c41] — ability: mana_red; last known: kind: CardLastKnownInformation
+  [precombat main] Card tapped: hierarchical_puct; Mountain [c44] — last known: kind: CardLastKnownInformation
+  [precombat main] Mana added: hierarchical_puct; Mountain [c44] — amount: 1; last known: kind: CardLastKnownInformation; mana: RED
+  [precombat main] hierarchical_puct activates Mountain [c44] — ability: mana_red; last known: kind: CardLastKnownInformation
+  [precombat main] Card tapped: hierarchical_puct; Mountain [c48] — last known: kind: CardLastKnownInformation
+  [precombat main] Mana added: hierarchical_puct; Mountain [c48] — amount: 1; last known: kind: CardLastKnownInformation; mana: RED
+  [precombat main] hierarchical_puct activates Mountain [c48] — ability: mana_red; last known: kind: CardLastKnownInformation
+  [precombat main] Card tapped: hierarchical_puct; Mountain [c57] — last known: kind: CardLastKnownInformation
+  [precombat main] Mana added: hierarchical_puct; Mountain [c57] — amount: 1; last known: kind: CardLastKnownInformation; mana: RED
+  [precombat main] hierarchical_puct activates Mountain [c57] — ability: mana_red; last known: kind: CardLastKnownInformation
+  [precombat main] Mana paid: hierarchical_puct; Ogre Battledriver [c16] — last known: kind: CardLastKnownInformation; payment: RED: 4
+  [precombat main] Card moved: hierarchical_puct; Ogre Battledriver [c16] — card: Ogre Battledriver [c16]; from: HAND; last known: kind: CardLastKnownInformation; previous controller: hierarchical_puct; to: STACK
+  [precombat main] hierarchical_puct casts Ogre Battledriver [c16] — ability: cast:Ogre Battledriver
+  [precombat main] hierarchical_puct decides PriorityDecisionRequest: 5.138 ms; observed options: 1; space size: 1; success
+  [precombat main] Simple decides PriorityDecisionRequest: 0.069 ms; observed options: 0; space size: unknown; success
+  [precombat main] Card moved: hierarchical_puct; Ogre Battledriver [c16] — card: Ogre Battledriver [c16]; from: STACK; last known: kind: CardLastKnownInformation; previous controller: hierarchical_puct; to: BATTLEFIELD
+  [precombat main] Resolution: hierarchical_puct; Ogre Battledriver [c16]; cast:Ogre Battledriver; success: True
+  [precombat main] hierarchical_puct decides PriorityDecisionRequest: 5.493 ms; observed options: 1; space size: 1; success
+  [precombat main] Simple decides PriorityDecisionRequest: 0.067 ms; observed options: 0; space size: unknown; success
+  [begin combat] hierarchical_puct decides PriorityDecisionRequest: 5.194 ms; observed options: 1; space size: 1; success
+  [begin combat] Simple decides PriorityDecisionRequest: 0.079 ms; observed options: 0; space size: unknown; success
+  [declare attackers] hierarchical_puct decides DeclareAttackersRequest: 992.226 ms; observed options: 100; space size: unknown; success
+  [declare attackers] hierarchical_puct decides PriorityDecisionRequest: 5.046 ms; observed options: 1; space size: 1; success
+  [declare attackers] Simple decides PriorityDecisionRequest: 0.070 ms; observed options: 0; space size: unknown; success
+  [end combat] hierarchical_puct decides PriorityDecisionRequest: 4.636 ms; observed options: 1; space size: 1; success
+  [end combat] Simple decides PriorityDecisionRequest: 0.062 ms; observed options: 0; space size: unknown; success
+  [postcombat main] hierarchical_puct decides PriorityDecisionRequest: 5.251 ms; observed options: 1; space size: 1; success
+  [postcombat main] Simple decides PriorityDecisionRequest: 0.063 ms; observed options: 0; space size: unknown; success
+  [end step] hierarchical_puct decides PriorityDecisionRequest: 5.023 ms; observed options: 1; space size: 1; success
+  [end step] Simple decides PriorityDecisionRequest: 0.064 ms; observed options: 0; space size: unknown; success
+
+Turn 10
+  [upkeep] Simple decides PriorityDecisionRequest: 0.058 ms; observed options: 0; space size: unknown; success
+  [upkeep] hierarchical_puct decides PriorityDecisionRequest: 4.629 ms; observed options: 1; space size: 1; success
+  [draw] Card moved: Simple; Serra Angel [c80] — card: Serra Angel [c80]; from: DECK; last known: kind: CardLastKnownInformation; previous controller: Simple; to: HAND
+  [draw] Card drawn: Simple; Serra Angel [c80] — card: Serra Angel [c80]; last known: kind: CardLastKnownInformation
+  [draw] Resolution: -; -; -; success: True
+  [draw] Simple decides PriorityDecisionRequest: 0.098 ms; observed options: 0; space size: unknown; success
+  [draw] hierarchical_puct decides PriorityDecisionRequest: 4.591 ms; observed options: 1; space size: 1; success
+  [precombat main] Simple chooses land: source: Plains [c118]
+  [precombat main] Simple decides PriorityDecisionRequest: 0.719 ms; observed options: 2; space size: unknown; success
+  [precombat main] Card moved: Simple; Plains [c118] — card: Plains [c118]; from: HAND; last known: kind: CardLastKnownInformation; previous controller: Simple; to: BATTLEFIELD
+  [precombat main] Simple plays land Plains [c118] — lands played: 1; last known: kind: CardLastKnownInformation
+  [precombat main] Resolution: Simple; Plains [c118]; play_land; success: True
+  [precombat main] Simple chooses action: ability: cast:Serra Angel; source: Serra Angel [c80]; targets: none
+  [precombat main] Simple decides PriorityDecisionRequest: 1.533 ms; observed options: 2; space size: 2; success
+  [precombat main] Card tapped: Simple; Plains [c97] — last known: kind: CardLastKnownInformation
+  [precombat main] Mana added: Simple; Plains [c97] — amount: 1; last known: kind: CardLastKnownInformation; mana: WHITE
+  [precombat main] Simple activates Plains [c97] — ability: mana_white; last known: kind: CardLastKnownInformation
+  [precombat main] Card tapped: Simple; Plains [c101] — last known: kind: CardLastKnownInformation
+  [precombat main] Mana added: Simple; Plains [c101] — amount: 1; last known: kind: CardLastKnownInformation; mana: WHITE
+  [precombat main] Simple activates Plains [c101] — ability: mana_white; last known: kind: CardLastKnownInformation
+  [precombat main] Card tapped: Simple; Plains [c102] — last known: kind: CardLastKnownInformation
+  [precombat main] Mana added: Simple; Plains [c102] — amount: 1; last known: kind: CardLastKnownInformation; mana: WHITE
+  [precombat main] Simple activates Plains [c102] — ability: mana_white; last known: kind: CardLastKnownInformation
+  [precombat main] Card tapped: Simple; Plains [c107] — last known: kind: CardLastKnownInformation
+  [precombat main] Mana added: Simple; Plains [c107] — amount: 1; last known: kind: CardLastKnownInformation; mana: WHITE
+  [precombat main] Simple activates Plains [c107] — ability: mana_white; last known: kind: CardLastKnownInformation
+  [precombat main] Card tapped: Simple; Plains [c118] — last known: kind: CardLastKnownInformation
+  [precombat main] Mana added: Simple; Plains [c118] — amount: 1; last known: kind: CardLastKnownInformation; mana: WHITE
+  [precombat main] Simple activates Plains [c118] — ability: mana_white; last known: kind: CardLastKnownInformation
+  [precombat main] Mana paid: Simple; Serra Angel [c80] — last known: kind: CardLastKnownInformation; payment: WHITE: 5
+  [precombat main] Card moved: Simple; Serra Angel [c80] — card: Serra Angel [c80]; from: HAND; last known: kind: CardLastKnownInformation; previous controller: Simple; to: STACK
+  [precombat main] Simple casts Serra Angel [c80] — ability: cast:Serra Angel
+  [precombat main] Simple decides PriorityDecisionRequest: 0.074 ms; observed options: 0; space size: unknown; success
+  [precombat main] hierarchical_puct decides PriorityDecisionRequest: 5.679 ms; observed options: 1; space size: 1; success
+  [precombat main] Card moved: Simple; Serra Angel [c80] — card: Serra Angel [c80]; from: STACK; last known: kind: CardLastKnownInformation; previous controller: Simple; to: BATTLEFIELD
+  [precombat main] Resolution: Simple; Serra Angel [c80]; cast:Serra Angel; success: True
+  [precombat main] Simple decides PriorityDecisionRequest: 0.076 ms; observed options: 0; space size: unknown; success
+  [precombat main] hierarchical_puct decides PriorityDecisionRequest: 5.716 ms; observed options: 1; space size: 1; success
+  [begin combat] Simple decides PriorityDecisionRequest: 0.066 ms; observed options: 0; space size: unknown; success
+  [begin combat] hierarchical_puct decides PriorityDecisionRequest: 5.131 ms; observed options: 1; space size: 1; success
+  [declare attackers] Simple chooses attack: attackers: Hallowed Priest [c69]
+  [declare attackers] Simple decides DeclareAttackersRequest: 0.172 ms; observed options: 1; space size: unknown; success
+  [declare attackers] Card tapped: Simple; Hallowed Priest [c69]
+  [declare attackers] Simple attacks with Hallowed Priest [c69] — attacker: Hallowed Priest [c69]; defender: hierarchical_puct
+  [declare attackers] Attackers declared: Simple; - — attackers: Hallowed Priest [c69]
+  [declare attackers] Simple decides PriorityDecisionRequest: 0.062 ms; observed options: 0; space size: unknown; success
+  [declare attackers] hierarchical_puct decides PriorityDecisionRequest: 5.352 ms; observed options: 1; space size: 1; success
+  [declare blockers] hierarchical_puct decides DeclareBlockersRequest: 1097.487 ms; observed options: 169; space size: unknown; success
+  [declare blockers] hierarchical_puct blocks with Ogre Battledriver [c16] — attacker: Hallowed Priest [c69]; blocker: Ogre Battledriver [c16]
+  [declare blockers] Attacker blocked: Simple; Hallowed Priest [c69] — blockers: Ogre Battledriver [c16]
+  [declare blockers] Blockers declared: hierarchical_puct; - — blockers: Ogre Battledriver [c16], Hallowed Priest [c69]
+  [declare blockers] Simple decides PriorityDecisionRequest: 0.084 ms; observed options: 0; space size: unknown; success
+  [declare blockers] hierarchical_puct decides PriorityDecisionRequest: 5.585 ms; observed options: 1; space size: 1; success
+  [second combat damage] Damage dealt: hierarchical_puct; Ogre Battledriver [c16] — amount: 3; combat: True; last known: kind: CardLastKnownInformation; life loss: 0; source revision: 3; target: Hallowed Priest; target object: Hallowed Priest [c69]; target revision: 3
+  [second combat damage] Damage dealt: Simple; Hallowed Priest [c69] — amount: 1; combat: True; last known: kind: CardLastKnownInformation; life loss: 0; source revision: 3; target: Ogre Battledriver; target object: Ogre Battledriver [c16]; target revision: 3
+  [second combat damage] Card moved: Simple; Hallowed Priest [c69] — card: Hallowed Priest [c69]; from: BATTLEFIELD; last known: kind: CardLastKnownInformation; previous controller: Simple; to: GRAVEYARD
+  [second combat damage] Simple decides PriorityDecisionRequest: 0.078 ms; observed options: 0; space size: unknown; success
+  [second combat damage] hierarchical_puct decides PriorityDecisionRequest: 5.275 ms; observed options: 1; space size: 1; success
+  [end combat] Simple decides PriorityDecisionRequest: 0.060 ms; observed options: 0; space size: unknown; success
+  [end combat] hierarchical_puct decides PriorityDecisionRequest: 5.049 ms; observed options: 1; space size: 1; success
+  [postcombat main] Simple decides PriorityDecisionRequest: 0.060 ms; observed options: 0; space size: unknown; success
+  [postcombat main] hierarchical_puct decides PriorityDecisionRequest: 5.556 ms; observed options: 1; space size: 1; success
+  [end step] Simple decides PriorityDecisionRequest: 0.068 ms; observed options: 0; space size: unknown; success
+  [end step] hierarchical_puct decides PriorityDecisionRequest: 5.241 ms; observed options: 1; space size: 1; success
+
+Turn 11
+  [upkeep] hierarchical_puct decides PriorityDecisionRequest: 5.022 ms; observed options: 1; space size: 1; success
+  [upkeep] Simple decides PriorityDecisionRequest: 0.064 ms; observed options: 0; space size: unknown; success
+  [draw] Card moved: hierarchical_puct; Mountain [c52] — card: Mountain [c52]; from: DECK; last known: kind: CardLastKnownInformation; previous controller: hierarchical_puct; to: HAND
+  [draw] Card drawn: hierarchical_puct; Mountain [c52] — card: Mountain [c52]; last known: kind: CardLastKnownInformation
+  [draw] Resolution: -; -; -; success: True
+  [draw] hierarchical_puct decides PriorityDecisionRequest: 5.641 ms; observed options: 1; space size: 1; success
+  [draw] Simple decides PriorityDecisionRequest: 0.069 ms; observed options: 0; space size: unknown; success
+  [precombat main] hierarchical_puct decides PriorityDecisionRequest: 1236.271 ms; observed options: 82; space size: unknown; success
+  [precombat main] Card moved: hierarchical_puct; Mountain [c52] — card: Mountain [c52]; from: HAND; last known: kind: CardLastKnownInformation; previous controller: hierarchical_puct; to: BATTLEFIELD
+  [precombat main] hierarchical_puct plays land Mountain [c52] — lands played: 1; last known: kind: CardLastKnownInformation
+  [precombat main] Resolution: hierarchical_puct; Mountain [c52]; play_land; success: True
+  [precombat main] hierarchical_puct decides PriorityDecisionRequest: 790.853 ms; observed options: 40; space size: unknown; success
+  [precombat main] Card tapped: hierarchical_puct; Mountain [c41] — last known: kind: CardLastKnownInformation
+  [precombat main] Mana added: hierarchical_puct; Mountain [c41] — amount: 1; last known: kind: CardLastKnownInformation; mana: RED
+  [precombat main] hierarchical_puct activates Mountain [c41] — ability: mana_red; last known: kind: CardLastKnownInformation
+  [precombat main] Card tapped: hierarchical_puct; Mountain [c44] — last known: kind: CardLastKnownInformation
+  [precombat main] Mana added: hierarchical_puct; Mountain [c44] — amount: 1; last known: kind: CardLastKnownInformation; mana: RED
+  [precombat main] hierarchical_puct activates Mountain [c44] — ability: mana_red; last known: kind: CardLastKnownInformation
+  [precombat main] Card tapped: hierarchical_puct; Mountain [c48] — last known: kind: CardLastKnownInformation
+  [precombat main] Mana added: hierarchical_puct; Mountain [c48] — amount: 1; last known: kind: CardLastKnownInformation; mana: RED
+  [precombat main] hierarchical_puct activates Mountain [c48] — ability: mana_red; last known: kind: CardLastKnownInformation
+  [precombat main] Card tapped: hierarchical_puct; Mountain [c52] — last known: kind: CardLastKnownInformation
+  [precombat main] Mana added: hierarchical_puct; Mountain [c52] — amount: 1; last known: kind: CardLastKnownInformation; mana: RED
+  [precombat main] hierarchical_puct activates Mountain [c52] — ability: mana_red; last known: kind: CardLastKnownInformation
+  [precombat main] Mana paid: hierarchical_puct; Ogre Battledriver [c15] — last known: kind: CardLastKnownInformation; payment: RED: 4
+  [precombat main] Card moved: hierarchical_puct; Ogre Battledriver [c15] — card: Ogre Battledriver [c15]; from: HAND; last known: kind: CardLastKnownInformation; previous controller: hierarchical_puct; to: STACK
+  [precombat main] hierarchical_puct casts Ogre Battledriver [c15] — ability: cast:Ogre Battledriver
+  [precombat main] hierarchical_puct decides PriorityDecisionRequest: 5.968 ms; observed options: 1; space size: 1; success
+  [precombat main] Simple decides PriorityDecisionRequest: 0.076 ms; observed options: 0; space size: unknown; success
+  [precombat main] Card moved: hierarchical_puct; Ogre Battledriver [c15] — card: Ogre Battledriver [c15]; from: STACK; last known: kind: CardLastKnownInformation; previous controller: hierarchical_puct; to: BATTLEFIELD
+  [precombat main] Trigger detected: hierarchical_puct; Ogre Battledriver [c16]; battledriver_etb
+  [precombat main] hierarchical_puct decides TriggerOrderRequest: 5.831 ms; observed options: 1; space size: 1; success
+  [precombat main] hierarchical_puct decides AbilityDecisionRequest: 7.037 ms; observed options: 1; space size: 1; success
+  [precombat main] Resolution: hierarchical_puct; Ogre Battledriver [c15]; cast:Ogre Battledriver; success: True
+  [precombat main] hierarchical_puct decides PriorityDecisionRequest: 6.287 ms; observed options: 1; space size: 1; success
+  [precombat main] Simple decides PriorityDecisionRequest: 0.078 ms; observed options: 0; space size: unknown; success
+  [precombat main] Temporary effect applied: hierarchical_puct; Ogre Battledriver [c16] — last known: kind: CardLastKnownInformation; targets: Ogre Battledriver [c15]
+  [precombat main] Resolution: hierarchical_puct; Ogre Battledriver [c16]; battledriver_etb; success: True
+  [precombat main] hierarchical_puct decides PriorityDecisionRequest: 6.403 ms; observed options: 1; space size: 1; success
+  [precombat main] Simple decides PriorityDecisionRequest: 0.071 ms; observed options: 0; space size: unknown; success
+  [begin combat] hierarchical_puct decides PriorityDecisionRequest: 5.770 ms; observed options: 1; space size: 1; success
+  [begin combat] Simple decides PriorityDecisionRequest: 0.084 ms; observed options: 0; space size: unknown; success
+  [declare attackers] hierarchical_puct decides DeclareAttackersRequest: 3614.675 ms; observed options: 579; space size: unknown; success
+  [declare attackers] hierarchical_puct decides PriorityDecisionRequest: 6.661 ms; observed options: 1; space size: 1; success
+  [declare attackers] Simple decides PriorityDecisionRequest: 0.083 ms; observed options: 0; space size: unknown; success
+  [end combat] hierarchical_puct decides PriorityDecisionRequest: 6.990 ms; observed options: 1; space size: 1; success
+  [end combat] Simple decides PriorityDecisionRequest: 0.087 ms; observed options: 0; space size: unknown; success
+  [postcombat main] hierarchical_puct decides PriorityDecisionRequest: 6.743 ms; observed options: 1; space size: 1; success
+  [postcombat main] Simple decides PriorityDecisionRequest: 0.091 ms; observed options: 0; space size: unknown; success
+  [end step] hierarchical_puct decides PriorityDecisionRequest: 6.382 ms; observed options: 1; space size: 1; success
+  [end step] Simple decides PriorityDecisionRequest: 0.078 ms; observed options: 0; space size: unknown; success
+
+Turn 12
+  [upkeep] Simple decides PriorityDecisionRequest: 0.064 ms; observed options: 0; space size: unknown; success
+  [upkeep] hierarchical_puct decides PriorityDecisionRequest: 5.944 ms; observed options: 1; space size: 1; success
+  [draw] Card moved: Simple; Plains [c99] — card: Plains [c99]; from: DECK; last known: kind: CardLastKnownInformation; previous controller: Simple; to: HAND
+  [draw] Card drawn: Simple; Plains [c99] — card: Plains [c99]; last known: kind: CardLastKnownInformation
+  [draw] Resolution: -; -; -; success: True
+  [draw] Simple decides PriorityDecisionRequest: 0.072 ms; observed options: 0; space size: unknown; success
+  [draw] hierarchical_puct decides PriorityDecisionRequest: 5.915 ms; observed options: 1; space size: 1; success
+  [precombat main] Simple chooses land: source: Plains [c99]
+  [precombat main] Simple decides PriorityDecisionRequest: 0.659 ms; observed options: 2; space size: unknown; success
+  [precombat main] Card moved: Simple; Plains [c99] — card: Plains [c99]; from: HAND; last known: kind: CardLastKnownInformation; previous controller: Simple; to: BATTLEFIELD
+  [precombat main] Simple plays land Plains [c99] — lands played: 1; last known: kind: CardLastKnownInformation
+  [precombat main] Resolution: Simple; Plains [c99]; play_land; success: True
+  [precombat main] Simple decides PriorityDecisionRequest: 0.068 ms; observed options: 0; space size: unknown; success
+  [precombat main] hierarchical_puct decides PriorityDecisionRequest: 6.197 ms; observed options: 1; space size: 1; success
+  [begin combat] Simple decides PriorityDecisionRequest: 0.080 ms; observed options: 0; space size: unknown; success
+  [begin combat] hierarchical_puct decides PriorityDecisionRequest: 6.589 ms; observed options: 1; space size: 1; success
+  [declare attackers] Simple chooses attack: attackers: Serra Angel [c80]
+  [declare attackers] Simple decides DeclareAttackersRequest: 0.185 ms; observed options: 1; space size: unknown; success
+  [declare attackers] Simple attacks with Serra Angel [c80] — attacker: Serra Angel [c80]; defender: hierarchical_puct
+  [declare attackers] Attackers declared: Simple; - — attackers: Serra Angel [c80]
+  [declare attackers] Simple decides PriorityDecisionRequest: 0.068 ms; observed options: 0; space size: unknown; success
+  [declare attackers] hierarchical_puct decides PriorityDecisionRequest: 6.314 ms; observed options: 1; space size: 1; success
+  [declare blockers] hierarchical_puct decides DeclareBlockersRequest: 6.683 ms; observed options: 1; space size: 1; success
+  [declare blockers] Simple decides PriorityDecisionRequest: 0.082 ms; observed options: 0; space size: unknown; success
+  [declare blockers] hierarchical_puct decides PriorityDecisionRequest: 6.471 ms; observed options: 1; space size: 1; success
+  [second combat damage] Damage dealt: Simple; Serra Angel [c80] — amount: 4; combat: True; last known: kind: CardLastKnownInformation; life loss: 4; source revision: 3; target: hierarchical_puct; target object: hierarchical_puct; target revision: -
+  [second combat damage] Simple decides PriorityDecisionRequest: 0.082 ms; observed options: 0; space size: unknown; success
+  [second combat damage] hierarchical_puct decides PriorityDecisionRequest: 7.032 ms; observed options: 1; space size: 1; success
+  [end combat] Simple decides PriorityDecisionRequest: 0.079 ms; observed options: 0; space size: unknown; success
+  [end combat] hierarchical_puct decides PriorityDecisionRequest: 6.830 ms; observed options: 1; space size: 1; success
+  [postcombat main] Simple decides PriorityDecisionRequest: 0.083 ms; observed options: 0; space size: unknown; success
+  [postcombat main] hierarchical_puct decides PriorityDecisionRequest: 6.777 ms; observed options: 1; space size: 1; success
+  [end step] Simple decides PriorityDecisionRequest: 0.079 ms; observed options: 0; space size: unknown; success
+  [end step] hierarchical_puct decides PriorityDecisionRequest: 6.690 ms; observed options: 1; space size: 1; success
+
+Turn 13
+  [upkeep] hierarchical_puct decides PriorityDecisionRequest: 6.700 ms; observed options: 1; space size: 1; success
+  [upkeep] Simple decides PriorityDecisionRequest: 0.082 ms; observed options: 0; space size: unknown; success
+  [draw] Card moved: hierarchical_puct; Raid Bombardment [c35] — card: Raid Bombardment [c35]; from: DECK; last known: kind: CardLastKnownInformation; previous controller: hierarchical_puct; to: HAND
+  [draw] Card drawn: hierarchical_puct; Raid Bombardment [c35] — card: Raid Bombardment [c35]; last known: kind: CardLastKnownInformation
+  [draw] Resolution: -; -; -; success: True
+  [draw] hierarchical_puct decides PriorityDecisionRequest: 6.790 ms; observed options: 1; space size: 1; success
+  [draw] Simple decides PriorityDecisionRequest: 0.081 ms; observed options: 0; space size: unknown; success
+  [precombat main] hierarchical_puct decides PriorityDecisionRequest: 3692.520 ms; observed options: 587; space size: unknown; success
+  [precombat main] Card tapped: hierarchical_puct; Mountain [c41] — last known: kind: CardLastKnownInformation
+  [precombat main] Mana added: hierarchical_puct; Mountain [c41] — amount: 1; last known: kind: CardLastKnownInformation; mana: RED
+  [precombat main] hierarchical_puct activates Mountain [c41] — ability: mana_red; last known: kind: CardLastKnownInformation
+  [precombat main] Card tapped: hierarchical_puct; Mountain [c44] — last known: kind: CardLastKnownInformation
+  [precombat main] Mana added: hierarchical_puct; Mountain [c44] — amount: 1; last known: kind: CardLastKnownInformation; mana: RED
+  [precombat main] hierarchical_puct activates Mountain [c44] — ability: mana_red; last known: kind: CardLastKnownInformation
+  [precombat main] Card tapped: hierarchical_puct; Mountain [c48] — last known: kind: CardLastKnownInformation
+  [precombat main] Mana added: hierarchical_puct; Mountain [c48] — amount: 1; last known: kind: CardLastKnownInformation; mana: RED
+  [precombat main] hierarchical_puct activates Mountain [c48] — ability: mana_red; last known: kind: CardLastKnownInformation
+  [precombat main] Mana paid: hierarchical_puct; Raid Bombardment [c35] — last known: kind: CardLastKnownInformation; payment: RED: 3
+  [precombat main] Card moved: hierarchical_puct; Raid Bombardment [c35] — card: Raid Bombardment [c35]; from: HAND; last known: kind: CardLastKnownInformation; previous controller: hierarchical_puct; to: STACK
+  [precombat main] hierarchical_puct casts Raid Bombardment [c35] — ability: cast:Raid Bombardment
+  [precombat main] hierarchical_puct decides PriorityDecisionRequest: 6.133 ms; observed options: 1; space size: 1; success
+  [precombat main] Simple decides PriorityDecisionRequest: 0.071 ms; observed options: 0; space size: unknown; success
+  [precombat main] Card moved: hierarchical_puct; Raid Bombardment [c35] — card: Raid Bombardment [c35]; from: STACK; last known: kind: CardLastKnownInformation; previous controller: hierarchical_puct; to: BATTLEFIELD
+  [precombat main] Resolution: hierarchical_puct; Raid Bombardment [c35]; cast:Raid Bombardment; success: True
+  [precombat main] hierarchical_puct decides PriorityDecisionRequest: 6.684 ms; observed options: 1; space size: 1; success
+  [precombat main] Simple decides PriorityDecisionRequest: 0.065 ms; observed options: 0; space size: unknown; success
+  [begin combat] hierarchical_puct decides PriorityDecisionRequest: 6.067 ms; observed options: 1; space size: 1; success
+  [begin combat] Simple decides PriorityDecisionRequest: 0.073 ms; observed options: 0; space size: unknown; success
+  [declare attackers] hierarchical_puct decides DeclareAttackersRequest: 2116.465 ms; observed options: 269; space size: unknown; success
+  [declare attackers] hierarchical_puct decides PriorityDecisionRequest: 6.044 ms; observed options: 1; space size: 1; success
+  [declare attackers] Simple decides PriorityDecisionRequest: 0.071 ms; observed options: 0; space size: unknown; success
+  [end combat] hierarchical_puct decides PriorityDecisionRequest: 6.048 ms; observed options: 1; space size: 1; success
+  [end combat] Simple decides PriorityDecisionRequest: 0.076 ms; observed options: 0; space size: unknown; success
+  [postcombat main] hierarchical_puct decides PriorityDecisionRequest: 7.502 ms; observed options: 1; space size: 1; success
+  [postcombat main] Simple decides PriorityDecisionRequest: 0.094 ms; observed options: 0; space size: unknown; success
+  [end step] hierarchical_puct decides PriorityDecisionRequest: 6.975 ms; observed options: 1; space size: 1; success
+  [end step] Simple decides PriorityDecisionRequest: 0.083 ms; observed options: 0; space size: unknown; success
+
+Turn 14
+  [upkeep] Simple decides PriorityDecisionRequest: 0.061 ms; observed options: 0; space size: unknown; success
+  [upkeep] hierarchical_puct decides PriorityDecisionRequest: 6.378 ms; observed options: 1; space size: 1; success
+  [draw] Card moved: Simple; Angel of Vitality [c76] — card: Angel of Vitality [c76]; from: DECK; last known: kind: CardLastKnownInformation; previous controller: Simple; to: HAND
+  [draw] Card drawn: Simple; Angel of Vitality [c76] — card: Angel of Vitality [c76]; last known: kind: CardLastKnownInformation
+  [draw] Resolution: -; -; -; success: True
+  [draw] Simple decides PriorityDecisionRequest: 0.120 ms; observed options: 0; space size: unknown; success
+  [draw] hierarchical_puct decides PriorityDecisionRequest: 6.671 ms; observed options: 1; space size: 1; success
+  [precombat main] Simple chooses land: source: Plains [c120]
+  [precombat main] Simple decides PriorityDecisionRequest: 0.819 ms; observed options: 2; space size: unknown; success
+  [precombat main] Card moved: Simple; Plains [c120] — card: Plains [c120]; from: HAND; last known: kind: CardLastKnownInformation; previous controller: Simple; to: BATTLEFIELD
+  [precombat main] Simple plays land Plains [c120] — lands played: 1; last known: kind: CardLastKnownInformation
+  [precombat main] Resolution: Simple; Plains [c120]; play_land; success: True
+  [precombat main] Simple chooses action: ability: cast:Angel of Vitality; source: Angel of Vitality [c76]; targets: none
+  [precombat main] Simple decides PriorityDecisionRequest: 1.487 ms; observed options: 2; space size: 2; success
+  [precombat main] Card tapped: Simple; Plains [c97] — last known: kind: CardLastKnownInformation
+  [precombat main] Mana added: Simple; Plains [c97] — amount: 1; last known: kind: CardLastKnownInformation; mana: WHITE
+  [precombat main] Simple activates Plains [c97] — ability: mana_white; last known: kind: CardLastKnownInformation
+  [precombat main] Card tapped: Simple; Plains [c99] — last known: kind: CardLastKnownInformation
+  [precombat main] Mana added: Simple; Plains [c99] — amount: 1; last known: kind: CardLastKnownInformation; mana: WHITE
+  [precombat main] Simple activates Plains [c99] — ability: mana_white; last known: kind: CardLastKnownInformation
+  [precombat main] Card tapped: Simple; Plains [c101] — last known: kind: CardLastKnownInformation
+  [precombat main] Mana added: Simple; Plains [c101] — amount: 1; last known: kind: CardLastKnownInformation; mana: WHITE
+  [precombat main] Simple activates Plains [c101] — ability: mana_white; last known: kind: CardLastKnownInformation
+  [precombat main] Mana paid: Simple; Angel of Vitality [c76] — last known: kind: CardLastKnownInformation; payment: WHITE: 3
+  [precombat main] Card moved: Simple; Angel of Vitality [c76] — card: Angel of Vitality [c76]; from: HAND; last known: kind: CardLastKnownInformation; previous controller: Simple; to: STACK
+  [precombat main] Simple casts Angel of Vitality [c76] — ability: cast:Angel of Vitality
+  [precombat main] Simple decides PriorityDecisionRequest: 0.077 ms; observed options: 0; space size: unknown; success
+  [precombat main] hierarchical_puct decides PriorityDecisionRequest: 6.866 ms; observed options: 1; space size: 1; success
+  [precombat main] Card moved: Simple; Angel of Vitality [c76] — card: Angel of Vitality [c76]; from: STACK; last known: kind: CardLastKnownInformation; previous controller: Simple; to: BATTLEFIELD
+  [precombat main] Resolution: Simple; Angel of Vitality [c76]; cast:Angel of Vitality; success: True
+  [precombat main] Simple decides PriorityDecisionRequest: 0.073 ms; observed options: 0; space size: unknown; success
+  [precombat main] hierarchical_puct decides PriorityDecisionRequest: 6.574 ms; observed options: 1; space size: 1; success
+  [begin combat] Simple decides PriorityDecisionRequest: 0.064 ms; observed options: 0; space size: unknown; success
+  [begin combat] hierarchical_puct decides PriorityDecisionRequest: 7.254 ms; observed options: 1; space size: 1; success
+  [declare attackers] Simple chooses attack: attackers: Serra Angel [c80]
+  [declare attackers] Simple decides DeclareAttackersRequest: 0.177 ms; observed options: 1; space size: unknown; success
+  [declare attackers] Simple attacks with Serra Angel [c80] — attacker: Serra Angel [c80]; defender: hierarchical_puct
+  [declare attackers] Attackers declared: Simple; - — attackers: Serra Angel [c80]
+  [declare attackers] Simple decides PriorityDecisionRequest: 0.067 ms; observed options: 0; space size: unknown; success
+  [declare attackers] hierarchical_puct decides PriorityDecisionRequest: 6.562 ms; observed options: 1; space size: 1; success
+  [declare blockers] hierarchical_puct decides DeclareBlockersRequest: 6.492 ms; observed options: 1; space size: 1; success
+  [declare blockers] Simple decides PriorityDecisionRequest: 0.073 ms; observed options: 0; space size: unknown; success
+  [declare blockers] hierarchical_puct decides PriorityDecisionRequest: 6.252 ms; observed options: 1; space size: 1; success
+  [second combat damage] Damage dealt: Simple; Serra Angel [c80] — amount: 4; combat: True; last known: kind: CardLastKnownInformation; life loss: 4; source revision: 3; target: hierarchical_puct; target object: hierarchical_puct; target revision: -
+  [second combat damage] Simple decides PriorityDecisionRequest: 0.065 ms; observed options: 0; space size: unknown; success
+  [second combat damage] hierarchical_puct decides PriorityDecisionRequest: 6.749 ms; observed options: 1; space size: 1; success
+  [end combat] Simple decides PriorityDecisionRequest: 0.075 ms; observed options: 0; space size: unknown; success
+  [end combat] hierarchical_puct decides PriorityDecisionRequest: 7.328 ms; observed options: 1; space size: 1; success
+  [postcombat main] Simple decides PriorityDecisionRequest: 0.094 ms; observed options: 0; space size: unknown; success
+  [postcombat main] hierarchical_puct decides PriorityDecisionRequest: 7.679 ms; observed options: 1; space size: 1; success
+  [end step] Simple decides PriorityDecisionRequest: 0.082 ms; observed options: 0; space size: unknown; success
+  [end step] hierarchical_puct decides PriorityDecisionRequest: 7.648 ms; observed options: 1; space size: 1; success
+
+Turn 15
+  [upkeep] hierarchical_puct decides PriorityDecisionRequest: 7.656 ms; observed options: 1; space size: 1; success
+  [upkeep] Simple decides PriorityDecisionRequest: 0.088 ms; observed options: 0; space size: unknown; success
+  [draw] Card moved: hierarchical_puct; Nest Robber [c6] — card: Nest Robber [c6]; from: DECK; last known: kind: CardLastKnownInformation; previous controller: hierarchical_puct; to: HAND
+  [draw] Card drawn: hierarchical_puct; Nest Robber [c6] — card: Nest Robber [c6]; last known: kind: CardLastKnownInformation
+  [draw] Resolution: -; -; -; success: True
+  [draw] hierarchical_puct decides PriorityDecisionRequest: 8.879 ms; observed options: 1; space size: 1; success
+  [draw] Simple decides PriorityDecisionRequest: 0.092 ms; observed options: 0; space size: unknown; success
+  [precombat main] hierarchical_puct decides PriorityDecisionRequest: 3039.677 ms; observed options: 242; space size: unknown; success
+  [precombat main] Card tapped: hierarchical_puct; Mountain [c41] — last known: kind: CardLastKnownInformation
+  [precombat main] Mana added: hierarchical_puct; Mountain [c41] — amount: 1; last known: kind: CardLastKnownInformation; mana: RED
+  [precombat main] hierarchical_puct activates Mountain [c41] — ability: mana_red; last known: kind: CardLastKnownInformation
+  [precombat main] Card tapped: hierarchical_puct; Mountain [c44] — last known: kind: CardLastKnownInformation
+  [precombat main] Mana added: hierarchical_puct; Mountain [c44] — amount: 1; last known: kind: CardLastKnownInformation; mana: RED
+  [precombat main] hierarchical_puct activates Mountain [c44] — ability: mana_red; last known: kind: CardLastKnownInformation
+  [precombat main] Mana paid: hierarchical_puct; Nest Robber [c6] — last known: kind: CardLastKnownInformation; payment: RED: 2
+  [precombat main] Card moved: hierarchical_puct; Nest Robber [c6] — card: Nest Robber [c6]; from: HAND; last known: kind: CardLastKnownInformation; previous controller: hierarchical_puct; to: STACK
+  [precombat main] hierarchical_puct casts Nest Robber [c6] — ability: cast:Nest Robber
+  [precombat main] hierarchical_puct decides PriorityDecisionRequest: 7.826 ms; observed options: 1; space size: 1; success
+  [precombat main] Simple decides PriorityDecisionRequest: 0.081 ms; observed options: 0; space size: unknown; success
+  [precombat main] Card moved: hierarchical_puct; Nest Robber [c6] — card: Nest Robber [c6]; from: STACK; last known: kind: CardLastKnownInformation; previous controller: hierarchical_puct; to: BATTLEFIELD
+  [precombat main] Trigger detected: hierarchical_puct; Ogre Battledriver [c15]; battledriver_etb
+  [precombat main] Trigger detected: hierarchical_puct; Ogre Battledriver [c16]; battledriver_etb
+  [precombat main] hierarchical_puct decides TriggerOrderRequest: 7.705 ms; observed options: 2; space size: 2; success
+  [precombat main] hierarchical_puct decides AbilityDecisionRequest: 7.444 ms; observed options: 1; space size: 1; success
+  [precombat main] hierarchical_puct decides AbilityDecisionRequest: 7.094 ms; observed options: 1; space size: 1; success
+  [precombat main] Resolution: hierarchical_puct; Nest Robber [c6]; cast:Nest Robber; success: True
+  [precombat main] hierarchical_puct decides PriorityDecisionRequest: 8.539 ms; observed options: 1; space size: 1; success
+  [precombat main] Simple decides PriorityDecisionRequest: 0.085 ms; observed options: 0; space size: unknown; success
+  [precombat main] Temporary effect applied: hierarchical_puct; Ogre Battledriver [c16] — last known: kind: CardLastKnownInformation; targets: Nest Robber [c6]
+  [precombat main] Resolution: hierarchical_puct; Ogre Battledriver [c16]; battledriver_etb; success: True
+  [precombat main] hierarchical_puct decides PriorityDecisionRequest: 8.086 ms; observed options: 1; space size: 1; success
+  [precombat main] Simple decides PriorityDecisionRequest: 0.099 ms; observed options: 0; space size: unknown; success
+  [precombat main] Temporary effect applied: hierarchical_puct; Ogre Battledriver [c15] — last known: kind: CardLastKnownInformation; targets: Nest Robber [c6]
+  [precombat main] Resolution: hierarchical_puct; Ogre Battledriver [c15]; battledriver_etb; success: True
+  [precombat main] hierarchical_puct decides PriorityDecisionRequest: 9.197 ms; observed options: 1; space size: 1; success
+  [precombat main] Simple decides PriorityDecisionRequest: 0.085 ms; observed options: 0; space size: unknown; success
+  [begin combat] hierarchical_puct decides PriorityDecisionRequest: 8.161 ms; observed options: 1; space size: 1; success
+  [begin combat] Simple decides PriorityDecisionRequest: 0.087 ms; observed options: 0; space size: unknown; success
+  [declare attackers] hierarchical_puct decides DeclareAttackersRequest: 3890.805 ms; observed options: 683; space size: unknown; success
+  [declare attackers] hierarchical_puct decides PriorityDecisionRequest: 7.398 ms; observed options: 1; space size: 1; success
+  [declare attackers] Simple decides PriorityDecisionRequest: 0.095 ms; observed options: 0; space size: unknown; success
+  [end combat] hierarchical_puct decides PriorityDecisionRequest: 7.208 ms; observed options: 1; space size: 1; success
+  [end combat] Simple decides PriorityDecisionRequest: 0.086 ms; observed options: 0; space size: unknown; success
+  [postcombat main] hierarchical_puct decides PriorityDecisionRequest: 7.906 ms; observed options: 1; space size: 1; success
+  [postcombat main] Simple decides PriorityDecisionRequest: 0.070 ms; observed options: 0; space size: unknown; success
+  [end step] hierarchical_puct decides PriorityDecisionRequest: 6.971 ms; observed options: 1; space size: 1; success
+  [end step] Simple decides PriorityDecisionRequest: 0.066 ms; observed options: 0; space size: unknown; success
+
+Turn 16
+  [upkeep] Simple decides PriorityDecisionRequest: 0.058 ms; observed options: 0; space size: unknown; success
+  [upkeep] hierarchical_puct decides PriorityDecisionRequest: 6.656 ms; observed options: 1; space size: 1; success
+  [draw] Card moved: Simple; Angel of Vitality [c77] — card: Angel of Vitality [c77]; from: DECK; last known: kind: CardLastKnownInformation; previous controller: Simple; to: HAND
+  [draw] Card drawn: Simple; Angel of Vitality [c77] — card: Angel of Vitality [c77]; last known: kind: CardLastKnownInformation
+  [draw] Resolution: -; -; -; success: True
+  [draw] Simple decides PriorityDecisionRequest: 0.102 ms; observed options: 0; space size: unknown; success
+  [draw] hierarchical_puct decides PriorityDecisionRequest: 6.753 ms; observed options: 1; space size: 1; success
+  [precombat main] Simple chooses action: ability: cast:Angel of Vitality; source: Angel of Vitality [c77]; targets: none
+  [precombat main] Simple decides PriorityDecisionRequest: 1.885 ms; observed options: 2; space size: 2; success
+  [precombat main] Card tapped: Simple; Plains [c97] — last known: kind: CardLastKnownInformation
+  [precombat main] Mana added: Simple; Plains [c97] — amount: 1; last known: kind: CardLastKnownInformation; mana: WHITE
+  [precombat main] Simple activates Plains [c97] — ability: mana_white; last known: kind: CardLastKnownInformation
+  [precombat main] Card tapped: Simple; Plains [c99] — last known: kind: CardLastKnownInformation
+  [precombat main] Mana added: Simple; Plains [c99] — amount: 1; last known: kind: CardLastKnownInformation; mana: WHITE
+  [precombat main] Simple activates Plains [c99] — ability: mana_white; last known: kind: CardLastKnownInformation
+  [precombat main] Card tapped: Simple; Plains [c101] — last known: kind: CardLastKnownInformation
+  [precombat main] Mana added: Simple; Plains [c101] — amount: 1; last known: kind: CardLastKnownInformation; mana: WHITE
+  [precombat main] Simple activates Plains [c101] — ability: mana_white; last known: kind: CardLastKnownInformation
+  [precombat main] Mana paid: Simple; Angel of Vitality [c77] — last known: kind: CardLastKnownInformation; payment: WHITE: 3
+  [precombat main] Card moved: Simple; Angel of Vitality [c77] — card: Angel of Vitality [c77]; from: HAND; last known: kind: CardLastKnownInformation; previous controller: Simple; to: STACK
+  [precombat main] Simple casts Angel of Vitality [c77] — ability: cast:Angel of Vitality
+  [precombat main] Simple decides PriorityDecisionRequest: 0.073 ms; observed options: 0; space size: unknown; success
+  [precombat main] hierarchical_puct decides PriorityDecisionRequest: 7.162 ms; observed options: 1; space size: 1; success
+  [precombat main] Card moved: Simple; Angel of Vitality [c77] — card: Angel of Vitality [c77]; from: STACK; last known: kind: CardLastKnownInformation; previous controller: Simple; to: BATTLEFIELD
+  [precombat main] Resolution: Simple; Angel of Vitality [c77]; cast:Angel of Vitality; success: True
+  [precombat main] Simple decides PriorityDecisionRequest: 0.666 ms; observed options: 1; space size: 1; success
+  [precombat main] hierarchical_puct decides PriorityDecisionRequest: 7.566 ms; observed options: 1; space size: 1; success
+  [begin combat] Simple decides PriorityDecisionRequest: 0.070 ms; observed options: 0; space size: unknown; success
+  [begin combat] hierarchical_puct decides PriorityDecisionRequest: 7.290 ms; observed options: 1; space size: 1; success
+  [declare attackers] Simple chooses attack: attackers: Angel of Vitality [c76], Serra Angel [c80]
+  [declare attackers] Simple decides DeclareAttackersRequest: 0.216 ms; observed options: 1; space size: unknown; success
+  [declare attackers] Card tapped: Simple; Angel of Vitality [c76]
+  [declare attackers] Simple attacks with Angel of Vitality [c76] — attacker: Angel of Vitality [c76]; defender: hierarchical_puct
+  [declare attackers] Simple attacks with Serra Angel [c80] — attacker: Serra Angel [c80]; defender: hierarchical_puct
+  [declare attackers] Attackers declared: Simple; - — attackers: Angel of Vitality [c76], Serra Angel [c80]
+  [declare attackers] Simple decides PriorityDecisionRequest: 0.071 ms; observed options: 0; space size: unknown; success
+  [declare attackers] hierarchical_puct decides PriorityDecisionRequest: 7.728 ms; observed options: 1; space size: 1; success
+  [declare blockers] hierarchical_puct decides DeclareBlockersRequest: 7.431 ms; observed options: 1; space size: 1; success
+  [declare blockers] Simple decides PriorityDecisionRequest: 0.076 ms; observed options: 0; space size: unknown; success
+  [declare blockers] hierarchical_puct decides PriorityDecisionRequest: 6.815 ms; observed options: 1; space size: 1; success
+  [second combat damage] hierarchical_puct decides ReplacementOrderRequest: 7.328 ms; observed options: 2; space size: 2; success
+  [second combat damage] Damage dealt: Simple; Angel of Vitality [c76] — amount: 2; combat: True; last known: kind: CardLastKnownInformation; life loss: 2; source revision: 3; target: hierarchical_puct; target object: hierarchical_puct; target revision: -
+  [second combat damage] Damage dealt: Simple; Serra Angel [c80] — amount: 4; combat: True; last known: kind: CardLastKnownInformation; life loss: 4; source revision: 3; target: hierarchical_puct; target object: hierarchical_puct; target revision: -
+  [second combat damage] Simple decides PriorityDecisionRequest: 0.075 ms; observed options: 0; space size: unknown; success
+  [second combat damage] hierarchical_puct decides PriorityDecisionRequest: 6.915 ms; observed options: 1; space size: 1; success
+  [end combat] Simple decides PriorityDecisionRequest: 0.065 ms; observed options: 0; space size: unknown; success
+  [end combat] hierarchical_puct decides PriorityDecisionRequest: 7.195 ms; observed options: 1; space size: 1; success
+  [postcombat main] Simple decides PriorityDecisionRequest: 0.669 ms; observed options: 1; space size: 1; success
+  [postcombat main] hierarchical_puct decides PriorityDecisionRequest: 6.836 ms; observed options: 1; space size: 1; success
+  [end step] Simple decides PriorityDecisionRequest: 0.065 ms; observed options: 0; space size: unknown; success
+  [end step] hierarchical_puct decides PriorityDecisionRequest: 7.356 ms; observed options: 1; space size: 1; success
+
+Turn 17
+  [upkeep] hierarchical_puct decides PriorityDecisionRequest: 7.104 ms; observed options: 1; space size: 1; success
+  [upkeep] Simple decides PriorityDecisionRequest: 0.091 ms; observed options: 0; space size: unknown; success
+  [draw] Card moved: hierarchical_puct; Mountain [c38] — card: Mountain [c38]; from: DECK; last known: kind: CardLastKnownInformation; previous controller: hierarchical_puct; to: HAND
+  [draw] Card drawn: hierarchical_puct; Mountain [c38] — card: Mountain [c38]; last known: kind: CardLastKnownInformation
+  [draw] Resolution: -; -; -; success: True
+  [draw] hierarchical_puct decides PriorityDecisionRequest: 7.250 ms; observed options: 1; space size: 1; success
+  [draw] Simple decides PriorityDecisionRequest: 0.071 ms; observed options: 0; space size: unknown; success
+  [precombat main] hierarchical_puct decides PriorityDecisionRequest: 2109.546 ms; observed options: 119; space size: unknown; success
+  [precombat main] Card moved: hierarchical_puct; Mountain [c38] — card: Mountain [c38]; from: HAND; last known: kind: CardLastKnownInformation; previous controller: hierarchical_puct; to: BATTLEFIELD
+  [precombat main] hierarchical_puct plays land Mountain [c38] — lands played: 1; last known: kind: CardLastKnownInformation
+  [precombat main] Resolution: hierarchical_puct; Mountain [c38]; play_land; success: True
+  [precombat main] hierarchical_puct decides PriorityDecisionRequest: 2010.635 ms; observed options: 104; space size: unknown; success
+  [precombat main] Card tapped: hierarchical_puct; Mountain [c38] — last known: kind: CardLastKnownInformation
+  [precombat main] Mana added: hierarchical_puct; Mountain [c38] — amount: 1; last known: kind: CardLastKnownInformation; mana: RED
+  [precombat main] hierarchical_puct activates Mountain [c38] — ability: mana_red; last known: kind: CardLastKnownInformation
+  [precombat main] Card tapped: hierarchical_puct; Mountain [c41] — last known: kind: CardLastKnownInformation
+  [precombat main] Mana added: hierarchical_puct; Mountain [c41] — amount: 1; last known: kind: CardLastKnownInformation; mana: RED
+  [precombat main] hierarchical_puct activates Mountain [c41] — ability: mana_red; last known: kind: CardLastKnownInformation
+  [precombat main] Card tapped: hierarchical_puct; Mountain [c44] — last known: kind: CardLastKnownInformation
+  [precombat main] Mana added: hierarchical_puct; Mountain [c44] — amount: 1; last known: kind: CardLastKnownInformation; mana: RED
+  [precombat main] hierarchical_puct activates Mountain [c44] — ability: mana_red; last known: kind: CardLastKnownInformation
+  [precombat main] Card tapped: hierarchical_puct; Mountain [c48] — last known: kind: CardLastKnownInformation
+  [precombat main] Mana added: hierarchical_puct; Mountain [c48] — amount: 1; last known: kind: CardLastKnownInformation; mana: RED
+  [precombat main] hierarchical_puct activates Mountain [c48] — ability: mana_red; last known: kind: CardLastKnownInformation
+  [precombat main] Card tapped: hierarchical_puct; Mountain [c52] — last known: kind: CardLastKnownInformation
+  [precombat main] Mana added: hierarchical_puct; Mountain [c52] — amount: 1; last known: kind: CardLastKnownInformation; mana: RED
+  [precombat main] hierarchical_puct activates Mountain [c52] — ability: mana_red; last known: kind: CardLastKnownInformation
+  [precombat main] Card tapped: hierarchical_puct; Mountain [c57] — last known: kind: CardLastKnownInformation
+  [precombat main] Mana added: hierarchical_puct; Mountain [c57] — amount: 1; last known: kind: CardLastKnownInformation; mana: RED
+  [precombat main] hierarchical_puct activates Mountain [c57] — ability: mana_red; last known: kind: CardLastKnownInformation
+  [precombat main] Mana paid: hierarchical_puct; Volcanic Dragon [c18] — last known: kind: CardLastKnownInformation; payment: RED: 6
+  [precombat main] Card moved: hierarchical_puct; Volcanic Dragon [c18] — card: Volcanic Dragon [c18]; from: HAND; last known: kind: CardLastKnownInformation; previous controller: hierarchical_puct; to: STACK
+  [precombat main] hierarchical_puct casts Volcanic Dragon [c18] — ability: cast:Volcanic Dragon
+  [precombat main] hierarchical_puct decides PriorityDecisionRequest: 8.001 ms; observed options: 1; space size: 1; success
+  [precombat main] Simple decides PriorityDecisionRequest: 0.080 ms; observed options: 0; space size: unknown; success
+  [precombat main] Card moved: hierarchical_puct; Volcanic Dragon [c18] — card: Volcanic Dragon [c18]; from: STACK; last known: kind: CardLastKnownInformation; previous controller: hierarchical_puct; to: BATTLEFIELD
+  [precombat main] Trigger detected: hierarchical_puct; Ogre Battledriver [c15]; battledriver_etb
+  [precombat main] Trigger detected: hierarchical_puct; Ogre Battledriver [c16]; battledriver_etb
+  [precombat main] hierarchical_puct decides TriggerOrderRequest: 8.451 ms; observed options: 2; space size: 2; success
+  [precombat main] hierarchical_puct decides AbilityDecisionRequest: 8.243 ms; observed options: 1; space size: 1; success
+  [precombat main] hierarchical_puct decides AbilityDecisionRequest: 7.525 ms; observed options: 1; space size: 1; success
+  [precombat main] Resolution: hierarchical_puct; Volcanic Dragon [c18]; cast:Volcanic Dragon; success: True
+  [precombat main] hierarchical_puct decides PriorityDecisionRequest: 7.314 ms; observed options: 1; space size: 1; success
+  [precombat main] Simple decides PriorityDecisionRequest: 0.077 ms; observed options: 0; space size: unknown; success
+  [precombat main] Temporary effect applied: hierarchical_puct; Ogre Battledriver [c16] — last known: kind: CardLastKnownInformation; targets: Volcanic Dragon [c18]
+  [precombat main] Resolution: hierarchical_puct; Ogre Battledriver [c16]; battledriver_etb; success: True
+  [precombat main] hierarchical_puct decides PriorityDecisionRequest: 7.902 ms; observed options: 1; space size: 1; success
+  [precombat main] Simple decides PriorityDecisionRequest: 0.077 ms; observed options: 0; space size: unknown; success
+  [precombat main] Temporary effect applied: hierarchical_puct; Ogre Battledriver [c15] — last known: kind: CardLastKnownInformation; targets: Volcanic Dragon [c18]
+  [precombat main] Resolution: hierarchical_puct; Ogre Battledriver [c15]; battledriver_etb; success: True
+  [precombat main] hierarchical_puct decides PriorityDecisionRequest: 7.504 ms; observed options: 1; space size: 1; success
+  [precombat main] Simple decides PriorityDecisionRequest: 0.084 ms; observed options: 0; space size: unknown; success
+  [begin combat] hierarchical_puct decides PriorityDecisionRequest: 7.479 ms; observed options: 1; space size: 1; success
+  [begin combat] Simple decides PriorityDecisionRequest: 0.087 ms; observed options: 0; space size: unknown; success
+  [declare attackers] hierarchical_puct decides DeclareAttackersRequest: 5256.454 ms; observed options: 1409; space size: unknown; success
+  [declare attackers] hierarchical_puct decides PriorityDecisionRequest: 9.348 ms; observed options: 1; space size: 1; success
+  [declare attackers] Simple decides PriorityDecisionRequest: 0.091 ms; observed options: 0; space size: unknown; success
+  [end combat] hierarchical_puct decides PriorityDecisionRequest: 9.046 ms; observed options: 1; space size: 1; success
+  [end combat] Simple decides PriorityDecisionRequest: 0.097 ms; observed options: 0; space size: unknown; success
+  [postcombat main] hierarchical_puct decides PriorityDecisionRequest: 8.631 ms; observed options: 1; space size: 1; success
+  [postcombat main] Simple decides PriorityDecisionRequest: 0.091 ms; observed options: 0; space size: unknown; success
+  [end step] hierarchical_puct decides PriorityDecisionRequest: 8.987 ms; observed options: 1; space size: 1; success
+  [end step] Simple decides PriorityDecisionRequest: 0.086 ms; observed options: 0; space size: unknown; success
+
+Turn 18
+  [upkeep] Simple decides PriorityDecisionRequest: 0.073 ms; observed options: 0; space size: unknown; success
+  [upkeep] hierarchical_puct decides PriorityDecisionRequest: 9.936 ms; observed options: 1; space size: 1; success
+  [draw] Card moved: Simple; Plains [c110] — card: Plains [c110]; from: DECK; last known: kind: CardLastKnownInformation; previous controller: Simple; to: HAND
+  [draw] Card drawn: Simple; Plains [c110] — card: Plains [c110]; last known: kind: CardLastKnownInformation
+  [draw] Resolution: -; -; -; success: True
+  [draw] Simple decides PriorityDecisionRequest: 0.205 ms; observed options: 0; space size: unknown; success
+  [draw] hierarchical_puct decides PriorityDecisionRequest: 8.969 ms; observed options: 1; space size: 1; success
+  [precombat main] Simple chooses land: source: Plains [c110]
+  [precombat main] Simple decides PriorityDecisionRequest: 1.827 ms; observed options: 2; space size: unknown; success
+  [precombat main] Card moved: Simple; Plains [c110] — card: Plains [c110]; from: HAND; last known: kind: CardLastKnownInformation; previous controller: Simple; to: BATTLEFIELD
+  [precombat main] Simple plays land Plains [c110] — lands played: 1; last known: kind: CardLastKnownInformation
+  [precombat main] Resolution: Simple; Plains [c110]; play_land; success: True
+  [precombat main] Simple decides PriorityDecisionRequest: 0.086 ms; observed options: 0; space size: unknown; success
+  [precombat main] hierarchical_puct decides PriorityDecisionRequest: 8.638 ms; observed options: 1; space size: 1; success
+  [begin combat] Simple decides PriorityDecisionRequest: 0.084 ms; observed options: 0; space size: unknown; success
+  [begin combat] hierarchical_puct decides PriorityDecisionRequest: 8.812 ms; observed options: 1; space size: 1; success
+  [declare attackers] Simple chooses attack: attackers: Angel of Vitality [c76], Angel of Vitality [c77], Serra Angel [c80]
+  [declare attackers] Simple decides DeclareAttackersRequest: 0.230 ms; observed options: 1; space size: unknown; success
+  [declare attackers] Card tapped: Simple; Angel of Vitality [c76]
+  [declare attackers] Simple attacks with Angel of Vitality [c76] — attacker: Angel of Vitality [c76]; defender: hierarchical_puct
+  [declare attackers] Card tapped: Simple; Angel of Vitality [c77]
+  [declare attackers] Simple attacks with Angel of Vitality [c77] — attacker: Angel of Vitality [c77]; defender: hierarchical_puct
+  [declare attackers] Simple attacks with Serra Angel [c80] — attacker: Serra Angel [c80]; defender: hierarchical_puct
+  [declare attackers] Attackers declared: Simple; - — attackers: Angel of Vitality [c76], Angel of Vitality [c77], Serra Angel [c80]
+  [declare attackers] Simple decides PriorityDecisionRequest: 0.077 ms; observed options: 0; space size: unknown; success
+  [declare attackers] hierarchical_puct decides PriorityDecisionRequest: 9.439 ms; observed options: 1; space size: 1; success
+  [declare blockers] hierarchical_puct decides DeclareBlockersRequest: 2527.374 ms; observed options: 204; space size: unknown; success
+  [declare blockers] hierarchical_puct blocks with Volcanic Dragon [c18] — attacker: Serra Angel [c80]; blocker: Volcanic Dragon [c18]
+  [declare blockers] Attacker blocked: Simple; Serra Angel [c80] — blockers: Volcanic Dragon [c18]
+  [declare blockers] Blockers declared: hierarchical_puct; - — blockers: Volcanic Dragon [c18], Serra Angel [c80]
+  [declare blockers] Simple decides PriorityDecisionRequest: 0.085 ms; observed options: 0; space size: unknown; success
+  [declare blockers] hierarchical_puct decides PriorityDecisionRequest: 7.935 ms; observed options: 1; space size: 1; success
+  [second combat damage] hierarchical_puct decides ReplacementOrderRequest: 8.929 ms; observed options: 6; space size: 6; success
+  [second combat damage] Damage dealt: hierarchical_puct; Volcanic Dragon [c18] — amount: 4; combat: True; last known: kind: CardLastKnownInformation; life loss: 0; source revision: 3; target: Serra Angel; target object: Serra Angel [c80]; target revision: 3
+  [second combat damage] Damage dealt: Simple; Angel of Vitality [c76] — amount: 2; combat: True; last known: kind: CardLastKnownInformation; life loss: 2; source revision: 3; target: hierarchical_puct; target object: hierarchical_puct; target revision: -
+  [second combat damage] Damage dealt: Simple; Angel of Vitality [c77] — amount: 2; combat: True; last known: kind: CardLastKnownInformation; life loss: 2; source revision: 3; target: hierarchical_puct; target object: hierarchical_puct; target revision: -
+  [second combat damage] Damage dealt: Simple; Serra Angel [c80] — amount: 4; combat: True; last known: kind: CardLastKnownInformation; life loss: 0; source revision: 3; target: Volcanic Dragon; target object: Volcanic Dragon [c18]; target revision: 3
+  [second combat damage] Card moved: Simple; Serra Angel [c80] — card: Serra Angel [c80]; from: BATTLEFIELD; last known: kind: CardLastKnownInformation; previous controller: Simple; to: GRAVEYARD
+  [second combat damage] Card moved: hierarchical_puct; Volcanic Dragon [c18] — card: Volcanic Dragon [c18]; from: BATTLEFIELD; last known: kind: CardLastKnownInformation; previous controller: hierarchical_puct; to: GRAVEYARD
+  [second combat damage] Simple decides PriorityDecisionRequest: 0.101 ms; observed options: 0; space size: unknown; success
+  [second combat damage] hierarchical_puct decides PriorityDecisionRequest: 8.206 ms; observed options: 1; space size: 1; success
+  [end combat] Simple decides PriorityDecisionRequest: 0.074 ms; observed options: 0; space size: unknown; success
+  [end combat] hierarchical_puct decides PriorityDecisionRequest: 7.885 ms; observed options: 1; space size: 1; success
+  [postcombat main] Simple decides PriorityDecisionRequest: 0.082 ms; observed options: 0; space size: unknown; success
+  [postcombat main] hierarchical_puct decides PriorityDecisionRequest: 7.983 ms; observed options: 1; space size: 1; success
+  [end step] Simple decides PriorityDecisionRequest: 0.077 ms; observed options: 0; space size: unknown; success
+  [end step] hierarchical_puct decides PriorityDecisionRequest: 10.581 ms; observed options: 1; space size: 1; success
+
+Turn 19
+  [upkeep] hierarchical_puct decides PriorityDecisionRequest: 8.950 ms; observed options: 1; space size: 1; success
+  [upkeep] Simple decides PriorityDecisionRequest: 0.087 ms; observed options: 0; space size: unknown; success
+  [draw] Card moved: hierarchical_puct; Inescapable Blaze [c28] — card: Inescapable Blaze [c28]; from: DECK; last known: kind: CardLastKnownInformation; previous controller: hierarchical_puct; to: HAND
+  [draw] Card drawn: hierarchical_puct; Inescapable Blaze [c28] — card: Inescapable Blaze [c28]; last known: kind: CardLastKnownInformation
+  [draw] Resolution: -; -; -; success: True
+  [draw] hierarchical_puct decides PriorityDecisionRequest: 5783.515 ms; observed options: 278; space size: unknown; success
+  [draw] Card tapped: hierarchical_puct; Mountain [c38] — last known: kind: CardLastKnownInformation
+  [draw] Mana added: hierarchical_puct; Mountain [c38] — amount: 1; last known: kind: CardLastKnownInformation; mana: RED
+  [draw] hierarchical_puct activates Mountain [c38] — ability: mana_red; last known: kind: CardLastKnownInformation
+  [draw] Card tapped: hierarchical_puct; Mountain [c41] — last known: kind: CardLastKnownInformation
+  [draw] Mana added: hierarchical_puct; Mountain [c41] — amount: 1; last known: kind: CardLastKnownInformation; mana: RED
+  [draw] hierarchical_puct activates Mountain [c41] — ability: mana_red; last known: kind: CardLastKnownInformation
+  [draw] Card tapped: hierarchical_puct; Mountain [c44] — last known: kind: CardLastKnownInformation
+  [draw] Mana added: hierarchical_puct; Mountain [c44] — amount: 1; last known: kind: CardLastKnownInformation; mana: RED
+  [draw] hierarchical_puct activates Mountain [c44] — ability: mana_red; last known: kind: CardLastKnownInformation
+  [draw] Card tapped: hierarchical_puct; Mountain [c48] — last known: kind: CardLastKnownInformation
+  [draw] Mana added: hierarchical_puct; Mountain [c48] — amount: 1; last known: kind: CardLastKnownInformation; mana: RED
+  [draw] hierarchical_puct activates Mountain [c48] — ability: mana_red; last known: kind: CardLastKnownInformation
+  [draw] Card tapped: hierarchical_puct; Mountain [c52] — last known: kind: CardLastKnownInformation
+  [draw] Mana added: hierarchical_puct; Mountain [c52] — amount: 1; last known: kind: CardLastKnownInformation; mana: RED
+  [draw] hierarchical_puct activates Mountain [c52] — ability: mana_red; last known: kind: CardLastKnownInformation
+  [draw] Card tapped: hierarchical_puct; Mountain [c57] — last known: kind: CardLastKnownInformation
+  [draw] Mana added: hierarchical_puct; Mountain [c57] — amount: 1; last known: kind: CardLastKnownInformation; mana: RED
+  [draw] hierarchical_puct activates Mountain [c57] — ability: mana_red; last known: kind: CardLastKnownInformation
+  [draw] Mana paid: hierarchical_puct; Inescapable Blaze [c28] — last known: kind: CardLastKnownInformation; payment: RED: 6
+  [draw] Card moved: hierarchical_puct; Inescapable Blaze [c28] — card: Inescapable Blaze [c28]; from: HAND; last known: kind: CardLastKnownInformation; previous controller: hierarchical_puct; to: STACK
+  [draw] hierarchical_puct casts Inescapable Blaze [c28] — ability: cast:Inescapable Blaze
+  [draw] hierarchical_puct decides PriorityDecisionRequest: 18.311 ms; observed options: 1; space size: 1; success
+  [draw] Simple decides PriorityDecisionRequest: 0.178 ms; observed options: 0; space size: unknown; success
+  [draw] Damage dealt: hierarchical_puct; Inescapable Blaze [c28] — amount: 6; combat: False; last known: kind: CardLastKnownInformation; life loss: 0; source revision: 2; target: Angel of Vitality; target object: Angel of Vitality [c77]; target revision: 3
+  [draw] Card moved: hierarchical_puct; Inescapable Blaze [c28] — card: Inescapable Blaze [c28]; from: STACK; last known: kind: CardLastKnownInformation; previous controller: hierarchical_puct; to: GRAVEYARD
+  [draw] Card moved: Simple; Angel of Vitality [c77] — card: Angel of Vitality [c77]; from: BATTLEFIELD; last known: kind: CardLastKnownInformation; previous controller: Simple; to: GRAVEYARD
+  [draw] Resolution: hierarchical_puct; Inescapable Blaze [c28]; cast:Inescapable Blaze; success: True
+  [draw] hierarchical_puct decides PriorityDecisionRequest: 16.951 ms; observed options: 1; space size: 1; success
+  [draw] Simple decides PriorityDecisionRequest: 0.190 ms; observed options: 0; space size: unknown; success
+  [precombat main] hierarchical_puct decides PriorityDecisionRequest: 24.225 ms; observed options: 1; space size: 1; success
+  [precombat main] Simple decides PriorityDecisionRequest: 0.169 ms; observed options: 0; space size: unknown; success
+  [begin combat] hierarchical_puct decides PriorityDecisionRequest: 22.404 ms; observed options: 1; space size: 1; success
+  [begin combat] Simple decides PriorityDecisionRequest: 0.187 ms; observed options: 0; space size: unknown; success
+  [declare attackers] hierarchical_puct decides DeclareAttackersRequest: 7572.636 ms; observed options: 408; space size: unknown; success
+  [declare attackers] Card tapped: hierarchical_puct; Nest Robber [c6]
+  [declare attackers] hierarchical_puct attacks with Nest Robber [c6] — attacker: Nest Robber [c6]; defender: Simple
+  [declare attackers] Card tapped: hierarchical_puct; Nest Robber [c7]
+  [declare attackers] hierarchical_puct attacks with Nest Robber [c7] — attacker: Nest Robber [c7]; defender: Simple
+  [declare attackers] Card tapped: hierarchical_puct; Nest Robber [c9]
+  [declare attackers] hierarchical_puct attacks with Nest Robber [c9] — attacker: Nest Robber [c9]; defender: Simple
+  [declare attackers] Card tapped: hierarchical_puct; Ogre Battledriver [c15]
+  [declare attackers] hierarchical_puct attacks with Ogre Battledriver [c15] — attacker: Ogre Battledriver [c15]; defender: Simple
+  [declare attackers] Card tapped: hierarchical_puct; Ogre Battledriver [c16]
+  [declare attackers] hierarchical_puct attacks with Ogre Battledriver [c16] — attacker: Ogre Battledriver [c16]; defender: Simple
+  [declare attackers] Attackers declared: hierarchical_puct; - — attackers: Nest Robber [c6], Nest Robber [c7], Nest Robber [c9], Ogre Battledriver [c15], Ogre Battledriver [c16]
+  [declare attackers] Trigger detected: hierarchical_puct; Raid Bombardment [c35]; raid_attack
+  [declare attackers] Trigger detected: hierarchical_puct; Raid Bombardment [c35]; raid_attack
+  [declare attackers] Trigger detected: hierarchical_puct; Raid Bombardment [c35]; raid_attack
+  [declare attackers] hierarchical_puct decides TriggerOrderRequest: 19.339 ms; observed options: 6; space size: 6; success
+  [declare attackers] hierarchical_puct decides AbilityDecisionRequest: 17.677 ms; observed options: 1; space size: 1; success
+  [declare attackers] hierarchical_puct decides AbilityDecisionRequest: 18.003 ms; observed options: 1; space size: 1; success
+  [declare attackers] hierarchical_puct decides AbilityDecisionRequest: 18.883 ms; observed options: 1; space size: 1; success
+  [declare attackers] hierarchical_puct decides PriorityDecisionRequest: 16.805 ms; observed options: 1; space size: 1; success
+  [declare attackers] Simple decides PriorityDecisionRequest: 0.161 ms; observed options: 0; space size: unknown; success
+  [declare attackers] Damage dealt: hierarchical_puct; Raid Bombardment [c35] — amount: 1; combat: False; last known: kind: CardLastKnownInformation; life loss: 1; source revision: 3; target: Simple; target object: Simple; target revision: -
+  [declare attackers] Resolution: hierarchical_puct; Raid Bombardment [c35]; raid_attack; success: True
+  [declare attackers] hierarchical_puct decides PriorityDecisionRequest: 18.633 ms; observed options: 1; space size: 1; success
+  [declare attackers] Simple decides PriorityDecisionRequest: 0.251 ms; observed options: 0; space size: unknown; success
+  [declare attackers] Damage dealt: hierarchical_puct; Raid Bombardment [c35] — amount: 1; combat: False; last known: kind: CardLastKnownInformation; life loss: 1; source revision: 3; target: Simple; target object: Simple; target revision: -
+  [declare attackers] Resolution: hierarchical_puct; Raid Bombardment [c35]; raid_attack; success: True
+  [declare attackers] hierarchical_puct decides PriorityDecisionRequest: 18.538 ms; observed options: 1; space size: 1; success
+  [declare attackers] Simple decides PriorityDecisionRequest: 0.162 ms; observed options: 0; space size: unknown; success
+  [declare attackers] Damage dealt: hierarchical_puct; Raid Bombardment [c35] — amount: 1; combat: False; last known: kind: CardLastKnownInformation; life loss: 1; source revision: 3; target: Simple; target object: Simple; target revision: -
+  [declare attackers] Resolution: hierarchical_puct; Raid Bombardment [c35]; raid_attack; success: True
+  [declare attackers] hierarchical_puct decides PriorityDecisionRequest: 17.315 ms; observed options: 1; space size: 1; success
+  [declare attackers] Simple decides PriorityDecisionRequest: 0.270 ms; observed options: 0; space size: unknown; success
+  [declare blockers] Simple chooses block: blockers: none
+  [declare blockers] Simple decides DeclareBlockersRequest: 0.804 ms; observed options: 1; space size: unknown; success
+  [declare blockers] hierarchical_puct decides PriorityDecisionRequest: 17.795 ms; observed options: 1; space size: 1; success
+  [declare blockers] Simple decides PriorityDecisionRequest: 0.162 ms; observed options: 0; space size: unknown; success
+  [second combat damage] Simple decides ReplacementOrderRequest: 0.112 ms; observed options: 1; space size: unknown; success
+  [second combat damage] Damage dealt: hierarchical_puct; Nest Robber [c6] — amount: 2; combat: True; last known: kind: CardLastKnownInformation; life loss: 2; source revision: 3; target: Simple; target object: Simple; target revision: -
+  [second combat damage] Damage dealt: hierarchical_puct; Nest Robber [c7] — amount: 2; combat: True; last known: kind: CardLastKnownInformation; life loss: 2; source revision: 3; target: Simple; target object: Simple; target revision: -
+  [second combat damage] Damage dealt: hierarchical_puct; Nest Robber [c9] — amount: 2; combat: True; last known: kind: CardLastKnownInformation; life loss: 2; source revision: 3; target: Simple; target object: Simple; target revision: -
+  [second combat damage] Damage dealt: hierarchical_puct; Ogre Battledriver [c15] — amount: 3; combat: True; last known: kind: CardLastKnownInformation; life loss: 3; source revision: 3; target: Simple; target object: Simple; target revision: -
+  [second combat damage] Damage dealt: hierarchical_puct; Ogre Battledriver [c16] — amount: 3; combat: True; last known: kind: CardLastKnownInformation; life loss: 3; source revision: 3; target: Simple; target object: Simple; target revision: -
+  [second combat damage] Player lost: Simple; - — reason: life

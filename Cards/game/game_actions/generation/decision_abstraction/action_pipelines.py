@@ -1,0 +1,169 @@
+"""Compose priority, ability and mana generation using engine components."""
+from __future__ import annotations
+from collections.abc import Iterator
+from dataclasses import replace
+from itertools import chain
+from typing import TYPE_CHECKING
+from .requests import AbilityDecisionRequest, PriorityDecisionRequest, ManaGenerationRequest
+from .policies import AbilityGenerationPolicy, PriorityGenerationPolicy, ManaGenerationPolicy
+from .parameters import ability_parameters
+from ..generation_strategy import action_generation_strategy
+from ..pruning.pruning_strategy import apply_pruning
+
+if TYPE_CHECKING:
+    from ...data_structs.game_action import GameAction
+    from ....mana.mana_solver import ManaSolverResult
+
+
+class AbilityDecisionGenerationPipeline:
+    """!
+    @brief Generates concrete actions for one requested runtime ability.
+    """
+    def generate(
+        self,
+        request: AbilityDecisionRequest,
+        policy: AbilityGenerationPolicy,
+    ) -> Iterator[GameAction]:
+        """!
+        @brief Validate ownership and yield pruned ability decisions.
+        @param request Ability decision request.
+        @param policy Ability generation policy.
+        @return Iterator over generated game actions.
+        """
+        if request.ability.controller is not request.player:
+            raise ValueError("The ability must belong to the requesting player.")
+        yield from apply_pruning(self._generate(request, policy), policy.pruning)
+
+    def _generate(
+        self, 
+        request: AbilityDecisionRequest, 
+        policy: AbilityGenerationPolicy,
+    ) -> Iterator[GameAction]:
+        """!
+        @brief Generate unpruned ability actions for the requested ability.
+        @param request Ability decision request.
+        @param policy Ability generation policy.
+        @return Iterator over generated game actions.
+        """
+        if request.choices is not None:
+            yield from request.choices
+            return
+        strategy = policy.strategy or action_generation_strategy()
+        for selected in ability_parameters(request.ability, policy, request.state):
+            yield from request.ability.generate_actions(
+                strategy, request.state, x_value=selected.x_value,
+                life_payment=selected.life_payment, skip_unpayable_costs=True,
+            )
+
+
+
+class PriorityDecisionGenerationPipeline:
+    """!
+    @brief Generates priority-window decisions for the active priority player.
+    """
+    def generate(
+        self,
+        request: PriorityDecisionRequest,
+        policy: PriorityGenerationPolicy,
+    ) -> Iterator[GameAction]:
+        """!
+        @brief Yield pass, ability, land-play and optional concede actions.
+        @param request Priority decision request.
+        @param policy Priority generation policy.
+        @return Iterator over generated game actions.
+        """
+        from ...data_structs.game_action import PassPriorityAction, ConcedeAction
+
+        if request.state.priority.current_player is not request.player:
+            raise ValueError("PriorityDecisionRequest player does not currently have priority.")
+        
+        yield PassPriorityAction(request.player)
+
+        for ability, ability_policy in self.abilities(request, policy):
+            if policy.staged_ability:
+                from .ability_frames import AbilityConstructionFrame, supports_construction
+                from .priority_frames import PrioritySourceOption
+                from ....rules.lands import LandPlayAction
+                if supports_construction(ability_policy, ability):
+                    frame = AbilityConstructionFrame(ability, ability_policy)
+                    proof = frame.prove(request.state)
+                    if proof is not None:
+                        first = proof.action()
+                        yield first if type(first) is LandPlayAction else PrioritySourceOption(
+                            ability, first, ability_policy, replace(frame, proof=proof))
+                    continue
+            options = AbilityDecisionRequest(request.state, request.player, ability).option_space(ability_policy)
+            if policy.staged_sources:
+                from .priority_frames import PrioritySourceOption
+                from ....rules.lands import LandPlayAction
+                stream = iter(options)
+                try:
+                    first = next(stream, None)
+                finally:
+                    close = getattr(stream, "close", None)
+                    if close is not None:
+                        close()
+                if first is not None:
+                    # Land play has a single completion and needs no prefix.
+                    yield first if type(first) is LandPlayAction else PrioritySourceOption(ability, first, ability_policy)
+            else:
+                yield from options
+        if policy.include_concede:
+            yield ConcedeAction(request.player)
+
+    def abilities(self, request, policy):
+        """Shared discovery/pruning for flat and source-first construction."""
+        from ....game_state.collectors.priority_ability_collector import PRIORITY_ABILITY_COLLECTOR
+
+        ability_policy = policy.ability_gp
+
+        if ability_policy.strategy is None:
+            ability_policy = replace(
+                ability_policy,
+                strategy=action_generation_strategy(),
+            )
+
+        collector = policy.collector or PRIORITY_ABILITY_COLLECTOR
+        groups = (
+            (collector.collect_lands(request.state, request.player), policy.land_play_ps),
+            (collector.collect_abilities(request.state, request.player, include_mana=policy.include_mana),
+             policy.ability_space_ps),
+        )
+        equivalence = None
+        for candidates, pruning in groups:
+            # Caller filters must run first: an excluded representative must not
+            # hide another copy. Collapse before expensive action generation.
+            candidates = iter(apply_pruning(candidates, pruning))
+            first = next(candidates, None)
+            if first is None:
+                continue
+            candidates = chain((first,), candidates)
+            if policy.equivalence is not None:
+                # Empty/fully filtered spaces need no state-wide equivalence
+                # snapshot. Reuse one context across nonempty groups.
+                if equivalence is None:
+                    equivalence = policy.equivalence.bind(request.state)
+                candidates = equivalence.representatives(candidates)
+            from game.ai.decisions.generation_candidates import ability_order
+            for ability in ability_order(candidates, request.state, request.player):
+                yield ability, ability_policy
+
+
+class ManaDecisionGenerationPipeline:
+    """!
+    @brief Generates a legal mana plan for a mana request.
+    """
+    def generate(self, request: ManaGenerationRequest, policy: ManaGenerationPolicy) -> Iterator[ManaSolverResult]:
+        """!
+        @brief Yield the legal mana plan produced by the configured solver.
+        @param request Mana generation request.
+        @param policy Mana generation policy.
+        @return Iterator containing a mana solver result if one exists.
+        """
+        from ....mana.mana_solver import SourceActivatingManaSolver
+        solver = policy.solver or SourceActivatingManaSolver()
+        plan = solver.get_mana_plan(
+            request.requirement, request.player, request.state, reserved=request.reserved,
+        )
+        if plan is not None:
+            yield plan

@@ -1,0 +1,1225 @@
+{
+  "scope": "Sequential real-game MCTS coverage audit, with every fallback linked to JSONL.\n\nThis is defect discovery, not a tournament or equal-work performance comparison.\nAll ten unordered starter color pairs are exercised, with both agent seats and\nstarting positions. Extra UCT/hierarchical runs use the same latency budget.\n",
+  "cases": [
+    {
+      "case": {
+        "name": "01-white-blue",
+        "own": "white",
+        "other": "blue",
+        "seed": 101,
+        "search_seed": 7001,
+        "seat": 0,
+        "starting": 0,
+        "selection": "puct"
+      },
+      "status": "win",
+      "error": null,
+      "turns": 21,
+      "elapsed_seconds": 59.68096600007266,
+      "cpu_seconds": 59.46875,
+      "source_unchanged": true,
+      "fingerprint": "d240b7695cf5f636262e02f1ba26070bebc9d33220919451a5931685896ae9a8",
+      "search_attempts": 72,
+      "usable_searches": 72,
+      "completed_trajectories": 596,
+      "reasons": {
+        "setup_policy": 1,
+        "forced_choice": 229,
+        "searched": 72
+      },
+      "stops": {
+        "time_budget": 72
+      },
+      "trajectory_interruptions": {
+        "time_budget": 55
+      },
+      "requests": {
+        "MulliganRequest": 1,
+        "PriorityDecisionRequest": 246,
+        "TriggerOrderRequest": 14,
+        "AbilityDecisionRequest": 24,
+        "DeclareAttackersRequest": 11,
+        "DeclareBlockersRequest": 3,
+        "ReplacementOrderRequest": 3
+      },
+      "fallbacks": [
+        {
+          "category": "setup",
+          "line": 2,
+          "turn": 1,
+          "phase": "UNTAP",
+          "request_kind": "MulliganRequest",
+          "reason": "setup_policy",
+          "options": 2,
+          "elapsed_ms": 8.658000035211444,
+          "information_key": "291ab736453d6c9b96d0c7178d1d7d000a7ebba08f48aeb9b36bc7c7ebf87e43",
+          "world_preparation": null,
+          "unsupported_detail": null,
+          "search": null
+        }
+      ],
+      "exceptions": [],
+      "worker_exception": null,
+      "simulation_limit_exceptions": [],
+      "execution": {
+        "returncode": 0,
+        "timed_out": false
+      }
+    },
+    {
+      "case": {
+        "name": "02-white-black",
+        "own": "white",
+        "other": "black",
+        "seed": 102,
+        "search_seed": 7002,
+        "seat": 1,
+        "starting": 0,
+        "selection": "puct"
+      },
+      "status": "win",
+      "error": null,
+      "turns": 13,
+      "elapsed_seconds": 20.711120099993423,
+      "cpu_seconds": 20.609375,
+      "source_unchanged": true,
+      "fingerprint": "d240b7695cf5f636262e02f1ba26070bebc9d33220919451a5931685896ae9a8",
+      "search_attempts": 29,
+      "usable_searches": 29,
+      "completed_trajectories": 197,
+      "reasons": {
+        "setup_policy": 1,
+        "forced_choice": 133,
+        "searched": 29
+      },
+      "stops": {
+        "time_budget": 29
+      },
+      "trajectory_interruptions": {
+        "time_budget": 23
+      },
+      "requests": {
+        "MulliganRequest": 1,
+        "PriorityDecisionRequest": 140,
+        "DeclareAttackersRequest": 6,
+        "DeclareBlockersRequest": 4,
+        "ReplacementOrderRequest": 6,
+        "TriggerOrderRequest": 3,
+        "AbilityDecisionRequest": 3
+      },
+      "fallbacks": [
+        {
+          "category": "setup",
+          "line": 3,
+          "turn": 1,
+          "phase": "UNTAP",
+          "request_kind": "MulliganRequest",
+          "reason": "setup_policy",
+          "options": 2,
+          "elapsed_ms": 8.672900032252073,
+          "information_key": "243f18744295a68ea88a97a35222909ba6053928eafc75f6fd6c00fbc9a1d0d7",
+          "world_preparation": null,
+          "unsupported_detail": null,
+          "search": null
+        }
+      ],
+      "exceptions": [],
+      "worker_exception": null,
+      "simulation_limit_exceptions": [],
+      "execution": {
+        "returncode": 0,
+        "timed_out": false
+      }
+    },
+    {
+      "case": {
+        "name": "03-blue-black",
+        "own": "blue",
+        "other": "black",
+        "seed": 103,
+        "search_seed": 7003,
+        "seat": 0,
+        "starting": 1,
+        "selection": "puct"
+      },
+      "status": "win",
+      "error": null,
+      "turns": 22,
+      "elapsed_seconds": 43.221716000000015,
+      "cpu_seconds": 42.9375,
+      "source_unchanged": true,
+      "fingerprint": "d240b7695cf5f636262e02f1ba26070bebc9d33220919451a5931685896ae9a8",
+      "search_attempts": 45,
+      "usable_searches": 45,
+      "completed_trajectories": 423,
+      "reasons": {
+        "setup_policy": 1,
+        "forced_choice": 222,
+        "searched": 45
+      },
+      "stops": {
+        "iteration_budget": 1,
+        "time_budget": 44
+      },
+      "trajectory_interruptions": {
+        "time_budget": 27
+      },
+      "requests": {
+        "MulliganRequest": 1,
+        "PriorityDecisionRequest": 234,
+        "DeclareAttackersRequest": 11,
+        "DiscardRequest": 1,
+        "DeclareBlockersRequest": 4,
+        "TriggerOrderRequest": 5,
+        "AbilityDecisionRequest": 8,
+        "AbilityResolutionRequest": 1,
+        "OptionalEffectRequest": 3
+      },
+      "fallbacks": [
+        {
+          "category": "setup",
+          "line": 3,
+          "turn": 1,
+          "phase": "UNTAP",
+          "request_kind": "MulliganRequest",
+          "reason": "setup_policy",
+          "options": 2,
+          "elapsed_ms": 9.812399977818131,
+          "information_key": "71097c26691fdaea804b5038f3211d53ac4ec61bc7ef59ba632387ee9eb63e8f",
+          "world_preparation": null,
+          "unsupported_detail": null,
+          "search": null
+        }
+      ],
+      "exceptions": [],
+      "worker_exception": null,
+      "simulation_limit_exceptions": [],
+      "execution": {
+        "returncode": 0,
+        "timed_out": false
+      }
+    },
+    {
+      "case": {
+        "name": "04-blue-red",
+        "own": "blue",
+        "other": "red",
+        "seed": 104,
+        "search_seed": 7004,
+        "seat": 1,
+        "starting": 1,
+        "selection": "puct"
+      },
+      "status": "win",
+      "error": null,
+      "turns": 15,
+      "elapsed_seconds": 33.97568030003458,
+      "cpu_seconds": 33.875,
+      "source_unchanged": true,
+      "fingerprint": "d240b7695cf5f636262e02f1ba26070bebc9d33220919451a5931685896ae9a8",
+      "search_attempts": 45,
+      "usable_searches": 45,
+      "completed_trajectories": 226,
+      "reasons": {
+        "setup_policy": 1,
+        "forced_choice": 173,
+        "searched": 45
+      },
+      "stops": {
+        "time_budget": 45
+      },
+      "trajectory_interruptions": {
+        "time_budget": 34
+      },
+      "requests": {
+        "MulliganRequest": 1,
+        "PriorityDecisionRequest": 185,
+        "TriggerOrderRequest": 6,
+        "AbilityDecisionRequest": 6,
+        "ScryRequest": 3,
+        "DeclareAttackersRequest": 8,
+        "DeclareBlockersRequest": 5,
+        "ReplacementOrderRequest": 4,
+        "OptionalEffectRequest": 1
+      },
+      "fallbacks": [
+        {
+          "category": "setup",
+          "line": 2,
+          "turn": 1,
+          "phase": "UNTAP",
+          "request_kind": "MulliganRequest",
+          "reason": "setup_policy",
+          "options": 2,
+          "elapsed_ms": 8.739300072193146,
+          "information_key": "0f43c73366cc1bd7244af2df55da2eb130b114f21f8bab4e9ddb2e5bc46f2b7e",
+          "world_preparation": null,
+          "unsupported_detail": null,
+          "search": null
+        }
+      ],
+      "exceptions": [],
+      "worker_exception": null,
+      "simulation_limit_exceptions": [],
+      "execution": {
+        "returncode": 0,
+        "timed_out": false
+      }
+    },
+    {
+      "case": {
+        "name": "05-black-red",
+        "own": "black",
+        "other": "red",
+        "seed": 105,
+        "search_seed": 7005,
+        "seat": 0,
+        "starting": 0,
+        "selection": "puct"
+      },
+      "status": "win",
+      "error": null,
+      "turns": 15,
+      "elapsed_seconds": 73.47127660003025,
+      "cpu_seconds": 73.046875,
+      "source_unchanged": true,
+      "fingerprint": "d240b7695cf5f636262e02f1ba26070bebc9d33220919451a5931685896ae9a8",
+      "search_attempts": 118,
+      "usable_searches": 115,
+      "completed_trajectories": 438,
+      "reasons": {
+        "setup_policy": 1,
+        "forced_choice": 61,
+        "searched": 115,
+        "extension_limit": 3
+      },
+      "stops": {
+        "time_budget": 118
+      },
+      "trajectory_interruptions": {
+        "time_budget": 102,
+        "extension_limit": 4
+      },
+      "requests": {
+        "MulliganRequest": 1,
+        "PriorityDecisionRequest": 159,
+        "DeclareAttackersRequest": 8,
+        "TriggerOrderRequest": 3,
+        "AbilityDecisionRequest": 3,
+        "DeclareBlockersRequest": 3,
+        "ReplacementOrderRequest": 3
+      },
+      "fallbacks": [
+        {
+          "category": "setup",
+          "line": 2,
+          "turn": 1,
+          "phase": "UNTAP",
+          "request_kind": "MulliganRequest",
+          "reason": "setup_policy",
+          "options": 2,
+          "elapsed_ms": 9.891499998047948,
+          "information_key": "36970d3c23df498809d58de8d4a0e2c5845312b240e3c30a5f54d4dc5eec0726",
+          "world_preparation": null,
+          "unsupported_detail": null,
+          "search": null
+        },
+        {
+          "category": "horizon_or_coverage",
+          "line": 812,
+          "turn": 9,
+          "phase": "PRECOMBAT_MAIN",
+          "request_kind": "PriorityDecisionRequest",
+          "reason": "extension_limit",
+          "options": 6,
+          "elapsed_ms": 582.7356000663713,
+          "information_key": "bc5bb85919db4051aee05db83aa80149a502160cf2b1ec0dc841627218de5412",
+          "world_preparation": {
+            "route": "current"
+          },
+          "unsupported_detail": null,
+          "search": {
+            "choice": {
+              "_json": "{\"kind\":\"PassPriorityAction\",\"player\":{\"player\":0}}",
+              "kind": "PassPriorityAction"
+            },
+            "estimates": [
+              {
+                "action": {
+                  "_json": "{\"ability_key\":\"cast:Compound Fracture\",\"action_key\":\"cast:Compound Fracture\",\"controller\":{\"player\":0},\"cost\":{\"effects\":[{\"features\":{\"destination\":\"STACK\",\"kind\":\"move_source\"},\"rule\":[\"game.game_actions.card_effects\",\"MoveSourceEffect\",\"Compound Fracture:put_on_stack\"],\"slots\":[]}],\"mana\":{\"life_payment\":0,\"mana_plan\":[{\"ability_key\":\"mana_black\",\"action_key\":\"mana_black\",\"controller\":{\"player\":0},\"cost\":{\"effects\":[{\"features\":{\"kind\":\"tap_source\"},\"rule\":[\"game.game_actions.card_effects\",\"TapSourceEffect\",\"tap_for_mana\"],\"slots\":[]}],\"mana\":{\"life_payment\":0,\"mana_plan\":[],\"payment\":null},\"parameters\":{\"x_variables\":{\"mapping\":[[[\"game.enums\",\"SAVariableType\",\"X\"],0]]}},\"targets\":{\"mapping\":[]}},\"effect\":{\"effects\":[{\"features\":{\"kind\":\"unknown\"},\"rule\":[\"game.game_actions.mana_effects\",\"AddManaEffect\",\"add_black\"],\"slots\":[]}],\"mana\":null,\"parameters\":{\"x_variables\":{\"mapping\":[[[\"game.enums\",\"SAVariableType\",\"X\"],0]]}},\"targets\":{\"mapping\":[]}},\"kind\":\"ManaAbilityAction\",\"source\":{\"card\":\"c38\",\"name\":\"Swamp\",\"zone_revision\":2},\"source_revision\":2,\"uses_stack\":false}],\"payment\":{\"mapping\":[[[\"game.enums\",\"ManaType\",\"BLACK\"],1]]}},\"parameters\":{\"x_variables\":{\"mapping\":[[[\"game.enums\",\"SAVariableType\",\"X\"],0]]}},\"targets\":{\"mapping\":[]}},\"effect\":{\"effects\":[{\"features\":{\"kind\":\"unknown\"},\"rule\":[\"game.cards.starter_support\",\"RuleEffect\",\"fracture\"],\"slots\":[[\"target\",\"target_0\"]]},{\"features\":{\"destination\":\"GRAVEYARD\",\"kind\":\"move_source\"},\"rule\":[\"game.game_actions.card_effects\",\"MoveSourceEffect\",\"Compound Fracture:to_graveyard\"],\"slots\":[]}],\"mana\":null,\"parameters\":{\"x_variables\":{\"mapping\":[[[\"game.enums\",\"SAVariableType\",\"X\"],0]]}},\"targets\":{\"mapping\":[[\"target\",{\"mapping\":[[\"target_0\",{\"mapping\":[[{\"card\":\"c1\",\"name\":\"Sanitarium Skeleton\",\"zone_revision\":3},1]]}]]}]]}},\"kind\":\"AbilityAction\",\"source\":{\"card\":\"c23\",\"name\":\"Compound Fracture\",\"zone_revision\":1},\"source_revision\":1,\"uses_stack\":true}",
+                  "kind": "AbilityAction"
+                },
+                "mean_value": null,
+                "prior_probability": 0.1335688146087504,
+                "visits": 0
+              },
+              {
+                "action": {
+                  "_json": "{\"ability_key\":\"cast:Compound Fracture\",\"action_key\":\"cast:Compound Fracture\",\"controller\":{\"player\":0},\"cost\":{\"effects\":[{\"features\":{\"destination\":\"STACK\",\"kind\":\"move_source\"},\"rule\":[\"game.game_actions.card_effects\",\"MoveSourceEffect\",\"Compound Fracture:put_on_stack\"],\"slots\":[]}],\"mana\":{\"life_payment\":0,\"mana_plan\":[{\"ability_key\":\"mana_black\",\"action_key\":\"mana_black\",\"controller\":{\"player\":0},\"cost\":{\"effects\":[{\"features\":{\"kind\":\"tap_source\"},\"rule\":[\"game.game_actions.card_effects\",\"TapSourceEffect\",\"tap_for_mana\"],\"slots\":[]}],\"mana\":{\"life_payment\":0,\"mana_plan\":[],\"payment\":null},\"parameters\":{\"x_variables\":{\"mapping\":[[[\"game.enums\",\"SAVariableType\",\"X\"],0]]}},\"targets\":{\"mapping\":[]}},\"effect\":{\"effects\":[{\"features\":{\"kind\":\"unknown\"},\"rule\":[\"game.game_actions.mana_effects\",\"AddManaEffect\",\"add_black\"],\"slots\":[]}],\"mana\":null,\"parameters\":{\"x_variables\":{\"mapping\":[[[\"game.enums\",\"SAVariableType\",\"X\"],0]]}},\"targets\":{\"mapping\":[]}},\"kind\":\"ManaAbilityAction\",\"source\":{\"card\":\"c38\",\"name\":\"Swamp\",\"zone_revision\":2},\"source_revision\":2,\"uses_stack\":false}],\"payment\":{\"mapping\":[[[\"game.enums\",\"ManaType\",\"BLACK\"],1]]}},\"parameters\":{\"x_variables\":{\"mapping\":[[[\"game.enums\",\"SAVariableType\",\"X\"],0]]}},\"targets\":{\"mapping\":[]}},\"effect\":{\"effects\":[{\"features\":{\"kind\":\"unknown\"},\"rule\":[\"game.cards.starter_support\",\"RuleEffect\",\"fracture\"],\"slots\":[[\"target\",\"target_0\"]]},{\"features\":{\"destination\":\"GRAVEYARD\",\"kind\":\"move_source\"},\"rule\":[\"game.game_actions.card_effects\",\"MoveSourceEffect\",\"Compound Fracture:to_graveyard\"],\"slots\":[]}],\"mana\":null,\"parameters\":{\"x_variables\":{\"mapping\":[[[\"game.enums\",\"SAVariableType\",\"X\"],0]]}},\"targets\":{\"mapping\":[[\"target\",{\"mapping\":[[\"target_0\",{\"mapping\":[[{\"card\":\"c121\",\"name\":\"Goblin\",\"zone_revision\":1},1]]}]]}]]}},\"kind\":\"AbilityAction\",\"source\":{\"card\":\"c23\",\"name\":\"Compound Fracture\",\"zone_revision\":1},\"source_revision\":1,\"uses_stack\":true}",
+                  "kind": "AbilityAction"
+                },
+                "mean_value": null,
+                "prior_probability": 0.1335688146087504,
+                "visits": 0
+              },
+              {
+                "action": {
+                  "_json": "{\"ability_key\":\"cast:Compound Fracture\",\"action_key\":\"cast:Compound Fracture\",\"controller\":{\"player\":0},\"cost\":{\"effects\":[{\"features\":{\"destination\":\"STACK\",\"kind\":\"move_source\"},\"rule\":[\"game.game_actions.card_effects\",\"MoveSourceEffect\",\"Compound Fracture:put_on_stack\"],\"slots\":[]}],\"mana\":{\"life_payment\":0,\"mana_plan\":[{\"ability_key\":\"mana_black\",\"action_key\":\"mana_black\",\"controller\":{\"player\":0},\"cost\":{\"effects\":[{\"features\":{\"kind\":\"tap_source\"},\"rule\":[\"game.game_actions.card_effects\",\"TapSourceEffect\",\"tap_for_mana\"],\"slots\":[]}],\"mana\":{\"life_payment\":0,\"mana_plan\":[],\"payment\":null},\"parameters\":{\"x_variables\":{\"mapping\":[[[\"game.enums\",\"SAVariableType\",\"X\"],0]]}},\"targets\":{\"mapping\":[]}},\"effect\":{\"effects\":[{\"features\":{\"kind\":\"unknown\"},\"rule\":[\"game.game_actions.mana_effects\",\"AddManaEffect\",\"add_black\"],\"slots\":[]}],\"mana\":null,\"parameters\":{\"x_variables\":{\"mapping\":[[[\"game.enums\",\"SAVariableType\",\"X\"],0]]}},\"targets\":{\"mapping\":[]}},\"kind\":\"ManaAbilityAction\",\"source\":{\"card\":\"c38\",\"name\":\"Swamp\",\"zone_revision\":2},\"source_revision\":2,\"uses_stack\":false}],\"payment\":{\"mapping\":[[[\"game.enums\",\"ManaType\",\"BLACK\"],1]]}},\"parameters\":{\"x_variables\":{\"mapping\":[[[\"game.enums\",\"SAVariableType\",\"X\"],0]]}},\"targets\":{\"mapping\":[]}},\"effect\":{\"effects\":[{\"features\":{\"kind\":\"unknown\"},\"rule\":[\"game.cards.starter_support\",\"RuleEffect\",\"fracture\"],\"slots\":[[\"target\",\"target_0\"]]},{\"features\":{\"destination\":\"GRAVEYARD\",\"kind\":\"move_source\"},\"rule\":[\"game.game_actions.card_effects\",\"MoveSourceEffect\",\"Compound Fracture:to_graveyard\"],\"slots\":[]}],\"mana\":null,\"parameters\":{\"x_variables\":{\"mapping\":[[[\"game.enums\",\"SAVariableType\",\"X\"],0]]}},\"targets\":{\"mapping\":[[\"target\",{\"mapping\":[[\"target_0\",{\"mapping\":[[{\"card\":\"c122\",\"name\":\"Goblin\",\"zone_revision\":1},1]]}]]}]]}},\"kind\":\"AbilityAction\",\"source\":{\"card\":\"c23\",\"name\":\"Compound Fracture\",\"zone_revision\":1},\"source_revision\":1,\"uses_stack\":true}",
+                  "kind": "AbilityAction"
+                },
+                "mean_value": null,
+                "prior_probability": 0.1335688146087504,
+                "visits": 0
+              },
+              {
+                "action": {
+                  "_json": "{\"ability_key\":\"cast:Compound Fracture\",\"action_key\":\"cast:Compound Fracture\",\"controller\":{\"player\":0},\"cost\":{\"effects\":[{\"features\":{\"destination\":\"STACK\",\"kind\":\"move_source\"},\"rule\":[\"game.game_actions.card_effects\",\"MoveSourceEffect\",\"Compound Fracture:put_on_stack\"],\"slots\":[]}],\"mana\":{\"life_payment\":0,\"mana_plan\":[{\"ability_key\":\"mana_black\",\"action_key\":\"mana_black\",\"controller\":{\"player\":0},\"cost\":{\"effects\":[{\"features\":{\"kind\":\"tap_source\"},\"rule\":[\"game.game_actions.card_effects\",\"TapSourceEffect\",\"tap_for_mana\"],\"slots\":[]}],\"mana\":{\"life_payment\":0,\"mana_plan\":[],\"payment\":null},\"parameters\":{\"x_variables\":{\"mapping\":[[[\"game.enums\",\"SAVariableType\",\"X\"],0]]}},\"targets\":{\"mapping\":[]}},\"effect\":{\"effects\":[{\"features\":{\"kind\":\"unknown\"},\"rule\":[\"game.game_actions.mana_effects\",\"AddManaEffect\",\"add_black\"],\"slots\":[]}],\"mana\":null,\"parameters\":{\"x_variables\":{\"mapping\":[[[\"game.enums\",\"SAVariableType\",\"X\"],0]]}},\"targets\":{\"mapping\":[]}},\"kind\":\"ManaAbilityAction\",\"source\":{\"card\":\"c38\",\"name\":\"Swamp\",\"zone_revision\":2},\"source_revision\":2,\"uses_stack\":false}],\"payment\":{\"mapping\":[[[\"game.enums\",\"ManaType\",\"BLACK\"],1]]}},\"parameters\":{\"x_variables\":{\"mapping\":[[[\"game.enums\",\"SAVariableType\",\"X\"],0]]}},\"targets\":{\"mapping\":[]}},\"effect\":{\"effects\":[{\"features\":{\"kind\":\"unknown\"},\"rule\":[\"game.cards.starter_support\",\"RuleEffect\",\"fracture\"],\"slots\":[[\"target\",\"target_0\"]]},{\"features\":{\"destination\":\"GRAVEYARD\",\"kind\":\"move_source\"},\"rule\":[\"game.game_actions.card_effects\",\"MoveSourceEffect\",\"Compound Fracture:to_graveyard\"],\"slots\":[]}],\"mana\":null,\"parameters\":{\"x_variables\":{\"mapping\":[[[\"game.enums\",\"SAVariableType\",\"X\"],0]]}},\"targets\":{\"mapping\":[[\"target\",{\"mapping\":[[\"target_0\",{\"mapping\":[[{\"card\":\"c7\",\"name\":\"Malakir Cullblade\",\"zone_revision\":3},1]]}]]}]]}},\"kind\":\"AbilityAction\",\"source\":{\"card\":\"c23\",\"name\":\"Compound Fracture\",\"zone_revision\":1},\"source_revision\":1,\"uses_stack\":true}",
+                  "kind": "AbilityAction"
+                },
+                "mean_value": null,
+                "prior_probability": 0.1335688146087504,
+                "visits": 0
+              },
+              {
+                "action": {
+                  "_json": "{\"ability_key\":\"cast:Compound Fracture\",\"action_key\":\"cast:Compound Fracture\",\"controller\":{\"player\":0},\"cost\":{\"effects\":[{\"features\":{\"destination\":\"STACK\",\"kind\":\"move_source\"},\"rule\":[\"game.game_actions.card_effects\",\"MoveSourceEffect\",\"Compound Fracture:put_on_stack\"],\"slots\":[]}],\"mana\":{\"life_payment\":0,\"mana_plan\":[{\"ability_key\":\"mana_black\",\"action_key\":\"mana_black\",\"controller\":{\"player\":0},\"cost\":{\"effects\":[{\"features\":{\"kind\":\"tap_source\"},\"rule\":[\"game.game_actions.card_effects\",\"TapSourceEffect\",\"tap_for_mana\"],\"slots\":[]}],\"mana\":{\"life_payment\":0,\"mana_plan\":[],\"payment\":null},\"parameters\":{\"x_variables\":{\"mapping\":[[[\"game.enums\",\"SAVariableType\",\"X\"],0]]}},\"targets\":{\"mapping\":[]}},\"effect\":{\"effects\":[{\"features\":{\"kind\":\"unknown\"},\"rule\":[\"game.game_actions.mana_effects\",\"AddManaEffect\",\"add_black\"],\"slots\":[]}],\"mana\":null,\"parameters\":{\"x_variables\":{\"mapping\":[[[\"game.enums\",\"SAVariableType\",\"X\"],0]]}},\"targets\":{\"mapping\":[]}},\"kind\":\"ManaAbilityAction\",\"source\":{\"card\":\"c38\",\"name\":\"Swamp\",\"zone_revision\":2},\"source_revision\":2,\"uses_stack\":false}],\"payment\":{\"mapping\":[[[\"game.enums\",\"ManaType\",\"BLACK\"],1]]}},\"parameters\":{\"x_variables\":{\"mapping\":[[[\"game.enums\",\"SAVariableType\",\"X\"],0]]}},\"targets\":{\"mapping\":[]}},\"effect\":{\"effects\":[{\"features\":{\"kind\":\"unknown\"},\"rule\":[\"game.cards.starter_support\",\"RuleEffect\",\"fracture\"],\"slots\":[[\"target\",\"target_0\"]]},{\"features\":{\"destination\":\"GRAVEYARD\",\"kind\":\"move_source\"},\"rule\":[\"game.game_actions.card_effects\",\"MoveSourceEffect\",\"Compound Fracture:to_graveyard\"],\"slots\":[]}],\"mana\":null,\"parameters\":{\"x_variables\":{\"mapping\":[[[\"game.enums\",\"SAVariableType\",\"X\"],0]]}},\"targets\":{\"mapping\":[[\"target\",{\"mapping\":[[\"target_0\",{\"mapping\":[[{\"card\":\"c73\",\"name\":\"Goblin Gang Leader\",\"zone_revision\":3},1]]}]]}]]}},\"kind\":\"AbilityAction\",\"source\":{\"card\":\"c23\",\"name\":\"Compound Fracture\",\"zone_revision\":1},\"source_revision\":1,\"uses_stack\":true}",
+                  "kind": "AbilityAction"
+                },
+                "mean_value": null,
+                "prior_probability": 0.1335688146087504,
+                "visits": 0
+              },
+              {
+                "action": {
+                  "_json": "{\"kind\":\"PassPriorityAction\",\"player\":{\"player\":0}}",
+                  "kind": "PassPriorityAction"
+                },
+                "mean_value": null,
+                "prior_probability": 0.33215592695624807,
+                "visits": 0
+              }
+            ],
+            "fallback_reason": "extension_limit",
+            "metrics": {
+              "advance_attempts": 32,
+              "advance_ms": 241.26629950478673,
+              "checkpoint_entries": 0,
+              "checkpoint_hits": 0,
+              "checkpoint_skipped_decisions": 0,
+              "cpu_ms": 546.875,
+              "elapsed_ms": 536.7184999631718,
+              "forced_initial_coverage": false,
+              "forced_transitions": 10,
+              "heuristic_leaves": 0,
+              "hierarchy_nodes": 0,
+              "hierarchy_selection_steps": 0,
+              "history_mismatch_reasons": [],
+              "history_prefix_advances": 0,
+              "history_rejected_samples": 0,
+              "history_sampling_attempts": 0,
+              "information_nodes": 1,
+              "interrupted_trajectories": 3,
+              "interruption_reasons": [
+                [
+                  "extension_limit",
+                  2
+                ],
+                [
+                  "time_budget",
+                  1
+                ]
+              ],
+              "iterations_completed": 0,
+              "iterations_started": 3,
+              "minimum_trajectories": 1,
+              "population_distinct_origins": 0,
+              "population_refreshes": 0,
+              "population_size": 0,
+              "population_survivors": 0,
+              "population_updates": 0,
+              "prior_evaluations": 1,
+              "rollout_policy_choices": 14,
+              "rollout_random_choices": 0,
+              "root_actions": 6,
+              "root_actions_visited": 0,
+              "root_coverage_required": false,
+              "selection": "puct",
+              "simulator_advance_calls": 14,
+              "terminal_leaves": 0,
+              "time_limit_ms": 500,
+              "trajectory_runs": 1,
+              "transition_cache_entries": 14,
+              "transition_cache_hits": 18,
+              "world_initialization_ms": 179.22630009707063,
+              "world_materializations": 3,
+              "world_restores": 0,
+              "worlds_built": 2
+            },
+            "root_coverage_complete": false,
+            "stop_reason": "time_budget",
+            "used_fallback": true,
+            "value": null
+          }
+        },
+        {
+          "category": "horizon_or_coverage",
+          "line": 819,
+          "turn": 9,
+          "phase": "BEGIN_COMBAT",
+          "request_kind": "PriorityDecisionRequest",
+          "reason": "extension_limit",
+          "options": 6,
+          "elapsed_ms": 707.4041999876499,
+          "information_key": "e6d80f7f2773f7e4085ac891e91a8c7647b9415498a2bc833dab80dab25c62ba",
+          "world_preparation": {
+            "route": "current"
+          },
+          "unsupported_detail": null,
+          "search": {
+            "choice": {
+              "_json": "{\"kind\":\"PassPriorityAction\",\"player\":{\"player\":0}}",
+              "kind": "PassPriorityAction"
+            },
+            "estimates": [
+              {
+                "action": {
+                  "_json": "{\"ability_key\":\"cast:Compound Fracture\",\"action_key\":\"cast:Compound Fracture\",\"controller\":{\"player\":0},\"cost\":{\"effects\":[{\"features\":{\"destination\":\"STACK\",\"kind\":\"move_source\"},\"rule\":[\"game.game_actions.card_effects\",\"MoveSourceEffect\",\"Compound Fracture:put_on_stack\"],\"slots\":[]}],\"mana\":{\"life_payment\":0,\"mana_plan\":[{\"ability_key\":\"mana_black\",\"action_key\":\"mana_black\",\"controller\":{\"player\":0},\"cost\":{\"effects\":[{\"features\":{\"kind\":\"tap_source\"},\"rule\":[\"game.game_actions.card_effects\",\"TapSourceEffect\",\"tap_for_mana\"],\"slots\":[]}],\"mana\":{\"life_payment\":0,\"mana_plan\":[],\"payment\":null},\"parameters\":{\"x_variables\":{\"mapping\":[[[\"game.enums\",\"SAVariableType\",\"X\"],0]]}},\"targets\":{\"mapping\":[]}},\"effect\":{\"effects\":[{\"features\":{\"kind\":\"unknown\"},\"rule\":[\"game.game_actions.mana_effects\",\"AddManaEffect\",\"add_black\"],\"slots\":[]}],\"mana\":null,\"parameters\":{\"x_variables\":{\"mapping\":[[[\"game.enums\",\"SAVariableType\",\"X\"],0]]}},\"targets\":{\"mapping\":[]}},\"kind\":\"ManaAbilityAction\",\"source\":{\"card\":\"c38\",\"name\":\"Swamp\",\"zone_revision\":2},\"source_revision\":2,\"uses_stack\":false}],\"payment\":{\"mapping\":[[[\"game.enums\",\"ManaType\",\"BLACK\"],1]]}},\"parameters\":{\"x_variables\":{\"mapping\":[[[\"game.enums\",\"SAVariableType\",\"X\"],0]]}},\"targets\":{\"mapping\":[]}},\"effect\":{\"effects\":[{\"features\":{\"kind\":\"unknown\"},\"rule\":[\"game.cards.starter_support\",\"RuleEffect\",\"fracture\"],\"slots\":[[\"target\",\"target_0\"]]},{\"features\":{\"destination\":\"GRAVEYARD\",\"kind\":\"move_source\"},\"rule\":[\"game.game_actions.card_effects\",\"MoveSourceEffect\",\"Compound Fracture:to_graveyard\"],\"slots\":[]}],\"mana\":null,\"parameters\":{\"x_variables\":{\"mapping\":[[[\"game.enums\",\"SAVariableType\",\"X\"],0]]}},\"targets\":{\"mapping\":[[\"target\",{\"mapping\":[[\"target_0\",{\"mapping\":[[{\"card\":\"c1\",\"name\":\"Sanitarium Skeleton\",\"zone_revision\":3},1]]}]]}]]}},\"kind\":\"AbilityAction\",\"source\":{\"card\":\"c23\",\"name\":\"Compound Fracture\",\"zone_revision\":1},\"source_revision\":1,\"uses_stack\":true}",
+                  "kind": "AbilityAction"
+                },
+                "mean_value": null,
+                "prior_probability": 0.1335688146087504,
+                "visits": 0
+              },
+              {
+                "action": {
+                  "_json": "{\"ability_key\":\"cast:Compound Fracture\",\"action_key\":\"cast:Compound Fracture\",\"controller\":{\"player\":0},\"cost\":{\"effects\":[{\"features\":{\"destination\":\"STACK\",\"kind\":\"move_source\"},\"rule\":[\"game.game_actions.card_effects\",\"MoveSourceEffect\",\"Compound Fracture:put_on_stack\"],\"slots\":[]}],\"mana\":{\"life_payment\":0,\"mana_plan\":[{\"ability_key\":\"mana_black\",\"action_key\":\"mana_black\",\"controller\":{\"player\":0},\"cost\":{\"effects\":[{\"features\":{\"kind\":\"tap_source\"},\"rule\":[\"game.game_actions.card_effects\",\"TapSourceEffect\",\"tap_for_mana\"],\"slots\":[]}],\"mana\":{\"life_payment\":0,\"mana_plan\":[],\"payment\":null},\"parameters\":{\"x_variables\":{\"mapping\":[[[\"game.enums\",\"SAVariableType\",\"X\"],0]]}},\"targets\":{\"mapping\":[]}},\"effect\":{\"effects\":[{\"features\":{\"kind\":\"unknown\"},\"rule\":[\"game.game_actions.mana_effects\",\"AddManaEffect\",\"add_black\"],\"slots\":[]}],\"mana\":null,\"parameters\":{\"x_variables\":{\"mapping\":[[[\"game.enums\",\"SAVariableType\",\"X\"],0]]}},\"targets\":{\"mapping\":[]}},\"kind\":\"ManaAbilityAction\",\"source\":{\"card\":\"c38\",\"name\":\"Swamp\",\"zone_revision\":2},\"source_revision\":2,\"uses_stack\":false}],\"payment\":{\"mapping\":[[[\"game.enums\",\"ManaType\",\"BLACK\"],1]]}},\"parameters\":{\"x_variables\":{\"mapping\":[[[\"game.enums\",\"SAVariableType\",\"X\"],0]]}},\"targets\":{\"mapping\":[]}},\"effect\":{\"effects\":[{\"features\":{\"kind\":\"unknown\"},\"rule\":[\"game.cards.starter_support\",\"RuleEffect\",\"fracture\"],\"slots\":[[\"target\",\"target_0\"]]},{\"features\":{\"destination\":\"GRAVEYARD\",\"kind\":\"move_source\"},\"rule\":[\"game.game_actions.card_effects\",\"MoveSourceEffect\",\"Compound Fracture:to_graveyard\"],\"slots\":[]}],\"mana\":null,\"parameters\":{\"x_variables\":{\"mapping\":[[[\"game.enums\",\"SAVariableType\",\"X\"],0]]}},\"targets\":{\"mapping\":[[\"target\",{\"mapping\":[[\"target_0\",{\"mapping\":[[{\"card\":\"c121\",\"name\":\"Goblin\",\"zone_revision\":1},1]]}]]}]]}},\"kind\":\"AbilityAction\",\"source\":{\"card\":\"c23\",\"name\":\"Compound Fracture\",\"zone_revision\":1},\"source_revision\":1,\"uses_stack\":true}",
+                  "kind": "AbilityAction"
+                },
+                "mean_value": null,
+                "prior_probability": 0.1335688146087504,
+                "visits": 0
+              },
+              {
+                "action": {
+                  "_json": "{\"ability_key\":\"cast:Compound Fracture\",\"action_key\":\"cast:Compound Fracture\",\"controller\":{\"player\":0},\"cost\":{\"effects\":[{\"features\":{\"destination\":\"STACK\",\"kind\":\"move_source\"},\"rule\":[\"game.game_actions.card_effects\",\"MoveSourceEffect\",\"Compound Fracture:put_on_stack\"],\"slots\":[]}],\"mana\":{\"life_payment\":0,\"mana_plan\":[{\"ability_key\":\"mana_black\",\"action_key\":\"mana_black\",\"controller\":{\"player\":0},\"cost\":{\"effects\":[{\"features\":{\"kind\":\"tap_source\"},\"rule\":[\"game.game_actions.card_effects\",\"TapSourceEffect\",\"tap_for_mana\"],\"slots\":[]}],\"mana\":{\"life_payment\":0,\"mana_plan\":[],\"payment\":null},\"parameters\":{\"x_variables\":{\"mapping\":[[[\"game.enums\",\"SAVariableType\",\"X\"],0]]}},\"targets\":{\"mapping\":[]}},\"effect\":{\"effects\":[{\"features\":{\"kind\":\"unknown\"},\"rule\":[\"game.game_actions.mana_effects\",\"AddManaEffect\",\"add_black\"],\"slots\":[]}],\"mana\":null,\"parameters\":{\"x_variables\":{\"mapping\":[[[\"game.enums\",\"SAVariableType\",\"X\"],0]]}},\"targets\":{\"mapping\":[]}},\"kind\":\"ManaAbilityAction\",\"source\":{\"card\":\"c38\",\"name\":\"Swamp\",\"zone_revision\":2},\"source_revision\":2,\"uses_stack\":false}],\"payment\":{\"mapping\":[[[\"game.enums\",\"ManaType\",\"BLACK\"],1]]}},\"parameters\":{\"x_variables\":{\"mapping\":[[[\"game.enums\",\"SAVariableType\",\"X\"],0]]}},\"targets\":{\"mapping\":[]}},\"effect\":{\"effects\":[{\"features\":{\"kind\":\"unknown\"},\"rule\":[\"game.cards.starter_support\",\"RuleEffect\",\"fracture\"],\"slots\":[[\"target\",\"target_0\"]]},{\"features\":{\"destination\":\"GRAVEYARD\",\"kind\":\"move_source\"},\"rule\":[\"game.game_actions.card_effects\",\"MoveSourceEffect\",\"Compound Fracture:to_graveyard\"],\"slots\":[]}],\"mana\":null,\"parameters\":{\"x_variables\":{\"mapping\":[[[\"game.enums\",\"SAVariableType\",\"X\"],0]]}},\"targets\":{\"mapping\":[[\"target\",{\"mapping\":[[\"target_0\",{\"mapping\":[[{\"card\":\"c122\",\"name\":\"Goblin\",\"zone_revision\":1},1]]}]]}]]}},\"kind\":\"AbilityAction\",\"source\":{\"card\":\"c23\",\"name\":\"Compound Fracture\",\"zone_revision\":1},\"source_revision\":1,\"uses_stack\":true}",
+                  "kind": "AbilityAction"
+                },
+                "mean_value": null,
+                "prior_probability": 0.1335688146087504,
+                "visits": 0
+              },
+              {
+                "action": {
+                  "_json": "{\"ability_key\":\"cast:Compound Fracture\",\"action_key\":\"cast:Compound Fracture\",\"controller\":{\"player\":0},\"cost\":{\"effects\":[{\"features\":{\"destination\":\"STACK\",\"kind\":\"move_source\"},\"rule\":[\"game.game_actions.card_effects\",\"MoveSourceEffect\",\"Compound Fracture:put_on_stack\"],\"slots\":[]}],\"mana\":{\"life_payment\":0,\"mana_plan\":[{\"ability_key\":\"mana_black\",\"action_key\":\"mana_black\",\"controller\":{\"player\":0},\"cost\":{\"effects\":[{\"features\":{\"kind\":\"tap_source\"},\"rule\":[\"game.game_actions.card_effects\",\"TapSourceEffect\",\"tap_for_mana\"],\"slots\":[]}],\"mana\":{\"life_payment\":0,\"mana_plan\":[],\"payment\":null},\"parameters\":{\"x_variables\":{\"mapping\":[[[\"game.enums\",\"SAVariableType\",\"X\"],0]]}},\"targets\":{\"mapping\":[]}},\"effect\":{\"effects\":[{\"features\":{\"kind\":\"unknown\"},\"rule\":[\"game.game_actions.mana_effects\",\"AddManaEffect\",\"add_black\"],\"slots\":[]}],\"mana\":null,\"parameters\":{\"x_variables\":{\"mapping\":[[[\"game.enums\",\"SAVariableType\",\"X\"],0]]}},\"targets\":{\"mapping\":[]}},\"kind\":\"ManaAbilityAction\",\"source\":{\"card\":\"c38\",\"name\":\"Swamp\",\"zone_revision\":2},\"source_revision\":2,\"uses_stack\":false}],\"payment\":{\"mapping\":[[[\"game.enums\",\"ManaType\",\"BLACK\"],1]]}},\"parameters\":{\"x_variables\":{\"mapping\":[[[\"game.enums\",\"SAVariableType\",\"X\"],0]]}},\"targets\":{\"mapping\":[]}},\"effect\":{\"effects\":[{\"features\":{\"kind\":\"unknown\"},\"rule\":[\"game.cards.starter_support\",\"RuleEffect\",\"fracture\"],\"slots\":[[\"target\",\"target_0\"]]},{\"features\":{\"destination\":\"GRAVEYARD\",\"kind\":\"move_source\"},\"rule\":[\"game.game_actions.card_effects\",\"MoveSourceEffect\",\"Compound Fracture:to_graveyard\"],\"slots\":[]}],\"mana\":null,\"parameters\":{\"x_variables\":{\"mapping\":[[[\"game.enums\",\"SAVariableType\",\"X\"],0]]}},\"targets\":{\"mapping\":[[\"target\",{\"mapping\":[[\"target_0\",{\"mapping\":[[{\"card\":\"c7\",\"name\":\"Malakir Cullblade\",\"zone_revision\":3},1]]}]]}]]}},\"kind\":\"AbilityAction\",\"source\":{\"card\":\"c23\",\"name\":\"Compound Fracture\",\"zone_revision\":1},\"source_revision\":1,\"uses_stack\":true}",
+                  "kind": "AbilityAction"
+                },
+                "mean_value": null,
+                "prior_probability": 0.1335688146087504,
+                "visits": 0
+              },
+              {
+                "action": {
+                  "_json": "{\"ability_key\":\"cast:Compound Fracture\",\"action_key\":\"cast:Compound Fracture\",\"controller\":{\"player\":0},\"cost\":{\"effects\":[{\"features\":{\"destination\":\"STACK\",\"kind\":\"move_source\"},\"rule\":[\"game.game_actions.card_effects\",\"MoveSourceEffect\",\"Compound Fracture:put_on_stack\"],\"slots\":[]}],\"mana\":{\"life_payment\":0,\"mana_plan\":[{\"ability_key\":\"mana_black\",\"action_key\":\"mana_black\",\"controller\":{\"player\":0},\"cost\":{\"effects\":[{\"features\":{\"kind\":\"tap_source\"},\"rule\":[\"game.game_actions.card_effects\",\"TapSourceEffect\",\"tap_for_mana\"],\"slots\":[]}],\"mana\":{\"life_payment\":0,\"mana_plan\":[],\"payment\":null},\"parameters\":{\"x_variables\":{\"mapping\":[[[\"game.enums\",\"SAVariableType\",\"X\"],0]]}},\"targets\":{\"mapping\":[]}},\"effect\":{\"effects\":[{\"features\":{\"kind\":\"unknown\"},\"rule\":[\"game.game_actions.mana_effects\",\"AddManaEffect\",\"add_black\"],\"slots\":[]}],\"mana\":null,\"parameters\":{\"x_variables\":{\"mapping\":[[[\"game.enums\",\"SAVariableType\",\"X\"],0]]}},\"targets\":{\"mapping\":[]}},\"kind\":\"ManaAbilityAction\",\"source\":{\"card\":\"c38\",\"name\":\"Swamp\",\"zone_revision\":2},\"source_revision\":2,\"uses_stack\":false}],\"payment\":{\"mapping\":[[[\"game.enums\",\"ManaType\",\"BLACK\"],1]]}},\"parameters\":{\"x_variables\":{\"mapping\":[[[\"game.enums\",\"SAVariableType\",\"X\"],0]]}},\"targets\":{\"mapping\":[]}},\"effect\":{\"effects\":[{\"features\":{\"kind\":\"unknown\"},\"rule\":[\"game.cards.starter_support\",\"RuleEffect\",\"fracture\"],\"slots\":[[\"target\",\"target_0\"]]},{\"features\":{\"destination\":\"GRAVEYARD\",\"kind\":\"move_source\"},\"rule\":[\"game.game_actions.card_effects\",\"MoveSourceEffect\",\"Compound Fracture:to_graveyard\"],\"slots\":[]}],\"mana\":null,\"parameters\":{\"x_variables\":{\"mapping\":[[[\"game.enums\",\"SAVariableType\",\"X\"],0]]}},\"targets\":{\"mapping\":[[\"target\",{\"mapping\":[[\"target_0\",{\"mapping\":[[{\"card\":\"c73\",\"name\":\"Goblin Gang Leader\",\"zone_revision\":3},1]]}]]}]]}},\"kind\":\"AbilityAction\",\"source\":{\"card\":\"c23\",\"name\":\"Compound Fracture\",\"zone_revision\":1},\"source_revision\":1,\"uses_stack\":true}",
+                  "kind": "AbilityAction"
+                },
+                "mean_value": null,
+                "prior_probability": 0.1335688146087504,
+                "visits": 0
+              },
+              {
+                "action": {
+                  "_json": "{\"kind\":\"PassPriorityAction\",\"player\":{\"player\":0}}",
+                  "kind": "PassPriorityAction"
+                },
+                "mean_value": null,
+                "prior_probability": 0.33215592695624807,
+                "visits": 0
+              }
+            ],
+            "fallback_reason": "extension_limit",
+            "metrics": {
+              "advance_attempts": 26,
+              "advance_ms": 491.6775004239753,
+              "checkpoint_entries": 0,
+              "checkpoint_hits": 0,
+              "checkpoint_skipped_decisions": 0,
+              "cpu_ms": 656.25,
+              "elapsed_ms": 659.4573999755085,
+              "forced_initial_coverage": false,
+              "forced_transitions": 8,
+              "heuristic_leaves": 0,
+              "hierarchy_nodes": 0,
+              "hierarchy_selection_steps": 0,
+              "history_mismatch_reasons": [],
+              "history_prefix_advances": 0,
+              "history_rejected_samples": 0,
+              "history_sampling_attempts": 0,
+              "information_nodes": 1,
+              "interrupted_trajectories": 2,
+              "interruption_reasons": [
+                [
+                  "extension_limit",
+                  1
+                ],
+                [
+                  "time_budget",
+                  1
+                ]
+              ],
+              "iterations_completed": 0,
+              "iterations_started": 2,
+              "minimum_trajectories": 1,
+              "population_distinct_origins": 0,
+              "population_refreshes": 0,
+              "population_size": 0,
+              "population_survivors": 0,
+              "population_updates": 0,
+              "prior_evaluations": 1,
+              "rollout_policy_choices": 10,
+              "rollout_random_choices": 1,
+              "root_actions": 6,
+              "root_actions_visited": 0,
+              "root_coverage_required": false,
+              "selection": "puct",
+              "simulator_advance_calls": 17,
+              "terminal_leaves": 0,
+              "time_limit_ms": 500,
+              "trajectory_runs": 2,
+              "transition_cache_entries": 17,
+              "transition_cache_hits": 9,
+              "world_initialization_ms": 129.408800159581,
+              "world_materializations": 4,
+              "world_restores": 0,
+              "worlds_built": 2
+            },
+            "root_coverage_complete": false,
+            "stop_reason": "time_budget",
+            "used_fallback": true,
+            "value": null
+          }
+        },
+        {
+          "category": "horizon_or_coverage",
+          "line": 826,
+          "turn": 9,
+          "phase": "DECLARE_ATTACKERS",
+          "request_kind": "DeclareAttackersRequest",
+          "reason": "extension_limit",
+          "options": 4,
+          "elapsed_ms": 655.2626999327913,
+          "information_key": "1dcd6c6d7f8f7dfd3cc9329fe98c612f0ecd9eda4e6eccdd1ef8a33ceeccc8c5",
+          "world_preparation": {
+            "route": "current"
+          },
+          "unsupported_detail": null,
+          "search": {
+            "choice": {
+              "_json": "{\"declarations\":{\"mapping\":[[{\"card\":\"c7\",\"name\":\"Malakir Cullblade\",\"zone_revision\":3},{\"player\":1}]]},\"kind\":\"DeclareAttackersOption\"}",
+              "kind": "DeclareAttackersOption"
+            },
+            "estimates": [
+              {
+                "action": {
+                  "_json": "{\"declarations\":{\"mapping\":[[{\"card\":\"c1\",\"name\":\"Sanitarium Skeleton\",\"zone_revision\":3},{\"player\":1}],[{\"card\":\"c7\",\"name\":\"Malakir Cullblade\",\"zone_revision\":3},{\"player\":1}]]},\"kind\":\"DeclareAttackersOption\"}",
+                  "kind": "DeclareAttackersOption"
+                },
+                "mean_value": null,
+                "prior_probability": 0.04853263551009069,
+                "visits": 0
+              },
+              {
+                "action": {
+                  "_json": "{\"declarations\":{\"mapping\":[[{\"card\":\"c1\",\"name\":\"Sanitarium Skeleton\",\"zone_revision\":3},{\"player\":1}]]},\"kind\":\"DeclareAttackersOption\"}",
+                  "kind": "DeclareAttackersOption"
+                },
+                "mean_value": null,
+                "prior_probability": 0.04853263551009069,
+                "visits": 0
+              },
+              {
+                "action": {
+                  "_json": "{\"declarations\":{\"mapping\":[[{\"card\":\"c7\",\"name\":\"Malakir Cullblade\",\"zone_revision\":3},{\"player\":1}]]},\"kind\":\"DeclareAttackersOption\"}",
+                  "kind": "DeclareAttackersOption"
+                },
+                "mean_value": null,
+                "prior_probability": 0.4514673644899093,
+                "visits": 0
+              },
+              {
+                "action": {
+                  "_json": "{\"declarations\":{\"mapping\":[]},\"kind\":\"DeclareAttackersOption\"}",
+                  "kind": "DeclareAttackersOption"
+                },
+                "mean_value": null,
+                "prior_probability": 0.4514673644899093,
+                "visits": 0
+              }
+            ],
+            "fallback_reason": "extension_limit",
+            "metrics": {
+              "advance_attempts": 17,
+              "advance_ms": 376.5013995580375,
+              "checkpoint_entries": 0,
+              "checkpoint_hits": 0,
+              "checkpoint_skipped_decisions": 0,
+              "cpu_ms": 593.75,
+              "elapsed_ms": 603.7880000658333,
+              "forced_initial_coverage": false,
+              "forced_transitions": 5,
+              "heuristic_leaves": 0,
+              "hierarchy_nodes": 0,
+              "hierarchy_selection_steps": 0,
+              "history_mismatch_reasons": [],
+              "history_prefix_advances": 0,
+              "history_rejected_samples": 0,
+              "history_sampling_attempts": 0,
+              "information_nodes": 1,
+              "interrupted_trajectories": 2,
+              "interruption_reasons": [
+                [
+                  "extension_limit",
+                  1
+                ],
+                [
+                  "time_budget",
+                  1
+                ]
+              ],
+              "iterations_completed": 0,
+              "iterations_started": 2,
+              "minimum_trajectories": 1,
+              "population_distinct_origins": 0,
+              "population_refreshes": 0,
+              "population_size": 0,
+              "population_survivors": 0,
+              "population_updates": 0,
+              "prior_evaluations": 1,
+              "rollout_policy_choices": 7,
+              "rollout_random_choices": 0,
+              "root_actions": 4,
+              "root_actions_visited": 0,
+              "root_coverage_required": false,
+              "selection": "puct",
+              "simulator_advance_calls": 17,
+              "terminal_leaves": 0,
+              "time_limit_ms": 500,
+              "trajectory_runs": 2,
+              "transition_cache_entries": 17,
+              "transition_cache_hits": 0,
+              "world_initialization_ms": 195.35319996066391,
+              "world_materializations": 4,
+              "world_restores": 0,
+              "worlds_built": 2
+            },
+            "root_coverage_complete": false,
+            "stop_reason": "time_budget",
+            "used_fallback": true,
+            "value": null
+          }
+        }
+      ],
+      "exceptions": [],
+      "worker_exception": null,
+      "simulation_limit_exceptions": [],
+      "execution": {
+        "returncode": 0,
+        "timed_out": false
+      }
+    },
+    {
+      "case": {
+        "name": "06-black-green",
+        "own": "black",
+        "other": "green",
+        "seed": 106,
+        "search_seed": 7006,
+        "seat": 1,
+        "starting": 0,
+        "selection": "puct"
+      },
+      "status": "win",
+      "error": null,
+      "turns": 20,
+      "elapsed_seconds": 54.10238020005636,
+      "cpu_seconds": 53.703125,
+      "source_unchanged": true,
+      "fingerprint": "d240b7695cf5f636262e02f1ba26070bebc9d33220919451a5931685896ae9a8",
+      "search_attempts": 70,
+      "usable_searches": 70,
+      "completed_trajectories": 380,
+      "reasons": {
+        "setup_policy": 1,
+        "forced_choice": 161,
+        "searched": 70
+      },
+      "stops": {
+        "time_budget": 70
+      },
+      "trajectory_interruptions": {
+        "time_budget": 55
+      },
+      "requests": {
+        "MulliganRequest": 1,
+        "PriorityDecisionRequest": 206,
+        "DeclareAttackersRequest": 10,
+        "DeclareBlockersRequest": 7,
+        "TriggerOrderRequest": 3,
+        "AbilityDecisionRequest": 3,
+        "ReplacementOrderRequest": 2
+      },
+      "fallbacks": [
+        {
+          "category": "setup",
+          "line": 3,
+          "turn": 1,
+          "phase": "UNTAP",
+          "request_kind": "MulliganRequest",
+          "reason": "setup_policy",
+          "options": 2,
+          "elapsed_ms": 9.68540005851537,
+          "information_key": "164ddfe881848882f0903c92d7b5812f36bd9c5322be0633e730a70207752139",
+          "world_preparation": null,
+          "unsupported_detail": null,
+          "search": null
+        }
+      ],
+      "exceptions": [],
+      "worker_exception": null,
+      "simulation_limit_exceptions": [],
+      "execution": {
+        "returncode": 0,
+        "timed_out": false
+      }
+    },
+    {
+      "case": {
+        "name": "07-red-green",
+        "own": "red",
+        "other": "green",
+        "seed": 107,
+        "search_seed": 7007,
+        "seat": 0,
+        "starting": 1,
+        "selection": "puct"
+      },
+      "status": "win",
+      "error": null,
+      "turns": 15,
+      "elapsed_seconds": 27.48417970002629,
+      "cpu_seconds": 27.453125,
+      "source_unchanged": true,
+      "fingerprint": "d240b7695cf5f636262e02f1ba26070bebc9d33220919451a5931685896ae9a8",
+      "search_attempts": 41,
+      "usable_searches": 41,
+      "completed_trajectories": 772,
+      "reasons": {
+        "setup_policy": 3,
+        "forced_choice": 152,
+        "searched": 41
+      },
+      "stops": {
+        "time_budget": 39,
+        "iteration_budget": 2
+      },
+      "trajectory_interruptions": {
+        "time_budget": 33
+      },
+      "requests": {
+        "MulliganRequest": 2,
+        "MulliganBottomRequest": 1,
+        "PriorityDecisionRequest": 175,
+        "DeclareAttackersRequest": 7,
+        "DeclareBlockersRequest": 4,
+        "TriggerOrderRequest": 1,
+        "AbilityDecisionRequest": 1,
+        "ReplacementOrderRequest": 5
+      },
+      "fallbacks": [
+        {
+          "category": "setup",
+          "line": 3,
+          "turn": 1,
+          "phase": "UNTAP",
+          "request_kind": "MulliganRequest",
+          "reason": "setup_policy",
+          "options": 2,
+          "elapsed_ms": 8.033200050704181,
+          "information_key": "af1a34d82d283c65c0b03a7a7eee1e12497cab3743872ea409c35541d7da02fa",
+          "world_preparation": null,
+          "unsupported_detail": null,
+          "search": null
+        },
+        {
+          "category": "setup",
+          "line": 5,
+          "turn": 1,
+          "phase": "UNTAP",
+          "request_kind": "MulliganBottomRequest",
+          "reason": "setup_policy",
+          "options": 7,
+          "elapsed_ms": 2.968600019812584,
+          "information_key": "b7797be00302d50d234ddb3075a4d1d45f538ffe8f84aaaf6a6d7c6df8e1ff79",
+          "world_preparation": null,
+          "unsupported_detail": null,
+          "search": null
+        },
+        {
+          "category": "setup",
+          "line": 7,
+          "turn": 1,
+          "phase": "UNTAP",
+          "request_kind": "MulliganRequest",
+          "reason": "setup_policy",
+          "options": 2,
+          "elapsed_ms": 2.125200000591576,
+          "information_key": "1197058d91fbb8ba36aea2ffd1b2b3527e265cc7b846d6fa713de7cb9f5d9aa2",
+          "world_preparation": null,
+          "unsupported_detail": null,
+          "search": null
+        }
+      ],
+      "exceptions": [],
+      "worker_exception": null,
+      "simulation_limit_exceptions": [],
+      "execution": {
+        "returncode": 0,
+        "timed_out": false
+      }
+    },
+    {
+      "case": {
+        "name": "08-red-white",
+        "own": "red",
+        "other": "white",
+        "seed": 108,
+        "search_seed": 7008,
+        "seat": 1,
+        "starting": 1,
+        "selection": "puct"
+      },
+      "status": "win",
+      "error": null,
+      "turns": 15,
+      "elapsed_seconds": 25.543422199902125,
+      "cpu_seconds": 25.5,
+      "source_unchanged": true,
+      "fingerprint": "d240b7695cf5f636262e02f1ba26070bebc9d33220919451a5931685896ae9a8",
+      "search_attempts": 40,
+      "usable_searches": 40,
+      "completed_trajectories": 1292,
+      "reasons": {
+        "setup_policy": 1,
+        "forced_choice": 148,
+        "searched": 40
+      },
+      "stops": {
+        "time_budget": 39,
+        "iteration_budget": 1
+      },
+      "trajectory_interruptions": {
+        "time_budget": 28
+      },
+      "requests": {
+        "MulliganRequest": 1,
+        "PriorityDecisionRequest": 167,
+        "DeclareAttackersRequest": 8,
+        "ScryRequest": 1,
+        "TriggerOrderRequest": 2,
+        "AbilityDecisionRequest": 2,
+        "ReplacementOrderRequest": 5,
+        "DeclareBlockersRequest": 3
+      },
+      "fallbacks": [
+        {
+          "category": "setup",
+          "line": 2,
+          "turn": 1,
+          "phase": "UNTAP",
+          "request_kind": "MulliganRequest",
+          "reason": "setup_policy",
+          "options": 2,
+          "elapsed_ms": 7.476800004951656,
+          "information_key": "6295edafffcf056ec146f2a6a6866953e53afb3f48e417ef0969f780ee0d642d",
+          "world_preparation": null,
+          "unsupported_detail": null,
+          "search": null
+        }
+      ],
+      "exceptions": [],
+      "worker_exception": null,
+      "simulation_limit_exceptions": [],
+      "execution": {
+        "returncode": 0,
+        "timed_out": false
+      }
+    },
+    {
+      "case": {
+        "name": "09-green-white",
+        "own": "green",
+        "other": "white",
+        "seed": 109,
+        "search_seed": 7009,
+        "seat": 0,
+        "starting": 0,
+        "selection": "puct"
+      },
+      "status": "win",
+      "error": null,
+      "turns": 19,
+      "elapsed_seconds": 38.09958589996677,
+      "cpu_seconds": 37.9375,
+      "source_unchanged": true,
+      "fingerprint": "d240b7695cf5f636262e02f1ba26070bebc9d33220919451a5931685896ae9a8",
+      "search_attempts": 54,
+      "usable_searches": 54,
+      "completed_trajectories": 1578,
+      "reasons": {
+        "setup_policy": 1,
+        "forced_choice": 168,
+        "searched": 54
+      },
+      "stops": {
+        "iteration_budget": 2,
+        "time_budget": 52
+      },
+      "trajectory_interruptions": {
+        "time_budget": 39
+      },
+      "requests": {
+        "MulliganRequest": 1,
+        "PriorityDecisionRequest": 203,
+        "DeclareAttackersRequest": 10,
+        "DeclareBlockersRequest": 4,
+        "ReplacementOrderRequest": 2,
+        "TriggerOrderRequest": 1,
+        "AbilityDecisionRequest": 1,
+        "CombatDamageRequest": 1
+      },
+      "fallbacks": [
+        {
+          "category": "setup",
+          "line": 2,
+          "turn": 1,
+          "phase": "UNTAP",
+          "request_kind": "MulliganRequest",
+          "reason": "setup_policy",
+          "options": 2,
+          "elapsed_ms": 9.857899975031614,
+          "information_key": "c58e4c163e8dd9d74f07054a565170501df42f1381edb3f84e6443225a65a220",
+          "world_preparation": null,
+          "unsupported_detail": null,
+          "search": null
+        }
+      ],
+      "exceptions": [],
+      "worker_exception": null,
+      "simulation_limit_exceptions": [],
+      "execution": {
+        "returncode": 0,
+        "timed_out": false
+      }
+    },
+    {
+      "case": {
+        "name": "10-green-blue",
+        "own": "green",
+        "other": "blue",
+        "seed": 110,
+        "search_seed": 7010,
+        "seat": 1,
+        "starting": 0,
+        "selection": "puct"
+      },
+      "status": "win",
+      "error": null,
+      "turns": 22,
+      "elapsed_seconds": 38.25636989995837,
+      "cpu_seconds": 38.046875,
+      "source_unchanged": true,
+      "fingerprint": "d240b7695cf5f636262e02f1ba26070bebc9d33220919451a5931685896ae9a8",
+      "search_attempts": 44,
+      "usable_searches": 44,
+      "completed_trajectories": 1260,
+      "reasons": {
+        "setup_policy": 1,
+        "forced_choice": 211,
+        "searched": 44
+      },
+      "stops": {
+        "time_budget": 42,
+        "iteration_budget": 2
+      },
+      "trajectory_interruptions": {
+        "time_budget": 31
+      },
+      "requests": {
+        "MulliganRequest": 1,
+        "PriorityDecisionRequest": 229,
+        "DeclareAttackersRequest": 11,
+        "CombatDamageRequest": 1,
+        "DiscardRequest": 1,
+        "DeclareBlockersRequest": 4,
+        "ReplacementOrderRequest": 1,
+        "TriggerOrderRequest": 4,
+        "AbilityDecisionRequest": 4
+      },
+      "fallbacks": [
+        {
+          "category": "setup",
+          "line": 3,
+          "turn": 1,
+          "phase": "UNTAP",
+          "request_kind": "MulliganRequest",
+          "reason": "setup_policy",
+          "options": 2,
+          "elapsed_ms": 8.243799908086658,
+          "information_key": "5674b6edcdb2df986620b1ef8dc321b653a8a7e3ab8873fce01022f13fa76e5a",
+          "world_preparation": null,
+          "unsupported_detail": null,
+          "search": null
+        }
+      ],
+      "exceptions": [],
+      "worker_exception": null,
+      "simulation_limit_exceptions": [],
+      "execution": {
+        "returncode": 0,
+        "timed_out": false
+      }
+    },
+    {
+      "case": {
+        "name": "11-uct-white-green",
+        "own": "white",
+        "other": "green",
+        "seed": 201,
+        "search_seed": 7101,
+        "seat": 1,
+        "starting": 1,
+        "selection": "uct"
+      },
+      "status": "win",
+      "error": null,
+      "turns": 18,
+      "elapsed_seconds": 26.87095429992769,
+      "cpu_seconds": 26.796875,
+      "source_unchanged": true,
+      "fingerprint": "d240b7695cf5f636262e02f1ba26070bebc9d33220919451a5931685896ae9a8",
+      "search_attempts": 32,
+      "usable_searches": 32,
+      "completed_trajectories": 785,
+      "reasons": {
+        "setup_policy": 1,
+        "forced_choice": 196,
+        "searched": 32
+      },
+      "stops": {
+        "time_budget": 30,
+        "iteration_budget": 2
+      },
+      "trajectory_interruptions": {
+        "time_budget": 24
+      },
+      "requests": {
+        "MulliganRequest": 1,
+        "PriorityDecisionRequest": 204,
+        "TriggerOrderRequest": 3,
+        "AbilityDecisionRequest": 3,
+        "DeclareAttackersRequest": 9,
+        "ReplacementOrderRequest": 5,
+        "DeclareBlockersRequest": 4
+      },
+      "fallbacks": [
+        {
+          "category": "setup",
+          "line": 2,
+          "turn": 1,
+          "phase": "UNTAP",
+          "request_kind": "MulliganRequest",
+          "reason": "setup_policy",
+          "options": 2,
+          "elapsed_ms": 8.954600081779063,
+          "information_key": "92665deb2a8090727969b5569e59df78f05eec22494d66e92f926ef016b0fb0b",
+          "world_preparation": null,
+          "unsupported_detail": null,
+          "search": null
+        }
+      ],
+      "exceptions": [],
+      "worker_exception": null,
+      "simulation_limit_exceptions": [],
+      "execution": {
+        "returncode": 0,
+        "timed_out": false
+      }
+    },
+    {
+      "case": {
+        "name": "12-hierarchical-blue-black",
+        "own": "blue",
+        "other": "black",
+        "seed": 202,
+        "search_seed": 7102,
+        "seat": 1,
+        "starting": 0,
+        "selection": "hierarchical_puct"
+      },
+      "status": "win",
+      "error": null,
+      "turns": 24,
+      "elapsed_seconds": 40.50809110002592,
+      "cpu_seconds": 40.328125,
+      "source_unchanged": true,
+      "fingerprint": "d240b7695cf5f636262e02f1ba26070bebc9d33220919451a5931685896ae9a8",
+      "search_attempts": 45,
+      "usable_searches": 45,
+      "completed_trajectories": 349,
+      "reasons": {
+        "setup_policy": 1,
+        "forced_choice": 248,
+        "searched": 45
+      },
+      "stops": {
+        "time_budget": 45
+      },
+      "trajectory_interruptions": {
+        "time_budget": 36
+      },
+      "requests": {
+        "MulliganRequest": 1,
+        "PriorityDecisionRequest": 259,
+        "DeclareAttackersRequest": 12,
+        "DeclareBlockersRequest": 7,
+        "ReplacementOrderRequest": 5,
+        "TriggerOrderRequest": 3,
+        "AbilityDecisionRequest": 3,
+        "OptionalEffectRequest": 3,
+        "AbilityResolutionRequest": 1
+      },
+      "fallbacks": [
+        {
+          "category": "setup",
+          "line": 3,
+          "turn": 1,
+          "phase": "UNTAP",
+          "request_kind": "MulliganRequest",
+          "reason": "setup_policy",
+          "options": 2,
+          "elapsed_ms": 9.183399961329997,
+          "information_key": "05e633a29ec700ec7ab47bed105aaad80cfea7a9b3bd76fbcc338f092b69174d",
+          "world_preparation": null,
+          "unsupported_detail": null,
+          "search": null
+        }
+      ],
+      "exceptions": [],
+      "worker_exception": null,
+      "simulation_limit_exceptions": [],
+      "execution": {
+        "returncode": 0,
+        "timed_out": false
+      }
+    }
+  ]
+}

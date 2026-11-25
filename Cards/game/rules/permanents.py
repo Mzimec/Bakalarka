@@ -1,6 +1,7 @@
 """Permanent lifecycle, attachments and loyalty, using the normal operation pipeline."""
 
 from collections import defaultdict
+from functools import cached_property
 
 from game.enums import CardSubtype, CardType, CounterType, ZoneType
 from game.game_state.card import Card
@@ -18,6 +19,12 @@ class TokenEntryOperation(MoveCardOperation):
     """!
     @brief Battlefield entry operation for a newly created token.
     """
+
+    def __init__(self, context, card, destination, *, creation_index=0):
+        super().__init__(context, card, destination)
+        # Stable within this simultaneous creation batch, before registration
+        # assigns a command ID. Distinguishes replacement-order choices in replay.
+        self.creation_index = creation_index
 
     def _move(self, state):
         """!
@@ -75,7 +82,8 @@ class CreateTokenOperation(Operation):
         from game.game_actions.resolution.replacement_effects import ReplacementResolver
 
         entries = tuple(
-            TokenEntryOperation(self.context, card, ZoneType.BATTLEFIELD) for card in cards
+            TokenEntryOperation(self.context, card, ZoneType.BATTLEFIELD, creation_index=index)
+            for index, card in enumerate(cards)
         )
 
         # Choose every entry replacement before any member enters. The outer
@@ -308,7 +316,24 @@ class PermanentStateRule(StateBasedAction):
     illegal attachments, the legend rule, and +1/+1/-1/-1 counter cancellation.
     """
 
-    def collect(self, state):
+    @cached_property
+    def candidate_filter(self):
+        from helper.query_system.query import EqQuery, DifferenceQuery
+        from game.game_state.registers.card_register import (
+            IK_ZONE, IK_IS_TOKEN, IK_TYPE, IK_SUBTYPE,
+            IK_ATTACHED, IK_LEGENDARY, IK_HAS_COUNTERS, IK_DYNAMIC_CHARACTERISTICS,
+        )
+        from game.game_actions.resolution.sba_candidates import SBACandidateFilter
+        return SBACandidateFilter(
+            (EqQuery(IK_ZONE, ZoneType.BATTLEFIELD) & (
+                EqQuery(IK_TYPE, CardType.PLANESWALKER) | EqQuery(IK_SUBTYPE, CardSubtype.AURA)
+                | EqQuery(IK_ATTACHED, True) | EqQuery(IK_LEGENDARY, True)
+                | EqQuery(IK_HAS_COUNTERS, True) | EqQuery(IK_DYNAMIC_CHARACTERISTICS, True)
+            )) | DifferenceQuery(EqQuery(IK_IS_TOKEN, True), (EqQuery(IK_ZONE, ZoneType.BATTLEFIELD),)),
+            (IK_ZONE, IK_IS_TOKEN, IK_TYPE, IK_SUBTYPE, IK_ATTACHED, IK_LEGENDARY,
+             IK_HAS_COUNTERS, IK_DYNAMIC_CHARACTERISTICS))
+
+    def collect(self, state, *, candidates=None):
         """!
         @brief Collect all currently applicable permanent-related SBA violations.
 
@@ -320,9 +345,10 @@ class PermanentStateRule(StateBasedAction):
         """
         violations, legends = [], defaultdict(list)
 
-        for card in getattr(state, "get_cards", lambda: ())():
-            context = ResolutionContext(source=card, controller=card.get_controller(state))
-
+        # Preserve one stable candidate order for simultaneous violations.
+        if candidates is None:
+            candidates = state.query_cards(self.candidate_filter.query) if hasattr(state, "query_cards") else ()
+        for card in candidates:
             if card.get_zone() != ZoneType.BATTLEFIELD:
                 if card.is_token:
                     violations.append(SBAViolation((CeaseTokenOperation(card),)))
@@ -346,7 +372,10 @@ class PermanentStateRule(StateBasedAction):
 
             if dies:
                 violations.append(
-                    SBAViolation((MoveCardOperation(context, card, ZoneType.GRAVEYARD),))
+                    SBAViolation((MoveCardOperation(
+                        ResolutionContext(source=card, controller=card.get_controller(state)),
+                        card, ZoneType.GRAVEYARD,
+                    ),))
                 )
 
             if card.definition.legendary:
@@ -373,8 +402,8 @@ class PermanentStateRule(StateBasedAction):
                 if controller is not player or len(cards) < 2:
                     continue
 
-                choose = getattr(player.decision_maker, "choose_legend", None)
-                keep = choose(state, player, tuple(cards)) if choose else cards[0]
+                from game.ai.agents.decision_maker import LegendRequest
+                keep = player.decision_maker.decide(LegendRequest(state, player, tuple(cards))).value.selected
 
                 if keep not in cards:
                     raise ValueError("Choose one of the legendary permanents to keep.")

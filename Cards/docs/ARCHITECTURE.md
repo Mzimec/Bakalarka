@@ -4,6 +4,10 @@
 
 This document describes architecture of this project. It tries to describe its components. This is not documentation for the code.
 
+Current AI/MCTS objects and their information/runtime boundaries are documented
+in [AI_SEARCH.md](AI_SEARCH.md). Code-level contracts use `data_structs`-style
+documentation directly on the owning classes, records and methods.
+
 The central architectural idea is:
 
 The game state is represented explicitly, legal actions are generated from that
@@ -1085,7 +1089,7 @@ Within a layer, ordering is determined using:
 - timestamps,
 - stable creation order.
 
-Detailed rule behavior belongs in [ENGINE_ROADMAP.md](ENGINE_ROADMAP.md).
+Detailed rule behavior belongs in [ENGINE_RULES.md](ENGINE_RULES.md).
 
 Architecturally, the important point is that all current characteristic queries
 see the result of this shared layered evaluation.

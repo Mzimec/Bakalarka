@@ -13,11 +13,9 @@ if TYPE_CHECKING:
 class ActionProcessor:
     """!
     @brief Validate and process complete game actions.
-
     Validates selected targets before any cost is paid, executes immediate
     resolutions, routes stack-using resolutions onto the game stack, and
     treats cost payment as a transaction that can be rolled back on failure.
-
     Trigger processing is temporarily deferred until all costs belonging
     to the action have been successfully committed.
     """
@@ -25,7 +23,6 @@ class ActionProcessor:
     def __init__(self, executor: ResolutionEngine) -> None:
         """!
         @brief Create a processor using the given resolution engine.
-
         @param executor Engine used to execute immediate resolutions and
                settle resulting state-based actions and triggers.
         """
@@ -34,16 +31,13 @@ class ActionProcessor:
     def process(self, state: State, action: GameAction) -> tuple[ExecutionResult, ...]:
         """!
         @brief Validate and process all resolutions produced by a game action.
-
         The action and all of its selected targets are validated before
         execution begins. Cost resolutions are executed transactionally;
         if any resolution fails, already-paid costs are rolled back.
-
         Stack-using resolutions are pushed onto the stack, while immediate
         resolutions are executed directly. Events and triggers produced
         during cost payment are deferred until the complete cost transaction
         has successfully committed.
-
         @param state Current game state.
         @param action Game action chosen by a player or game rule.
         @return Results for resolutions executed immediately. Stack-routed
@@ -87,7 +81,7 @@ class ActionProcessor:
 
         # Only actions containing cost resolutions need rollback support.
         transaction = (
-            CostTransaction(state)
+            CostTransaction(state, resolutions=resolutions, action=action)
             if any(r.context.is_cost for r in resolutions)
             else None
         )
@@ -164,6 +158,8 @@ class ActionProcessor:
             raise
 
         finally:
+            if transaction is not None:
+                transaction.close()
             pending = self.executor._pending_triggers
             self.executor._pending_triggers = previous
             self.executor._cost_transaction = previous_transaction
@@ -194,7 +190,6 @@ class ActionProcessor:
     def _route(self, state: State, resolution: ScheduledResolution) -> None:
         """!
         @brief Push a stack-using resolution onto the game stack.
-
         @param state Current game state.
         @param resolution Scheduled resolution to route to the stack.
         """

@@ -1,0 +1,21 @@
+Starting C:\Users\stepa\Documents\Bakalarka\Bakalarka\Cards
+Traceback (most recent call last):
+  File "C:\Users\stepa\Documents\Bakalarka\Bakalarka\Cards\runs\mcts-fallbacks-20261023\run.py", line 40, in <module>
+    result = run_config(path, output=args.output/'match.jsonl')
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\stepa\Documents\Bakalarka\Bakalarka\Cards\game\simulation\config.py", line 130, in run_config
+    controllers = [make_controller(player.get("agent", {}), seed=seed + index,
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\stepa\Documents\Bakalarka\Bakalarka\Cards\game\simulation\config.py", line 31, in make_controller
+    return make_search_controller(config.get("mcts", {}), search_origin, max_decisions=max_decisions)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\stepa\Documents\Bakalarka\Bakalarka\Cards\game\simulation\search_config.py", line 169, in make_search_controller
+    settings = SearchAgentConfig.parse(config)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\stepa\Documents\Bakalarka\Bakalarka\Cards\game\simulation\search_config.py", line 63, in parse
+    return cls(**data)
+           ^^^^^^^^^^^
+  File "<string>", line 42, in __init__
+  File "C:\Users\stepa\Documents\Bakalarka\Bakalarka\Cards\game\simulation\search_config.py", line 109, in __post_init__
+    raise ValueError("heuristic prior requires puct selection")
+ValueError: heuristic prior requires puct selection

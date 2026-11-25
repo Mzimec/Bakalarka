@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from dataclasses import dataclass, asdict
+from dataclasses import dataclass, asdict, field
 from enum import Enum
 from itertools import combinations
 import json
@@ -12,10 +12,13 @@ from collections import Counter
 import secrets
 
 from game.reporting.readable_log import render_match
+from game.reporting.decision_statistics import DecisionStatistics, format_decision_statistics
+from game.game_actions.generation.decision_abstraction.measurement import observe_decisions
 from pathlib import Path
 from typing import Any
 
-from game.ai.simple_agent import SimpleAgent, DecisionLimitReached
+from game.ai.agents.simple_agent import (SimpleAgent, DecisionLimitReached)
+from game.ai.agents.trivial_agent import TrivialAgent
 from game.cards.decks import ARENA_STARTERS, load_arena_starter
 from game.game_loop.setup import create_game
 from game.cards.catalog import game_catalog
@@ -82,7 +85,7 @@ class MatchLog:
     @brief Append ordered decisions, events and results to one JSON Lines file.
     """
 
-    def __init__(self, path: Path) -> None:
+    def __init__(self, path: Path | None = None, *, stream=None) -> None:
         """!
         @brief Create a new experiment log.
 
@@ -90,7 +93,10 @@ class MatchLog:
 
         @param path Destination JSONL path.
         """
-        self.stream = path.open("x", encoding="utf-8")
+        if (path is None) == (stream is None):
+            raise ValueError('Supply exactly one log path or stream')
+        self.owns_stream = stream is None
+        self.stream = path.open("x", encoding="utf-8") if self.owns_stream else stream
         self.sequence = 0
 
     def write(self, kind: str, **data) -> None:
@@ -122,7 +128,8 @@ class MatchLog:
         """! 
         @brief Close the underlying JSONL stream.
         """
-        self.stream.close()
+        if self.owns_stream:
+            self.stream.close()
 
 
 class NullMatchLog:
@@ -255,11 +262,13 @@ class MatchResult:
     log: str | None
     error: str | None = None
     elapsed_seconds: float = 0.0
+    decision_timing: list[dict] = field(default_factory=list)
+    search_diagnostics: list[dict] = field(default_factory=list)
 
 
 def run_match(
     colors,
-    output: Path | None,
+    output: Path | None = None,
     *,
     seed: int | None = None,
     starting_player=0,
@@ -269,6 +278,8 @@ def run_match(
     names=None,
     decklists=None,
     metadata=None,
+    collect_decision_stats: bool = True,
+    log_stream=None,
 ) -> MatchResult:
     """!
     @brief Run one reproducible duel between two decks and controllers.
@@ -278,6 +289,8 @@ def run_match(
     created. When an output path is supplied, the match writes a structured JSONL
     log and derives a human-readable TXT log from it. When output is `None`, the
     match runs without persistent per-match log files.
+    A caller-owned log_stream (e.g. StringIO) records the same JSONL in memory;
+    it cannot be combined with a file output and is not closed by the runner.
 
     @param colors Two deck labels used for identification and fallback starter-deck
                 loading when `decklists` is not supplied.
@@ -293,8 +306,17 @@ def run_match(
     @param decklists Optional explicit pair of decklists. When omitted, decks are
                     loaded from `colors` using `ARENA_STARTERS`.
     @param metadata Optional experiment metadata recorded in the match log header.
+    @param collect_decision_stats Measure decisions and consumed options. If False,
+                skip all decision telemetry and return an empty decision_timing.
     @return Match result containing outcome, seed, winner, limits and timing data.
     """
+    if output is not None and log_stream is not None:
+        raise ValueError('Choose a log file or a memory stream')
+    if output is not None:
+        output = Path(output)
+    logging = output is not None or log_stream is not None
+    if type(collect_decision_stats) is not bool:
+        raise ValueError("collect_decision_stats must be a boolean.")
     if seed is None:
         seed = secrets.randbits(31)
     if len(colors) != 2 or (decklists is None and any(color not in ARENA_STARTERS for color in colors)):
@@ -309,115 +331,165 @@ def run_match(
     if decklists is not None and len(decklists) != 2:
         raise ValueError("A duel needs two decklists.")
 
-    log = MatchLog(output) if output is not None else NullMatchLog()
+    log = MatchLog(output,stream=log_stream) if logging else NullMatchLog()
     started = perf_counter()
     agents = controllers or tuple(SimpleAgent(max_decisions=max_decisions) for _ in range(2))
 
+    previous_logs = []
+    previous_search_logs = []
     for agent in agents:
-        if isinstance(agent, SimpleAgent):
+        if isinstance(agent, (SimpleAgent, TrivialAgent)) and not any(agent is prior for prior, _ in previous_logs):
+            previous_logs.append((agent, agent.log))
             agent.log = log.decision
+        if callable(getattr(agent, "search_summary", None)):
+            previous = agent.on_search_decision
+            previous_search_logs.append((agent, previous))
+            def record_search(request, detail, previous=previous):
+                if logging:
+                    log.write("search_decision", player=request.player.name, player_index=request.player.idx,
+                              request=type(request).__name__,
+                              turn=request.state.turn.number if request.state is not None else None,
+                              phase=request.state.turn.phase.name if request.state is not None else None, **detail)
+                if previous is not None:
+                    previous(request, detail)
+            agent.on_search_decision = record_search
+
+    decision_statistics = DecisionStatistics() if collect_decision_stats else None
+
+    def record_decision(agent, request, metrics):
+        player = request.player
+        decision_statistics.record(player.idx, player.name, type(agent).__name__, agent.decision_mode, metrics)
+        if logging:
+            log.write(
+                "decision_timing", player=player.name, player_index=player.idx,
+                agent=type(agent).__name__, mode=agent.decision_mode,
+                turn=request.state.turn.number if request.state is not None else 0,
+                phase=request.state.turn.phase if request.state is not None else "SETUP",
+                **metrics,
+            )
 
     state = None
     status, winner, winner_index, error = "error", None, None, None
 
-    log.write(
-        "match",
-        colors=colors,
-        seed=seed,
-        starting_player=starting_player,
-        max_turns=max_turns,
-        max_decisions=max_decisions,
-        agent=[type(agent).__name__ for agent in agents],
-        metadata=metadata,
-        decklists=[{"name": d.name, "cards": d.cards} for d in decklists] if decklists is not None else None,
-    )
+    if logging:
+        log.write(
+            "match",
+            colors=colors,
+            seed=seed,
+            starting_player=starting_player,
+            max_turns=max_turns,
+            max_decisions=max_decisions,
+            agent=[type(agent).__name__ for agent in agents],
+            metadata=metadata,
+            decklists=[{"name": d.name, "cards": d.cards} for d in decklists] if decklists is not None else None,
+        )
 
-    try:
-        decks = tuple(decklists) if decklists is not None else tuple(load_arena_starter(color) for color in colors)
-        catalog = game_catalog()
+    with observe_decisions(record_decision if collect_decision_stats else None,
+                           enabled=collect_decision_stats):
+        try:
+            decks = tuple(decklists) if decklists is not None else tuple(load_arena_starter(color) for color in colors)
+            catalog = game_catalog()
 
-        # Refuse to start an experiment whose deck contains cards not represented
-        # by the current executable card catalog.
-        missing = sorted({name for deck in decks for name, _ in deck.cards if name not in catalog})
+            # Refuse to start an experiment whose deck contains cards not represented
+            # by the current executable card catalog.
+            missing = sorted({name for deck in decks for name, _ in deck.cards if name not in catalog})
 
-        if missing:
-            status, error = "unsupported", "Missing card definitions: " + ", ".join(missing)
+            if missing:
+                status, error = "unsupported", "Missing card definitions: " + ", ".join(missing)
 
-        else:
-            state = create_game(
-                decks,
-                agents,
-                catalog,
-                seed=seed,
-                starting_player_idx=starting_player,
-                names=names or (f"{colors[0]}-0", f"{colors[1]}-1"),
-            )
-
-            bus = LoggedEventBus(log, state)
-
-            from game.console.demo_game import ConsoleDecisionMaker
-
-            for agent in agents:
-                if isinstance(agent, ConsoleDecisionMaker):
-                    agent.event_bus = bus
-                    agent._event_index = 0
-
-            engine = LoggedResolutionEngine(OperationExecutor(), bus)
-            loop = GameLoop(None, LoggedProcessor(engine))
-
-            log.write(
-                "setup",
-                hands={p.name: list(p.hand.values()) for p in state.players},
-                mulligans=state.mulligans_taken,
-            )
-
-            while not state.is_game_over and state.turn.number <= max_turns:
-                log.write(
-                    "phase",
-                    turn=state.turn.number,
-                    phase=state.turn.phase,
-                    active=state.active_player,
-                )
-
-                loop.step(state)
-
-                # State summaries are snapshots after a complete loop step rather
-                # than references to mutable player objects.
-                log.write(
-                    "state",
-                    turn=state.turn.number,
-                    phase=state.turn.phase,
-                    players=[
-                        {
-                            "name": p.name,
-                            "life": p.health,
-                            "hand_size": len(p.hand),
-                            "library_size": len(p.deck),
-                        }
-                        for p in state.players
-                    ],
-                )
-
-            survivors = [p for p in state.players if p.is_alive]
-
-            if not state.is_game_over:
-                status = "turn_limit"
-            elif len(survivors) == 1:
-                winner_player = survivors[0]
-                winner_index = state.players.index(winner_player)
-                status, winner = "win", winner_player.name  
             else:
-                status = "draw"
+                state = create_game(
+                    decks,
+                    agents,
+                    catalog,
+                    seed=seed,
+                    starting_player_idx=starting_player,
+                    names=names or (f"{colors[0]}-0", f"{colors[1]}-1"),
+                )
 
-    except (EOFError, KeyboardInterrupt):
-        status = "aborted"
+                bus = LoggedEventBus(log, state) if logging else EventBus()
 
-    except DecisionLimitReached as exc:
-        status, error = "decision_limit", str(exc)
+                from game.console.demo_game import ConsoleDecisionMaker
 
-    except Exception as exc:
-        status, error = "error", f"{type(exc).__name__}: {exc}"
-        log.write("exception", traceback=traceback.format_exc())
+                for agent in agents:
+                    if isinstance(agent, ConsoleDecisionMaker):
+                        agent.event_bus = bus
+                        agent._event_index = 0
+
+                operation_executor = OperationExecutor()
+                engine = (LoggedResolutionEngine(operation_executor, bus) if logging
+                          else ResolutionEngine(operation_executor, bus))
+                processor = LoggedProcessor(engine) if logging else ActionProcessor(engine)
+                loop = GameLoop(None, processor)
+
+                if logging:
+                    log.write(
+                        "setup",
+                        hands={p.name: list(p.hand.values()) for p in state.players},
+                        mulligans=state.mulligans_taken,
+                    )
+
+                while not state.is_game_over and state.turn.number <= max_turns:
+                    if logging:
+                        log.write(
+                            "phase",
+                            turn=state.turn.number,
+                            phase=state.turn.phase,
+                            active=state.active_player,
+                        )
+
+                    loop.step(state)
+
+                    # State summaries are snapshots after a complete loop step rather
+                    # than references to mutable player objects.
+                    if logging:
+                        log.write(
+                            "state",
+                            turn=state.turn.number,
+                            phase=state.turn.phase,
+                            players=[
+                                {
+                                    "name": p.name,
+                                    "life": p.health,
+                                    "hand_size": len(p.hand),
+                                    "library_size": len(p.deck),
+                                }
+                                for p in state.players
+                            ],
+                        )
+
+                survivors = list(state.active_players)
+                if logging:
+                    operation_executor.print_lki_stats()
+
+                if not state.is_game_over:
+                    status = "turn_limit"
+                elif len(survivors) == 1:
+                    winner_player = survivors[0]
+                    winner_index = state.players.index(winner_player)
+                    status, winner = "win", winner_player.name
+                else:
+                    status = "draw"
+
+        except (EOFError, KeyboardInterrupt):
+            status = "aborted"
+
+        except DecisionLimitReached as exc:
+            status, error = "decision_limit", str(exc)
+
+        except Exception as exc:
+            status, error = "error", f"{type(exc).__name__}: {exc}"
+            if logging:
+                log.write("exception", traceback=traceback.format_exc())
+        finally:
+            for agent, previous_log in previous_logs:
+                agent.log = previous_log
+            for agent, previous_log in previous_search_logs:
+                agent.on_search_decision = previous_log
+            for agent in agents:
+                close_search = getattr(agent, 'close_search', None)
+                if close_search is not None:
+                    close_search()
 
     result = MatchResult(
         tuple(colors),
@@ -431,9 +503,13 @@ def run_match(
         output.name if output is not None else None,
         error,
         perf_counter() - started,
+        decision_timing=decision_statistics.summary() if decision_statistics is not None else [],
+        search_diagnostics=[{"player": index, "agent": type(agent).__name__, **agent.search_summary()}
+                            for index, agent in enumerate(agents) if callable(getattr(agent, "search_summary", None))],
     )
 
-    log.write("result", **asdict(result))
+    if logging:
+        log.write("result", **asdict(result))
     log.close()
 
     if output is not None:
@@ -492,6 +568,7 @@ def summarize_tournament(
     @brief Build aggregate tournament statistics from individual match results.
     """
     participants = []
+    decision_statistics = DecisionStatistics()
 
     for index, player in enumerate(players):
         participants.append(
@@ -529,6 +606,7 @@ def summarize_tournament(
         )
 
     for result in results:
+        decision_statistics.merge(result.decision_timing)
         for player_index, stats in enumerate(participants):
             stats["games"] += 1
             stats["turns_total"] += result.turns
@@ -565,7 +643,9 @@ def summarize_tournament(
             elif result.status == "error":
                 stats["errors"] += 1
 
+    timing = decision_statistics.summary()
     for stats in participants:
+        stats["decision_timing"] = [entry for entry in timing if entry["player_index"] == stats["index"]]
         _finalize_participant_stats(stats)
 
     statuses = Counter(result.status for result in results)
@@ -588,6 +668,7 @@ def summarize_tournament(
     )
 
     global_stats = {
+        "decision_timing": timing,
         "games": len(results),
         "completed_games": len(completed),
         "decisive_games": len(decisive),
@@ -668,15 +749,16 @@ def _file_name(value: str) -> str:
     return value.lower().replace(" ", "-")
 
 def run_tournament(
-    output: Path,
+    output: Path | None,
     players: tuple[TournamentPlayer, TournamentPlayer],
     *,
     games=1,
     seed:int | None = None,
     max_turns=100,
     max_decisions=10000,
-    log_matches=True,
-    log_batch=True,
+    log_matches=None,
+    log_batch=None,
+    collect_decision_stats: bool = True,
 ):
     """!
     @brief Run repeated matches between two tournament participants.
@@ -692,8 +774,20 @@ def run_tournament(
     @param max_decisions Per-agent decision limit.
     @param log_matches Whether to create JSONL/TXT logs for individual matches.
     @param log_batch Whether to create aggregate tournament summaries.
+    @param collect_decision_stats Enable optional decision telemetry in each match.
     @return List of individual match results.
     """
+    # Supplying an output directory opts into logs. No destination means RAM.
+    log_matches = output is not None if log_matches is None else log_matches
+    log_batch = output is not None if log_batch is None else log_batch
+    if any(type(v) is not bool for v in (log_matches,log_batch)):
+        raise ValueError('Log flags must be booleans')
+    if (log_matches or log_batch) and output is None:
+        raise ValueError('File logging requires an explicit output directory')
+    if output is not None:
+        output = Path(output)
+    if type(collect_decision_stats) is not bool:
+        raise ValueError("collect_decision_stats must be a boolean.")
     if len(players) != 2:
         raise ValueError("A tournament requires exactly two players.")
 
@@ -708,17 +802,28 @@ def run_tournament(
 
     from game.simulation.config import make_controller
     
+    names = tuple(player.name for player in players)
+    decklists = tuple(player.deck for player in players)
+    uses_mcts = any(player.controller.get("type") == "mcts" for player in players)
+    if uses_mcts:
+        from game.ai.sampling.game_origin import GameOrigin
+
     results = []
 
     for repeat in range(games):
         match_seed = seed + repeat
 
         for starting_player in (0, 1):
+            origin = None
+            if uses_mcts:
+                origin = GameOrigin(decklists, game_catalog, names=names,
+                                    starting_player_idx=starting_player)
             controllers = tuple(
                 make_controller(
                     player.controller,
                     seed=match_seed + index,
                     max_decisions=max_decisions,
+                    search_origin=origin,
                 )
                 for index, player in enumerate(players)
             )
@@ -743,8 +848,9 @@ def run_tournament(
                     max_turns=max_turns,
                     max_decisions=max_decisions,
                     controllers=controllers,
-                    names=tuple(player.name for player in players),
-                    decklists=tuple(player.deck for player in players),
+                    collect_decision_stats=collect_decision_stats,
+                    names=names,
+                    decklists=decklists,
                     metadata={
                         "players": [
                             {
@@ -840,6 +946,8 @@ def run_tournament(
                     f"  Average decisions: {stats['average_decisions']:.2f}",
                 ]
             )
+
+        lines.extend(["", *format_decision_statistics(summary["global"]["decision_timing"])])
 
         (output / "summary.txt").write_text(
             "\n".join(lines) + "\n",

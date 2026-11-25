@@ -1,5 +1,13 @@
 """Public exports for the game package."""
 
+import os as _os
+import sys as _sys
+
+# Also inherited by spawned game actors. Use python -B (or set the variable
+# before startup) to prevent bytecode for this first imported package as well.
+_sys.dont_write_bytecode = True
+_os.environ['PYTHONDONTWRITEBYTECODE'] = '1'
+
 from .abilities import *
 from .game_actions import *
 from .game_state import *

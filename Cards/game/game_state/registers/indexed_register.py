@@ -26,11 +26,36 @@ class IndexedRegister(InMemoryObjectRegister):
         @param index_keys Index groups maintained by the base register.
         @param ordered_keys Index groups requiring ordered storage.
         """
+        index_keys = tuple(index_keys)
         super().__init__(index_keys, ordered_keys)
         self.state = state
         self._by_key = {}
         self._snapshots = {}
         self._dirty = {}
+        self._dirty_indexes = {}
+        # Opaque tokens cannot collide after a checkpoint rollback and mutation.
+        self.change_token = object()
+        # Membership revisions change only when committed index buckets change,
+        # independently of broad dirty notifications and unrelated index keys.
+        self._membership_tokens = dict.fromkeys(index_keys, object())
+        self._synchronising = False
+
+    def membership_token(self, indexes):
+        """Revision of selected index memberships; synchronize before reading.
+
+        Opaque identities remain distinct across rollback followed by new writes.
+        This describes query membership, not arbitrary runtime object values.
+        """
+        return tuple(self._membership_tokens[index] for index in indexes)
+
+    def _touch_memberships(self, indexes):
+        token = object()
+        for index in indexes:
+            self._membership_tokens[index] = token
+
+    def update(self, first, ctx):
+        super().update(first, ctx)
+        self._touch_memberships(ctx.data)
 
     def index_values(self, obj):
         """!
@@ -44,6 +69,10 @@ class IndexedRegister(InMemoryObjectRegister):
         """
         raise NotImplementedError
 
+    def changed_index_values(self, obj, indexes):
+        """Read affected memberships; subclasses may return a partial mapping."""
+        return self.index_values(obj)
+
     def get_by_key(self, key):
         """!
         @brief Return the registered object with the supplied entity key.
@@ -52,6 +81,22 @@ class IndexedRegister(InMemoryObjectRegister):
         @return Registered object, or `None` if absent.
         """
         return self._by_key.get(key)
+
+    def _native_bucket(self,index,value):
+        """Read an owned native index mask without a temporary Query/BitSet.
+
+        Native selectors synchronize before reading and materialize their
+        results before returning. Extensible queries retain query()/contains().
+        """
+        bucket = self.idx_provider.get_index_group(index).get(value)
+        return 0 if bucket is None else bucket._bits
+
+    def _native_objects(self,bits):
+        """Yield native mask IDs in the same ascending order as BitSet."""
+        while bits:
+            low = bits & -bits
+            yield self.storage.get(low.bit_length()-1)
+            bits ^= low
 
     def validate_new(self, obj):
         """!
@@ -100,11 +145,13 @@ class IndexedRegister(InMemoryObjectRegister):
 
         self._by_key[obj.key] = obj
         self._snapshots[obj.key] = values
+        self._touch_memberships(values)
+        self.change_token = object()
 
         # Register membership can affect continuous-effect queries.
         self.state._effects_dirty = True
 
-    def mark_changed(self, obj):
+    def mark_changed(self, obj, indexes=None):
         """!
         @brief Mark a registered object for deferred index synchronization.
 
@@ -115,7 +162,13 @@ class IndexedRegister(InMemoryObjectRegister):
         @param obj Runtime object whose indexed characteristics changed.
         """
         if self._by_key.get(obj.key) is obj:
+            # A full notification dominates every partial notification until sync.
+            previous = self._dirty_indexes.get(obj.key, frozenset())
+            self._dirty_indexes[obj.key] = (
+                None if indexes is None or previous is None else previous | indexes
+            )
             self._dirty[obj.key] = obj
+            self.change_token = object()
             self.state._effects_dirty = True
 
     def synchronise(self):
@@ -127,35 +180,47 @@ class IndexedRegister(InMemoryObjectRegister):
         its previous immutable snapshot and only changed memberships are sent to
         the underlying index provider.
         """
+        # Formula modifiers may query other cards while their own snapshot is
+        # being computed. Read committed memberships in that nested query;
+        # the layer pipeline synchronizes again after applying each layer.
+        if self._synchronising:
+            return
         self.state.refresh_continuous_effects()
+        if not self._dirty:
+            return
+        self._synchronising = True
+        try:
 
-        # Snapshots preserve the previous memberships independently of the
-        # mutable runtime object, so obsolete index values can still be removed
-        # after that object has already changed.
-        while self._dirty:
-            key = next(iter(self._dirty))
-            obj = self._dirty[key]
+            # Snapshots preserve the previous memberships independently of the
+            # mutable runtime object, so obsolete index values can still be removed
+            # after that object has already changed.
+            while self._dirty:
+                key = next(iter(self._dirty))
+                obj = self._dirty[key]
 
-            current = self.index_values(obj)
-            previous = self._snapshots[key]
+                current = self.changed_index_values(obj, self._dirty_indexes.get(key))
+                previous = self._snapshots[key]
 
-            changes = {
-                index: IndexUpdate(
-                    previous[index] - value,
-                    value - previous[index],
-                )
-                for index, value in current.items()
-                if value != previous[index]
-            }
+                changes = {
+                    index: IndexUpdate(
+                        previous[index] - value,
+                        value - previous[index],
+                    )
+                    for index, value in current.items()
+                    if value != previous[index]
+                }
 
-            if changes:
-                self.update(
-                    obj,
-                    RegisterUpdateContext(changes),
-                )
+                if changes:
+                    self.update(
+                        obj,
+                        RegisterUpdateContext(changes),
+                    )
 
-            self._snapshots[key] = current
-            self._dirty.pop(key)
+                self._snapshots[key] = current if len(current) == len(previous) else previous | current
+                self._dirty.pop(key)
+                self._dirty_indexes.pop(key, None)
+        finally:
+            self._synchronising = False
 
     def unregister(self, obj):
         """!
@@ -188,6 +253,9 @@ class IndexedRegister(InMemoryObjectRegister):
         self._snapshots.pop(obj.key)
         self._by_key.pop(obj.key)
         self._dirty.pop(obj.key, None)
+        self._dirty_indexes.pop(obj.key, None)
+        self._touch_memberships(previous)
+        self.change_token = object()
         self.state._effects_dirty = True
 
     def query(self, query):
@@ -240,3 +308,6 @@ class IndexedRegister(InMemoryObjectRegister):
         self._by_key.clear()
         self._snapshots.clear()
         self._dirty.clear()
+        self._dirty_indexes.clear()
+        self._touch_memberships(tuple(self._membership_tokens))
+        self.change_token = object()

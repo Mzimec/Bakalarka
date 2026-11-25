@@ -7,14 +7,18 @@ from abc import ABC, abstractmethod
 from uuid import uuid4
 from helper.runtime_object import RuntimeObject
 
+from game.ai.agents.decision_maker import DecisionMaker
+
 from ..constants import STARTING_HEALTH, HAND_SIZE
 from .battlefield import Battlefield, CardCollection
+from .card_repository import CardRepository
 
 if TYPE_CHECKING:
     from ..game_actions.data_structs.ability import GameAction
     from .card import Card
     from .state import State
     from .battlefield import CardCollection
+    from game.ai.agents.decision_maker import DecisionMaker
 
 from ..enums import *
 
@@ -61,8 +65,9 @@ class Player(RuntimeObject):
         self._idx = idx
         self._name = name if name is not None else f"Player {idx + 1}"
 
+        self._card_repository = CardRepository()
         self._zone_map: dict[ZoneType, CardCollection] = {
-            zone: Battlefield() if zone == ZoneType.BATTLEFIELD else CardCollection()
+            zone: (Battlefield if zone == ZoneType.BATTLEFIELD else CardCollection)(repository=self._card_repository)
             for zone in ZoneType
         }
 
@@ -114,6 +119,36 @@ class Player(RuntimeObject):
         """
         self._health = value
 
+        if self._game_state is not None:
+            self._game_state.player_register.mark_changed(self)
+
+    @property
+    def failed_draw(self):
+        return self._failed_draw
+
+    @failed_draw.setter
+    def failed_draw(self, value):
+        self._failed_draw = value
+        if self._game_state is not None:
+            self._game_state.player_register.mark_changed(self)
+
+    @property
+    def poison_counters(self):
+        return self._poison_counters
+
+    @poison_counters.setter
+    def poison_counters(self, value):
+        self._poison_counters = value
+        if self._game_state is not None:
+            self._game_state.player_register.mark_changed(self)
+
+    @property
+    def has_lost(self):
+        return self._has_lost
+
+    @has_lost.setter
+    def has_lost(self, value):
+        self._has_lost = value
         if self._game_state is not None:
             self._game_state.player_register.mark_changed(self)
 
@@ -324,78 +359,12 @@ class Player(RuntimeObject):
         self.move_card(card, ZoneType.HAND, state)
         return card
 
-    def get_action(self, state: State) -> GameAction | None:
+    def get_action(self, state: State) -> GameAction:
         """!
         @brief Ask the player's controller to choose an action.
 
         @param state Current game state.
-        @return Chosen action, or `None` if the player takes no action.
+        @return Chosen action, including an explicit PassPriorityAction.
         """
-        return self.controller.get_action(state, self)
-
-
-class DecisionMaker(ABC):
-    """!
-    @brief Base contract for human, scripted or AI player controllers.
-    """
-
-    @abstractmethod
-    def get_action(self, state: State, player: Player) -> GameAction | None:
-        """!
-        @brief Choose a game action for the supplied player.
-
-        @param state Current game state.
-        @param player Player making the decision.
-        @return Chosen game action, or `None` when no action is chosen.
-        """
-        pass
-
-    def process_triggers(self, state: State, triggers) -> None:
-        """!
-        @brief Handle triggered abilities controlled by this player.
-
-        Controllers that do not override trigger processing reject non-empty
-        trigger batches rather than silently ignoring mandatory decisions.
-        """
-        if list(triggers):
-            raise NotImplementedError("This controller does not handle triggered abilities.")
-
-    def choose_attackers(self, state, player):
-        """!
-        @brief Choose attackers for combat.
-
-        @return Mapping describing attacker declarations.
-        """
-        return {}
-
-    def choose_blockers(self, state, player):
-        """!
-        @brief Choose blockers for combat.
-
-        @return Mapping describing blocker declarations.
-        """
-        return {}
-
-    def choose_discards(self, state, player, count):
-        """!
-        @brief Choose cards to discard during cleanup.
-
-        Default behavior selects the last `count` cards from the hand.
-        """
-        return tuple(player.hand.values())[-count:] if count else ()
-
-    def choose_mulligan(self, state, player, mulligans_taken):
-        """!
-        @brief Decide whether to take another mulligan.
-
-        Default controllers always keep their current hand.
-        """
-        return False
-
-    def choose_mulligan_bottom(self, state, player, count):
-        """!
-        @brief Choose cards to place on the bottom after a London mulligan.
-
-        Default behavior chooses the first `count` cards in current hand order.
-        """
-        return tuple(player.hand.values())[:count]
+        from game.ai.agents.decision_maker import PriorityDecisionRequest
+        return self.controller.decide(PriorityDecisionRequest(state, self)).value

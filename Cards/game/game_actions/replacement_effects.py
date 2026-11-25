@@ -1,5 +1,6 @@
 """Install resolved replacement effects through the ordinary effect graph."""
 
+from __future__ import annotations
 from .data_structs.effect import Effect
 from .data_structs.operation import Operation
 from .resolution.event_bus import GameEvent
@@ -8,16 +9,20 @@ from .resolution.event_bus import GameEvent
 class InstallReplacementOperation(Operation):
     """!
     @brief Install a bound replacement effect into the game state.
-
     By default the installed effect is independent of the source that created
     it. Anchored effects are instead bound to the source incarnation and use
     the replacement system's normal source-lifetime checks.
     """
 
-    def __init__(self, context, definition, *, anchored=False):
+    def __init__(
+        self,
+        context: object,
+        definition: object,
+        *,
+        anchored: bool = False,
+    ) -> None:
         """!
         @brief Create an operation that installs a replacement definition.
-
         @param context Bound resolution context.
         @param definition Replacement-effect definition to instantiate.
         @param anchored Whether to bind the runtime effect to the source.
@@ -26,10 +31,9 @@ class InstallReplacementOperation(Operation):
         self.definition = definition
         self.anchored = anchored
 
-    def execute(self, state):
+    def execute(self, state: object) -> list[object]:
         """!
         @brief Bind and register the replacement effect.
-
         @param state Current game state.
         @return A single `replacement_installed` event.
         """
@@ -55,29 +59,34 @@ class InstallReplacementOperation(Operation):
 class InstallReplacementEffect(Effect):
     """!
     @brief Create and install a replacement effect during resolution.
-
     The factory receives the live state and resolution context, allowing the
     resulting definition to capture choices such as targets, values or duration.
-
     Ordinary resolved replacement effects are independent of their source's
     later zone changes. Setting `anchored=True` explicitly ties the installed
     effect to that source incarnation.
-
     @var factory
         Pure factory producing a replacement-effect definition.
     @var anchored
         Whether the installed runtime effect is bound to its source.
     """
 
-    def __init__(self, key, factory, *, anchored=False):
+    def __init__(
+        self,
+        key: str,
+        factory: object,
+        *,
+        anchored: bool = False,
+    ) -> None:
+        """!
+        @brief Initialize this object.
+        """
         super().__init__(key)
         self.factory = factory
         self.anchored = anchored
 
-    def to_operations(self, state, context):
+    def to_operations(self, state: object, context: object) -> object:
         """!
         @brief Materialize and generate the replacement-installation operation.
-
         @param state Current game state.
         @param context Bound resolution context.
         """
@@ -87,7 +96,7 @@ class InstallReplacementEffect(Effect):
             anchored=self.anchored,
         )
 
-    def get_info(self):
+    def get_info(self) -> str:
         """!
         @brief Return a human-readable description of this effect.
         """

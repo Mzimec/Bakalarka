@@ -1,0 +1,134 @@
+{
+  "scope": "Forensic replay: old own choices, real searches only at failures/crash roots.\n\nScripted choices are explicitly marked and are NOT training/search results.\nNo rules or guards are patched. Failure-only hooks collect exception metadata.\n",
+  "status": "error",
+  "error": "KeyError: 'root'",
+  "matched_logged_search_roots": 18,
+  "actual_searches": [
+    {
+      "information_key": "abb59f865f656027306e096899302d763ed77f7a42b2071c2d6387e7f306872c",
+      "previous_reason": "history_sampling_budget",
+      "request": "PriorityDecisionRequest",
+      "turn": 11,
+      "phase": "DRAW",
+      "exception": "KeyError: 'root'"
+    }
+  ],
+  "diagnostics": [
+    {
+      "type": "snapshot_effect_membership",
+      "turn": 11,
+      "phase": "UPKEEP",
+      "request": "PriorityDecisionRequest",
+      "preparation": {
+        "route": "continuation",
+        "cause": "unsupported_snapshot: A public rule retains an inaccessible card reference",
+        "detail": {
+          "request": "PriorityDecisionRequest",
+          "phase": "UPKEEP",
+          "reference_path": [
+            "dict",
+            "<mapping-entry>",
+            "ContinuousEffectsManager",
+            "dict",
+            "<mapping-entry>",
+            "EffectRegister",
+            "dict",
+            "<mapping-entry>",
+            "InMemoryObjectRegister",
+            "dict",
+            "<mapping-entry>",
+            "ObjectStorage",
+            "dict",
+            "<mapping-entry>",
+            "list",
+            "<sequence-item>",
+            "EffectEntry",
+            "dict",
+            "<mapping-entry>",
+            "ContinuousEffect",
+            "dict",
+            "state",
+            "ContinuousEffectState",
+            "dict",
+            "<mapping-entry>",
+            "set",
+            "Card"
+          ]
+        },
+        "anchor_turn": 10,
+        "anchor_phase": "PRECOMBAT_MAIN"
+      },
+      "effects": [
+        {
+          "public_source": "Warden of Evos Isle",
+          "static_ability": "warden_reduction",
+          "targeting": "DynamicTargetingStrategy",
+          "hidden_zones": [
+            "HAND",
+            "HAND",
+            "HAND"
+          ]
+        }
+      ]
+    },
+    {
+      "type": "snapshot_effect_membership",
+      "turn": 11,
+      "phase": "DRAW",
+      "request": "PriorityDecisionRequest",
+      "preparation": {
+        "route": "continuation",
+        "cause": "unsupported_snapshot: A public rule retains an inaccessible card reference",
+        "detail": {
+          "request": "PriorityDecisionRequest",
+          "phase": "DRAW",
+          "reference_path": [
+            "dict",
+            "<mapping-entry>",
+            "ContinuousEffectsManager",
+            "dict",
+            "<mapping-entry>",
+            "EffectRegister",
+            "dict",
+            "<mapping-entry>",
+            "InMemoryObjectRegister",
+            "dict",
+            "<mapping-entry>",
+            "ObjectStorage",
+            "dict",
+            "<mapping-entry>",
+            "list",
+            "<sequence-item>",
+            "EffectEntry",
+            "dict",
+            "<mapping-entry>",
+            "ContinuousEffect",
+            "dict",
+            "state",
+            "ContinuousEffectState",
+            "dict",
+            "<mapping-entry>",
+            "set",
+            "Card"
+          ]
+        },
+        "anchor_turn": 10,
+        "anchor_phase": "PRECOMBAT_MAIN"
+      },
+      "effects": [
+        {
+          "public_source": "Warden of Evos Isle",
+          "static_ability": "warden_reduction",
+          "targeting": "DynamicTargetingStrategy",
+          "hidden_zones": [
+            "HAND",
+            "HAND",
+            "HAND"
+          ]
+        }
+      ]
+    }
+  ],
+  "fingerprint": "8c066b348be83c2aaeb581276109a303dc63c9531f0a7448da7d19ea931bbc26",
+  "source_unchanged": true
+}

@@ -1,6 +1,9 @@
 """First executable cards from the supplied Azorius Control deck."""
 
+from __future__ import annotations
 from dataclasses import replace
+from functools import lru_cache
+from immutabledict import immutabledict
 
 from game.cards.starter_cards import _spell, _slot
 from game.cards.starter_support import RuleEffect, ScryOperation
@@ -11,7 +14,7 @@ from game.game_actions.control_effects import (
 from game.operations.card_operations import DrawCardOperation
 
 
-def opt_operations(state, context):
+def opt_operations(state: object, context: object) -> object:
     """!
     @brief Finish scrying before drawing from the newly ordered library.
     """
@@ -19,7 +22,8 @@ def opt_operations(state, context):
     yield DrawCardOperation(context)
 
 
-def control_catalog():
+@lru_cache(maxsize=1)
+def _static_control_catalog():
     """!
     @brief Return fully implemented control definitions, without placeholders.
     """
@@ -42,4 +46,9 @@ def control_catalog():
     )
     verdict = replace(verdict, colors=frozenset({ManaType.WHITE, ManaType.BLUE}),
                       color_identity=frozenset({ManaType.WHITE, ManaType.BLUE}))
-    return {card.name: card for card in (counterspell, opt, verdict)}
+    return immutabledict({card.name: card for card in (counterspell, opt, verdict)})
+
+
+def control_catalog() -> dict:
+    """Return a fresh lookup table referencing published control definitions."""
+    return dict(_static_control_catalog())

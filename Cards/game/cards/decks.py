@@ -1,5 +1,6 @@
 """Counted decklists, including Arena text exports, independent of card behavior."""
 
+from __future__ import annotations
 from collections import Counter
 from dataclasses import dataclass
 from collections.abc import Mapping
@@ -27,10 +28,16 @@ ARENA_STARTERS = {
 
 @dataclass(frozen=True)
 class DeckList:
+    """!
+    @brief Immutable counted decklist independent of executable card rules.
+    """
     name: str
     cards: tuple[tuple[str, int], ...]
 
-    def __post_init__(self):
+    def __post_init__(self) -> None:
+        """!
+        @brief Validate and normalize immutable dataclass state.
+        """
         counts = Counter()
         for name, count in self.cards:
             if not isinstance(name, str) or not name.strip() or type(count) is not int or count < 1:
@@ -39,7 +46,7 @@ class DeckList:
         object.__setattr__(self, "cards", tuple(counts.items()))
 
     @classmethod
-    def from_arena(cls, text: str, name="Imported deck"):
+    def from_arena(cls, text: str, name: str = "Imported deck") -> object:
         """!
         @brief Read the main deck; reject sideboards rather than silently merging them.
         """
@@ -59,10 +66,19 @@ class DeckList:
         return cls(name, tuple(entries))
 
     @property
-    def size(self):
+    def size(self) -> int:
+        """!
+        @brief Return the total number of cards in this decklist.
+        """
         return sum(count for _, count in self.cards)
 
-    def resolve(self, catalog: Mapping[str, CardDefinition], *, minimum_size=60, maximum_copies=4):
+    def resolve(
+        self,
+        catalog: Mapping[str, CardDefinition],
+        *,
+        minimum_size: int = 60,
+        maximum_copies: int = 4,
+    ) -> object:
         """!
         @brief Validate before creating any runtime objects. This is not format legality.
         """
@@ -84,7 +100,7 @@ class DeckList:
         return tuple(result)
 
 
-def load_arena_starter(color):
+def load_arena_starter(color: str) -> object:
     """!
     @brief Read an ANB reference main deck; card mechanics still require a catalog.
     """

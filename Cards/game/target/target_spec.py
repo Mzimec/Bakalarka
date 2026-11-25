@@ -7,15 +7,16 @@ from collections.abc import Iterator, Set
 from dataclasses import dataclass
 from typing import Callable
 from helper.query_system.query import Query
+from helper.static_definition import StaticDefinition
 
 if TYPE_CHECKING:
     from ..game_state import Card, State, Player
     from helper.runtime_object import RuntimeObject
 
-__all__ = ["TargetSpec", "QueryTargetSpec", "PlayerQueryTargetSpec"]
+__all__ = ["TargetSpec", "QueryTargetSpec", "PlayerQueryTargetSpec", "SelfSpec"]
 
 
-class TargetSpec(ABC):
+class TargetSpec(StaticDefinition, ABC):
     """!
     @brief Base object that discovers legal target candidates.
     """
@@ -114,6 +115,16 @@ class QueryTargetSpec(TargetSpec):
             return False
 
         return self.register(state).contains(self.query_for(source, controller, state), target)
+
+
+class SelfSpec(TargetSpec):
+    """Select only the source, optionally gated by a pure predicate."""
+    def __init__(self, condition=lambda state, source: True):
+        self.condition = condition
+
+    def generate_candidates(self, source, controller, state, reserved=None):
+        if self.condition(state, source):
+            yield source
 
 
 class PlayerQueryTargetSpec(QueryTargetSpec):

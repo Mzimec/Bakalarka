@@ -1,0 +1,2486 @@
+{
+  "scope": "Controlled first-action comparison against fixed continuation; no win-rate claim.",
+  "results": [
+    {
+      "case": "double_block",
+      "mode": "heuristic",
+      "seed": 42,
+      "budget": null,
+      "selected": {
+        "declarations": {
+          "mapping": [
+            [
+              {
+                "card": "c1",
+                "name": "Moorland Inquisitor",
+                "zone_revision": 1
+              },
+              {
+                "card": "c3",
+                "name": "Rumbling Baloth",
+                "zone_revision": 1
+              }
+            ],
+            [
+              {
+                "card": "c2",
+                "name": "Moorland Inquisitor",
+                "zone_revision": 1
+              },
+              {
+                "card": "c3",
+                "name": "Rumbling Baloth",
+                "zone_revision": 1
+              }
+            ]
+          ]
+        },
+        "kind": "DeclareBlockersOption"
+      },
+      "elapsed_ms": 0.30499999411404133,
+      "search": null,
+      "verification": {
+        "passed": true,
+        "unresolved": false,
+        "terminal": false,
+        "trace": [
+          {
+            "player": 0,
+            "request": "DeclareBlockersRequest",
+            "phase": "DECLARE_BLOCKERS",
+            "action": {
+              "declarations": {
+                "mapping": [
+                  [
+                    {
+                      "card": "c1",
+                      "name": "Moorland Inquisitor",
+                      "zone_revision": 1
+                    },
+                    {
+                      "card": "c3",
+                      "name": "Rumbling Baloth",
+                      "zone_revision": 1
+                    }
+                  ],
+                  [
+                    {
+                      "card": "c2",
+                      "name": "Moorland Inquisitor",
+                      "zone_revision": 1
+                    },
+                    {
+                      "card": "c3",
+                      "name": "Rumbling Baloth",
+                      "zone_revision": 1
+                    }
+                  ]
+                ]
+              },
+              "kind": "DeclareBlockersOption"
+            }
+          },
+          {
+            "player": 1,
+            "request": "PriorityDecisionRequest",
+            "phase": "DECLARE_BLOCKERS",
+            "action": {
+              "kind": "PassPriorityAction",
+              "player": {
+                "player": 1
+              }
+            }
+          },
+          {
+            "player": 0,
+            "request": "PriorityDecisionRequest",
+            "phase": "DECLARE_BLOCKERS",
+            "action": {
+              "kind": "PassPriorityAction",
+              "player": {
+                "player": 0
+              }
+            }
+          },
+          {
+            "player": 1,
+            "request": "CombatDamageRequest",
+            "phase": "SECOND_COMBAT_DAMAGE",
+            "action": {
+              "assignments": {
+                "mapping": [
+                  [
+                    {
+                      "card": "c1",
+                      "name": "Moorland Inquisitor",
+                      "zone_revision": 1
+                    },
+                    0
+                  ],
+                  [
+                    {
+                      "card": "c2",
+                      "name": "Moorland Inquisitor",
+                      "zone_revision": 1
+                    },
+                    4
+                  ]
+                ]
+              },
+              "kind": "CombatDamageOption"
+            }
+          },
+          {
+            "player": 1,
+            "request": "ReplacementOrderRequest",
+            "phase": "SECOND_COMBAT_DAMAGE",
+            "action": {
+              "items": [
+                {
+                  "amount": 2,
+                  "combat": true,
+                  "context": {
+                    "ability": null,
+                    "action_key": "combat_damage",
+                    "controller": {
+                      "player": 0
+                    },
+                    "effects": null,
+                    "is_cost": false,
+                    "last_known": null,
+                    "parameters": {
+                      "x_variables": {
+                        "mapping": []
+                      }
+                    },
+                    "source": {
+                      "card": "c1",
+                      "name": "Moorland Inquisitor",
+                      "zone_revision": 1
+                    },
+                    "source_revision": null,
+                    "subability": null,
+                    "targets": null,
+                    "trigger_event": null,
+                    "uses_stack": false
+                  },
+                  "damage_controller": {
+                    "player": 0
+                  },
+                  "deathtouch": false,
+                  "defer_lifelink": false,
+                  "infect": false,
+                  "kind": "DamageCreatureOperation",
+                  "lifelink": false,
+                  "source_revision": 1,
+                  "target": {
+                    "card": "c3",
+                    "name": "Rumbling Baloth",
+                    "zone_revision": 1
+                  },
+                  "unpreventable": false,
+                  "wither": false
+                },
+                {
+                  "amount": 2,
+                  "combat": true,
+                  "context": {
+                    "ability": null,
+                    "action_key": "combat_damage",
+                    "controller": {
+                      "player": 0
+                    },
+                    "effects": null,
+                    "is_cost": false,
+                    "last_known": null,
+                    "parameters": {
+                      "x_variables": {
+                        "mapping": []
+                      }
+                    },
+                    "source": {
+                      "card": "c2",
+                      "name": "Moorland Inquisitor",
+                      "zone_revision": 1
+                    },
+                    "source_revision": null,
+                    "subability": null,
+                    "targets": null,
+                    "trigger_event": null,
+                    "uses_stack": false
+                  },
+                  "damage_controller": {
+                    "player": 0
+                  },
+                  "deathtouch": false,
+                  "defer_lifelink": false,
+                  "infect": false,
+                  "kind": "DamageCreatureOperation",
+                  "lifelink": false,
+                  "source_revision": 1,
+                  "target": {
+                    "card": "c3",
+                    "name": "Rumbling Baloth",
+                    "zone_revision": 1
+                  },
+                  "unpreventable": false,
+                  "wither": false
+                }
+              ],
+              "kind": "ReplacementOrderOption"
+            }
+          }
+        ],
+        "endpoint": {
+          "active": 1,
+          "battlefield": [
+            {
+              "abilities": [
+                {
+                  "allowed_zones": [
+                    "BATTLEFIELD"
+                  ],
+                  "costs": [
+                    {
+                      "action_node": null,
+                      "effects": [],
+                      "kind": "SubAbilityDefinition",
+                      "mana_cost": "{2}{W}",
+                      "resolution_speed": null,
+                      "slots": []
+                    }
+                  ],
+                  "effects": [
+                    {
+                      "action_node": {
+                        "effect_map": {
+                          "first_strike_until_cleanup": []
+                        },
+                        "kind": "EffectActionNode"
+                      },
+                      "effects": [
+                        {
+                          "description_unavailable": false,
+                          "features": {
+                            "kind": "unknown"
+                          },
+                          "key": "first_strike_until_cleanup",
+                          "kind": "TemporaryModifierEffect",
+                          "text": "Apply a temporary modifier until cleanup."
+                        }
+                      ],
+                      "kind": "SubAbilityDefinition",
+                      "mana_cost": null,
+                      "resolution_speed": null,
+                      "slots": []
+                    }
+                  ],
+                  "key": "first_strike",
+                  "kind": "ActivatedAbilityDefinition",
+                  "loyalty_cost": null,
+                  "mana_ability": false,
+                  "parameters": {},
+                  "sorcery_speed": false,
+                  "uses_stack": true
+                },
+                {
+                  "allowed_zones": [
+                    "HAND"
+                  ],
+                  "costs": [
+                    {
+                      "action_node": {
+                        "effect_map": {
+                          "Moorland Inquisitor:put_on_stack": []
+                        },
+                        "kind": "EffectActionNode"
+                      },
+                      "effects": [
+                        {
+                          "description_unavailable": false,
+                          "features": {
+                            "destination": "STACK",
+                            "kind": "move_source"
+                          },
+                          "key": "Moorland Inquisitor:put_on_stack",
+                          "kind": "MoveSourceEffect",
+                          "text": "Move this card to STACK."
+                        }
+                      ],
+                      "kind": "SubAbilityDefinition",
+                      "mana_cost": null,
+                      "resolution_speed": null,
+                      "slots": []
+                    }
+                  ],
+                  "effects": [
+                    {
+                      "action_node": {
+                        "effect_map": {
+                          "Moorland Inquisitor:to_battlefield": []
+                        },
+                        "kind": "EffectActionNode"
+                      },
+                      "effects": [
+                        {
+                          "description_unavailable": false,
+                          "features": {
+                            "destination": "BATTLEFIELD",
+                            "kind": "move_source"
+                          },
+                          "key": "Moorland Inquisitor:to_battlefield",
+                          "kind": "MoveSourceEffect",
+                          "text": "Move this card to BATTLEFIELD."
+                        }
+                      ],
+                      "kind": "SubAbilityDefinition",
+                      "mana_cost": null,
+                      "resolution_speed": null,
+                      "slots": []
+                    }
+                  ],
+                  "key": "cast:Moorland Inquisitor",
+                  "kind": "CastSpellAbilityDefinition",
+                  "loyalty_cost": null,
+                  "mana_ability": false,
+                  "parameters": {},
+                  "sorcery_speed": false,
+                  "uses_stack": true
+                }
+              ],
+              "attached_to": null,
+              "attachment_restrictions": [],
+              "attachments": [],
+              "casting_cost": "{1}{W}",
+              "chosen_x": 0,
+              "colors": [
+                "WHITE"
+              ],
+              "controller": 0,
+              "cost": "{1}{W}",
+              "counters": {},
+              "damage_by_deathtouch": false,
+              "damage_marked": 0,
+              "face_down": false,
+              "id": "c1",
+              "identity_visible": true,
+              "keywords": [],
+              "legendary": false,
+              "loyalty_activated_this_turn": false,
+              "mana_value": 2,
+              "name": "Moorland Inquisitor",
+              "owner": 0,
+              "power": 2,
+              "skip_untap": null,
+              "static_abilities": [],
+              "subtypes": [
+                "HUMAN",
+                "SOLDIER"
+              ],
+              "summoning_sick": false,
+              "tapped": false,
+              "text": "{2}{W}: This creature gains first strike until end of turn. (It deals combat damage before creatures without first strike.)",
+              "token": false,
+              "toughness": 2,
+              "triggers": [],
+              "types": [
+                "CREATURE"
+              ],
+              "zone": "BATTLEFIELD",
+              "zone_revision": 1
+            }
+          ],
+          "combat": {
+            "active": true,
+            "attackers": [],
+            "attackers_declared": true,
+            "blocked": [
+              "c3"
+            ],
+            "blockers": {
+              "c1": "c3"
+            },
+            "defenders": {},
+            "first_damage_done": false,
+            "first_strike_step": false,
+            "regular_damage_done": true
+          },
+          "continuous_effects": [],
+          "exile": [],
+          "graveyard": [
+            {
+              "abilities": [
+                {
+                  "allowed_zones": [
+                    "BATTLEFIELD"
+                  ],
+                  "costs": [
+                    {
+                      "action_node": null,
+                      "effects": [],
+                      "kind": "SubAbilityDefinition",
+                      "mana_cost": "{2}{W}",
+                      "resolution_speed": null,
+                      "slots": []
+                    }
+                  ],
+                  "effects": [
+                    {
+                      "action_node": {
+                        "effect_map": {
+                          "first_strike_until_cleanup": []
+                        },
+                        "kind": "EffectActionNode"
+                      },
+                      "effects": [
+                        {
+                          "description_unavailable": false,
+                          "features": {
+                            "kind": "unknown"
+                          },
+                          "key": "first_strike_until_cleanup",
+                          "kind": "TemporaryModifierEffect",
+                          "text": "Apply a temporary modifier until cleanup."
+                        }
+                      ],
+                      "kind": "SubAbilityDefinition",
+                      "mana_cost": null,
+                      "resolution_speed": null,
+                      "slots": []
+                    }
+                  ],
+                  "key": "first_strike",
+                  "kind": "ActivatedAbilityDefinition",
+                  "loyalty_cost": null,
+                  "mana_ability": false,
+                  "parameters": {},
+                  "sorcery_speed": false,
+                  "uses_stack": true
+                },
+                {
+                  "allowed_zones": [
+                    "HAND"
+                  ],
+                  "costs": [
+                    {
+                      "action_node": {
+                        "effect_map": {
+                          "Moorland Inquisitor:put_on_stack": []
+                        },
+                        "kind": "EffectActionNode"
+                      },
+                      "effects": [
+                        {
+                          "description_unavailable": false,
+                          "features": {
+                            "destination": "STACK",
+                            "kind": "move_source"
+                          },
+                          "key": "Moorland Inquisitor:put_on_stack",
+                          "kind": "MoveSourceEffect",
+                          "text": "Move this card to STACK."
+                        }
+                      ],
+                      "kind": "SubAbilityDefinition",
+                      "mana_cost": null,
+                      "resolution_speed": null,
+                      "slots": []
+                    }
+                  ],
+                  "effects": [
+                    {
+                      "action_node": {
+                        "effect_map": {
+                          "Moorland Inquisitor:to_battlefield": []
+                        },
+                        "kind": "EffectActionNode"
+                      },
+                      "effects": [
+                        {
+                          "description_unavailable": false,
+                          "features": {
+                            "destination": "BATTLEFIELD",
+                            "kind": "move_source"
+                          },
+                          "key": "Moorland Inquisitor:to_battlefield",
+                          "kind": "MoveSourceEffect",
+                          "text": "Move this card to BATTLEFIELD."
+                        }
+                      ],
+                      "kind": "SubAbilityDefinition",
+                      "mana_cost": null,
+                      "resolution_speed": null,
+                      "slots": []
+                    }
+                  ],
+                  "key": "cast:Moorland Inquisitor",
+                  "kind": "CastSpellAbilityDefinition",
+                  "loyalty_cost": null,
+                  "mana_ability": false,
+                  "parameters": {},
+                  "sorcery_speed": false,
+                  "uses_stack": true
+                }
+              ],
+              "attached_to": null,
+              "attachment_restrictions": [],
+              "attachments": [],
+              "casting_cost": "{1}{W}",
+              "chosen_x": 0,
+              "colors": [
+                "WHITE"
+              ],
+              "controller": 0,
+              "cost": "{1}{W}",
+              "counters": {},
+              "damage_by_deathtouch": false,
+              "damage_marked": 0,
+              "face_down": false,
+              "id": "c2",
+              "identity_visible": true,
+              "keywords": [],
+              "legendary": false,
+              "loyalty_activated_this_turn": false,
+              "mana_value": 2,
+              "name": "Moorland Inquisitor",
+              "owner": 0,
+              "power": 2,
+              "skip_untap": null,
+              "static_abilities": [],
+              "subtypes": [
+                "HUMAN",
+                "SOLDIER"
+              ],
+              "summoning_sick": false,
+              "tapped": false,
+              "text": "{2}{W}: This creature gains first strike until end of turn. (It deals combat damage before creatures without first strike.)",
+              "token": false,
+              "toughness": 2,
+              "triggers": [],
+              "types": [
+                "CREATURE"
+              ],
+              "zone": "GRAVEYARD",
+              "zone_revision": 2
+            },
+            {
+              "abilities": [
+                {
+                  "allowed_zones": [
+                    "HAND"
+                  ],
+                  "costs": [
+                    {
+                      "action_node": {
+                        "effect_map": {
+                          "Rumbling Baloth:put_on_stack": []
+                        },
+                        "kind": "EffectActionNode"
+                      },
+                      "effects": [
+                        {
+                          "description_unavailable": false,
+                          "features": {
+                            "destination": "STACK",
+                            "kind": "move_source"
+                          },
+                          "key": "Rumbling Baloth:put_on_stack",
+                          "kind": "MoveSourceEffect",
+                          "text": "Move this card to STACK."
+                        }
+                      ],
+                      "kind": "SubAbilityDefinition",
+                      "mana_cost": null,
+                      "resolution_speed": null,
+                      "slots": []
+                    }
+                  ],
+                  "effects": [
+                    {
+                      "action_node": {
+                        "effect_map": {
+                          "Rumbling Baloth:to_battlefield": []
+                        },
+                        "kind": "EffectActionNode"
+                      },
+                      "effects": [
+                        {
+                          "description_unavailable": false,
+                          "features": {
+                            "destination": "BATTLEFIELD",
+                            "kind": "move_source"
+                          },
+                          "key": "Rumbling Baloth:to_battlefield",
+                          "kind": "MoveSourceEffect",
+                          "text": "Move this card to BATTLEFIELD."
+                        }
+                      ],
+                      "kind": "SubAbilityDefinition",
+                      "mana_cost": null,
+                      "resolution_speed": null,
+                      "slots": []
+                    }
+                  ],
+                  "key": "cast:Rumbling Baloth",
+                  "kind": "CastSpellAbilityDefinition",
+                  "loyalty_cost": null,
+                  "mana_ability": false,
+                  "parameters": {},
+                  "sorcery_speed": false,
+                  "uses_stack": true
+                }
+              ],
+              "attached_to": null,
+              "attachment_restrictions": [],
+              "attachments": [],
+              "casting_cost": "{2}{G}{G}",
+              "chosen_x": 0,
+              "colors": [
+                "GREEN"
+              ],
+              "controller": 1,
+              "cost": "{2}{G}{G}",
+              "counters": {},
+              "damage_by_deathtouch": false,
+              "damage_marked": 0,
+              "face_down": false,
+              "id": "c3",
+              "identity_visible": true,
+              "keywords": [],
+              "legendary": false,
+              "loyalty_activated_this_turn": false,
+              "mana_value": 4,
+              "name": "Rumbling Baloth",
+              "owner": 1,
+              "power": 4,
+              "skip_untap": null,
+              "static_abilities": [],
+              "subtypes": [
+                "BEAST"
+              ],
+              "summoning_sick": false,
+              "tapped": false,
+              "text": "No printed abilities.",
+              "token": false,
+              "toughness": 4,
+              "triggers": [],
+              "types": [
+                "CREATURE"
+              ],
+              "zone": "GRAVEYARD",
+              "zone_revision": 2
+            }
+          ],
+          "hand": [],
+          "information_limits": [
+            "Opponent hands and all library identities/order are hidden.",
+            "Face-down identities are masked; inspection permissions are not yet modeled.",
+            "Knowledge covers published zone changes/draws; general reveal and scry permissions are not yet modeled.",
+            "description_unavailable marks rule code without a declarative description; do not infer its meaning."
+          ],
+          "knowledge": {
+            "coverage": "Zone changes and draws published since this agent joined; no general reveal/scry adapter yet.",
+            "event_count": 2,
+            "known_locations": [
+              {
+                "card_id": "c1",
+                "name": "Moorland Inquisitor",
+                "owner": 0,
+                "provenance": "snapshot",
+                "zone": "BATTLEFIELD"
+              },
+              {
+                "card_id": "c2",
+                "name": "Moorland Inquisitor",
+                "owner": 0,
+                "provenance": "snapshot",
+                "zone": "GRAVEYARD"
+              },
+              {
+                "card_id": "c3",
+                "name": "Rumbling Baloth",
+                "owner": 1,
+                "provenance": "snapshot",
+                "zone": "GRAVEYARD"
+              }
+            ],
+            "observed_cards": [
+              {
+                "card_id": "c1",
+                "name": "Moorland Inquisitor",
+                "owner": 0
+              },
+              {
+                "card_id": "c2",
+                "name": "Moorland Inquisitor",
+                "owner": 0
+              },
+              {
+                "card_id": "c3",
+                "name": "Rumbling Baloth",
+                "owner": 1
+              }
+            ],
+            "recent_events": [
+              {
+                "card_id": "c3",
+                "from_zone": "BATTLEFIELD",
+                "kind": "card_moved",
+                "name": "Rumbling Baloth",
+                "owner": 1,
+                "phase": "SECOND_COMBAT_DAMAGE",
+                "player": 1,
+                "to_zone": "GRAVEYARD",
+                "turn": 5
+              },
+              {
+                "card_id": "c2",
+                "from_zone": "BATTLEFIELD",
+                "kind": "card_moved",
+                "name": "Moorland Inquisitor",
+                "owner": 0,
+                "phase": "SECOND_COMBAT_DAMAGE",
+                "player": 0,
+                "to_zone": "GRAVEYARD",
+                "turn": 5
+              }
+            ]
+          },
+          "passed_players": [],
+          "pending_abilities": [],
+          "phase": "SECOND_COMBAT_DAMAGE",
+          "players": [
+            {
+              "hand_size": 0,
+              "has_lost": false,
+              "id": 0,
+              "land_plays_per_turn": 1,
+              "lands_played_this_turn": 0,
+              "library_size": 4,
+              "life": 2,
+              "mana": {},
+              "maximum_hand_size": 7,
+              "name": "Player 1",
+              "poison_counters": 0
+            },
+            {
+              "hand_size": 0,
+              "has_lost": false,
+              "id": 1,
+              "land_plays_per_turn": 1,
+              "lands_played_this_turn": 0,
+              "library_size": 4,
+              "life": 20,
+              "mana": {},
+              "maximum_hand_size": 7,
+              "name": "Player 2",
+              "poison_counters": 0
+            }
+          ],
+          "priority": 1,
+          "replacement_effects": [],
+          "schema_version": 2,
+          "self": 0,
+          "stack": [],
+          "turn": 5
+        }
+      }
+    },
+    {
+      "case": "double_block",
+      "mode": "uniform",
+      "seed": 42,
+      "budget": {
+        "worlds": 1,
+        "iterations": 16,
+        "max_advances": 304,
+        "max_depth": 1,
+        "max_extensions": 16
+      },
+      "selected": {
+        "declarations": {
+          "mapping": [
+            [
+              {
+                "card": "c1",
+                "name": "Moorland Inquisitor",
+                "zone_revision": 1
+              },
+              {
+                "card": "c3",
+                "name": "Rumbling Baloth",
+                "zone_revision": 1
+              }
+            ],
+            [
+              {
+                "card": "c2",
+                "name": "Moorland Inquisitor",
+                "zone_revision": 1
+              },
+              {
+                "card": "c3",
+                "name": "Rumbling Baloth",
+                "zone_revision": 1
+              }
+            ]
+          ]
+        },
+        "kind": "DeclareBlockersOption"
+      },
+      "elapsed_ms": 1932.4249000055715,
+      "search": {
+        "choice": {
+          "kind": "DeclareBlockersOption",
+          "_json": "{\"declarations\":{\"mapping\":[[{\"card\":\"c1\",\"name\":\"Moorland Inquisitor\",\"zone_revision\":1},{\"card\":\"c3\",\"name\":\"Rumbling Baloth\",\"zone_revision\":1}],[{\"card\":\"c2\",\"name\":\"Moorland Inquisitor\",\"zone_revision\":1},{\"card\":\"c3\",\"name\":\"Rumbling Baloth\",\"zone_revision\":1}]]},\"kind\":\"DeclareBlockersOption\"}"
+        },
+        "value": 0.10626395613790247,
+        "used_fallback": false,
+        "root_coverage_complete": true,
+        "stop_reason": "iteration_budget",
+        "estimates": [
+          {
+            "action": {
+              "kind": "DeclareBlockersOption",
+              "_json": "{\"declarations\":{\"mapping\":[[{\"card\":\"c1\",\"name\":\"Moorland Inquisitor\",\"zone_revision\":1},{\"card\":\"c3\",\"name\":\"Rumbling Baloth\",\"zone_revision\":1}],[{\"card\":\"c2\",\"name\":\"Moorland Inquisitor\",\"zone_revision\":1},{\"card\":\"c3\",\"name\":\"Rumbling Baloth\",\"zone_revision\":1}]]},\"kind\":\"DeclareBlockersOption\"}"
+            },
+            "visits": 6,
+            "mean_value": 0.10626395613790247
+          },
+          {
+            "action": {
+              "kind": "DeclareBlockersOption",
+              "_json": "{\"declarations\":{\"mapping\":[[{\"card\":\"c1\",\"name\":\"Moorland Inquisitor\",\"zone_revision\":1},{\"card\":\"c3\",\"name\":\"Rumbling Baloth\",\"zone_revision\":1}]]},\"kind\":\"DeclareBlockersOption\"}"
+            },
+            "visits": 4,
+            "mean_value": -0.20377375936011305
+          },
+          {
+            "action": {
+              "kind": "DeclareBlockersOption",
+              "_json": "{\"declarations\":{\"mapping\":[[{\"card\":\"c2\",\"name\":\"Moorland Inquisitor\",\"zone_revision\":1},{\"card\":\"c3\",\"name\":\"Rumbling Baloth\",\"zone_revision\":1}]]},\"kind\":\"DeclareBlockersOption\"}"
+            },
+            "visits": 4,
+            "mean_value": -0.20377375936011305
+          },
+          {
+            "action": {
+              "kind": "DeclareBlockersOption",
+              "_json": "{\"declarations\":{\"mapping\":[]},\"kind\":\"DeclareBlockersOption\"}"
+            },
+            "visits": 2,
+            "mean_value": -1.0
+          }
+        ],
+        "metrics": {
+          "worlds_built": 1,
+          "iterations_started": 16,
+          "iterations_completed": 16,
+          "advance_attempts": 60,
+          "terminal_leaves": 2,
+          "heuristic_leaves": 14,
+          "interrupted_trajectories": 0,
+          "interruption_reasons": [],
+          "information_nodes": 5,
+          "elapsed_ms": 1932.1563000557944,
+          "rollout_policy_choices": 0,
+          "rollout_random_choices": 4
+        }
+      },
+      "verification": {
+        "passed": true,
+        "unresolved": false,
+        "terminal": false,
+        "trace": [
+          {
+            "player": 0,
+            "request": "DeclareBlockersRequest",
+            "phase": "DECLARE_BLOCKERS",
+            "action": {
+              "declarations": {
+                "mapping": [
+                  [
+                    {
+                      "card": "c1",
+                      "name": "Moorland Inquisitor",
+                      "zone_revision": 1
+                    },
+                    {
+                      "card": "c3",
+                      "name": "Rumbling Baloth",
+                      "zone_revision": 1
+                    }
+                  ],
+                  [
+                    {
+                      "card": "c2",
+                      "name": "Moorland Inquisitor",
+                      "zone_revision": 1
+                    },
+                    {
+                      "card": "c3",
+                      "name": "Rumbling Baloth",
+                      "zone_revision": 1
+                    }
+                  ]
+                ]
+              },
+              "kind": "DeclareBlockersOption"
+            }
+          },
+          {
+            "player": 1,
+            "request": "PriorityDecisionRequest",
+            "phase": "DECLARE_BLOCKERS",
+            "action": {
+              "kind": "PassPriorityAction",
+              "player": {
+                "player": 1
+              }
+            }
+          },
+          {
+            "player": 0,
+            "request": "PriorityDecisionRequest",
+            "phase": "DECLARE_BLOCKERS",
+            "action": {
+              "kind": "PassPriorityAction",
+              "player": {
+                "player": 0
+              }
+            }
+          },
+          {
+            "player": 1,
+            "request": "CombatDamageRequest",
+            "phase": "SECOND_COMBAT_DAMAGE",
+            "action": {
+              "assignments": {
+                "mapping": [
+                  [
+                    {
+                      "card": "c1",
+                      "name": "Moorland Inquisitor",
+                      "zone_revision": 1
+                    },
+                    0
+                  ],
+                  [
+                    {
+                      "card": "c2",
+                      "name": "Moorland Inquisitor",
+                      "zone_revision": 1
+                    },
+                    4
+                  ]
+                ]
+              },
+              "kind": "CombatDamageOption"
+            }
+          },
+          {
+            "player": 1,
+            "request": "ReplacementOrderRequest",
+            "phase": "SECOND_COMBAT_DAMAGE",
+            "action": {
+              "items": [
+                {
+                  "amount": 2,
+                  "combat": true,
+                  "context": {
+                    "ability": null,
+                    "action_key": "combat_damage",
+                    "controller": {
+                      "player": 0
+                    },
+                    "effects": null,
+                    "is_cost": false,
+                    "last_known": null,
+                    "parameters": {
+                      "x_variables": {
+                        "mapping": []
+                      }
+                    },
+                    "source": {
+                      "card": "c1",
+                      "name": "Moorland Inquisitor",
+                      "zone_revision": 1
+                    },
+                    "source_revision": null,
+                    "subability": null,
+                    "targets": null,
+                    "trigger_event": null,
+                    "uses_stack": false
+                  },
+                  "damage_controller": {
+                    "player": 0
+                  },
+                  "deathtouch": false,
+                  "defer_lifelink": false,
+                  "infect": false,
+                  "kind": "DamageCreatureOperation",
+                  "lifelink": false,
+                  "source_revision": 1,
+                  "target": {
+                    "card": "c3",
+                    "name": "Rumbling Baloth",
+                    "zone_revision": 1
+                  },
+                  "unpreventable": false,
+                  "wither": false
+                },
+                {
+                  "amount": 2,
+                  "combat": true,
+                  "context": {
+                    "ability": null,
+                    "action_key": "combat_damage",
+                    "controller": {
+                      "player": 0
+                    },
+                    "effects": null,
+                    "is_cost": false,
+                    "last_known": null,
+                    "parameters": {
+                      "x_variables": {
+                        "mapping": []
+                      }
+                    },
+                    "source": {
+                      "card": "c2",
+                      "name": "Moorland Inquisitor",
+                      "zone_revision": 1
+                    },
+                    "source_revision": null,
+                    "subability": null,
+                    "targets": null,
+                    "trigger_event": null,
+                    "uses_stack": false
+                  },
+                  "damage_controller": {
+                    "player": 0
+                  },
+                  "deathtouch": false,
+                  "defer_lifelink": false,
+                  "infect": false,
+                  "kind": "DamageCreatureOperation",
+                  "lifelink": false,
+                  "source_revision": 1,
+                  "target": {
+                    "card": "c3",
+                    "name": "Rumbling Baloth",
+                    "zone_revision": 1
+                  },
+                  "unpreventable": false,
+                  "wither": false
+                }
+              ],
+              "kind": "ReplacementOrderOption"
+            }
+          }
+        ],
+        "endpoint": {
+          "active": 1,
+          "battlefield": [
+            {
+              "abilities": [
+                {
+                  "allowed_zones": [
+                    "BATTLEFIELD"
+                  ],
+                  "costs": [
+                    {
+                      "action_node": null,
+                      "effects": [],
+                      "kind": "SubAbilityDefinition",
+                      "mana_cost": "{2}{W}",
+                      "resolution_speed": null,
+                      "slots": []
+                    }
+                  ],
+                  "effects": [
+                    {
+                      "action_node": {
+                        "effect_map": {
+                          "first_strike_until_cleanup": []
+                        },
+                        "kind": "EffectActionNode"
+                      },
+                      "effects": [
+                        {
+                          "description_unavailable": false,
+                          "features": {
+                            "kind": "unknown"
+                          },
+                          "key": "first_strike_until_cleanup",
+                          "kind": "TemporaryModifierEffect",
+                          "text": "Apply a temporary modifier until cleanup."
+                        }
+                      ],
+                      "kind": "SubAbilityDefinition",
+                      "mana_cost": null,
+                      "resolution_speed": null,
+                      "slots": []
+                    }
+                  ],
+                  "key": "first_strike",
+                  "kind": "ActivatedAbilityDefinition",
+                  "loyalty_cost": null,
+                  "mana_ability": false,
+                  "parameters": {},
+                  "sorcery_speed": false,
+                  "uses_stack": true
+                },
+                {
+                  "allowed_zones": [
+                    "HAND"
+                  ],
+                  "costs": [
+                    {
+                      "action_node": {
+                        "effect_map": {
+                          "Moorland Inquisitor:put_on_stack": []
+                        },
+                        "kind": "EffectActionNode"
+                      },
+                      "effects": [
+                        {
+                          "description_unavailable": false,
+                          "features": {
+                            "destination": "STACK",
+                            "kind": "move_source"
+                          },
+                          "key": "Moorland Inquisitor:put_on_stack",
+                          "kind": "MoveSourceEffect",
+                          "text": "Move this card to STACK."
+                        }
+                      ],
+                      "kind": "SubAbilityDefinition",
+                      "mana_cost": null,
+                      "resolution_speed": null,
+                      "slots": []
+                    }
+                  ],
+                  "effects": [
+                    {
+                      "action_node": {
+                        "effect_map": {
+                          "Moorland Inquisitor:to_battlefield": []
+                        },
+                        "kind": "EffectActionNode"
+                      },
+                      "effects": [
+                        {
+                          "description_unavailable": false,
+                          "features": {
+                            "destination": "BATTLEFIELD",
+                            "kind": "move_source"
+                          },
+                          "key": "Moorland Inquisitor:to_battlefield",
+                          "kind": "MoveSourceEffect",
+                          "text": "Move this card to BATTLEFIELD."
+                        }
+                      ],
+                      "kind": "SubAbilityDefinition",
+                      "mana_cost": null,
+                      "resolution_speed": null,
+                      "slots": []
+                    }
+                  ],
+                  "key": "cast:Moorland Inquisitor",
+                  "kind": "CastSpellAbilityDefinition",
+                  "loyalty_cost": null,
+                  "mana_ability": false,
+                  "parameters": {},
+                  "sorcery_speed": false,
+                  "uses_stack": true
+                }
+              ],
+              "attached_to": null,
+              "attachment_restrictions": [],
+              "attachments": [],
+              "casting_cost": "{1}{W}",
+              "chosen_x": 0,
+              "colors": [
+                "WHITE"
+              ],
+              "controller": 0,
+              "cost": "{1}{W}",
+              "counters": {},
+              "damage_by_deathtouch": false,
+              "damage_marked": 0,
+              "face_down": false,
+              "id": "c1",
+              "identity_visible": true,
+              "keywords": [],
+              "legendary": false,
+              "loyalty_activated_this_turn": false,
+              "mana_value": 2,
+              "name": "Moorland Inquisitor",
+              "owner": 0,
+              "power": 2,
+              "skip_untap": null,
+              "static_abilities": [],
+              "subtypes": [
+                "HUMAN",
+                "SOLDIER"
+              ],
+              "summoning_sick": false,
+              "tapped": false,
+              "text": "{2}{W}: This creature gains first strike until end of turn. (It deals combat damage before creatures without first strike.)",
+              "token": false,
+              "toughness": 2,
+              "triggers": [],
+              "types": [
+                "CREATURE"
+              ],
+              "zone": "BATTLEFIELD",
+              "zone_revision": 1
+            }
+          ],
+          "combat": {
+            "active": true,
+            "attackers": [],
+            "attackers_declared": true,
+            "blocked": [
+              "c3"
+            ],
+            "blockers": {
+              "c1": "c3"
+            },
+            "defenders": {},
+            "first_damage_done": false,
+            "first_strike_step": false,
+            "regular_damage_done": true
+          },
+          "continuous_effects": [],
+          "exile": [],
+          "graveyard": [
+            {
+              "abilities": [
+                {
+                  "allowed_zones": [
+                    "BATTLEFIELD"
+                  ],
+                  "costs": [
+                    {
+                      "action_node": null,
+                      "effects": [],
+                      "kind": "SubAbilityDefinition",
+                      "mana_cost": "{2}{W}",
+                      "resolution_speed": null,
+                      "slots": []
+                    }
+                  ],
+                  "effects": [
+                    {
+                      "action_node": {
+                        "effect_map": {
+                          "first_strike_until_cleanup": []
+                        },
+                        "kind": "EffectActionNode"
+                      },
+                      "effects": [
+                        {
+                          "description_unavailable": false,
+                          "features": {
+                            "kind": "unknown"
+                          },
+                          "key": "first_strike_until_cleanup",
+                          "kind": "TemporaryModifierEffect",
+                          "text": "Apply a temporary modifier until cleanup."
+                        }
+                      ],
+                      "kind": "SubAbilityDefinition",
+                      "mana_cost": null,
+                      "resolution_speed": null,
+                      "slots": []
+                    }
+                  ],
+                  "key": "first_strike",
+                  "kind": "ActivatedAbilityDefinition",
+                  "loyalty_cost": null,
+                  "mana_ability": false,
+                  "parameters": {},
+                  "sorcery_speed": false,
+                  "uses_stack": true
+                },
+                {
+                  "allowed_zones": [
+                    "HAND"
+                  ],
+                  "costs": [
+                    {
+                      "action_node": {
+                        "effect_map": {
+                          "Moorland Inquisitor:put_on_stack": []
+                        },
+                        "kind": "EffectActionNode"
+                      },
+                      "effects": [
+                        {
+                          "description_unavailable": false,
+                          "features": {
+                            "destination": "STACK",
+                            "kind": "move_source"
+                          },
+                          "key": "Moorland Inquisitor:put_on_stack",
+                          "kind": "MoveSourceEffect",
+                          "text": "Move this card to STACK."
+                        }
+                      ],
+                      "kind": "SubAbilityDefinition",
+                      "mana_cost": null,
+                      "resolution_speed": null,
+                      "slots": []
+                    }
+                  ],
+                  "effects": [
+                    {
+                      "action_node": {
+                        "effect_map": {
+                          "Moorland Inquisitor:to_battlefield": []
+                        },
+                        "kind": "EffectActionNode"
+                      },
+                      "effects": [
+                        {
+                          "description_unavailable": false,
+                          "features": {
+                            "destination": "BATTLEFIELD",
+                            "kind": "move_source"
+                          },
+                          "key": "Moorland Inquisitor:to_battlefield",
+                          "kind": "MoveSourceEffect",
+                          "text": "Move this card to BATTLEFIELD."
+                        }
+                      ],
+                      "kind": "SubAbilityDefinition",
+                      "mana_cost": null,
+                      "resolution_speed": null,
+                      "slots": []
+                    }
+                  ],
+                  "key": "cast:Moorland Inquisitor",
+                  "kind": "CastSpellAbilityDefinition",
+                  "loyalty_cost": null,
+                  "mana_ability": false,
+                  "parameters": {},
+                  "sorcery_speed": false,
+                  "uses_stack": true
+                }
+              ],
+              "attached_to": null,
+              "attachment_restrictions": [],
+              "attachments": [],
+              "casting_cost": "{1}{W}",
+              "chosen_x": 0,
+              "colors": [
+                "WHITE"
+              ],
+              "controller": 0,
+              "cost": "{1}{W}",
+              "counters": {},
+              "damage_by_deathtouch": false,
+              "damage_marked": 0,
+              "face_down": false,
+              "id": "c2",
+              "identity_visible": true,
+              "keywords": [],
+              "legendary": false,
+              "loyalty_activated_this_turn": false,
+              "mana_value": 2,
+              "name": "Moorland Inquisitor",
+              "owner": 0,
+              "power": 2,
+              "skip_untap": null,
+              "static_abilities": [],
+              "subtypes": [
+                "HUMAN",
+                "SOLDIER"
+              ],
+              "summoning_sick": false,
+              "tapped": false,
+              "text": "{2}{W}: This creature gains first strike until end of turn. (It deals combat damage before creatures without first strike.)",
+              "token": false,
+              "toughness": 2,
+              "triggers": [],
+              "types": [
+                "CREATURE"
+              ],
+              "zone": "GRAVEYARD",
+              "zone_revision": 2
+            },
+            {
+              "abilities": [
+                {
+                  "allowed_zones": [
+                    "HAND"
+                  ],
+                  "costs": [
+                    {
+                      "action_node": {
+                        "effect_map": {
+                          "Rumbling Baloth:put_on_stack": []
+                        },
+                        "kind": "EffectActionNode"
+                      },
+                      "effects": [
+                        {
+                          "description_unavailable": false,
+                          "features": {
+                            "destination": "STACK",
+                            "kind": "move_source"
+                          },
+                          "key": "Rumbling Baloth:put_on_stack",
+                          "kind": "MoveSourceEffect",
+                          "text": "Move this card to STACK."
+                        }
+                      ],
+                      "kind": "SubAbilityDefinition",
+                      "mana_cost": null,
+                      "resolution_speed": null,
+                      "slots": []
+                    }
+                  ],
+                  "effects": [
+                    {
+                      "action_node": {
+                        "effect_map": {
+                          "Rumbling Baloth:to_battlefield": []
+                        },
+                        "kind": "EffectActionNode"
+                      },
+                      "effects": [
+                        {
+                          "description_unavailable": false,
+                          "features": {
+                            "destination": "BATTLEFIELD",
+                            "kind": "move_source"
+                          },
+                          "key": "Rumbling Baloth:to_battlefield",
+                          "kind": "MoveSourceEffect",
+                          "text": "Move this card to BATTLEFIELD."
+                        }
+                      ],
+                      "kind": "SubAbilityDefinition",
+                      "mana_cost": null,
+                      "resolution_speed": null,
+                      "slots": []
+                    }
+                  ],
+                  "key": "cast:Rumbling Baloth",
+                  "kind": "CastSpellAbilityDefinition",
+                  "loyalty_cost": null,
+                  "mana_ability": false,
+                  "parameters": {},
+                  "sorcery_speed": false,
+                  "uses_stack": true
+                }
+              ],
+              "attached_to": null,
+              "attachment_restrictions": [],
+              "attachments": [],
+              "casting_cost": "{2}{G}{G}",
+              "chosen_x": 0,
+              "colors": [
+                "GREEN"
+              ],
+              "controller": 1,
+              "cost": "{2}{G}{G}",
+              "counters": {},
+              "damage_by_deathtouch": false,
+              "damage_marked": 0,
+              "face_down": false,
+              "id": "c3",
+              "identity_visible": true,
+              "keywords": [],
+              "legendary": false,
+              "loyalty_activated_this_turn": false,
+              "mana_value": 4,
+              "name": "Rumbling Baloth",
+              "owner": 1,
+              "power": 4,
+              "skip_untap": null,
+              "static_abilities": [],
+              "subtypes": [
+                "BEAST"
+              ],
+              "summoning_sick": false,
+              "tapped": false,
+              "text": "No printed abilities.",
+              "token": false,
+              "toughness": 4,
+              "triggers": [],
+              "types": [
+                "CREATURE"
+              ],
+              "zone": "GRAVEYARD",
+              "zone_revision": 2
+            }
+          ],
+          "hand": [],
+          "information_limits": [
+            "Opponent hands and all library identities/order are hidden.",
+            "Face-down identities are masked; inspection permissions are not yet modeled.",
+            "Knowledge covers published zone changes/draws; general reveal and scry permissions are not yet modeled.",
+            "description_unavailable marks rule code without a declarative description; do not infer its meaning."
+          ],
+          "knowledge": {
+            "coverage": "Zone changes and draws published since this agent joined; no general reveal/scry adapter yet.",
+            "event_count": 2,
+            "known_locations": [
+              {
+                "card_id": "c1",
+                "name": "Moorland Inquisitor",
+                "owner": 0,
+                "provenance": "snapshot",
+                "zone": "BATTLEFIELD"
+              },
+              {
+                "card_id": "c2",
+                "name": "Moorland Inquisitor",
+                "owner": 0,
+                "provenance": "snapshot",
+                "zone": "GRAVEYARD"
+              },
+              {
+                "card_id": "c3",
+                "name": "Rumbling Baloth",
+                "owner": 1,
+                "provenance": "snapshot",
+                "zone": "GRAVEYARD"
+              }
+            ],
+            "observed_cards": [
+              {
+                "card_id": "c1",
+                "name": "Moorland Inquisitor",
+                "owner": 0
+              },
+              {
+                "card_id": "c2",
+                "name": "Moorland Inquisitor",
+                "owner": 0
+              },
+              {
+                "card_id": "c3",
+                "name": "Rumbling Baloth",
+                "owner": 1
+              }
+            ],
+            "recent_events": [
+              {
+                "card_id": "c3",
+                "from_zone": "BATTLEFIELD",
+                "kind": "card_moved",
+                "name": "Rumbling Baloth",
+                "owner": 1,
+                "phase": "SECOND_COMBAT_DAMAGE",
+                "player": 1,
+                "to_zone": "GRAVEYARD",
+                "turn": 5
+              },
+              {
+                "card_id": "c2",
+                "from_zone": "BATTLEFIELD",
+                "kind": "card_moved",
+                "name": "Moorland Inquisitor",
+                "owner": 0,
+                "phase": "SECOND_COMBAT_DAMAGE",
+                "player": 0,
+                "to_zone": "GRAVEYARD",
+                "turn": 5
+              }
+            ]
+          },
+          "passed_players": [],
+          "pending_abilities": [],
+          "phase": "SECOND_COMBAT_DAMAGE",
+          "players": [
+            {
+              "hand_size": 0,
+              "has_lost": false,
+              "id": 0,
+              "land_plays_per_turn": 1,
+              "lands_played_this_turn": 0,
+              "library_size": 4,
+              "life": 2,
+              "mana": {},
+              "maximum_hand_size": 7,
+              "name": "Player 1",
+              "poison_counters": 0
+            },
+            {
+              "hand_size": 0,
+              "has_lost": false,
+              "id": 1,
+              "land_plays_per_turn": 1,
+              "lands_played_this_turn": 0,
+              "library_size": 4,
+              "life": 20,
+              "mana": {},
+              "maximum_hand_size": 7,
+              "name": "Player 2",
+              "poison_counters": 0
+            }
+          ],
+          "priority": 1,
+          "replacement_effects": [],
+          "schema_version": 2,
+          "self": 0,
+          "stack": [],
+          "turn": 5
+        }
+      }
+    },
+    {
+      "case": "double_block",
+      "mode": "guided",
+      "seed": 42,
+      "budget": {
+        "worlds": 1,
+        "iterations": 16,
+        "max_advances": 304,
+        "max_depth": 1,
+        "max_extensions": 16
+      },
+      "selected": {
+        "declarations": {
+          "mapping": [
+            [
+              {
+                "card": "c1",
+                "name": "Moorland Inquisitor",
+                "zone_revision": 1
+              },
+              {
+                "card": "c3",
+                "name": "Rumbling Baloth",
+                "zone_revision": 1
+              }
+            ],
+            [
+              {
+                "card": "c2",
+                "name": "Moorland Inquisitor",
+                "zone_revision": 1
+              },
+              {
+                "card": "c3",
+                "name": "Rumbling Baloth",
+                "zone_revision": 1
+              }
+            ]
+          ]
+        },
+        "kind": "DeclareBlockersOption"
+      },
+      "elapsed_ms": 2182.250799960457,
+      "search": {
+        "choice": {
+          "kind": "DeclareBlockersOption",
+          "_json": "{\"declarations\":{\"mapping\":[[{\"card\":\"c1\",\"name\":\"Moorland Inquisitor\",\"zone_revision\":1},{\"card\":\"c3\",\"name\":\"Rumbling Baloth\",\"zone_revision\":1}],[{\"card\":\"c2\",\"name\":\"Moorland Inquisitor\",\"zone_revision\":1},{\"card\":\"c3\",\"name\":\"Rumbling Baloth\",\"zone_revision\":1}]]},\"kind\":\"DeclareBlockersOption\"}"
+        },
+        "value": 0.10626395613790247,
+        "used_fallback": false,
+        "root_coverage_complete": true,
+        "stop_reason": "iteration_budget",
+        "estimates": [
+          {
+            "action": {
+              "kind": "DeclareBlockersOption",
+              "_json": "{\"declarations\":{\"mapping\":[[{\"card\":\"c1\",\"name\":\"Moorland Inquisitor\",\"zone_revision\":1},{\"card\":\"c3\",\"name\":\"Rumbling Baloth\",\"zone_revision\":1}],[{\"card\":\"c2\",\"name\":\"Moorland Inquisitor\",\"zone_revision\":1},{\"card\":\"c3\",\"name\":\"Rumbling Baloth\",\"zone_revision\":1}]]},\"kind\":\"DeclareBlockersOption\"}"
+            },
+            "visits": 6,
+            "mean_value": 0.10626395613790247
+          },
+          {
+            "action": {
+              "kind": "DeclareBlockersOption",
+              "_json": "{\"declarations\":{\"mapping\":[[{\"card\":\"c1\",\"name\":\"Moorland Inquisitor\",\"zone_revision\":1},{\"card\":\"c3\",\"name\":\"Rumbling Baloth\",\"zone_revision\":1}]]},\"kind\":\"DeclareBlockersOption\"}"
+            },
+            "visits": 4,
+            "mean_value": -0.20377375936011305
+          },
+          {
+            "action": {
+              "kind": "DeclareBlockersOption",
+              "_json": "{\"declarations\":{\"mapping\":[[{\"card\":\"c2\",\"name\":\"Moorland Inquisitor\",\"zone_revision\":1},{\"card\":\"c3\",\"name\":\"Rumbling Baloth\",\"zone_revision\":1}]]},\"kind\":\"DeclareBlockersOption\"}"
+            },
+            "visits": 4,
+            "mean_value": -0.20377375936011305
+          },
+          {
+            "action": {
+              "kind": "DeclareBlockersOption",
+              "_json": "{\"declarations\":{\"mapping\":[]},\"kind\":\"DeclareBlockersOption\"}"
+            },
+            "visits": 2,
+            "mean_value": -1.0
+          }
+        ],
+        "metrics": {
+          "worlds_built": 1,
+          "iterations_started": 16,
+          "iterations_completed": 16,
+          "advance_attempts": 60,
+          "terminal_leaves": 2,
+          "heuristic_leaves": 14,
+          "interrupted_trajectories": 0,
+          "interruption_reasons": [],
+          "information_nodes": 5,
+          "elapsed_ms": 2181.942099938169,
+          "rollout_policy_choices": 4,
+          "rollout_random_choices": 0
+        }
+      },
+      "verification": {
+        "passed": true,
+        "unresolved": false,
+        "terminal": false,
+        "trace": [
+          {
+            "player": 0,
+            "request": "DeclareBlockersRequest",
+            "phase": "DECLARE_BLOCKERS",
+            "action": {
+              "declarations": {
+                "mapping": [
+                  [
+                    {
+                      "card": "c1",
+                      "name": "Moorland Inquisitor",
+                      "zone_revision": 1
+                    },
+                    {
+                      "card": "c3",
+                      "name": "Rumbling Baloth",
+                      "zone_revision": 1
+                    }
+                  ],
+                  [
+                    {
+                      "card": "c2",
+                      "name": "Moorland Inquisitor",
+                      "zone_revision": 1
+                    },
+                    {
+                      "card": "c3",
+                      "name": "Rumbling Baloth",
+                      "zone_revision": 1
+                    }
+                  ]
+                ]
+              },
+              "kind": "DeclareBlockersOption"
+            }
+          },
+          {
+            "player": 1,
+            "request": "PriorityDecisionRequest",
+            "phase": "DECLARE_BLOCKERS",
+            "action": {
+              "kind": "PassPriorityAction",
+              "player": {
+                "player": 1
+              }
+            }
+          },
+          {
+            "player": 0,
+            "request": "PriorityDecisionRequest",
+            "phase": "DECLARE_BLOCKERS",
+            "action": {
+              "kind": "PassPriorityAction",
+              "player": {
+                "player": 0
+              }
+            }
+          },
+          {
+            "player": 1,
+            "request": "CombatDamageRequest",
+            "phase": "SECOND_COMBAT_DAMAGE",
+            "action": {
+              "assignments": {
+                "mapping": [
+                  [
+                    {
+                      "card": "c1",
+                      "name": "Moorland Inquisitor",
+                      "zone_revision": 1
+                    },
+                    0
+                  ],
+                  [
+                    {
+                      "card": "c2",
+                      "name": "Moorland Inquisitor",
+                      "zone_revision": 1
+                    },
+                    4
+                  ]
+                ]
+              },
+              "kind": "CombatDamageOption"
+            }
+          },
+          {
+            "player": 1,
+            "request": "ReplacementOrderRequest",
+            "phase": "SECOND_COMBAT_DAMAGE",
+            "action": {
+              "items": [
+                {
+                  "amount": 2,
+                  "combat": true,
+                  "context": {
+                    "ability": null,
+                    "action_key": "combat_damage",
+                    "controller": {
+                      "player": 0
+                    },
+                    "effects": null,
+                    "is_cost": false,
+                    "last_known": null,
+                    "parameters": {
+                      "x_variables": {
+                        "mapping": []
+                      }
+                    },
+                    "source": {
+                      "card": "c1",
+                      "name": "Moorland Inquisitor",
+                      "zone_revision": 1
+                    },
+                    "source_revision": null,
+                    "subability": null,
+                    "targets": null,
+                    "trigger_event": null,
+                    "uses_stack": false
+                  },
+                  "damage_controller": {
+                    "player": 0
+                  },
+                  "deathtouch": false,
+                  "defer_lifelink": false,
+                  "infect": false,
+                  "kind": "DamageCreatureOperation",
+                  "lifelink": false,
+                  "source_revision": 1,
+                  "target": {
+                    "card": "c3",
+                    "name": "Rumbling Baloth",
+                    "zone_revision": 1
+                  },
+                  "unpreventable": false,
+                  "wither": false
+                },
+                {
+                  "amount": 2,
+                  "combat": true,
+                  "context": {
+                    "ability": null,
+                    "action_key": "combat_damage",
+                    "controller": {
+                      "player": 0
+                    },
+                    "effects": null,
+                    "is_cost": false,
+                    "last_known": null,
+                    "parameters": {
+                      "x_variables": {
+                        "mapping": []
+                      }
+                    },
+                    "source": {
+                      "card": "c2",
+                      "name": "Moorland Inquisitor",
+                      "zone_revision": 1
+                    },
+                    "source_revision": null,
+                    "subability": null,
+                    "targets": null,
+                    "trigger_event": null,
+                    "uses_stack": false
+                  },
+                  "damage_controller": {
+                    "player": 0
+                  },
+                  "deathtouch": false,
+                  "defer_lifelink": false,
+                  "infect": false,
+                  "kind": "DamageCreatureOperation",
+                  "lifelink": false,
+                  "source_revision": 1,
+                  "target": {
+                    "card": "c3",
+                    "name": "Rumbling Baloth",
+                    "zone_revision": 1
+                  },
+                  "unpreventable": false,
+                  "wither": false
+                }
+              ],
+              "kind": "ReplacementOrderOption"
+            }
+          }
+        ],
+        "endpoint": {
+          "active": 1,
+          "battlefield": [
+            {
+              "abilities": [
+                {
+                  "allowed_zones": [
+                    "BATTLEFIELD"
+                  ],
+                  "costs": [
+                    {
+                      "action_node": null,
+                      "effects": [],
+                      "kind": "SubAbilityDefinition",
+                      "mana_cost": "{2}{W}",
+                      "resolution_speed": null,
+                      "slots": []
+                    }
+                  ],
+                  "effects": [
+                    {
+                      "action_node": {
+                        "effect_map": {
+                          "first_strike_until_cleanup": []
+                        },
+                        "kind": "EffectActionNode"
+                      },
+                      "effects": [
+                        {
+                          "description_unavailable": false,
+                          "features": {
+                            "kind": "unknown"
+                          },
+                          "key": "first_strike_until_cleanup",
+                          "kind": "TemporaryModifierEffect",
+                          "text": "Apply a temporary modifier until cleanup."
+                        }
+                      ],
+                      "kind": "SubAbilityDefinition",
+                      "mana_cost": null,
+                      "resolution_speed": null,
+                      "slots": []
+                    }
+                  ],
+                  "key": "first_strike",
+                  "kind": "ActivatedAbilityDefinition",
+                  "loyalty_cost": null,
+                  "mana_ability": false,
+                  "parameters": {},
+                  "sorcery_speed": false,
+                  "uses_stack": true
+                },
+                {
+                  "allowed_zones": [
+                    "HAND"
+                  ],
+                  "costs": [
+                    {
+                      "action_node": {
+                        "effect_map": {
+                          "Moorland Inquisitor:put_on_stack": []
+                        },
+                        "kind": "EffectActionNode"
+                      },
+                      "effects": [
+                        {
+                          "description_unavailable": false,
+                          "features": {
+                            "destination": "STACK",
+                            "kind": "move_source"
+                          },
+                          "key": "Moorland Inquisitor:put_on_stack",
+                          "kind": "MoveSourceEffect",
+                          "text": "Move this card to STACK."
+                        }
+                      ],
+                      "kind": "SubAbilityDefinition",
+                      "mana_cost": null,
+                      "resolution_speed": null,
+                      "slots": []
+                    }
+                  ],
+                  "effects": [
+                    {
+                      "action_node": {
+                        "effect_map": {
+                          "Moorland Inquisitor:to_battlefield": []
+                        },
+                        "kind": "EffectActionNode"
+                      },
+                      "effects": [
+                        {
+                          "description_unavailable": false,
+                          "features": {
+                            "destination": "BATTLEFIELD",
+                            "kind": "move_source"
+                          },
+                          "key": "Moorland Inquisitor:to_battlefield",
+                          "kind": "MoveSourceEffect",
+                          "text": "Move this card to BATTLEFIELD."
+                        }
+                      ],
+                      "kind": "SubAbilityDefinition",
+                      "mana_cost": null,
+                      "resolution_speed": null,
+                      "slots": []
+                    }
+                  ],
+                  "key": "cast:Moorland Inquisitor",
+                  "kind": "CastSpellAbilityDefinition",
+                  "loyalty_cost": null,
+                  "mana_ability": false,
+                  "parameters": {},
+                  "sorcery_speed": false,
+                  "uses_stack": true
+                }
+              ],
+              "attached_to": null,
+              "attachment_restrictions": [],
+              "attachments": [],
+              "casting_cost": "{1}{W}",
+              "chosen_x": 0,
+              "colors": [
+                "WHITE"
+              ],
+              "controller": 0,
+              "cost": "{1}{W}",
+              "counters": {},
+              "damage_by_deathtouch": false,
+              "damage_marked": 0,
+              "face_down": false,
+              "id": "c1",
+              "identity_visible": true,
+              "keywords": [],
+              "legendary": false,
+              "loyalty_activated_this_turn": false,
+              "mana_value": 2,
+              "name": "Moorland Inquisitor",
+              "owner": 0,
+              "power": 2,
+              "skip_untap": null,
+              "static_abilities": [],
+              "subtypes": [
+                "HUMAN",
+                "SOLDIER"
+              ],
+              "summoning_sick": false,
+              "tapped": false,
+              "text": "{2}{W}: This creature gains first strike until end of turn. (It deals combat damage before creatures without first strike.)",
+              "token": false,
+              "toughness": 2,
+              "triggers": [],
+              "types": [
+                "CREATURE"
+              ],
+              "zone": "BATTLEFIELD",
+              "zone_revision": 1
+            }
+          ],
+          "combat": {
+            "active": true,
+            "attackers": [],
+            "attackers_declared": true,
+            "blocked": [
+              "c3"
+            ],
+            "blockers": {
+              "c1": "c3"
+            },
+            "defenders": {},
+            "first_damage_done": false,
+            "first_strike_step": false,
+            "regular_damage_done": true
+          },
+          "continuous_effects": [],
+          "exile": [],
+          "graveyard": [
+            {
+              "abilities": [
+                {
+                  "allowed_zones": [
+                    "BATTLEFIELD"
+                  ],
+                  "costs": [
+                    {
+                      "action_node": null,
+                      "effects": [],
+                      "kind": "SubAbilityDefinition",
+                      "mana_cost": "{2}{W}",
+                      "resolution_speed": null,
+                      "slots": []
+                    }
+                  ],
+                  "effects": [
+                    {
+                      "action_node": {
+                        "effect_map": {
+                          "first_strike_until_cleanup": []
+                        },
+                        "kind": "EffectActionNode"
+                      },
+                      "effects": [
+                        {
+                          "description_unavailable": false,
+                          "features": {
+                            "kind": "unknown"
+                          },
+                          "key": "first_strike_until_cleanup",
+                          "kind": "TemporaryModifierEffect",
+                          "text": "Apply a temporary modifier until cleanup."
+                        }
+                      ],
+                      "kind": "SubAbilityDefinition",
+                      "mana_cost": null,
+                      "resolution_speed": null,
+                      "slots": []
+                    }
+                  ],
+                  "key": "first_strike",
+                  "kind": "ActivatedAbilityDefinition",
+                  "loyalty_cost": null,
+                  "mana_ability": false,
+                  "parameters": {},
+                  "sorcery_speed": false,
+                  "uses_stack": true
+                },
+                {
+                  "allowed_zones": [
+                    "HAND"
+                  ],
+                  "costs": [
+                    {
+                      "action_node": {
+                        "effect_map": {
+                          "Moorland Inquisitor:put_on_stack": []
+                        },
+                        "kind": "EffectActionNode"
+                      },
+                      "effects": [
+                        {
+                          "description_unavailable": false,
+                          "features": {
+                            "destination": "STACK",
+                            "kind": "move_source"
+                          },
+                          "key": "Moorland Inquisitor:put_on_stack",
+                          "kind": "MoveSourceEffect",
+                          "text": "Move this card to STACK."
+                        }
+                      ],
+                      "kind": "SubAbilityDefinition",
+                      "mana_cost": null,
+                      "resolution_speed": null,
+                      "slots": []
+                    }
+                  ],
+                  "effects": [
+                    {
+                      "action_node": {
+                        "effect_map": {
+                          "Moorland Inquisitor:to_battlefield": []
+                        },
+                        "kind": "EffectActionNode"
+                      },
+                      "effects": [
+                        {
+                          "description_unavailable": false,
+                          "features": {
+                            "destination": "BATTLEFIELD",
+                            "kind": "move_source"
+                          },
+                          "key": "Moorland Inquisitor:to_battlefield",
+                          "kind": "MoveSourceEffect",
+                          "text": "Move this card to BATTLEFIELD."
+                        }
+                      ],
+                      "kind": "SubAbilityDefinition",
+                      "mana_cost": null,
+                      "resolution_speed": null,
+                      "slots": []
+                    }
+                  ],
+                  "key": "cast:Moorland Inquisitor",
+                  "kind": "CastSpellAbilityDefinition",
+                  "loyalty_cost": null,
+                  "mana_ability": false,
+                  "parameters": {},
+                  "sorcery_speed": false,
+                  "uses_stack": true
+                }
+              ],
+              "attached_to": null,
+              "attachment_restrictions": [],
+              "attachments": [],
+              "casting_cost": "{1}{W}",
+              "chosen_x": 0,
+              "colors": [
+                "WHITE"
+              ],
+              "controller": 0,
+              "cost": "{1}{W}",
+              "counters": {},
+              "damage_by_deathtouch": false,
+              "damage_marked": 0,
+              "face_down": false,
+              "id": "c2",
+              "identity_visible": true,
+              "keywords": [],
+              "legendary": false,
+              "loyalty_activated_this_turn": false,
+              "mana_value": 2,
+              "name": "Moorland Inquisitor",
+              "owner": 0,
+              "power": 2,
+              "skip_untap": null,
+              "static_abilities": [],
+              "subtypes": [
+                "HUMAN",
+                "SOLDIER"
+              ],
+              "summoning_sick": false,
+              "tapped": false,
+              "text": "{2}{W}: This creature gains first strike until end of turn. (It deals combat damage before creatures without first strike.)",
+              "token": false,
+              "toughness": 2,
+              "triggers": [],
+              "types": [
+                "CREATURE"
+              ],
+              "zone": "GRAVEYARD",
+              "zone_revision": 2
+            },
+            {
+              "abilities": [
+                {
+                  "allowed_zones": [
+                    "HAND"
+                  ],
+                  "costs": [
+                    {
+                      "action_node": {
+                        "effect_map": {
+                          "Rumbling Baloth:put_on_stack": []
+                        },
+                        "kind": "EffectActionNode"
+                      },
+                      "effects": [
+                        {
+                          "description_unavailable": false,
+                          "features": {
+                            "destination": "STACK",
+                            "kind": "move_source"
+                          },
+                          "key": "Rumbling Baloth:put_on_stack",
+                          "kind": "MoveSourceEffect",
+                          "text": "Move this card to STACK."
+                        }
+                      ],
+                      "kind": "SubAbilityDefinition",
+                      "mana_cost": null,
+                      "resolution_speed": null,
+                      "slots": []
+                    }
+                  ],
+                  "effects": [
+                    {
+                      "action_node": {
+                        "effect_map": {
+                          "Rumbling Baloth:to_battlefield": []
+                        },
+                        "kind": "EffectActionNode"
+                      },
+                      "effects": [
+                        {
+                          "description_unavailable": false,
+                          "features": {
+                            "destination": "BATTLEFIELD",
+                            "kind": "move_source"
+                          },
+                          "key": "Rumbling Baloth:to_battlefield",
+                          "kind": "MoveSourceEffect",
+                          "text": "Move this card to BATTLEFIELD."
+                        }
+                      ],
+                      "kind": "SubAbilityDefinition",
+                      "mana_cost": null,
+                      "resolution_speed": null,
+                      "slots": []
+                    }
+                  ],
+                  "key": "cast:Rumbling Baloth",
+                  "kind": "CastSpellAbilityDefinition",
+                  "loyalty_cost": null,
+                  "mana_ability": false,
+                  "parameters": {},
+                  "sorcery_speed": false,
+                  "uses_stack": true
+                }
+              ],
+              "attached_to": null,
+              "attachment_restrictions": [],
+              "attachments": [],
+              "casting_cost": "{2}{G}{G}",
+              "chosen_x": 0,
+              "colors": [
+                "GREEN"
+              ],
+              "controller": 1,
+              "cost": "{2}{G}{G}",
+              "counters": {},
+              "damage_by_deathtouch": false,
+              "damage_marked": 0,
+              "face_down": false,
+              "id": "c3",
+              "identity_visible": true,
+              "keywords": [],
+              "legendary": false,
+              "loyalty_activated_this_turn": false,
+              "mana_value": 4,
+              "name": "Rumbling Baloth",
+              "owner": 1,
+              "power": 4,
+              "skip_untap": null,
+              "static_abilities": [],
+              "subtypes": [
+                "BEAST"
+              ],
+              "summoning_sick": false,
+              "tapped": false,
+              "text": "No printed abilities.",
+              "token": false,
+              "toughness": 4,
+              "triggers": [],
+              "types": [
+                "CREATURE"
+              ],
+              "zone": "GRAVEYARD",
+              "zone_revision": 2
+            }
+          ],
+          "hand": [],
+          "information_limits": [
+            "Opponent hands and all library identities/order are hidden.",
+            "Face-down identities are masked; inspection permissions are not yet modeled.",
+            "Knowledge covers published zone changes/draws; general reveal and scry permissions are not yet modeled.",
+            "description_unavailable marks rule code without a declarative description; do not infer its meaning."
+          ],
+          "knowledge": {
+            "coverage": "Zone changes and draws published since this agent joined; no general reveal/scry adapter yet.",
+            "event_count": 2,
+            "known_locations": [
+              {
+                "card_id": "c1",
+                "name": "Moorland Inquisitor",
+                "owner": 0,
+                "provenance": "snapshot",
+                "zone": "BATTLEFIELD"
+              },
+              {
+                "card_id": "c2",
+                "name": "Moorland Inquisitor",
+                "owner": 0,
+                "provenance": "snapshot",
+                "zone": "GRAVEYARD"
+              },
+              {
+                "card_id": "c3",
+                "name": "Rumbling Baloth",
+                "owner": 1,
+                "provenance": "snapshot",
+                "zone": "GRAVEYARD"
+              }
+            ],
+            "observed_cards": [
+              {
+                "card_id": "c1",
+                "name": "Moorland Inquisitor",
+                "owner": 0
+              },
+              {
+                "card_id": "c2",
+                "name": "Moorland Inquisitor",
+                "owner": 0
+              },
+              {
+                "card_id": "c3",
+                "name": "Rumbling Baloth",
+                "owner": 1
+              }
+            ],
+            "recent_events": [
+              {
+                "card_id": "c3",
+                "from_zone": "BATTLEFIELD",
+                "kind": "card_moved",
+                "name": "Rumbling Baloth",
+                "owner": 1,
+                "phase": "SECOND_COMBAT_DAMAGE",
+                "player": 1,
+                "to_zone": "GRAVEYARD",
+                "turn": 5
+              },
+              {
+                "card_id": "c2",
+                "from_zone": "BATTLEFIELD",
+                "kind": "card_moved",
+                "name": "Moorland Inquisitor",
+                "owner": 0,
+                "phase": "SECOND_COMBAT_DAMAGE",
+                "player": 0,
+                "to_zone": "GRAVEYARD",
+                "turn": 5
+              }
+            ]
+          },
+          "passed_players": [],
+          "pending_abilities": [],
+          "phase": "SECOND_COMBAT_DAMAGE",
+          "players": [
+            {
+              "hand_size": 0,
+              "has_lost": false,
+              "id": 0,
+              "land_plays_per_turn": 1,
+              "lands_played_this_turn": 0,
+              "library_size": 4,
+              "life": 2,
+              "mana": {},
+              "maximum_hand_size": 7,
+              "name": "Player 1",
+              "poison_counters": 0
+            },
+            {
+              "hand_size": 0,
+              "has_lost": false,
+              "id": 1,
+              "land_plays_per_turn": 1,
+              "lands_played_this_turn": 0,
+              "library_size": 4,
+              "life": 20,
+              "mana": {},
+              "maximum_hand_size": 7,
+              "name": "Player 2",
+              "poison_counters": 0
+            }
+          ],
+          "priority": 1,
+          "replacement_effects": [],
+          "schema_version": 2,
+          "self": 0,
+          "stack": [],
+          "turn": 5
+        }
+      }
+    }
+  ]
+}

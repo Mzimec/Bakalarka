@@ -138,6 +138,161 @@ python -B -m game.bin.play `
 
 ---
 
+### Human versus local Ollama
+
+From the repository root in **cmd.exe**, with Ollama running and `qwen3:8b`
+already downloaded:
+
+```bat
+set PYTHONPATH=Cards
+.venv\Scripts\python.exe -B -m game.bin.play --ai-agent ollama --human-deck white --ai-deck red
+```
+
+You control white through console commands; local Qwen controls red. Choose
+either deck from `white`, `blue`, `black`, `red`, `green`. Use
+`--starting-player ai` to let Qwen start, or `--seed 2026` to fix the setup seed.
+Enter `help` for commands, `pass` to pass priority, `inspect CARD` for details,
+or `concede` to concede.
+
+The [interactive Ollama settings](../configs/ollama_play.json) select
+`qwen3:8b`, `think=false`, `num_gpu=37`, `num_ctx=4096`, a 60-second timeout and
+up to 10,000 model requests. Override with `--llm-settings PATH` (a JSON object
+of LLM settings, not a whole match config) or `--llm-model NAME`. Other models
+may need different layer settings. This mode requires provider `ollama`.
+
+The launcher checks the server/model before starting. It prints waiting status
+for model choices and reports heuristic fallbacks immediately and at game end.
+The existing modular agent still handles auxiliary decisions and mana payment.
+No match logs are written unless `--output NEW_FILE.jsonl` is supplied.
+
+Local Qwen configs now enable `compact_observation=true`. The LLM receives the
+already visibility-filtered state with live card statistics, card rule text,
+current abilities, target slots, nontrivial branch plans, stack, effects and
+remembered hidden-card facts. Identical current rule descriptions share a
+per-request `rule_catalog`; `rules_ref` resolves a card's current rules.
+`card_defaults` and `ability_defaults` supply omitted default values. Native
+single-effect targetless wrappers are simplified, including exact source-zone
+movements. This presentation is not the full engine execution schema or an
+MCTS identity, and never executes effects or reads hidden runtime objects.
+Repeated currently visible identities/locations are omitted from memory;
+uniform event records use an ordered `columns`/`rows` table without deleting
+events. Unknown descriptions remain explicitly unknown.
+
+Ollama replies are constrained by a JSON schema to exactly `{"choice": N}`
+with `N` one of the offered candidate indices. The output budget is 128 tokens;
+incomplete responses and token-limit termination are rejected before parsing.
+No incomplete JSON is repaired into an action and there are no automatic
+retries. The selector exposes `last_response` with completion reason and
+returned prompt/output token counts for diagnosis, without retaining raw text.
+Restart an already running game process after updating the adapter.
+
+The compact projection reduces prompt size but is not a universal bound on
+all MTG positions. Larger boards/complex custom descriptions may still exceed
+the configured context; do not infer full-information reasoning merely from a
+valid JSON reply. The short local checks are protocol checks, not a win-rate
+evaluation.
+
+## MCTS versus a local LLM benchmark
+
+The default local model is `qwen3:8b` (about 5.2 GB of model files).
+After installing Ollama, download it once:
+
+```bat
+ollama pull qwen3:8b
+```
+
+From the repository root in **cmd.exe**:
+
+```bat
+set PYTHONPATH=Cards
+.venv\Scripts\python.exe -B -m benchmarks.mcts_vs_llm --mcts-deck white --llm-deck red
+```
+
+The default [benchmark config](../configs/mcts_vs_llm.json) references the current
+`mcts_play_128_native.json` preset without overriding it: 128 trajectories total,
+four sampled worlds, depth 8 and heuristic PUCT. Choose either deck from `white`,
+`blue`, `black`, `red`, `green`. Use `--model MODEL_NAME` to override the model,
+or change `llm.model` in the config. Local config sets `think=false` so the
+short output budget is used for the JSON choice, rather than a reasoning trace.
+The local Qwen preset also sets `num_gpu=37` (layers, not GPU count) and
+`num_ctx=4096`. On the RTX 3060 Laptop 6 GB, automatic placement used 70% GPU;
+explicit 37-layer placement was observed as 100% GPU at this context length.
+A short JSON smoke request completed in 8.77 s including 8.27 s of model load;
+this is not a whole-game or full-state performance result. Larger contexts or
+other GPU workloads can require more memory. Other models may need different
+layer settings. The 4K context is finite: full game prompts must be measured
+before drawing conclusions about policy quality or lost input through truncation.
+These settings affect the LLM policy and are not a claim about its playing strength.
+Ollama must already be
+running; the benchmark checks its installed model list before starting a game.
+This config belongs to `benchmarks.mcts_vs_llm`, not `game.bin.match`.
+
+For three pairs of games, with each seed played once with each starting player:
+
+```bat
+.venv\Scripts\python.exe -B -m benchmarks.mcts_vs_llm --model MODEL_NAME --mcts-deck white --llm-deck red --paired --rounds 3
+```
+
+The two agents keep their selected decks in a pair. Use the same deck for both
+agents to reduce deck matchup differences. `--seed`, `--starting-player mcts|llm`,
+`--max-turns` and `--max-decisions` override benchmark defaults; `--dry-run`
+validates and prints the effective config without HTTP or games.
+
+The benchmark prints progress, match results, decision timing, MCTS diagnostics
+and LLM request/fallback counts to stdout. LLM timeouts, invalid responses and
+exhausted request budgets fall back to the existing heuristic and are reported.
+Turn/decision limits are incomplete games, not draws. Python process CPU time
+excludes the separate Ollama server; wall time includes waiting for it. Small
+samples and games with fallbacks do not establish comparative playing strength.
+
+No output files are created by default. To save `summary.json` and each match's
+JSONL/TXT logs, add a **new** output directory:
+
+```bat
+.venv\Scripts\python.exe -B -m benchmarks.mcts_vs_llm --model MODEL_NAME --mcts-deck white --llm-deck red --paired --output Cards/artifacts/runs/mcts-vs-llm-01
+```
+
+### MCTS versus OpenAI GPT-6.1 Sol
+
+The same benchmark supports OpenAI Responses API with the separate
+[OpenAI config](../configs/mcts_vs_openai.json). No Ollama server or additional
+Python packages are required. From the repository root in **cmd.exe**:
+
+```bat
+set OPENAI_API_KEY=YOUR_API_KEY
+set PYTHONPATH=Cards
+.venv\Scripts\python.exe -B -m benchmarks.mcts_vs_llm --config Cards/configs/mcts_vs_openai.json --mcts-deck white --llm-deck red
+```
+
+The configured model ID is `gpt-6.1-sol`, reasoning effort `low`, timeout 120 s,
+at most 1,000 requests per game and 2,048 output tokens per request (including
+reasoning tokens). These are request/output limits, **not a monetary budget**.
+API access and token billing are required. The key is read from
+`OPENAI_API_KEY` at request time; only the environment variable name belongs in
+the config. It is not saved in logs or sent in the game prompt.
+
+Use `--model` to override the API model ID, or `--paired --rounds 3` for six
+games. Other model families may require changing `reasoning_effort` (set it to
+`null` to omit the parameter). An authenticated model-access GET runs before a
+game; `--dry-run` skips HTTP and does not require a key. Actual choices use
+strict JSON schema, validate the returned candidate index, send only the
+existing actor-visible observation, and do not send previous conversation
+history or attach tools. `store=false` is set on Responses requests; this is
+not a claim of zero provider-side data retention.
+
+Each decision makes at most one API request (no automatic retries). API errors,
+refusals, incomplete responses and invalid choices use the same measured
+heuristic fallback as Ollama. Per-game and aggregate reports include returned
+input/output/total token usage, including incomplete responses when usage is
+available; failed requests without returned usage cannot be accounted for by
+this counter. No currency estimate or playing-strength claim is inferred.
+
+Protocol/model references checked on 2026-11-24:
+[GPT-6.1 Sol](https://developers.openai.com/api/docs/models/gpt-6.1-sol),
+[Responses API](https://developers.openai.com/api/reference/resources/responses/methods/create),
+[structured outputs](https://developers.openai.com/api/docs/guides/structured-outputs),
+[API quickstart](https://developers.openai.com/api/docs/quickstart).
+
 # 3. Console controls
 
 The interactive console accepts text commands.

@@ -1,0 +1,82 @@
+=== Tournament Summary ===
+
+Games: 2
+Completed: 2
+Decisive: 2
+Draws: 0
+Average turns: 14.00
+Average decisions: 343.00
+Total elapsed: 1.091 s
+
+Starting player:
+  Win rate: 0.00%
+  Decisive win rate: 0.00%
+
+Participants:
+
+modular-1 (Keep the Peace)
+  Controller: {'type': 'modular', 'candidates': {'target_limit': 24, 'cost_limit': 4, 'keep_per_ability': 4}, 'combat': {'max_assignments': 512}}
+  Games: 2
+  Wins: 1
+  Losses: 1
+  Draws: 0
+  Win rate: 50.00%
+  Decisive win rate: 50.00%
+  WR when starting: 0.00%
+  WR when second: 100.00%
+  Average turns: 14.00
+  Average decisions: 343.00
+
+simple-2 (Keep the Peace)
+  Controller: {'type': 'simple'}
+  Games: 2
+  Wins: 1
+  Losses: 1
+  Draws: 0
+  Win rate: 50.00%
+  Decisive win rate: 50.00%
+  WR when starting: 0.00%
+  WR when second: 100.00%
+  Average turns: 14.00
+  Average decisions: 343.00
+
+Decision timing (wall time; includes option generation and input/model waits):
+  modular-1 [ModularAgent, agent]: 362 decisions, average 0.592 ms, total 0.214 s, errors 0, auto-passes 286
+    Active option generation: 0.178 s; other decision work: 0.037 s (split recorded for 362 decisions)
+    MulliganRequest: n=2, average 0.048 ms; observed options 0.00; space size unknown
+      0 observed options: n=2, average 0.048 ms
+    PriorityDecisionRequest: n=312, average 0.644 ms; observed options 0.74; space size 1.47 (known for 156 decisions)
+      0 observed options: n=156, average 0.063 ms
+      2-10 observed options: n=26, average 3.188 ms
+      1 observed options: n=130, average 0.831 ms
+    DeclareAttackersRequest: n=14, average 0.389 ms; observed options 3.00; space size 3.00 (known for 14 decisions)
+      2-10 observed options: n=14, average 0.389 ms
+    DeclareBlockersRequest: n=6, average 1.113 ms; observed options 5.83; space size 5.83 (known for 6 decisions)
+      11-100 observed options: n=1, average 1.991 ms
+      2-10 observed options: n=5, average 0.938 ms
+    ReplacementOrderRequest: n=9, average 0.033 ms; observed options 1.00; space size unknown
+      1 observed options: n=9, average 0.033 ms
+    TriggerOrderRequest: n=8, average 0.036 ms; observed options 1.00; space size unknown
+      1 observed options: n=8, average 0.036 ms
+    AbilityDecisionRequest: n=11, average 0.052 ms; observed options 1.00; space size 1.00 (known for 11 decisions)
+      1 observed options: n=11, average 0.052 ms
+  simple-2 [SimpleAgent, agent]: 360 decisions, average 0.491 ms, total 0.177 s, errors 0, auto-passes 286
+    Active option generation: 0.148 s; other decision work: 0.029 s (split recorded for 360 decisions)
+    MulliganRequest: n=2, average 0.047 ms; observed options 0.00; space size unknown
+      0 observed options: n=2, average 0.047 ms
+    PriorityDecisionRequest: n=312, average 0.546 ms; observed options 0.64; space size 1.22 (known for 143 decisions)
+      1 observed options: n=130, average 0.852 ms
+      2-10 observed options: n=26, average 1.911 ms
+      0 observed options: n=156, average 0.064 ms
+    DeclareAttackersRequest: n=14, average 0.157 ms; observed options 1.00; space size unknown
+      1 observed options: n=14, average 0.157 ms
+    DeclareBlockersRequest: n=6, average 0.450 ms; observed options 1.00; space size unknown
+      1 observed options: n=6, average 0.450 ms
+    TriggerOrderRequest: n=8, average 0.044 ms; observed options 1.00; space size unknown
+      1 observed options: n=8, average 0.044 ms
+    AbilityDecisionRequest: n=11, average 0.067 ms; observed options 1.00; space size 1.00 (known for 11 decisions)
+      1 observed options: n=11, average 0.067 ms
+    ReplacementOrderRequest: n=7, average 0.040 ms; observed options 1.00; space size unknown
+      1 observed options: n=7, average 0.040 ms
+  Observed options are consumed yields, not unique actions. Size refers to the policy-filtered space.
+  Generation times only active option-stream next() calls, including nested expansion once. Other decision work includes policy, discovery outside streams, validation and measurement overhead; it is not pure scoring time. Precomputed choices were generated before this measurement.

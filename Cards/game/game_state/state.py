@@ -15,6 +15,7 @@ from ..game_actions.game_stack import GameStack, PrioritySystem
 from ..game_loop.game_loop import Turn
 from .look_up import LookUpSystem, LookUpResult
 from .modifier import ContinuousEffectsManager, ContinuousEffect, TimeStamp
+from . import continuous_rules
 
 from ..enums import *
 
@@ -45,6 +46,10 @@ class State:
             invalid, players are reused, or initial card identities conflict.
         """
         self._players = tuple(players)
+        self.knowledge_token = object()  # Distinguish games without retaining their runtime graph in an agent.
+        # Rule events still execute when an owned perfect-information world
+        # opts out of viewer projections. Real games always start enabled.
+        self.record_player_information = True
 
         if not self._players:
             raise ValueError("A game state needs at least one player.")
@@ -65,6 +70,8 @@ class State:
         self._stack: GameStack = GameStack()
         self._priority: PrioritySystem = PrioritySystem(self)
         self._turn = Turn()
+        from .turn_history import TurnHistory
+        self._turn_history = TurnHistory()
         self.skip_first_draw = skip_first_draw
         self.cleanup_priority = False
         self._deferred_events = []
@@ -76,6 +83,12 @@ class State:
         self.combat = CombatState(self)
         self._lookup_system = LookUpSystem()
         self._cont_effect_manager = ContinuousEffectsManager()
+        from .card_snapshot_cache import CardSnapshotCache
+        self._card_snapshots = CardSnapshotCache()
+        from ..mana.source_cache import StaticManaSourceCache
+        self._mana_source_cache = StaticManaSourceCache()
+        from ..game_actions.triggers.trigger_registry import NativeTriggerRegistry
+        self._trigger_registry = NativeTriggerRegistry()
 
         # These flags coordinate lazy/re-entrant continuous-effect refresh.
         self._refreshing_effects = False
@@ -92,11 +105,19 @@ class State:
         self.player_register = PlayerRegister(self)
 
         # Validate all initial identities before binding anything to this state.
-        cards = self.get_cards()
+        cards = [card for player in self.players for card in player.get_cards()]
         if len({card.key for card in cards}) != len(cards) or any(
             card.runtime_id is not None for card in cards
         ):
             raise ValueError("Initial cards must have distinct, unregistered identities.")
+
+        from .card_repository import CardRepository
+        self._cards = CardRepository(cards)
+        self._card_states = self._cards.states
+        for player in self.players:
+            player._card_repository = self._cards
+            for zone in player._zone_map.values():
+                zone.bind(self._cards)
 
         for player in self.players:
             player._game_state = self
@@ -104,6 +125,45 @@ class State:
 
         for card in cards:
             self.register_card(card)
+
+    @property
+    def cards(self):
+        """Stable physical card repository, distinct from live zone membership."""
+        return self._cards
+
+    @property
+    def card_states(self):
+        """Canonical dynamic card records of this world, indexed by stable key."""
+        return self._card_states
+
+    @property
+    def turn_history(self):
+        return self._turn_history
+
+    def observation_for(self, player):
+        """Return this world's reusable visibility window for a participant.
+
+        Consume it inside ``with view.read():`` while the engine is suspended.
+        Reads after mutation or rollback open a new lease on the same handle.
+        """
+        from game.ai.information.runtime_observation import player_view
+        return player_view(self, player)
+
+    @property
+    def turn_events(self):
+        """Legacy live archive; unavailable archives never masquerade as empty."""
+        return self._turn_history.events
+
+    @turn_events.setter
+    def turn_events(self, events):
+        from .turn_history import TurnHistory
+        self._turn_history = TurnHistory(events)
+
+    def record_turn_event(self, event):
+        if getattr(self, "_history_turn", None) != self.turn.number:
+            self._turn_history.reset()
+            self._history_turn = self.turn.number
+        self._turn_history.record(event)
 
     def register_card(self, card: Card) -> None:
         """!
@@ -119,6 +179,7 @@ class State:
             raise ValueError("Register cards through their owner's add_card method.")
 
         self.card_register.register(card)
+        self._cards.add(card)
         card._game_state = self
 
     def notify_card_changed(self, card: Card) -> None:
@@ -144,9 +205,7 @@ class State:
         """!
         @brief Recompute continuous-effect memberships and layered characteristics.
         """
-        from .continuous_rules import refresh_continuous_effects
-
-        refresh_continuous_effects(self)
+        continuous_rules.refresh_continuous_effects(self)
 
     def add_continuous_effect(self, effect):
         """!
@@ -166,6 +225,11 @@ class State:
         @return Materialized tuple of matching cards.
         """
         return tuple(self.card_register.query(query))
+
+    def query_effects(self, query):
+        """Select live continuous effects by source, layer or duration."""
+        self.refresh_continuous_effects()
+        return self._cont_effect_manager.query(query)
 
     def query_players(self, query):
         """!
@@ -189,7 +253,10 @@ class State:
         """!
         @brief Return players that have not yet lost the game.
         """
-        return tuple(player for player in self.players if player.is_alive)
+        from helper.query_system.query import EqQuery
+        from .registers.player_register import IK_ALIVE
+
+        return self.query_players(EqQuery(IK_ALIVE, True))
 
     @property
     def active_player_idx(self) -> int:
@@ -200,7 +267,11 @@ class State:
         """!
         @brief Return the current global turn/phase timestamp.
         """
-        return TimeStamp(self.turn.number, self.turn.phase)
+        turn = self.turn
+        stamp = self.__dict__.get("_cached_time_stamp")
+        if stamp is None or stamp.turn_number != turn.number or stamp.phase != turn.phase:
+            stamp = self._cached_time_stamp = TimeStamp(turn.number, turn.phase)
+        return stamp
 
     @property
     def stack(self) -> GameStack:
@@ -265,7 +336,10 @@ class State:
         """!
         @brief Return whether at least one player has lost.
         """
-        return any(not player.is_alive for player in self.players)
+        from helper.query_system.query import EqQuery
+        from .registers.player_register import IK_ALIVE
+
+        return bool(self.query_players(EqQuery(IK_ALIVE, False)))
 
     def defer_events(self, events):
         """!
@@ -285,18 +359,15 @@ class State:
         @param from_zones Zones to inspect, or all zones when omitted.
         @return Materialized list of known cards.
         """
-        if from_players is None:
-            from_players = self._players
+        from helper.query_system.query import InQuery
+        from .registers.card_register import IK_OWNER, IK_ZONE
 
-        if from_zones is None:
-            from_zones = [z for z in ZoneType]
-
-        cards: list[Card] = []
-
-        for player in from_players:
-            cards.extend(player.get_cards(from_zones))
-
-        return cards
+        owners = self.players if from_players is None else from_players
+        zones = tuple(ZoneType) if from_zones is None else from_zones
+        return list(self.query_cards(
+            InQuery(IK_OWNER, frozenset(owners))
+            & InQuery(IK_ZONE, frozenset(zones))
+        ))
 
     def get_mana_sources(self, player):
         """!
@@ -320,7 +391,10 @@ class State:
         @param ability_key Ability identifier.
         @return True if the ability is currently activatable.
         """
-        if card not in self.get_cards(from_zones=[ZoneType.BATTLEFIELD]):
+        if (
+            self.card_register.get_by_key(card.key) is not card
+            or card.get_zone() != ZoneType.BATTLEFIELD
+        ):
             return False
 
         definition = card.get_ability_def(ability_key, self)
@@ -396,28 +470,9 @@ class State:
         @param event Optional event associated with the created trigger instances.
         @return Trigger abilities exposed by cards in usable zones.
         """
-        from ..game_actions.data_structs.ability import TriggerAbility, TriggerAbilityDefinition
-
-        triggers: list[TriggerAbility] = []
-
-        for card in self.get_cards():
-            zone = card.get_zone()
-
-            for ability_def in card.get_trigger_defs(self).values():
-                if not isinstance(ability_def, TriggerAbilityDefinition):
-                    continue
-
-                if ability_def.is_usable_in_zone(zone):
-                    triggers.append(
-                        TriggerAbility(
-                            ability_def,
-                            card,
-                            card.get_controller(self),
-                            event=event,
-                        )
-                    )
-
-        return triggers
+        from ..game_actions.triggers.trigger_roster import iter_trigger_bindings
+        return [binding.definition.to_ability(binding.source, binding.controller, event=event)
+                for binding in iter_trigger_bindings(self)]
 
     def get_triggered_abilities(self, event: GameEvent | None = None) -> list[TriggerAbility]:
         """!

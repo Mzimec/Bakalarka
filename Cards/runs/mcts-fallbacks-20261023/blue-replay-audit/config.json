@@ -1,0 +1,38 @@
+{
+  "seed": 43,
+  "starting_player": 0,
+  "max_turns": 17,
+  "max_decisions": 3000,
+  "players": [
+    {
+      "name": "Search",
+      "deck": "blue",
+      "agent": {
+        "type": "mcts",
+        "mcts": {
+          "deck_knowledge": "both_lists",
+          "selection": "puct",
+          "prior": "heuristic",
+          "search_seed": 7001,
+          "worlds": 2,
+          "iterations": 64,
+          "max_depth": 4,
+          "max_extensions": 8,
+          "max_advances": 1024,
+          "max_options": 4096,
+          "max_simulator_decisions": 2048,
+          "max_phases": 512,
+          "trajectory_mode": "continuous",
+          "max_search_ms": 500.0
+        }
+      }
+    },
+    {
+      "name": "Simple",
+      "deck": "black",
+      "agent": {
+        "type": "simple"
+      }
+    }
+  ]
+}

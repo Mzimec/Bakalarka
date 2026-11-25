@@ -4,6 +4,7 @@ import json
 from pathlib import Path
 
 from game.cards.decks import ARENA_STARTERS
+from .decision_statistics import format_decision_statistics
 
 
 def describe(value):
@@ -48,6 +49,8 @@ def render_match(source: Path, output: Path | None = None):
         "Player turns are numbered individually. Interactive time includes waiting for input.",
         "",
     ]
+    lines.extend(format_decision_statistics(result.get("decision_timing", [])))
+    lines.append("")
     if result.get("error"):
         lines.append("Reason: " + result["error"])
     last_turn = None
@@ -80,6 +83,13 @@ def render_match(source: Path, output: Path | None = None):
             message = f"{kind.replace('_', ' ').capitalize()}: {who}; {card}; {describe(row.get('ability'))}"
             if "success" in row:
                 message += f"; success: {row['success']}"
+        elif kind == "decision_timing":
+            size = row.get("option_space_size")
+            message = (
+                f"{who} decides {row['request_type']}: {row['elapsed_ns'] / 1e6:.3f} ms; "
+                f"observed options: {row['options_observed']}; "
+                f"space size: {size if size is not None else 'unknown'}; {row['status']}"
+            )
         elif kind == "decision" and row.get("decision") != "pass":
             message = f"{who} chooses {row['decision']}: {describe(row.get('details'))}"
         elif kind == "action_result" and not row["success"]:

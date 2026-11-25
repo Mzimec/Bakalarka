@@ -19,6 +19,20 @@ from ..stat_type import (
 from dataclasses import dataclass
 
 
+_STAT_LAYERS = {
+    STAT_CONTROLLER: Layer.CONTROL,
+    STAT_TYPES: Layer.TYPE,
+    STAT_SUBTYPES: Layer.TYPE,
+    STAT_COLORS: Layer.COLOR,
+    STAT_ABILITIES: Layer.ABILITY,
+    STAT_TRIGGERS: Layer.ABILITY,
+    STAT_KEYWORDS: Layer.ABILITY,
+    STAT_STATIC_ABILITIES: Layer.ABILITY,
+    STAT_INTRINSIC_MANA: Layer.ABILITY,
+    STAT_MANA_COST: Layer.RULES,
+}
+
+
 def modifier_layer(stat, modifier):
     """!
     @brief Determine the continuous-effect layer for one stat modifier.
@@ -34,18 +48,7 @@ def modifier_layer(stat, modifier):
     if isinstance(modifier, (LayeredModifier, SwitchPowerToughness)):
         return modifier.layer
 
-    return {
-        STAT_CONTROLLER: Layer.CONTROL,
-        STAT_TYPES: Layer.TYPE,
-        STAT_SUBTYPES: Layer.TYPE,
-        STAT_COLORS: Layer.COLOR,
-        STAT_ABILITIES: Layer.ABILITY,
-        STAT_TRIGGERS: Layer.ABILITY,
-        STAT_KEYWORDS: Layer.ABILITY,
-        STAT_STATIC_ABILITIES: Layer.ABILITY,
-        STAT_INTRINSIC_MANA: Layer.ABILITY,
-        STAT_MANA_COST: Layer.RULES,
-    }.get(
+    return _STAT_LAYERS.get(
         stat,
         modifier.layer if stat in (STAT_POWER, STAT_TOUGHNESS) else Layer.RULES,
     )

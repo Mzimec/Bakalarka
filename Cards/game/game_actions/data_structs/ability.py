@@ -1,13 +1,14 @@
 """Ability definitions, runtime bindings and subability composition."""
 
 from __future__ import annotations
-from typing import TYPE_CHECKING, override, overload, Any
+from typing import TYPE_CHECKING, override, overload, Any, ClassVar
 from functools import cached_property
 from dataclasses import dataclass, field, replace
 from abc import ABC, abstractmethod
-from collections.abc import Iterable, Mapping, Sequence
+from collections.abc import Callable, Iterable, Iterator, Mapping, Sequence
 from immutabledict import immutabledict
 from types import MappingProxyType
+from helper.static_definition import StaticDefinition, RuntimeBinding
 import copy
 
 if TYPE_CHECKING:
@@ -21,7 +22,9 @@ if TYPE_CHECKING:
     from ...target import TargetSlot
     from ...target.target_resolver import ImmutableTargetBinding
     from ...mana.mana_value import ImmutableManaValue, ManaValue, ManaValueBase
-    from ...ai.mana_solver import ManaSolver
+    from ...mana.mana_solver import ManaSolver
+    from ..generation.generation_strategy import ActionGenerationStrategy
+    from .game_action import ManaAbilityAction
 
 from ...game_state.modifier import ModifierSource, ContinuouosEffectModifierSource
 from .game_action import AbilityAction, ExecutionPlan, GameAction
@@ -42,7 +45,19 @@ __all__ = [
     "EffectSequence",
     "SubAbilityDefinition",
     "AbilityDefinition",
+    "PriorityActionAbilityDefinition",
+    "ActivatedAbilityDefinition",
+    "CastSpellAbilityDefinition",
+    "ManaAbilityDefinition",
+    "TriggeredManaAbilityDefinition",
+    "TriggeredManaAbility",
     "Ability",
+    "PriorityActionAbility",
+    "CastSpellAbility",
+    "ActivatedAbility",
+    "ManaAbility",
+    "PlayLandAbility",
+    "PlayLandAbilityDefinition",
     "TriggerCondition",
     "TriggerAbilityDefinition",
     "TriggerAbility",
@@ -53,7 +68,6 @@ __all__ = [
 class EffectBinding:
     """!
     @brief Resolved connection between an effect object and the slots it consumes.
-
     @var effect
         The concrete `Effect` instance being applied.
     @var slots
@@ -69,10 +83,8 @@ class EffectBinding:
 class EffectSequence:
     """!
     @brief An ordered, immutable sequence of resolved effect bindings.
-
     Represents the full set of effects (and the slots each one uses)
     that make up one concrete resolution of an ability.
-
     @var sequence
         Tuple of `EffectBinding` entries in resolution order.
     """
@@ -105,11 +117,9 @@ class EffectSequence:
 class SubAbilityVariable:
     """!
     @brief Metadata describing an X/Y-style variable cost or effect magnitude.
-
     Links a variable (e.g. the X in "Fireball deals X damage") to the
     cost and action sub-definitions that scale with its chosen value,
     plus bounds on the legal value range.
-
     @var var_type
         Which kind of scalable variable this is (e.g. cost-X vs
         effect-Y), as an `SAVariableType`.
@@ -135,7 +145,6 @@ class SubAbilityVariable:
     def get_max_value(self, state: State, subability: RuntimeSubAbility) -> int:
         """!
         @brief Computes the largest legal value this variable may take.
-
         @param state Current game state (unused by the default
                implementation, but kept for future state-dependent caps,
                e.g. based on available mana).
@@ -148,21 +157,19 @@ class SubAbilityVariable:
         # X/Y choices are optional metadata on a card definition.  A missing
         # specialised resolver must not crash action generation; use a bounded
         # deterministic fallback and honour an explicit cap.
-        cap = self.max_cap if self.max_cap is not None else 20
+        cap: int = self.max_cap if self.max_cap is not None else 20
         if type(cap) is not int or cap < self.min_value:
             cap = self.min_value
         return max(self.min_value, cap)
 
 
 @dataclass(frozen=True)
-class SubAbilityDefinition:
+class SubAbilityDefinition(StaticDefinition):
     """!
     @brief Defines either the cost part or the effect part of an ability.
-
     An `AbilityDefinition` is built from one or more cost sub-defs and
     one or more action (effect) sub-defs; a `SubAbilityComposer` merges
     them into a single compiled `RuntimeSubAbility`.
-
     @var action_node
         Root of the action-tree fragment (costs to pay or effects to
         apply) contributed by this sub-definition, or `None` if it
@@ -191,7 +198,6 @@ class SubAbilityDefinition:
 class SubAbilityComposer:
     """!
     @brief Accumulates and compiles a multiset of `SubAbilityDefinition`s.
-
     Card abilities can be built up piecewise (e.g. a base cost plus
     additional costs from other effects, or a base effect plus bonus
     effects). This composer tracks how many times each distinct
@@ -212,18 +218,21 @@ class SubAbilityComposer:
     ) -> None:
         """!
         @brief Creates an empty composer, a copy of another, or one seeded from sub-defs.
-
         @param first Either another `SubAbilityComposer` to copy (its
                internal counts and resolution-speed bookkeeping are
                copied), an iterable of `SubAbilityDefinition`s to seed
                this composer with, or `None` to start empty.
         """
+        self._subdefs: dict[SubAbilityDefinition, int]
+        self._resolution_speed: ResolutionSpeed | None
+        self._speed_count: int
+
         if isinstance(first, SubAbilityComposer):
             # Copy constructor: duplicate internal state rather than
             # sharing the same mutable dict.
-            self._subdefs: dict[SubAbilityDefinition, int] = dict(first._subdefs)
-            self._resolution_speed: ResolutionSpeed | None = first._resolution_speed
-            self._speed_count: int = first._speed_count
+            self._subdefs = dict(first._subdefs)
+            self._resolution_speed = first._resolution_speed
+            self._speed_count = first._speed_count
 
         else:
             self._subdefs = {}
@@ -241,11 +250,9 @@ class SubAbilityComposer:
     def extend_subdefs(self, subdefs: Iterable[SubAbilityDefinition]) -> None:
         """!
         @brief Adds sub-definitions to the composer, incrementing their counts.
-
         Validates that any sub-definition carrying an explicit
         `resolution_speed` agrees with the speed already established by
         previously added sub-definitions.
-
         @param subdefs Sub-definitions to add (multiplicities are summed
                if the same definition is added more than once).
         @throws ValueError If a sub-definition's `resolution_speed`
@@ -270,12 +277,10 @@ class SubAbilityComposer:
     def remove_subdefs(self, subdefs: Iterable[SubAbilityDefinition]) -> None:
         """!
         @brief Removes previously added sub-definitions, decrementing their counts.
-
         Entries whose count drops to zero (or below) are deleted
         entirely. If no sub-definition with an explicit resolution speed
         remains, the composer's recorded `resolution_speed` is reset to
         `None` so a future, differently-timed sub-def can be added.
-
         @param subdefs Sub-definitions to remove. Sub-definitions not
                currently present are silently ignored.
         """
@@ -298,13 +303,11 @@ class SubAbilityComposer:
     def _compile_mana_cost(self, ability: Ability, state: State) -> ImmutableManaValue | None:
         """!
         @brief Sums the mana costs contributed by every accumulated sub-definition.
-
         For each distinct sub-definition with a `mana_cost`, resolves it
         either by parsing a literal string/`ManaValueBase`, or by
         reading the corresponding stat off `ability` (which allows
         continuous effects/modifiers to alter the cost). The resolved
         amount is then added once per recorded multiplicity.
-
         @param ability The `Ability` instance whose stats are consulted
                when a sub-def's `mana_cost` is a stat reference rather
                than a literal.
@@ -347,8 +350,26 @@ class SubAbilityComposer:
         ActionNode | None,
     ]:
         """!
-        @brief Merges every accumulated sub-definition's action tree into one graph.
+        @brief Returns the compiled action graph for the accumulated sub-definitions.
+        Uses the cached structural-template path for the base composer type and
+        falls back to direct graph construction for subclasses.
+        @return A tuple containing the merged target-slot map, effect map, and
+                root action node.
+        """
+        from ..generation.structural_templates import compiled_graph
+        if type(self) is not SubAbilityComposer:
+            return self._build_action_graph()
+        return compiled_graph(self._subdefs, self._build_action_graph)
 
+    def _build_action_graph(
+        self,
+    ) -> tuple[
+        immutabledict[str, RepetitionTargetSlotWrapper],
+        immutabledict[str, Effect],
+        ActionNode | None,
+    ]:
+        """!
+        @brief Merges every accumulated sub-definition's action tree into one graph.
         Each occurrence of a sub-definition (respecting its recorded
         multiplicity) gets its own copy of the action node and target
         slots, disambiguated with a numeric suffix (`_0`, `_1`, ...) so
@@ -357,7 +378,6 @@ class SubAbilityComposer:
         yields `None`, one child is returned as-is, and multiple
         children are wrapped in an `AndActionNode` so they all execute
         together.
-
         @return A 3-tuple of:
                 - the merged slot map (suffixed slot key ->
                   `RepetitionTargetSlotWrapper`),
@@ -396,14 +416,13 @@ class SubAbilityComposer:
         elif len(children) == 1:
             action_node = children[0]
         else:
-            action_node = AndActionNode(children)
+            action_node = AndActionNode(tuple(children))
 
         return immutabledict(slots), immutabledict(effects), action_node
 
     def compile(self, ability: Ability, state: State) -> RuntimeSubAbility | None:
         """!
         @brief Compiles all accumulated sub-definitions into a single runtime ability.
-
         @param ability The `Ability` the compiled mana cost should be
                resolved against.
         @param state Current game state, used for stat/mana-cost
@@ -433,15 +452,13 @@ class SubAbilityComposer:
 
 
 @dataclass(frozen=True)
-class RuntimeSubAbility:
+class RuntimeSubAbility(RuntimeBinding):
     """!
     @brief Fully compiled cost or effect half of an ability, ready to generate actions.
-
     Produced by `SubAbilityComposer.compile`. Bundles the merged action
     tree, resolved mana cost, and lookup tables for slots/effects so
     that generated action-option dictionaries (mapping effect keys to
     slot keys) can be turned into concrete `EffectSequence`s.
-
     @var action_node
         Root of the combined action tree (costs or effects), or `None`
         if this sub-ability contributes no actions.
@@ -480,7 +497,7 @@ class RuntimeSubAbility:
             slots: set[RepetitionTargetSlotWrapper] = set()
 
             for key in v:
-                slot = self.slots.get(key)
+                slot: RepetitionTargetSlotWrapper | None = self.slots.get(key)
 
                 if slot is None:
                     raise KeyError(f"  No TargetSlot for '{key}' in self.slots.")
@@ -515,12 +532,10 @@ class RuntimeSubAbility:
     ) -> set[RepetitionTargetSlotWrapper]:
         """!
         @brief Collect every target slot referenced by a resolved target binding.
-
         Same idea as `get_used_slots_in_esmap`, but reads slot keys from
         an already-resolved target binding structure (slot-group key ->
         {target-slot-key: value}) rather than from an effect-to-slots
         mapping.
-
         @param binding Resolved binding mapping, as produced during
                action generation/target resolution.
         @return Target slots referenced anywhere in `binding` that are
@@ -535,18 +550,15 @@ class RuntimeSubAbility:
 
 
 @dataclass(frozen=True)
-class AbilityDefinition:
+class AbilityDefinition(StaticDefinition, ABC):
     """!
     @brief Static data that describes how a card ability can be used.
-
     This is the card-authoring-level description of an ability (shared
     across all instances of a card), as opposed to `Ability`, which is
     the runtime object bound to one specific source card and controller.
-
     @var uses_stack
         Whether activating/casting this ability puts it on the stack.
-        Defaults to `True`; mana abilities and some special/loyalty
-        actions override this.
+        Defaults to `True`; mana abilities and special actions override this.
     @var subdefs
         Map from `SAVariableType` to `SubAbilityVariable`, describing any
         X/Y-style scalable costs or effects this ability has.
@@ -585,69 +597,48 @@ class AbilityDefinition:
     key: str = "ability"
     cost_subdefs: tuple[SubAbilityDefinition, ...] = ()
     action_subdefs: tuple[SubAbilityDefinition, ...] = ()
-    is_spell: bool = False
+    is_spell: ClassVar[bool] = False
     sorcery_speed: bool = False
-    is_mana_ability: bool = False
-    loyalty_cost: int | None = None
+    is_mana_ability: ClassVar[bool] = False
+    loyalty_cost: ClassVar[int | None] = None
 
     def validation_error(self, source: Card, controller: Player, state: State) -> str | None:
         """!
-        @brief Return a validation message when the requested action is not legal.
-
-        Checks, in order: loyalty-ability-specific rules (integer cost,
-        must use the stack, must be on the battlefield, once-per-turn
-        limit, sufficient loyalty counters), that a spell has a mana
-        cost and isn't a land, that the ability is usable from the
-        source's current zone, that `controller` actually controls (or
-        owns, for spells) the ability, and finally timing restrictions
-        for sorcery-speed abilities (active player, main phase, empty
-        stack).
-
-        @param source The card the ability originates from.
-        @param controller The player attempting to use the ability.
+        @brief Validates shared zone, controller, and timing restrictions.
+        @param source Card providing the ability.
+        @param controller Player attempting to use the ability.
         @param state Current game state.
-        @return `None` if the action is legal, otherwise a short
-                human-readable string explaining why it is not.
+        @return Validation error message, or `None` when the ability is legal.
         """
-        if self.loyalty_cost is not None:
-            if type(self.loyalty_cost) is not int:
-                return "Loyalty cost must be an integer."
-            if self.is_spell or self.is_mana_ability or not self.uses_stack:
-                return "Loyalty abilities must be activated abilities using the stack."
-            if source.get_zone() != ZoneType.BATTLEFIELD:
-                return "Loyalty abilities require a battlefield permanent."
-            if source.loyalty_activated_turn == state.turn.number:
-                return "A loyalty ability of this permanent was already activated this turn."
-            if source.state.counters.get(CounterType.LOYALTY, 0) + self.loyalty_cost < 0:
-                return "Insufficient loyalty counters."
-        if self.is_spell and source.get_mana_cost(state) is None:
-            return "A spell without a mana cost cannot be cast by paying its mana cost."
-        if self.is_spell and CardType.LAND in source.get_types(state):
-            return "Lands are played as special actions, not cast as spells."
         if not self.is_usable_in_zone(source.get_zone()):
             return f"Ability '{self.key}' is not available in {source.get_zone().name}."
-        permitted_player = source.owner if self.is_spell else source.get_controller(state)
-        if controller is not permitted_player:
+        if controller is not self._permitted_player(source, state):
             return "You do not control this ability."
-        # Determine whether the ability is restricted to sorcery speed:
-        # explicit sorcery_speed flag, loyalty abilities (always sorcery
-        # speed), or a spell that is neither an instant nor flash.
-        sorcery_speed = (
-            self.loyalty_cost is not None
-            or self.sorcery_speed
-            or (
-                self.is_spell
-                and CardType.INSTANT not in source.get_types(state)
-                and not source.has_keyword(state, "flash")
-            )
-        )
-        if sorcery_speed and (
+        if self._requires_sorcery_speed(source, state) and (
             state.active_player is not controller
             or state.turn.phase not in {TurnPhase.PRECOMBAT_MAIN, TurnPhase.POSTCOMBAT_MAIN}
             or not state.stack.is_empty()
         ):
             return "Use this ability during your main phase with an empty stack."
         return None
+
+    def _permitted_player(self, source: Card, state: State) -> Player:
+        """!
+        @brief Returns the player permitted to use this ability.
+        @param source Card providing the ability.
+        @param state Current game state.
+        @return Player currently controlling the source card.
+        """
+        return source.get_controller(state)
+
+    def _requires_sorcery_speed(self, source: Card, state: State) -> bool:
+        """!
+        @brief Returns whether this ability is restricted to sorcery-speed timing.
+        @param source Card providing the ability.
+        @param state Current game state.
+        @return `True` when sorcery-speed timing is required.
+        """
+        return self.sorcery_speed
 
     def is_usable_in_zone(self, zone: ZoneType) -> bool:
         """!
@@ -657,26 +648,203 @@ class AbilityDefinition:
         """
         return zone in self.allowed_zones
 
+    @abstractmethod
     def to_ability(self, card: Card, player: Player) -> Ability:
         """!
-        @brief Binds this static definition to a specific source card and controller.
-        @param card The card this ability instance originates from.
-        @param player The player who would control/cast this ability
-               instance.
-        @return A new runtime `Ability` wrapping this definition.
+        @brief Binds this definition to its matching runtime ability type.
+        @param card Source card for the runtime ability.
+        @param player Player controlling or casting the runtime ability.
+        @return Runtime ability bound to `card` and `player`.
         """
-        return Ability(self, card, player)
+        raise NotImplementedError
+
+
+@dataclass(frozen=True)
+class PriorityActionAbilityDefinition(AbilityDefinition):
+    """!
+    @brief Base definition for abilities offered during a priority window.
+    """
+
+
+@dataclass(frozen=True)
+class ActivatedAbilityDefinition(PriorityActionAbilityDefinition):
+    """!
+    @brief Definition of an activated ability that can optionally use loyalty.
+    @var loyalty_cost
+        Loyalty-counter change paid when activating the ability, or `None` for
+        non-loyalty activated abilities.
+    """
+
+    loyalty_cost: int | None = None
+
+    def validation_error(self, source: Card, controller: Player, state: State) -> str | None:
+        """!
+        @brief Validates loyalty-specific rules before shared activation rules.
+        @param source Card providing the activated ability.
+        @param controller Player attempting to activate the ability.
+        @param state Current game state.
+        @return Validation error message, or `None` when the ability is legal.
+        """
+        if self.loyalty_cost is not None:
+            if type(self.loyalty_cost) is not int:
+                return "Loyalty cost must be an integer."
+            if self.is_mana_ability or not self.uses_stack:
+                return "Loyalty abilities must be activated abilities using the stack."
+            if source.get_zone() != ZoneType.BATTLEFIELD:
+                return "Loyalty abilities require a battlefield permanent."
+            if source.loyalty_activated_turn == state.turn.number:
+                return "A loyalty ability of this permanent was already activated this turn."
+            if source.state.counters.get(CounterType.LOYALTY, 0) + self.loyalty_cost < 0:
+                return "Insufficient loyalty counters."
+        return super().validation_error(source, controller, state)
+
+    def _requires_sorcery_speed(self, source: Card, state: State) -> bool:
+        """!
+        @brief Applies sorcery-speed timing to loyalty abilities.
+        @param source Card providing the activated ability.
+        @param state Current game state.
+        @return `True` when loyalty or inherited timing requires sorcery speed.
+        """
+        return self.loyalty_cost is not None or super()._requires_sorcery_speed(source, state)
+
+    def to_ability(self, card: Card, player: Player) -> ActivatedAbility:
+        """!
+        @brief Creates the runtime activated ability for this definition.
+        @param card Source card for the ability.
+        @param player Player controlling the ability.
+        @return Runtime `ActivatedAbility`.
+        """
+        return ActivatedAbility(self, card, player)
+
+
+@dataclass(frozen=True)
+class CastSpellAbilityDefinition(PriorityActionAbilityDefinition):
+    """!
+    @brief Definition used for casting a card as a spell.
+    """
+
+    is_spell: ClassVar[bool] = True
+    uses_stack: bool = field(default=True, init=False)
+    allowed_zones: frozenset[ZoneType] = frozenset({ZoneType.HAND})
+
+    def validation_error(self, source: Card, controller: Player, state: State) -> str | None:
+        """!
+        @brief Validates spell-specific casting restrictions before shared rules.
+        @param source Card being cast.
+        @param controller Player attempting to cast the spell.
+        @param state Current game state.
+        @return Validation error message, or `None` when casting is legal.
+        """
+        if source.get_mana_cost(state) is None:
+            return "A spell without a mana cost cannot be cast by paying its mana cost."
+        if CardType.LAND in source.get_types(state):
+            return "Lands are played as special actions, not cast as spells."
+        return super().validation_error(source, controller, state)
+
+    def _permitted_player(self, source: Card, state: State) -> Player:
+        """!
+        @brief Returns the player permitted to cast this card.
+        @param source Card being cast.
+        @param state Current game state.
+        @return Owner of the source card.
+        """
+        return source.owner
+
+    def _requires_sorcery_speed(self, source: Card, state: State) -> bool:
+        """!
+        @brief Determines whether the spell must follow sorcery-speed timing.
+        @param source Card being cast.
+        @param state Current game state.
+        @return `True` for sorcery-speed spells without flash.
+        """
+        return self.sorcery_speed or (
+            CardType.INSTANT not in source.get_types(state) and not source.has_keyword(state, "flash")
+        )
+
+    def to_ability(self, card: Card, player: Player) -> CastSpellAbility:
+        """!
+        @brief Creates the runtime spell-casting ability for this definition.
+        @param card Card being cast.
+        @param player Player casting the card.
+        @return Runtime `CastSpellAbility`.
+        """
+        return CastSpellAbility(self, card, player)
+
+
+@dataclass(frozen=True)
+class ManaAbilityDefinition(ActivatedAbilityDefinition):
+    """!
+    @brief Definition of an activated mana ability that resolves without the stack.
+    """
+
+    is_mana_ability: ClassVar[bool] = True
+    uses_stack: bool = field(default=False, init=False)
+
+    def to_ability(self, card: Card, player: Player) -> ManaAbility:
+        """!
+        @brief Creates the runtime mana ability for this definition.
+        @param card Source card for the mana ability.
+        @param player Player controlling the mana ability.
+        @return Runtime `ManaAbility`.
+        """
+        return ManaAbility(self, card, player)
+
+
+@dataclass(frozen=True)
+class PlayLandAbilityDefinition(PriorityActionAbilityDefinition):
+    """!
+    @brief Permission to play a land from the specified zones.
+    The intrinsic definition permits only its owner's hand. Card effects may
+    grant another definition through `STAT_ABILITIES`, optionally with a live
+    condition and a different permitted player (e.g. playing an exiled card).
+    @var permitted_player
+        Optional player explicitly permitted to play the land.
+    @var condition
+        Optional live predicate that must remain true for the permission to apply.
+    """
+    key: str = "play_land"
+    uses_stack: bool = field(default=False, init=False)
+    allowed_zones: frozenset[ZoneType] = frozenset({ZoneType.HAND})
+    permitted_player: Player | None = None
+    condition: Callable[[Card, Player, State], bool] | None = None
+
+    def validation_error(self, source: Card, controller: Player, state: State) -> str | None:
+        """!
+        @brief Validates timing, player, zone, and conditional land-play permission.
+        @param source Land card being played.
+        @param controller Player attempting to play the land.
+        @param state Current game state.
+        @return Validation error message, or `None` when the land may be played.
+        """
+        from ...rules.lands import land_play_timing_error
+        error: str | None = land_play_timing_error(source, controller, state)
+        if error:
+            return error
+        if controller is not (self.permitted_player or source.owner):
+            return "This player does not have permission to play this land."
+        if source.get_zone() not in self.allowed_zones:
+            return "This land cannot be played from its current zone."
+        if self.condition is not None and not self.condition(source, controller, state):
+            return "The permission to play this land is no longer active."
+        return None
+
+    def to_ability(self, card: Card, player: Player) -> PlayLandAbility:
+        """!
+        @brief Creates the runtime land-play ability for this definition.
+        @param card Land card to bind.
+        @param player Player using the land-play permission.
+        @return Runtime `PlayLandAbility`.
+        """
+        return PlayLandAbility(self, card, player)
 
 
 @dataclass(frozen=True)
 class AbilityData:
     """!
     @brief Immutable payload backing a runtime `Ability` instance.
-
     Kept as a small separate dataclass so `Ability` (which mixes in
     `HasModifiableStats`) can cheaply share/copy its identity data (via
     the copy-constructor overload) without re-deriving derived state.
-
     @var definition
         The static `AbilityDefinition` this instance is based on.
     @var source
@@ -693,7 +861,6 @@ class AbilityData:
 class Ability(HasModifiableStats):
     """!
     @brief Runtime ability bound to a specific source card.
-
     Wraps a static `AbilityDefinition` together with the specific card
     (`source`) and player (`caster`) it applies to for one particular
     instance of use. Exposes modifiable stats (e.g. mana cost) so
@@ -714,7 +881,6 @@ class Ability(HasModifiableStats):
     ) -> None:
         """!
         @brief Creates a new ability instance, or copies an existing one.
-
         @param first Either an existing `Ability` to copy (shares its
                underlying `AbilityData`, stats, and modifier sources), or
                an `AbilityDefinition` to bind to `second`/`third`.
@@ -728,10 +894,14 @@ class Ability(HasModifiableStats):
                 on the same `StatType` while building this ability's stat
                 table.
         """
+        self._data: AbilityData
+        self._stats: immutabledict[StatType, Stat]
+        self._modifier_sources: tuple[ModifierSource, ...]
+
         if isinstance(first, Ability):
             # Copy constructor: reuse the same immutable backing data
             # rather than rebuilding stats from scratch.
-            self._data: AbilityData = first._data
+            self._data = first._data
             self._stats = first._stats
             self._modifier_sources = first._modifier_sources
 
@@ -760,14 +930,14 @@ class Ability(HasModifiableStats):
                 if hasattr(subdef.mana_cost, "stat_type"):
                     stats_builder[subdef.mana_cost.stat_type] = subdef.mana_cost
 
-            self._stats: immutabledict[StatType, Stat] = immutabledict(stats_builder)
+            self._stats = immutabledict(stats_builder)
 
-            self._modifier_sources: tuple[ModifierSource, ...] = second.modifier_sources
+            self._modifier_sources = second.modifier_sources
 
     # HasStat properties
     @property
     @override
-    def stats(self):
+    def stats(self) -> immutabledict[StatType, Stat]:
         """!
         @brief The modifiable stat table for this ability (e.g. mana-cost stats).
         @return Immutable mapping of `StatType` to `Stat`.
@@ -777,7 +947,7 @@ class Ability(HasModifiableStats):
     # HasModifiers properties
     @property
     @override
-    def modifier_sources(self):
+    def modifier_sources(self) -> tuple[ModifierSource, ...]:
         """!
         @brief Modifier sources inherited from this ability's source card.
         @return Tuple of `ModifierSource` affecting this ability's stats.
@@ -788,6 +958,7 @@ class Ability(HasModifiableStats):
     def definition(self) -> AbilityDefinition:
         """!
         @brief The static `AbilityDefinition` this instance is based on.
+        @return Static ability definition backing this runtime instance.
         """
         return self._data.definition
 
@@ -795,6 +966,7 @@ class Ability(HasModifiableStats):
     def key(self) -> str:
         """!
         @brief Shortcut for `self.definition.key`.
+        @return Unique key of the underlying ability definition.
         """
         return self.definition.key
 
@@ -802,6 +974,7 @@ class Ability(HasModifiableStats):
     def source(self) -> Card:
         """!
         @brief The card this ability instance is bound to.
+        @return Source card of this runtime ability.
         """
         return self._data.source
 
@@ -809,8 +982,41 @@ class Ability(HasModifiableStats):
     def controller(self) -> Player:
         """!
         @brief The player controlling/casting this ability instance.
+        @return Player bound to this runtime ability.
         """
         return self._data.caster
+
+    def generate_actions(
+        self,
+        strategy: ActionGenerationStrategy,
+        state: State,
+        **parameters: Any,
+    ) -> Iterator[GameAction]:
+        """!
+        @brief Generates executable game actions for this runtime ability.
+        @param strategy Strategy controlling action-plan generation.
+        @param state Current game state.
+        @param parameters Additional generation parameters forwarded to the pipeline.
+        @return Iterator over generated legal game actions.
+        """
+        from ..generation.ability_action_gen_pipeline import ABILITY_GENERATION_PIPELINE
+        yield from ABILITY_GENERATION_PIPELINE.generate(self, strategy, state, **parameters)
+
+    def casting_mana_cost(self, state: State) -> ImmutableManaValue | None:
+        """!
+        @brief Returns the additional casting mana cost contributed by this ability type.
+        @param state Current game state.
+        @return Additional casting mana cost, or `None` when none applies.
+        """
+        return None
+
+    @property
+    def action_type(self) -> type[AbilityAction]:
+        """!
+        @brief Returns the game-action class created by this runtime ability.
+        @return Action class used by `to_game_action`.
+        """
+        return AbilityAction
 
     def to_game_action(self, c_generator: ExecutionPlan, a_generator: ExecutionPlan) -> GameAction:
         """!
@@ -819,18 +1025,12 @@ class Ability(HasModifiableStats):
         @param a_generator Generator for the ability effect operations.
         @return Game action representing one concrete ability choice.
         """
-        from .game_action import ManaAbilityAction
-
-        # Mana abilities are represented by a distinct action subclass
-        # (`ManaAbilityAction`) so the rest of the engine can special-case
-        # them (e.g. never putting them on the stack).
-        action_type = ManaAbilityAction if self.definition.is_mana_ability else AbilityAction
-        return action_type(
+        return self.action_type(
             action_key=self.key,
             source=self._data.source,
             cost_generator=c_generator,
             action_generator=a_generator,
-            uses_stack=self.definition.uses_stack and not self.definition.is_mana_ability,
+            uses_stack=self.definition.uses_stack,
             controller=self.controller,
             ability=self.definition,
         )
@@ -838,19 +1038,100 @@ class Ability(HasModifiableStats):
     def is_activatable(self) -> bool:
         """!
         @brief Quick zone-only check of whether this ability could currently be used.
-
         Note this only checks zone legality (via
         `AbilityDefinition.is_usable_in_zone`); full legality (control,
         timing, loyalty limits, etc.) is determined by
         `AbilityDefinition.validation_error`.
-
         @return `True` if the source card's current zone permits this
                 ability.
         """
         return self.definition.is_usable_in_zone(self._data.source.get_zone())
 
 
-class TriggerCondition(ABC):
+class PriorityActionAbility(Ability):
+    """!
+    @brief Runtime ability offered while its controller has priority.
+    """
+
+
+class CastSpellAbility(PriorityActionAbility):
+    """!
+    @brief Runtime spell ability whose plan includes the card's modified casting cost.
+    """
+
+    def casting_mana_cost(self, state: State) -> ImmutableManaValue | None:
+        """!
+        @brief Returns the source card's current modified casting cost.
+        @param state Current game state.
+        @return Current casting mana cost of the source card.
+        """
+        return self.source.get_casting_cost(state)
+
+
+class ActivatedAbility(PriorityActionAbility):
+    """!
+    @brief Runtime binding for an activated card ability.
+    """
+
+
+class ManaAbility(ActivatedAbility):
+    """!
+    @brief Runtime activation that produces an immediate `ManaAbilityAction`.
+    """
+
+    @property
+    def action_type(self) -> type[ManaAbilityAction]:
+        """!
+        @brief Returns the immediate mana-ability action class.
+        @return `ManaAbilityAction` class.
+        """
+        from .game_action import ManaAbilityAction
+        return ManaAbilityAction
+
+
+class PlayLandAbility(PriorityActionAbility):
+    """!
+    @brief Runtime permission that generates a special land-play action.
+    Land play does not use spell costs or the stack.
+    """
+
+    def generate_actions(
+        self,
+        strategy: ActionGenerationStrategy,
+        state: State,
+        **parameters: Any,
+    ) -> Iterator[GameAction]:
+        """!
+        @brief Generates the land-play action after validating the current permission.
+        @param strategy Generation strategy, unused by the land-play path.
+        @param state Current game state.
+        @param parameters Additional generation parameters, unused by this path.
+        @return Iterator yielding the single land-play action.
+        @throws ValueError If the land cannot currently be played.
+        """
+        from ...rules.lands import land_play_error
+        error: str | None = land_play_error(self.source, self.controller, state, self.definition)
+        if error:
+            raise ValueError(error)
+        yield self.to_game_action()
+
+    def to_game_action(
+        self,
+        c_generator: ExecutionPlan | None = None,
+        a_generator: ExecutionPlan | None = None,
+    ) -> GameAction:
+        """!
+        @brief Builds the special game action that plays this land.
+        @param c_generator Unused cost plan, accepted for interface compatibility.
+        @param a_generator Unused effect plan, accepted for interface compatibility.
+        @return Special land-play game action.
+        """
+        from ...rules.lands import LandPlayAction
+        return LandPlayAction(self.source, self.controller, self.definition,
+                              getattr(self.source, "zone_revision", None))
+
+
+class TriggerCondition(StaticDefinition, ABC):
     """!
     @brief Base predicate used to decide whether an event should trigger an ability.
     """
@@ -858,6 +1139,9 @@ class TriggerCondition(ABC):
     # None preserves generic event conditions; zone-aware conditions explicitly
     # distinguish leaves-the-battlefield from "from anywhere" triggers.
     looks_back_in_time: bool | None = None
+    # Optional conservative event dispatch contract. Declare on each concrete
+    # condition class; inherited declarations do not constrain custom matching.
+    event_keys = None
 
     @abstractmethod
     def matches(self, state: State, event: GameEvent) -> bool:
@@ -874,11 +1158,9 @@ class TriggerCondition(ABC):
 class TriggerAbilityDefinition(AbilityDefinition):
     """!
     @brief Static data for an ability that is produced by a matching game event.
-
     Extends `AbilityDefinition` with the `TriggerCondition` that decides
     whether a given `GameEvent` causes this ability to trigger, plus an
     optional "intervening if" clause re-checked at resolution time.
-
     @var condition
         The `TriggerCondition` used to match incoming game events.
         Defaults to `None` (never triggers) if not set.
@@ -888,19 +1170,16 @@ class TriggerAbilityDefinition(AbilityDefinition):
         of the base `condition` match.
     """
 
-    condition: TriggerCondition = field(default=None)
-    intervening_if: Any | None = None
+    condition: TriggerCondition | None = field(default=None)
+    intervening_if: Callable[[State, GameEvent], bool] | None = None
 
-    def validation_error(self, source, controller, state):
-        # Eligibility was captured when the event occurred, before stack resolution.
+    def validation_error(self, source: Card, controller: Player, state: State) -> str | None:
         """!
         @brief Return a validation message when the requested action is not legal.
-
         Triggered abilities are always legal to put on the stack once
         triggered — their eligibility was already determined by the
         triggering event, not by re-checking normal activation rules at
         resolution time.
-
         @param source Unused; kept for signature compatibility with
                `AbilityDefinition.validation_error`.
         @param controller Unused; kept for signature compatibility.
@@ -910,22 +1189,56 @@ class TriggerAbilityDefinition(AbilityDefinition):
         return None
 
     @override
-    def to_ability(self, card, player):
+    def to_ability(
+        self,
+        card: Card,
+        player: Player,
+        *,
+        event: GameEvent | None = None,
+        source_last_known: Any | None = None,
+    ) -> TriggerAbility:
         """!
-        @brief Binds this trigger definition to a source card and controller.
-        @param card The card this triggered ability originates from.
-        @param player The player who will control this triggered
-               ability instance.
-        @return A new `TriggerAbility` (without an associated event yet;
-                use its constructor directly to attach one).
+        @brief Creates a runtime triggered ability bound to an optional triggering event.
+        @param card Source card for the triggered ability.
+        @param player Player controlling the triggered ability.
+        @param event Event that produced the trigger, if already known.
+        @param source_last_known Optional last-known source snapshot.
+        @return Runtime `TriggerAbility`.
         """
-        return TriggerAbility(self, card, player)
+        return TriggerAbility(self, card, player, event, source_last_known)
+
+
+@dataclass(frozen=True)
+class TriggeredManaAbilityDefinition(TriggerAbilityDefinition):
+    """!
+    @brief Definition of a triggered mana ability resolved without the stack.
+    """
+
+    is_mana_ability: ClassVar[bool] = True
+    uses_stack: bool = field(default=False, init=False)
+
+    def to_ability(
+        self,
+        card: Card,
+        player: Player,
+        *,
+        event: GameEvent | None = None,
+        source_last_known: Any | None = None,
+    ) -> TriggeredManaAbility:
+        """!
+        @brief Creates a runtime triggered mana ability.
+        @param card Source card for the triggered mana ability.
+        @param player Player controlling the triggered mana ability.
+        @param event Event that produced the trigger, if already known.
+        @param source_last_known Optional last-known source snapshot.
+        @return Runtime `TriggeredManaAbility`.
+        """
+        return TriggeredManaAbility(self, card, player, event, source_last_known)
 
 
 class TriggerAbility(Ability):
     """!
     @brief Runtime triggered ability paired with the event that caused it.
-
     Extends `Ability` by carrying the specific `GameEvent` that (may
     have) triggered it, plus a snapshot of the source card's
     last-known state/characteristics (`source_last_known`) for triggers
@@ -943,7 +1256,6 @@ class TriggerAbility(Ability):
     ) -> None:
         """!
         @brief Creates a triggered ability instance, optionally bound to an event.
-
         @param definition The `TriggerAbilityDefinition` this instance is
                based on.
         @param source The card this triggered ability originates from.
@@ -956,13 +1268,17 @@ class TriggerAbility(Ability):
                triggers that care about "last known information".
         """
         super().__init__(definition, source, caster)
-        self.event = event
-        self.source_last_known = source_last_known
+        self.event: GameEvent | None = event
+        self.source_last_known: Any | None = source_last_known
         # Capture identity now; later resolution must not treat a returned
         # card as the permanent that originally triggered this ability.
-        self.source_revision = getattr(source, "zone_revision", None)
+        self.source_revision: Any | None = getattr(source, "zone_revision", None)
 
-    def to_game_action(self, c_generator, a_generator):
+    def to_game_action(
+        self,
+        c_generator: ExecutionPlan,
+        a_generator: ExecutionPlan,
+    ) -> GameAction:
         """!
         @brief Builds the game action for this trigger, attaching its triggering event.
         @param c_generator Generator for the cost operations.
@@ -981,7 +1297,6 @@ class TriggerAbility(Ability):
     def matches(self, state: State) -> bool:
         """!
         @brief Evaluate the stored trigger event against the ability condition.
-
         Returns `False` early if there is no stored event, the
         definition isn't actually a `TriggerAbilityDefinition`, or no
         `condition` is configured. If an `intervening_if` clause is set,
@@ -989,7 +1304,6 @@ class TriggerAbility(Ability):
         `matches_trigger(self, state)` hook (for conditions that need
         access to the full trigger instance, e.g. `source_last_known`),
         that is preferred over the plain `matches(state, event)` check.
-
         @param state Current game state.
         @return True if the stored event matches the trigger condition.
         """
@@ -1006,12 +1320,17 @@ class TriggerAbility(Ability):
         return self.definition.condition.matches(state, self.event)
 
 
+class TriggeredManaAbility(TriggerAbility):
+    """!
+    @brief Triggered mana ability resolved immediately by `TriggerProcessor`.
+    """
+
+
 class AbilityCollection(KeyedCollection[AbilityDefinition]):
     """!
     @brief Keyed collection of `AbilityDefinition`s belonging to a card.
-
     Thin specialization of `KeyedCollection` (looked up by each
     definition's `key`) with no additional behavior of its own.
     """
 
-    pass
+    ...

@@ -61,7 +61,6 @@ class GameStack:
 class PrioritySystem:
     """!
     @brief Expose priority state maintained by the active PriorityWindow.
-
     PriorityWindow owns passing and stack resolution. This object provides the
     current player and pass history to validators, controllers and turn setup.
     """

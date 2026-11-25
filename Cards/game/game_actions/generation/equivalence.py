@@ -1,0 +1,256 @@
+"""Conservative symmetry reduction for one immutable generation pass.
+
+Keys describe decision interchangeability, never runtime identity. Unknown rule
+implementations and identity-observing state keep all concrete alternatives.
+"""
+from __future__ import annotations
+
+from collections.abc import Iterable, Iterator, Mapping, Set
+from typing import Protocol
+from dataclasses import dataclass, fields, is_dataclass
+from enum import Enum
+
+
+class UnknownSemantics(Exception):
+    """!
+    @brief Raised when a value cannot be safely reduced to a structural key.
+    """
+    pass
+
+
+class StructuralKey:
+    """!
+    @brief Produces exact structured keys for supported declarative rule objects.
+    """
+    def __init__(self) -> None:
+        """!
+        @brief Build the supported-type tables used for structural freezing.
+        """
+        from ..data_structs import ability, action_node
+        from ...game_state.card import CardDefinition
+        from ...game_state.modifier import TimeStamp
+        from ...game_state.stat import Stat, ModifiablePrimitiveStat, ModifiableReferenceStat
+        from ...stat_type import StatType
+        from ...mana.mana_value import (ColoredSymbol, GenericSymbol, VariableSymbol, HybridGenericSymbol,
+                                         PhyrexianSymbol, GeneralisedSymbol, DeterministicSymbol)
+        from ..card_effects import TapSourceEffect, MoveSourceEffect, DamagePlayerEffect
+        from ..mana_effects import AddManaEffect
+        from ...target.target_resolver import TargetSlot, TargetResolver
+        from ...target.target_selector import SingleTargetSelector, MinMaxTegetSelector
+        from ...target.target_spec import QueryTargetSpec, PlayerQueryTargetSpec
+        from helper.query_system.object_register import IndexKey
+        from helper.query_system.query import EqQuery, InQuery, RangeQuery, AndQuery, OrQuery, DifferenceQuery, HasQuery
+        self.records = {
+            TimeStamp, CardDefinition, Stat, ModifiablePrimitiveStat, ModifiableReferenceStat, StatType,
+            ColoredSymbol, GenericSymbol, VariableSymbol, HybridGenericSymbol, PhyrexianSymbol,
+            GeneralisedSymbol, DeterministicSymbol, ability.CastSpellAbilityDefinition, ability.ActivatedAbilityDefinition,
+            ability.ManaAbilityDefinition, ability.PlayLandAbilityDefinition,
+            ability.SubAbilityDefinition, ability.SubAbilityVariable,
+            action_node.EffectActionNode, action_node.AndActionNode, action_node.OrActionNode, action_node.ManaActionNode,
+            TargetSlot, TargetResolver, SingleTargetSelector, MinMaxTegetSelector, QueryTargetSpec, PlayerQueryTargetSpec,
+            IndexKey, EqQuery, InQuery, RangeQuery, AndQuery, OrQuery, DifferenceQuery, HasQuery,
+        }
+        self.effects = {TapSourceEffect, MoveSourceEffect, DamagePlayerEffect, AddManaEffect}
+        self.supported = self.records | self.effects
+        self.cache: dict[int, tuple[object, object]] = {}
+
+    def freeze(self, value: object) -> object:
+        """!
+        @brief Convert a supported value into a hashable structural key.
+        @param value Value to freeze.
+        @return Hashable representation of the value.
+        """
+        if value is None or type(value) in (bool, int, str, float, bytes):
+            return (type(value), value)
+        if isinstance(value, Enum):
+            return (type(value), value)
+        from ...game_state.player import Player
+        if type(value) is Player:
+            return (Player, id(value))
+        if isinstance(value, Mapping):
+            return ("mapping", frozenset((self.freeze(k), self.freeze(v)) for k, v in value.items()))
+        if isinstance(value, Set):
+            return ("set", frozenset(self.freeze(v) for v in value))
+        if isinstance(value, (tuple, list)):
+            return ("sequence", tuple(self.freeze(v) for v in value))
+        if type(value) not in self.supported:
+            raise UnknownSemantics(type(value).__name__)
+        identity = id(value)
+        if identity not in self.cache:
+            members = ((field.name, getattr(value, field.name)) for field in fields(value)) if is_dataclass(value) else vars(value).items()
+            self.cache[identity] = (value, (type(value), tuple((key, self.freeze(v)) for key, v in members)))
+        return self.cache[identity][1]
+
+    def ability(self, definition: object) -> object:
+        # The local ability name only identifies an otherwise identical rule.
+        """!
+        @brief Create a structural key for an ability definition.
+        @param definition Ability definition to key.
+        @return Structural ability key excluding the local name.
+        """
+        if type(definition) not in self.records:
+            raise UnknownSemantics(type(definition).__name__)
+        return (type(definition), tuple((field.name, self.freeze(getattr(definition, field.name)))
+                for field in fields(definition) if field.name != "key"))
+
+
+class EquivalencePolicy(Protocol):
+    """!
+    @brief Protocol for creating an equivalence context bound to a state.
+    """
+    def bind(self, state: object) -> EquivalenceContext:
+        """!
+        @brief Create an equivalence context for the supplied state.
+        @param state Game state-like object.
+        @return Bound equivalence context.
+        """
+        ...
+
+
+@dataclass(frozen=True)
+class ConservativeEquivalencePolicy:
+    """!
+    @brief Create a fresh context; no signature survives a decision/state mutation.
+    """
+    def bind(self, state: object) -> EquivalenceContext:
+        """!
+        @brief Create a new conservative equivalence context.
+        @param state Game state-like object.
+        @return New equivalence context.
+        """
+        return EquivalenceContext(state)
+
+
+class EquivalenceContext:
+    """!
+    @brief State-bound conservative equivalence context for representative pruning.
+    """
+    def __init__(self, state: object) -> None:
+        """!
+        @brief Initialize structural keying for the supplied state.
+        @param state Game state-like object.
+        """
+        self.state = state
+        self.structure = StructuralKey()
+        self.cards: dict[int, object] = {}
+        self._classes: dict[object, int] = {}
+        self.enabled = False
+        from ...game_state.state import State
+        if not isinstance(state, State):
+            return
+        from helper.query_system.query import EqQuery
+        from ...game_state.registers.card_register import IK_HAS_TRIGGERS, IK_STATIC_REPLACEMENT
+        state.synchronise_registers()
+        self.enabled = not (
+            not state.stack.is_empty()
+            or getattr(state.combat, "active", False)
+            or getattr(state, "runtime_triggers", ())
+            or getattr(state, "replacement_rules", ())
+            or getattr(state, "_deferred_events", ())
+            or state._cont_effect_manager.query()
+            or state.query_cards(EqQuery(IK_HAS_TRIGGERS, True) | EqQuery(IK_STATIC_REPLACEMENT, True))
+        )
+
+    def card_key(self, card: object) -> object:
+        """!
+        @brief Return the equivalence key used for a runtime card.
+        @param card Runtime card-like object.
+        @return Structural card key, or identity key when unsafe.
+        """
+        from ...game_state.card import Card
+        from ...enums import ZoneType
+        from ...game_state.modifier import (
+            ContinuouosEffectModifierSource, CounterModifierSource, AttachedModifierSource,
+        )
+        if not self.enabled or type(card) is not Card:
+            return ("identity", id(card))
+        identity = id(card)
+        if identity in self.cards:
+            return self.cards[identity]
+        result = ("identity", identity)
+        if (card.get_zone() in (ZoneType.HAND, ZoneType.BATTLEFIELD)
+                and card.attached_to is None and not card.state.attached
+                and not card.state.active_cont_effects and not card.state._anchored_modifiers
+                and card.state.skip_untap is None
+                and tuple(type(source) for source in card.modifier_sources) == (
+                    ContinuouosEffectModifierSource, CounterModifierSource, AttachedModifierSource,
+                )):
+            try:
+                # Keep all runtime metadata except identifiers and historical LKI.
+                runtime = {k: v for k, v in vars(card).items() if k not in {
+                    "_key", "runtime_id", "command_id", "_game_state", "_definition", "_printed_definition",
+                    "_stats", "_modifier_sources", "_state", "_incarnation_history",
+                    # Derived read caches are not characteristics or identity
+                    # observations. Their authoritative inputs/results are
+                    # already represented below, independently of cache warmth.
+                    "_native_empty_sources", "_native_modifier_plan",
+                    "_characteristic_values", "_ability_definition_cache",
+                }}
+                record_metadata = {'zone_revision', 'controlled_since', 'token_left_battlefield',
+                                   'loyalty_activated_turn', '_entry_copy_restore'}
+                runtime.update((name, getattr(card, name)) for name in record_metadata
+                               if hasattr(card, name))
+                values = {k: v for k, v in vars(card.state).items()
+                          if k not in record_metadata | {"_on_change", "_on_runtime_change", "zone_info", "attach_info",
+                                                        "_stats", "_modifier_sources", "_incarnation_history", "_definition_override"}}
+                zone_info = dict(vars(card.state.zone_info))
+                from ...enums import CardType
+                from ...rules.lands import BASIC_LAND_MANA
+                plain_land = (
+                    card.definition.types == frozenset({CardType.LAND})
+                    and card.definition.subtypes
+                    and all(subtype.name in BASIC_LAND_MANA for subtype in card.definition.subtypes)
+                    and not card.definition.abilities
+                    and not card.definition.triggers
+                    and not card.definition.continuous_effects
+                    and not card.definition.replacement_effects
+                )
+                if plain_land:
+                    # Old basic lands remain interchangeable across turn numbers.
+                    # Retain freshness: animating a newly controlled land could
+                    # make summoning sickness relevant later in this turn.
+                    runtime["controlled_since"] = card.controlled_since >= card.get_controller(self.state).last_turn_started
+                    zone_info["entered_at"] = card.state.zone_info.entered_at.turn_number == self.state.turn.number
+                result = (
+                    "card", self.structure.freeze(card.definition), self.structure.freeze(card.stats),
+                    self.structure.freeze(runtime), self.structure.freeze(values),
+                    self.structure.freeze(zone_info),
+                    self.structure.freeze(vars(card.state.attach_info)),
+                    self.structure.freeze(tuple((key, card.get_stat(key, self.state)) for key in card.stats)),
+                )
+            except UnknownSemantics:
+                pass
+        if result[0] == "card":
+            # Intern once: mana backtracking compares small class IDs rather
+            # than repeatedly hashing the full characteristic/rule graph.
+            result = ("card", self._classes.setdefault(result, len(self._classes)))
+        self.cards[identity] = result
+        return result
+
+    def ability_key(self, ability: object) -> object:
+        """!
+        @brief Return the equivalence key used for a runtime ability.
+        @param ability Runtime ability-like object.
+        @return Structural ability key, or identity key when unsafe.
+        """
+        card = self.card_key(ability.source)
+        if card[0] == "identity":
+            return ("ability_identity", id(ability.source), ability.key, id(ability.definition))
+        try:
+            return (type(ability), card, id(ability.controller), self.structure.ability(ability.definition),
+                    self.structure.freeze(ability.stats))
+        except UnknownSemantics:
+            return ("ability_identity", id(ability.source), ability.key, id(ability.definition))
+
+    def representatives(self, abilities: Iterable[object]) -> Iterator[object]:
+        """!
+        @brief Yield one representative ability for each equivalence key.
+        @param abilities Candidate abilities.
+        @return Iterator over representative abilities.
+        """
+        seen: set[object] = set()
+        for ability in abilities:
+            key = self.ability_key(ability)
+            if key not in seen:
+                seen.add(key)
+                yield ability

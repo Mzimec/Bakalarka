@@ -24,7 +24,6 @@ from ...enums import *
 class SubAbilityGenerationResult:
     """!
     @brief Result of compiling one concrete set of sub-ability choices.
-
     @var selected_variables
         Selected values for variable sub-abilities such as X or Y.
     @var cost_subability
@@ -58,13 +57,11 @@ class FixedSubAbilityGenerator(SubAbilityGenerator):
     @brief Compile the fixed cost/effect parts of a definition with no variable choice.
     """
 
-    def generate(self, ctx, state):
+    def generate(self, ctx: ActionGenerationContextBase, state: State) -> Iterator[SubAbilityGenerationResult]:
         """!
         @brief Yield the fixed sub-ability combination.
-
         Rejects definitions containing variable sub-abilities, since this
         generator does not choose values for them.
-
         @param ctx Shared action-generation context.
         @param state Current game state.
         @return Iterator containing the compiled fixed sub-ability result.
@@ -88,18 +85,29 @@ class FullSubAbilityGenerator(SubAbilityGenerator):
     """
 
     @override
-    def generate(self, ctx, state) -> Iterator[SubAbilityGenerationResult]:
+    def generate(self, ctx: ActionGenerationContextBase, state: State) -> Iterator[SubAbilityGenerationResult]:
         """!
         @brief Yield every legal compiled cost/effect sub-ability combination.
-
         Variable sub-abilities are selected recursively. Their maximum
         values are evaluated against the cost sub-ability accumulated so
         far, allowing later variables to depend on already chosen costs.
-
         @param ctx Shared action-generation context.
         @param state Current game state.
         @return Iterator of compiled `SubAbilityGenerationResult` instances.
         """
+
+        definition = ctx.ability.definition
+        cost_composer = SubAbilityComposer(definition.cost_subdefs)
+        action_composer = SubAbilityComposer(definition.action_subdefs)
+        if not definition.subdefs:
+            # Fixed abilities have exactly one combination. Avoid creating the
+            # recursive search and temporary variable sets for this common case.
+            yield SubAbilityGenerationResult(
+                immutabledict(),
+                cost_composer.compile(ctx.ability, state),
+                action_composer.compile(ctx.ability, state),
+            )
+            return
 
         def _recursion_step(
             accumulated: dict[SAVariableType, int],
@@ -117,6 +125,10 @@ class FullSubAbilityGenerator(SubAbilityGenerator):
             ) -> None:
                 # Apply each selected variable's action sub-definition as
                 # many times as required by its chosen value.
+                """!
+                @brief Apply or remove selected variable action sub-definitions.
+                @param operation Composer method used to mutate the action side.
+                """
                 operation(
                     action_composer,
                     (
@@ -184,10 +196,6 @@ class FullSubAbilityGenerator(SubAbilityGenerator):
 
             del accumulated[cur_var_type]
             unused.add(cur_var_type)
-
-        # Start with the definition's fixed cost and action components.
-        cost_composer = SubAbilityComposer(ctx.ability.definition.cost_subdefs)
-        action_composer = SubAbilityComposer(ctx.ability.definition.action_subdefs)
 
         yield from _recursion_step(
             {},

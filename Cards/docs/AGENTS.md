@@ -2,6 +2,20 @@
 
 ## 1. Purpose
 
+The optional `search_backend="pimc"` is a separate perfect-information
+ensemble over sampled worlds. Real-player memory belongs to the live
+controller/sampler boundary; its simulation controllers do not own knowledge
+or recall. It does not replace the default information-set search or the
+tactical minimax reference. See
+[PIMC architecture and limits](experiments/mcts/MCTS_PIMC_MEMORY_BOUNDARY_20261109.md).
+
+Implementation ownership is grouped under `game.ai`: agents, decisions,
+information, evaluation, search, simulation, sampling, training, experiments
+and reference. Compose controllers through `SearchAgentBuilder`; application
+JSON validation remains in `game.simulation.search_config`. Shared search
+records belong to `game.ai.search.contracts`, not to one concrete algorithm.
+Package initializers stay lazy. See the [module map](../game/ai/README.md).
+
 This document describes the decision-making components used by the MtG engine.
 
 The engine distinguishes between two broad categories:
@@ -18,13 +32,21 @@ At the current stage, the main decision-making components are:
 ```text
 Full agents
 ├── SimpleAgent
-└── LLM-based agent
+├── ModularAgent (heuristic or LLM selector)
+├── MCTSAgent
+└── TrivialAgent (minimal baseline)
 
 Partial decision modules
 └── Mana solver
 ```
 
 The rules engine remains authoritative.
+
+The current MCTS object model, player-information boundary, sampled worlds,
+progressive widening, cache ownership and RAM-only runtime contract are described
+in [AI_SEARCH.md](AI_SEARCH.md). The sections below discuss the shared controller
+boundary and the Simple/LLM composition in more detail. Mana planning is owned
+by `game.mana.mana_solver`; the former `game.ai.mana_solver` shim was removed.
 
 Agents choose among actions that the engine exposes or validates; they do not
 replace the rules implementation.

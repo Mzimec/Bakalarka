@@ -72,6 +72,9 @@ class ManaPool(MutablePositiveCounterMapping[ManaType], ManaPoolBase):
         """!
         @brief Remove all mana from the pool.
         """
+        before = self.__dict__.get("_cost_before_write")
+        if before is not None:
+            before()
         self._data.clear()
 
     def add(self, other):
@@ -91,6 +94,9 @@ class ManaPool(MutablePositiveCounterMapping[ManaType], ManaPoolBase):
         _positive_counts({mana: amount})
         if not isinstance(mana, ManaType):
             raise ValueError("A pool contains mana types, not cost symbols.")
+        before = self.__dict__.get("_cost_before_write")
+        if before is not None:
+            before()
         super().add_pair(mana, amount)
 
     def substract(self, other):
@@ -105,6 +111,10 @@ class ManaPool(MutablePositiveCounterMapping[ManaType], ManaPoolBase):
         payment = _positive_counts(other)
         if any(self.get(mana, 0) < amount for mana, amount in payment.items()):
             raise ValueError("Insufficient mana for this payment.")
+
+        before = self.__dict__.get("_cost_before_write")
+        if before is not None:
+            before()
 
         for mana, amount in payment.items():
             remaining = self._data[mana] - amount
@@ -441,6 +451,12 @@ class ManaValueBase(Mapping[ManaSymbol, int], ABC):
 
             else:
                 raise ValueError("Generalised symbols must be compiled as subabilities.")
+
+        # Ordinary costs have one result. No recursive expansion or duplicate
+        # tracking is needed; still return a fresh immutable requirement.
+        if not alternatives:
+            yield fixed.to_immutable(), 0
+            return
 
         seen = set()
 

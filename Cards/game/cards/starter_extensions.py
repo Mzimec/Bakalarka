@@ -41,13 +41,13 @@ from game.operations.card_operations import (
     TapCardOperation,
     DamagePlayerOperation,
 )
-from game.target.target_spec import TargetSpec
+from game.target.target_spec import TargetSpec, SelfSpec
 from game.rules.lands import mana_ability
 from game.cards.starter_support import (
     RuleEffect,
     EventCondition,
     FormulaModifier,
-    ScryOperation,
+    ScryEffect,
     UntapOperation,
     SkipUntapOperation,
     LoseLifeOperation,
@@ -77,27 +77,48 @@ from game.cards.starter_cards import (
 )
 
 
-def own_creatures(state, player):
-    return tuple(
-        card
-        for card in state.get_cards(from_zones=[Z.BATTLEFIELD])
-        if card.get_controller(state) is player and card.is_type(state, T.CREATURE)
-    )
+def own_creatures(state: object, player: object) -> tuple[object, ...]:
+    """!
+    @brief own_creatures helper.
+    """
+    from helper.query_system.query import EqQuery
+    from game.game_state.registers.card_register import IK_ZONE, IK_TYPE, IK_CONTROLLER
+
+    return state.query_cards(EqQuery(IK_ZONE, Z.BATTLEFIELD)
+        & EqQuery(IK_TYPE, T.CREATURE) & EqQuery(IK_CONTROLLER, player))
 
 
-def count_lands(state, player, subtype=None):
-    return sum(
-        card.is_type(state, T.LAND) and (subtype is None or subtype in card.get_subtypes(state))
-        for card in state.get_cards(from_zones=[Z.BATTLEFIELD])
-        if card.get_controller(state) is player
-    )
+def count_lands(state: object, player: object, subtype: object = None) -> int:
+    """!
+    @brief count_lands helper.
+    """
+    from helper.query_system.query import EqQuery
+    from game.game_state.registers.card_register import IK_ZONE, IK_TYPE, IK_CONTROLLER, IK_SUBTYPE
+
+    query = (EqQuery(IK_ZONE, Z.BATTLEFIELD) & EqQuery(IK_TYPE, T.LAND)
+             & EqQuery(IK_CONTROLLER, player))
+    if subtype is not None:
+        query &= EqQuery(IK_SUBTYPE, subtype)
+    return len(state.query_cards(query))
 
 
 class PlayerSpec(TargetSpec):
-    def __init__(self, *, opponent=False):
+    """!
+    @brief PlayerSpec target specification.
+    """
+    def __init__(self, *, opponent: object = False) -> None:
+        """!
+        @brief Initialize this object.
+        """
         self.opponent = opponent
 
-    def generate_candidates(self, source, controller, state, reserved=None):
+    def generate_candidates(
+        self,
+        source: object,
+        controller: object,
+        state: object,
+        reserved: object = None,
+    ) -> object:
         """!
         @brief Yield candidate objects permitted by this target specification.
         """
@@ -109,7 +130,16 @@ class PlayerSpec(TargetSpec):
 
 
 class HandSpec(TargetSpec):
-    def generate_candidates(self, source, controller, state, reserved=None):
+    """!
+    @brief HandSpec target specification.
+    """
+    def generate_candidates(
+        self,
+        source: object,
+        controller: object,
+        state: object,
+        reserved: object = None,
+    ) -> object:
         """!
         @brief Yield candidate objects permitted by this target specification.
         """
@@ -120,59 +150,82 @@ class HandSpec(TargetSpec):
         )
 
 
-class SelfSpec(TargetSpec):
-    def __init__(self, condition=lambda s, c: True):
-        self.condition = condition
-
-    def generate_candidates(self, source, controller, state, reserved=None):
-        """!
-        @brief Yield candidate objects permitted by this target specification.
-        """
-        if self.condition(state, source):
-            yield source
 
 
 class FlyingSpellSpec(TargetSpec):
-    def generate_candidates(self, source, controller, state, reserved=None):
+    """!
+    @brief FlyingSpellSpec target specification.
+    """
+    def generate_candidates(
+        self,
+        source: object,
+        controller: object,
+        state: object,
+        reserved: object = None,
+    ) -> object:
         """!
         @brief Yield candidate objects permitted by this target specification.
         """
         yield from (
             card
-            for card in controller.hand.values()
-            if card.is_type(state, T.CREATURE) and card.has_keyword(state, "flying")
+            for card in state.query_cards(EqQuery(IK_ZONE, Z.HAND)
+                & EqQuery(IK_OWNER, controller) & EqQuery(IK_TYPE, T.CREATURE))
+            if card.has_keyword(state, "flying")
         )
 
 
-CREATURE = PredicateTargetSpec(lambda card, source, player, state: card.is_type(state, T.CREATURE))
+from helper.query_system.query import EqQuery, DifferenceQuery, RangeQuery
+from game.game_state.registers.card_register import IK_TYPE, IK_CONTROLLER, IK_POWER, IK_ZONE, IK_OWNER, IK_NAME
+
+CREATURE = PredicateTargetSpec(lambda card, source, player, state: card.is_type(state, T.CREATURE),
+                             query=EqQuery(IK_TYPE, T.CREATURE))
 OWN = PredicateTargetSpec(
     lambda card, source, player, state: card.is_type(state, T.CREATURE)
-    and card.get_controller(state) is player
+    and card.get_controller(state) is player,
+    query=lambda source, player, state: EqQuery(IK_TYPE, T.CREATURE) & EqQuery(IK_CONTROLLER, player),
 )
 OTHER = PredicateTargetSpec(
     lambda card, source, player, state: card.is_type(state, T.CREATURE)
-    and card.get_controller(state) is not player
+    and card.get_controller(state) is not player,
+    query=lambda source, player, state: DifferenceQuery(EqQuery(IK_TYPE, T.CREATURE), (EqQuery(IK_CONTROLLER, player),)),
 )
 
 
-def temporary(key, power=0, toughness=0, keywords=(), *, getter=None):
+def temporary(
+    key: str,
+    power: int = 0,
+    toughness: int = 0,
+    keywords: object = (),
+    *,
+    getter: object = None,
+) -> object:
+    """!
+    @brief temporary helper.
+    """
     modifiers = {POWER: (AddIntModifier(power),), TOUGHNESS: (AddIntModifier(toughness),)}
     if keywords:
         modifiers[KEYWORDS] = (AddSetModifier(frozenset(keywords)),)
     return TemporaryModifierEffect(key, modifiers, target_getter=getter)
 
 
-def self_trigger(key, effects, slots=()):
+def self_trigger(key: str, effects: object, slots: object = ()) -> object:
+    """!
+    @brief self_trigger helper.
+    """
     return _trigger(key, EntersBattlefieldCondition(source_only=True), effects, slots)
 
 
-def optional(effect):
-    def generate(state, context):
+def optional(effect: object) -> object:
+    """!
+    @brief optional helper.
+    """
+    def generate(state: object, context: object) -> object:
         """!
         @brief Yield choices supported by this generation strategy.
         """
-        choose = getattr(context.controller.decision_maker, "choose_optional_effect", None)
-        if choose is None or choose(state, context, effect.get_info()):
+        from game.ai.agents.decision_maker import OptionalEffectRequest
+        request = OptionalEffectRequest(state, context.controller, context, effect.get_info())
+        if context.controller.decision_maker.decide(request).value.accept:
             yield from effect.to_operations(state, context)
 
     return RuleEffect(
@@ -180,44 +233,65 @@ def optional(effect):
     )
 
 
-def return_targets(state, context):
+def return_targets(state: object, context: object) -> object:
+    """!
+    @brief return_targets helper.
+    """
     for card in targets(context):
         yield MoveCardOperation(context, card, Z.HAND)
 
 
-def destroy_targets(state, context):
+def destroy_targets(state: object, context: object) -> object:
+    """!
+    @brief destroy_targets helper.
+    """
     for card in targets(context):
         if not card.has_keyword(state, "indestructible"):
             yield MoveCardOperation(context, card, Z.GRAVEYARD)
 
 
-def draw_target(state, context, amount):
+def draw_target(state: object, context: object, amount: int) -> object:
+    """!
+    @brief draw_target helper.
+    """
     for player in targets(context):
         for _ in range(amount):
             yield DrawCardOperation(replace(context, controller=player))
 
 
-def mill(state, context):
+def mill(state: object, context: object) -> object:
+    """!
+    @brief mill helper.
+    """
     for card in tuple(reversed(tuple(context.controller.deck.values())))[:3]:
         yield MoveCardOperation(context, card, Z.GRAVEYARD)
 
 
-def world_return(state, context):
-    for card in tuple(context.controller.graveyard.values()):
-        if card.is_type(state, T.LAND):
-            operation = MoveCardOperation(context, card, Z.BATTLEFIELD)
-            operation.entry_tapped = True
-            yield operation
+def world_return(state: object, context: object) -> object:
+    """!
+    @brief world_return helper.
+    """
+    for card in state.query_cards(EqQuery(IK_ZONE, Z.GRAVEYARD)
+        & EqQuery(IK_OWNER, context.controller) & EqQuery(IK_TYPE, T.LAND)):
+        operation = MoveCardOperation(context, card, Z.BATTLEFIELD)
+        operation.entry_tapped = True
+        yield operation
 
 
-def sleep(state, context):
+def sleep(state: object, context: object) -> object:
+    """!
+    @brief sleep helper.
+    """
     for player in targets(context):
         for card in own_creatures(state, player):
             yield TapCardOperation(context, card, tap_symbol=False)
             yield SkipUntapOperation(context, card, player)
 
 
-def bad_deal(state, context):
+def bad_deal(state: object, context: object) -> object:
+    """!
+    @brief bad_deal helper.
+    """
     for _ in range(2):
         yield DrawCardOperation(context)
     for player in state.active_players:
@@ -227,26 +301,37 @@ def bad_deal(state, context):
         yield LoseLifeOperation(context, player, 2)
 
 
-def opportunist(state, context):
+def opportunist(state: object, context: object) -> object:
+    """!
+    @brief opportunist helper.
+    """
     for player in state.active_players:
         if player is not context.controller:
             yield LoseLifeOperation(context, player, 2)
     yield from GainLifeEffect("opportunist_life", 2).to_operations(state, context)
 
 
-def fracture(state, context):
-    count = 1 + sum(
-        card.name == "Compound Fracture" for card in context.controller.graveyard.values()
-    )
+def fracture(state: object, context: object) -> object:
+    """!
+    @brief fracture helper.
+    """
+    count = 1 + len(state.query_cards(EqQuery(IK_ZONE, Z.GRAVEYARD)
+        & EqQuery(IK_OWNER, context.controller) & EqQuery(IK_NAME, "compound fracture")))
     yield from temporary("fracture", -count, -count).to_operations(state, context)
 
 
-def brontodon(state, context):
+def brontodon(state: object, context: object) -> object:
+    """!
+    @brief brontodon helper.
+    """
     count = count_lands(state, context.controller)
     yield from temporary("brontodon", count, count).to_operations(state, context)
 
 
-def rakshasa_condition(state, trigger):
+def rakshasa_condition(state: object, trigger: object) -> bool:
+    """!
+    @brief rakshasa_condition helper.
+    """
     event, source = trigger.event, trigger.source
     return (
         event.key == "card_moved"
@@ -258,18 +343,27 @@ def rakshasa_condition(state, trigger):
     )
 
 
-def rakshasa_damage(state, context):
+def rakshasa_damage(state: object, context: object) -> object:
+    """!
+    @brief rakshasa_damage helper.
+    """
     for player in targets(context):
         yield DamagePlayerOperation(
             context, player, count_lands(state, context.controller, ST.SWAMP)
         )
 
 
-def sengir_condition(state, trigger):
+def sengir_condition(state: object, trigger: object) -> bool:
+    """!
+    @brief sengir_condition helper.
+    """
     if not is_death(trigger.event) or getattr(state, "_history_turn", None) != state.turn.number:
         return False
     dying = trigger.event.source
     revision = trigger.event.payload["last_known"].zone_revision
+    history = getattr(state, "turn_history", None)
+    if history is not None:
+        return history.dealt_damage(trigger.source, trigger.source_revision, dying, revision)
     return any(
         event.key == "damage_dealt"
         and event.source is trigger.source
@@ -282,13 +376,19 @@ def sengir_condition(state, trigger):
 
 
 class CaryatidManaEffect(AddManaEffect):
-    def get_info(self):
+    """!
+    @brief CaryatidManaEffect declarative effect.
+    """
+    def get_info(self) -> str:
         """!
         @brief Describe both possible outputs of the conditional mana ability.
         """
         return f"Add one {self.mana.name} mana, or two if you control a creature with power 4 or greater."
 
-    def get_amount(self, state, context):
+    def get_amount(self, state: object, context: object) -> int:
+        """!
+        @brief get_amount helper.
+        """
         return (
             2
             if any(card.get_power(state) >= 4 for card in own_creatures(state, context.controller))
@@ -296,7 +396,10 @@ class CaryatidManaEffect(AddManaEffect):
         )
 
 
-def aura(card, modifiers, triggers=()):
+def aura(card: object, modifiers: object, triggers: object = ()) -> object:
+    """!
+    @brief aura helper.
+    """
     return replace(
         card,
         attach_mods=immutabledict(modifiers),
@@ -306,7 +409,7 @@ def aura(card, modifiers, triggers=()):
 
 
 @lru_cache(maxsize=1)
-def extension_catalog():
+def extension_catalog() -> dict:
     """!
     @brief Build all fifty remaining starter definitions with executable rules.
     @return A name-keyed catalog; source metadata is vendored for offline use.
@@ -342,13 +445,22 @@ def extension_catalog():
             ),
         )
 
-    def update(name, **kwargs):
+    def update(name: str, **kwargs: object) -> None:
+        """!
+        @brief update helper.
+        """
         cards[name] = replace(cards[name], **kwargs)
 
-    def add_ability(name, ability):
+    def add_ability(name: str, ability: object) -> None:
+        """!
+        @brief add_ability helper.
+        """
         update(name, abilities=cards[name].abilities | {ability})
 
-    def spell(name, effects, slots=()):
+    def spell(name: str, effects: object, slots: object = ()) -> object:
+        """!
+        @brief spell helper.
+        """
         update(
             name,
             abilities=frozenset(
@@ -356,11 +468,17 @@ def extension_catalog():
             ),
         )
 
-    def triggers(name, *definitions):
+    def triggers(name: str, *definitions: object) -> None:
+        """!
+        @brief triggers helper.
+        """
         update(name, triggers=frozenset(definitions))
 
-    def scry_effect(amount):
-        return RuleEffect("scry", lambda s, c: (ScryOperation(c, amount),), info=f"Scry {amount}.")
+    def scry_effect(amount: int) -> object:
+        """!
+        @brief scry_effect helper.
+        """
+        return ScryEffect('scry', amount)
 
     triggers("Wall of Runes", self_trigger("runes_enter", (scry_effect(1),)))
     triggers("Octoprophet", self_trigger("octoprophet_enter", (scry_effect(2),)))
@@ -414,7 +532,8 @@ def extension_catalog():
                     lambda c, source, p, s: c is not source
                     and c.get_controller(s) is p
                     and c.is_type(s, T.CREATURE)
-                    and c.has_keyword(s, "flying")
+                    and c.has_keyword(s, "flying"),
+                    query=lambda source, player, state: EqQuery(IK_TYPE, T.CREATURE) & EqQuery(IK_CONTROLLER, player),
                 ),
                 {POWER: (AddIntModifier(1),)},
             ),
@@ -613,7 +732,8 @@ def extension_catalog():
         (
             _slot(
                 spec=PredicateTargetSpec(
-                    lambda c, src, p, s: c.is_type(s, T.CREATURE) and c.get_power(s) <= 2
+                    lambda c, src, p, s: c.is_type(s, T.CREATURE) and c.get_power(s) <= 2,
+                    query=EqQuery(IK_TYPE, T.CREATURE) & RangeQuery(IK_POWER, max_value=2),
                 )
             ),
         ),

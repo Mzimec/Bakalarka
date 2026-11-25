@@ -1,16 +1,44 @@
 """Compile effect bindings and combined mana costs without mutating state."""
 
 from __future__ import annotations
+from typing import TYPE_CHECKING
+from collections.abc import Iterator
 from abc import ABC, abstractmethod
-from dataclasses import replace
+from dataclasses import dataclass, replace
 from immutabledict import immutabledict
 
 from ..data_structs.game_action import AbilityExecutionPlan
 from ..data_structs.ability import EffectSequence
 from ..data_structs.action_node import ActionNodeOption, ImmutableEffectToSlotMap
-from ...mana.mana_value import ManaValue, ManaRequirement, ImmutableManaRequirement
+from ...mana.mana_value import ManaValueBase, ManaRequirement, ImmutableManaRequirement
 from ...abilities.parameter_context import ParameterContext
 from ...enums import SAVariableType
+from .structural_templates import prepared_effects
+from .execution_cost import EXECUTION_MANA_COST_COMPILER
+
+if TYPE_CHECKING:
+    from .ability_action_gen_pipeline import ActionGenerationContextBase
+    from .generation_strategy import ExecutionPlanStrategy
+    from ..data_structs.ability import RuntimeSubAbility
+    from ...game_state import State
+
+
+_EMPTY_EFFECTS = EffectSequence(())
+_EMPTY_OPTIONS = (ActionNodeOption(ImmutableEffectToSlotMap(), ImmutableManaRequirement()),)
+_ZERO_X = immutabledict({SAVariableType.X: 0})
+
+
+@dataclass(frozen=True)
+class PreparedExecutionPlan:
+    """One structural mode/payment, before its target combinations are built."""
+    option: ActionNodeOption
+    effects: EffectSequence
+    used_slots: frozenset
+    param_context: ParameterContext
+    mana_solver_result: object
+
+    def bind(self, binding):
+        return AbilityExecutionPlan(self.effects, binding, self.param_context, self.mana_solver_result)
 
 
 class ExecutionPlanPipelineBase(ABC):
@@ -19,7 +47,7 @@ class ExecutionPlanPipelineBase(ABC):
     """
 
     @abstractmethod
-    def generate(self, ctx, subability, strategy, state):
+    def generate(self, ctx: ActionGenerationContextBase, subability: RuntimeSubAbility | None, strategy: ExecutionPlanStrategy, state: State) -> Iterator[AbilityExecutionPlan]:
         """!
         @brief Yield legal execution plans for the supplied sub-ability.
         """
@@ -29,21 +57,18 @@ class ExecutionPlanPipelineBase(ABC):
 class ExecutionPlanPipeline(ExecutionPlanPipelineBase):
     """!
     @brief Compile action-node options, mana payment, and target bindings.
-
     Combines the selected sub-ability with the supplied generation
     strategy and produces concrete `AbilityExecutionPlan` instances
     without mutating the game state.
     """
 
-    def generate(self, ctx, subability, strategy, state):
+    def generate(self, ctx: ActionGenerationContextBase, subability: RuntimeSubAbility | None, strategy: ExecutionPlanStrategy, state: State) -> Iterator[AbilityExecutionPlan]:
         """!
         @brief Yield legal execution plans supported by this strategy.
-
         Builds the effective mana cost from the ability-level and
         sub-ability-level costs, resolves action-node options, finds a
         legal mana payment plan, generates target bindings, and combines
         the results into immutable execution plans.
-
         @param ctx Shared action-generation context.
         @param subability Sub-ability whose execution plans are generated,
                or `None` for an empty cost/effect side.
@@ -54,36 +79,46 @@ class ExecutionPlanPipeline(ExecutionPlanPipelineBase):
         @throws ValueError If mana must be paid but no mana solver is
                 available.
         """
+        for prepared in self.prepare(ctx, subability, strategy, state):
+            from game.ai.decisions.generation_candidates import target_preferences
+            with target_preferences(prepared.effects):
+                for binding in strategy.target_gen.generate(ctx, prepared.used_slots, state):
+                    yield prepared.bind(binding)
+
+    def prepare(self, ctx, subability, strategy, state, *, reuse=None):
+        """Compile modes and mana once, shared by flat and staged generation.
+
+        A staged frame can reuse its proven mode within the same unchanged
+        owned context. This never shares a payment across states or abilities.
+        """
         # Missing sub-abilities and sub-abilities without an action node
         # still produce one empty option so the rest of the pipeline can
         # treat them uniformly.
-        empty = subability is None or subability.action_node is None
+        empty: bool = subability is None or subability.action_node is None
         options = (
-            (ActionNodeOption(ImmutableEffectToSlotMap(), ImmutableManaRequirement()),)
+            _EMPTY_OPTIONS
             if empty
             else strategy.options_gen.generate(subability.action_node)
         )
 
         # Combine mana costs inherited from the enclosing ability with any
         # additional mana cost defined by this sub-ability.
-        cost = ManaValue()
-        if strategy.mana_solver is not None and ctx.mana_cost is not None:
-            cost.add(ManaValue(ctx.mana_cost))
+        cost = EXECUTION_MANA_COST_COMPILER.combine(
+            ctx.mana_cost if strategy.mana_solver is not None else None,
+            subability.mana_cost if subability is not None else None,
+        )
 
-        if subability is not None and subability.mana_cost is not None:
-            cost.add(ManaValue(subability.mana_cost))
-
-        x_value = getattr(ctx, "x_value", 0)
-        param_context = ParameterContext(
-            immutabledict({SAVariableType.X: x_value})
+        x_value: int = getattr(ctx, "x_value", 0)
+        param_context: ParameterContext = ParameterContext(
+            _ZERO_X if type(x_value) is int and x_value == 0 else immutabledict({SAVariableType.X: x_value})
         )
 
         for option in options:
-            effects = (
-                EffectSequence(())
-                if empty
-                else subability.normalize_effect_map(option.effects)
-            )
+            if reuse is not None and option == reuse.option:
+                yield reuse
+                continue
+            effects, used_slots = ((_EMPTY_EFFECTS, frozenset()) if empty
+                                   else prepared_effects(subability, option.effects))
 
             mana_solver_result = None
 
@@ -97,7 +132,9 @@ class ExecutionPlanPipeline(ExecutionPlanPipelineBase):
             if strategy.mana_solver is not None:
                 # ManaValue may have several legal payment forms, e.g.
                 # alternative life payments or variable X costs.
-                for symbol_requirement, life in cost.payment_options(x_value):
+                # Use the same built-in expansion for borrowed immutable values
+                # as for the mutable accumulator used previously.
+                for symbol_requirement, life in ManaValueBase.payment_options(cost, x_value):
                     selected_life = getattr(ctx, "life_payment", None)
 
                     if (
@@ -108,30 +145,37 @@ class ExecutionPlanPipeline(ExecutionPlanPipelineBase):
                     requirement = ManaRequirement(option.mana_req)
                     requirement.add(symbol_requirement)
 
-                    from ...ai.mana_solver import SourceActivatingManaSolver
+                    if not requirement:
+                        from ...mana.mana_solver import ManaSolverResult
+
+                        mana_solver_result = ManaSolverResult(
+                            (),
+                            state,
+                            payment=None,
+                            life_payment=life,
+                        )
+                        break
+
                     from ..card_effects import TapSourceEffect
 
-                    kwargs = {}
-
-                    # If paying the non-mana cost already taps the ability's
-                    # source, prevent the activating mana solver from also
-                    # selecting that source as a mana producer.
-                    if isinstance(strategy.mana_solver, SourceActivatingManaSolver):
-                        kwargs["reserved"] = (
-                            frozenset({ctx.ability.source})
-                            if any(
-                                isinstance(binding.effect, TapSourceEffect)
-                                for binding in effects.sequence
-                            )
-                            else frozenset()
-                        )
-
-                    candidate = strategy.mana_solver.get_mana_plan(
-                        requirement,
-                        ctx.ability.controller,
-                        state,
-                        **kwargs,
+                    # A source tapped by this cost cannot also produce its mana.
+                    reserved = (
+                        frozenset({ctx.ability.source})
+                        if any(isinstance(binding.effect, TapSourceEffect)
+                               for binding in effects.sequence)
+                        else frozenset()
                     )
+
+                    from .decision_abstraction.requests import ManaGenerationRequest
+                    from .decision_abstraction.policies import ManaGenerationPolicy
+
+                    request = ManaGenerationRequest(
+                        state, ctx.ability.controller, requirement,
+                        reserved=reserved,
+                    )
+                    candidate = next(iter(request.option_space(
+                        ManaGenerationPolicy(strategy.mana_solver)
+                    )), None)
 
                     if candidate is not None:
                         mana_solver_result = replace(
@@ -144,19 +188,9 @@ class ExecutionPlanPipeline(ExecutionPlanPipelineBase):
                 if mana_solver_result is None:
                     continue
 
-            used_slots = (
-                frozenset()
-                if empty
-                else subability.get_used_slots_in_esmap(option.effects)
-            )
-
             # Target generation is performed only for slots actually used
             # by the selected action-node option.
-            for binding in strategy.target_gen.generate(ctx, used_slots, state):
-                yield AbilityExecutionPlan(
-                    effects=effects,
-                    binding=binding,
-                    param_context=param_context,
-                    mana_solver_result=mana_solver_result,
-                )
+            if used_slots is None:
+                used_slots = subability.get_used_slots_in_esmap(option.effects)
+            yield PreparedExecutionPlan(option, effects, frozenset(used_slots), param_context, mana_solver_result)
 

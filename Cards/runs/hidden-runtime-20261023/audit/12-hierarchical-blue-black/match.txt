@@ -1,0 +1,1447 @@
+Cold-Blooded Killers (Cold-Blooded Killers) vs Aerial Domination (Aerial Domination)
+Result: win | Winner: Simple | Player turn: 27
+Elapsed wall time: 76.418 s
+Seed: 202 | Starting player: 0
+Player turns are numbered individually. Interactive time includes waiting for input.
+
+Decision timing (wall time; includes option generation and input/model waits):
+  Simple [SimpleAgent, agent]: 316 decisions, average 1.254 ms, total 0.396 s, errors 0, auto-passes 187
+    Active option generation: 0.341 s; other decision work: 0.056 s (split recorded for 316 decisions)
+    AbilityDecisionRequest: n=4, average 0.101 ms; observed options 2.25; space size 2.25 (known for 4 decisions)
+      1 observed options: n=3, average 0.090 ms
+      2-10 observed options: n=1, average 0.134 ms
+    CombatDamageRequest: n=1, average 0.096 ms; observed options 1.00; space size unknown
+      1 observed options: n=1, average 0.096 ms
+    DeclareAttackersRequest: n=14, average 0.202 ms; observed options 1.00; space size unknown
+      1 observed options: n=14, average 0.202 ms
+    DeclareBlockersRequest: n=3, average 0.185 ms; observed options 1.00; space size unknown
+      1 observed options: n=3, average 0.185 ms
+    MulliganRequest: n=1, average 0.080 ms; observed options 0.00; space size unknown
+      0 observed options: n=1, average 0.080 ms
+    PriorityDecisionRequest: n=289, average 1.357 ms; observed options 1.39; space size 1.63 (known for 236 decisions)
+      0 observed options: n=44, average 0.132 ms
+      1 observed options: n=143, average 1.395 ms
+      2-10 observed options: n=102, average 1.832 ms
+    TriggerOrderRequest: n=4, average 0.044 ms; observed options 1.00; space size unknown
+      1 observed options: n=4, average 0.044 ms
+  Search [MCTSAgent, agent]: 335 decisions, average 222.475 ms, total 74.529 s, errors 0, auto-passes 0
+    Active option generation: 1.613 s; other decision work: 72.916 s (split recorded for 335 decisions)
+    AbilityDecisionRequest: n=5, average 225.026 ms; observed options 18.20; space size 1.00 (known for 3 decisions)
+      1 observed options: n=3, average 10.892 ms
+      11-100 observed options: n=2, average 546.227 ms
+    AbilityResolutionRequest: n=1, average 542.812 ms; observed options 26.00; space size unknown
+      11-100 observed options: n=1, average 542.812 ms
+    DeclareAttackersRequest: n=13, average 306.626 ms; observed options 9.85; space size 1.00 (known for 9 decisions)
+      1 observed options: n=9, average 91.123 ms
+      11-100 observed options: n=4, average 791.510 ms
+    DeclareBlockersRequest: n=8, average 381.279 ms; observed options 15.12; space size 1.00 (known for 4 decisions)
+      1 observed options: n=4, average 71.201 ms
+      11-100 observed options: n=4, average 691.357 ms
+    MulliganRequest: n=1, average 8.976 ms; observed options 2.00; space size 2.00 (known for 1 decisions)
+      2-10 observed options: n=1, average 8.976 ms
+    OptionalEffectRequest: n=5, average 627.599 ms; observed options 42.20; space size unknown
+      11-100 observed options: n=5, average 627.599 ms
+    PriorityDecisionRequest: n=290, average 201.525 ms; observed options 7.22; space size 1.00 (known for 229 decisions)
+      1 observed options: n=229, average 52.888 ms
+      11-100 observed options: n=61, average 759.521 ms
+    ReplacementOrderRequest: n=7, average 598.020 ms; observed options 38.00; space size unknown
+      11-100 observed options: n=7, average 598.020 ms
+    TriggerOrderRequest: n=5, average 9.887 ms; observed options 1.00; space size 1.00 (known for 5 decisions)
+      1 observed options: n=5, average 9.887 ms
+  Observed options are consumed yields, not unique actions. Size refers to the policy-filtered space.
+  Generation times only active option-stream next() calls, including nested expansion once. Other decision work includes policy, discovery outside streams, validation and measurement overhead; it is not pure scoring time. Precomputed choices were generated before this measurement.
+
+
+Turn 1
+  [untap] Simple decides MulliganRequest: 0.080 ms; observed options: 0; space size: unknown; success
+  [untap] Search decides MulliganRequest: 8.976 ms; observed options: 2; space size: 2; success
+  [upkeep] Simple decides PriorityDecisionRequest: 16.733 ms; observed options: 1; space size: 1; success
+  [upkeep] Search decides PriorityDecisionRequest: 2.553 ms; observed options: 1; space size: 1; success
+  [precombat main] Simple chooses land: source: Swamp [c42]
+  [precombat main] Simple decides PriorityDecisionRequest: 0.469 ms; observed options: 2; space size: unknown; success
+  [precombat main] Card moved: Simple; Swamp [c42] — card: Swamp [c42]; from: HAND; last known: kind: CardLastKnownInformation; previous controller: Simple; to: BATTLEFIELD
+  [precombat main] Simple plays land Swamp [c42] — lands played: 1; last known: kind: CardLastKnownInformation
+  [precombat main] Resolution: Simple; Swamp [c42]; play_land; success: True
+  [precombat main] Simple decides PriorityDecisionRequest: 2.759 ms; observed options: 1; space size: 1; success
+  [precombat main] Search decides PriorityDecisionRequest: 2.477 ms; observed options: 1; space size: 1; success
+  [begin combat] Simple decides PriorityDecisionRequest: 1.170 ms; observed options: 1; space size: 1; success
+  [begin combat] Search decides PriorityDecisionRequest: 2.325 ms; observed options: 1; space size: 1; success
+  [declare attackers] Simple chooses attack: attackers: none
+  [declare attackers] Simple decides DeclareAttackersRequest: 0.132 ms; observed options: 1; space size: unknown; success
+  [declare attackers] Simple decides PriorityDecisionRequest: 1.230 ms; observed options: 1; space size: 1; success
+  [declare attackers] Search decides PriorityDecisionRequest: 2.474 ms; observed options: 1; space size: 1; success
+  [end combat] Simple decides PriorityDecisionRequest: 1.272 ms; observed options: 1; space size: 1; success
+  [end combat] Search decides PriorityDecisionRequest: 2.691 ms; observed options: 1; space size: 1; success
+  [postcombat main] Simple decides PriorityDecisionRequest: 1.470 ms; observed options: 1; space size: 1; success
+  [postcombat main] Search decides PriorityDecisionRequest: 2.374 ms; observed options: 1; space size: 1; success
+  [end step] Simple decides PriorityDecisionRequest: 1.240 ms; observed options: 1; space size: 1; success
+  [end step] Search decides PriorityDecisionRequest: 15.244 ms; observed options: 1; space size: 1; success
+
+Turn 2
+  [upkeep] Search decides PriorityDecisionRequest: 3.323 ms; observed options: 1; space size: 1; success
+  [upkeep] Simple decides PriorityDecisionRequest: 1.456 ms; observed options: 1; space size: 1; success
+  [draw] Card moved: Search; Riddlemaster Sphinx [c82] — card: Riddlemaster Sphinx [c82]; from: DECK; last known: kind: CardLastKnownInformation; previous controller: Search; to: HAND
+  [draw] Card drawn: Search; Riddlemaster Sphinx [c82] — card: Riddlemaster Sphinx [c82]; last known: kind: CardLastKnownInformation
+  [draw] Resolution: -; -; -; success: True
+  [draw] Search decides PriorityDecisionRequest: 3.591 ms; observed options: 1; space size: 1; success
+  [draw] Simple decides PriorityDecisionRequest: 1.394 ms; observed options: 1; space size: 1; success
+  [precombat main] Search decides PriorityDecisionRequest: 516.106 ms; observed options: 50; space size: unknown; success
+  [precombat main] Card moved: Search; Island [c102] — card: Island [c102]; from: HAND; last known: kind: CardLastKnownInformation; previous controller: Search; to: BATTLEFIELD
+  [precombat main] Search plays land Island [c102] — lands played: 1; last known: kind: CardLastKnownInformation
+  [precombat main] Resolution: Search; Island [c102]; play_land; success: True
+  [precombat main] Search decides PriorityDecisionRequest: 4.754 ms; observed options: 1; space size: 1; success
+  [precombat main] Simple decides PriorityDecisionRequest: 1.390 ms; observed options: 1; space size: 1; success
+  [begin combat] Search decides PriorityDecisionRequest: 2.996 ms; observed options: 1; space size: 1; success
+  [begin combat] Simple decides PriorityDecisionRequest: 1.342 ms; observed options: 1; space size: 1; success
+  [declare attackers] Search decides DeclareAttackersRequest: 12.347 ms; observed options: 1; space size: 1; success
+  [declare attackers] Search decides PriorityDecisionRequest: 3.273 ms; observed options: 1; space size: 1; success
+  [declare attackers] Simple decides PriorityDecisionRequest: 1.394 ms; observed options: 1; space size: 1; success
+  [end combat] Search decides PriorityDecisionRequest: 3.526 ms; observed options: 1; space size: 1; success
+  [end combat] Simple decides PriorityDecisionRequest: 1.364 ms; observed options: 1; space size: 1; success
+  [postcombat main] Search decides PriorityDecisionRequest: 4.104 ms; observed options: 1; space size: 1; success
+  [postcombat main] Simple decides PriorityDecisionRequest: 1.258 ms; observed options: 1; space size: 1; success
+  [end step] Search decides PriorityDecisionRequest: 60.292 ms; observed options: 1; space size: 1; success
+  [end step] Simple decides PriorityDecisionRequest: 1.327 ms; observed options: 1; space size: 1; success
+
+Turn 3
+  [upkeep] Simple decides PriorityDecisionRequest: 1.336 ms; observed options: 1; space size: 1; success
+  [upkeep] Search decides PriorityDecisionRequest: 3.095 ms; observed options: 1; space size: 1; success
+  [draw] Card moved: Simple; Swamp [c44] — card: Swamp [c44]; from: DECK; last known: kind: CardLastKnownInformation; previous controller: Simple; to: HAND
+  [draw] Card drawn: Simple; Swamp [c44] — card: Swamp [c44]; last known: kind: CardLastKnownInformation
+  [draw] Resolution: -; -; -; success: True
+  [draw] Simple decides PriorityDecisionRequest: 1.222 ms; observed options: 1; space size: 1; success
+  [draw] Search decides PriorityDecisionRequest: 3.041 ms; observed options: 1; space size: 1; success
+  [precombat main] Simple chooses land: source: Swamp [c44]
+  [precombat main] Simple decides PriorityDecisionRequest: 0.432 ms; observed options: 2; space size: unknown; success
+  [precombat main] Card moved: Simple; Swamp [c44] — card: Swamp [c44]; from: HAND; last known: kind: CardLastKnownInformation; previous controller: Simple; to: BATTLEFIELD
+  [precombat main] Simple plays land Swamp [c44] — lands played: 1; last known: kind: CardLastKnownInformation
+  [precombat main] Resolution: Simple; Swamp [c44]; play_land; success: True
+  [precombat main] Simple decides PriorityDecisionRequest: 2.202 ms; observed options: 1; space size: 1; success
+  [precombat main] Search decides PriorityDecisionRequest: 3.326 ms; observed options: 1; space size: 1; success
+  [begin combat] Simple decides PriorityDecisionRequest: 1.727 ms; observed options: 1; space size: 1; success
+  [begin combat] Search decides PriorityDecisionRequest: 3.031 ms; observed options: 1; space size: 1; success
+  [declare attackers] Simple chooses attack: attackers: none
+  [declare attackers] Simple decides DeclareAttackersRequest: 0.115 ms; observed options: 1; space size: unknown; success
+  [declare attackers] Simple decides PriorityDecisionRequest: 1.706 ms; observed options: 1; space size: 1; success
+  [declare attackers] Search decides PriorityDecisionRequest: 3.171 ms; observed options: 1; space size: 1; success
+  [end combat] Simple decides PriorityDecisionRequest: 1.670 ms; observed options: 1; space size: 1; success
+  [end combat] Search decides PriorityDecisionRequest: 3.029 ms; observed options: 1; space size: 1; success
+  [postcombat main] Simple decides PriorityDecisionRequest: 1.894 ms; observed options: 1; space size: 1; success
+  [postcombat main] Search decides PriorityDecisionRequest: 3.043 ms; observed options: 1; space size: 1; success
+  [end step] Simple decides PriorityDecisionRequest: 1.813 ms; observed options: 1; space size: 1; success
+  [end step] Search decides PriorityDecisionRequest: 14.042 ms; observed options: 1; space size: 1; success
+
+Turn 4
+  [upkeep] Search decides PriorityDecisionRequest: 3.301 ms; observed options: 1; space size: 1; success
+  [upkeep] Simple decides PriorityDecisionRequest: 1.792 ms; observed options: 1; space size: 1; success
+  [draw] Card moved: Search; Winged Words [c90] — card: Winged Words [c90]; from: DECK; last known: kind: CardLastKnownInformation; previous controller: Search; to: HAND
+  [draw] Card drawn: Search; Winged Words [c90] — card: Winged Words [c90]; last known: kind: CardLastKnownInformation
+  [draw] Resolution: -; -; -; success: True
+  [draw] Search decides PriorityDecisionRequest: 3.869 ms; observed options: 1; space size: 1; success
+  [draw] Simple decides PriorityDecisionRequest: 1.888 ms; observed options: 1; space size: 1; success
+  [precombat main] Search decides PriorityDecisionRequest: 565.332 ms; observed options: 41; space size: unknown; success
+  [precombat main] Card moved: Search; Island [c118] — card: Island [c118]; from: HAND; last known: kind: CardLastKnownInformation; previous controller: Search; to: BATTLEFIELD
+  [precombat main] Search plays land Island [c118] — lands played: 1; last known: kind: CardLastKnownInformation
+  [precombat main] Resolution: Search; Island [c118]; play_land; success: True
+  [precombat main] Search decides PriorityDecisionRequest: 5.640 ms; observed options: 1; space size: 1; success
+  [precombat main] Simple decides PriorityDecisionRequest: 1.941 ms; observed options: 1; space size: 1; success
+  [begin combat] Search decides PriorityDecisionRequest: 3.689 ms; observed options: 1; space size: 1; success
+  [begin combat] Simple decides PriorityDecisionRequest: 1.844 ms; observed options: 1; space size: 1; success
+  [declare attackers] Search decides DeclareAttackersRequest: 17.570 ms; observed options: 1; space size: 1; success
+  [declare attackers] Search decides PriorityDecisionRequest: 3.779 ms; observed options: 1; space size: 1; success
+  [declare attackers] Simple decides PriorityDecisionRequest: 1.751 ms; observed options: 1; space size: 1; success
+  [end combat] Search decides PriorityDecisionRequest: 3.444 ms; observed options: 1; space size: 1; success
+  [end combat] Simple decides PriorityDecisionRequest: 1.847 ms; observed options: 1; space size: 1; success
+  [postcombat main] Search decides PriorityDecisionRequest: 5.520 ms; observed options: 1; space size: 1; success
+  [postcombat main] Simple decides PriorityDecisionRequest: 1.746 ms; observed options: 1; space size: 1; success
+  [end step] Search decides PriorityDecisionRequest: 17.232 ms; observed options: 1; space size: 1; success
+  [end step] Simple decides PriorityDecisionRequest: 2.026 ms; observed options: 1; space size: 1; success
+
+Turn 5
+  [upkeep] Simple decides PriorityDecisionRequest: 1.818 ms; observed options: 1; space size: 1; success
+  [upkeep] Search decides PriorityDecisionRequest: 4.213 ms; observed options: 1; space size: 1; success
+  [draw] Card moved: Simple; Compound Fracture [c26] — card: Compound Fracture [c26]; from: DECK; last known: kind: CardLastKnownInformation; previous controller: Simple; to: HAND
+  [draw] Card drawn: Simple; Compound Fracture [c26] — card: Compound Fracture [c26]; last known: kind: CardLastKnownInformation
+  [draw] Resolution: -; -; -; success: True
+  [draw] Simple decides PriorityDecisionRequest: 2.404 ms; observed options: 1; space size: 1; success
+  [draw] Search decides PriorityDecisionRequest: 4.138 ms; observed options: 1; space size: 1; success
+  [precombat main] Simple chooses land: source: Swamp [c49]
+  [precombat main] Simple decides PriorityDecisionRequest: 0.418 ms; observed options: 2; space size: unknown; success
+  [precombat main] Card moved: Simple; Swamp [c49] — card: Swamp [c49]; from: HAND; last known: kind: CardLastKnownInformation; previous controller: Simple; to: BATTLEFIELD
+  [precombat main] Simple plays land Swamp [c49] — lands played: 1; last known: kind: CardLastKnownInformation
+  [precombat main] Resolution: Simple; Swamp [c49]; play_land; success: True
+  [precombat main] Simple chooses action: ability: cast:Savage Gorger; source: Savage Gorger [c13]; targets: none
+  [precombat main] Simple decides PriorityDecisionRequest: 3.806 ms; observed options: 2; space size: 2; success
+  [precombat main] Card tapped: Simple; Swamp [c42] — last known: kind: CardLastKnownInformation
+  [precombat main] Mana added: Simple; Swamp [c42] — amount: 1; last known: kind: CardLastKnownInformation; mana: BLACK
+  [precombat main] Simple activates Swamp [c42] — ability: mana_black; last known: kind: CardLastKnownInformation
+  [precombat main] Card tapped: Simple; Swamp [c44] — last known: kind: CardLastKnownInformation
+  [precombat main] Mana added: Simple; Swamp [c44] — amount: 1; last known: kind: CardLastKnownInformation; mana: BLACK
+  [precombat main] Simple activates Swamp [c44] — ability: mana_black; last known: kind: CardLastKnownInformation
+  [precombat main] Card tapped: Simple; Swamp [c49] — last known: kind: CardLastKnownInformation
+  [precombat main] Mana added: Simple; Swamp [c49] — amount: 1; last known: kind: CardLastKnownInformation; mana: BLACK
+  [precombat main] Simple activates Swamp [c49] — ability: mana_black; last known: kind: CardLastKnownInformation
+  [precombat main] Mana paid: Simple; Savage Gorger [c13] — last known: kind: CardLastKnownInformation; payment: BLACK: 3
+  [precombat main] Card moved: Simple; Savage Gorger [c13] — card: Savage Gorger [c13]; from: HAND; last known: kind: CardLastKnownInformation; previous controller: Simple; to: STACK
+  [precombat main] Simple casts Savage Gorger [c13] — ability: cast:Savage Gorger
+  [precombat main] Simple decides PriorityDecisionRequest: 1.503 ms; observed options: 1; space size: 1; success
+  [precombat main] Search decides PriorityDecisionRequest: 20.757 ms; observed options: 1; space size: 1; success
+  [precombat main] Card moved: Simple; Savage Gorger [c13] — card: Savage Gorger [c13]; from: STACK; last known: kind: CardLastKnownInformation; previous controller: Simple; to: BATTLEFIELD
+  [precombat main] Resolution: Simple; Savage Gorger [c13]; cast:Savage Gorger; success: True
+  [precombat main] Simple decides PriorityDecisionRequest: 1.418 ms; observed options: 1; space size: 1; success
+  [precombat main] Search decides PriorityDecisionRequest: 4.859 ms; observed options: 1; space size: 1; success
+  [begin combat] Simple decides PriorityDecisionRequest: 1.278 ms; observed options: 1; space size: 1; success
+  [begin combat] Search decides PriorityDecisionRequest: 21.402 ms; observed options: 1; space size: 1; success
+  [declare attackers] Simple chooses attack: attackers: none
+  [declare attackers] Simple decides DeclareAttackersRequest: 0.145 ms; observed options: 1; space size: unknown; success
+  [declare attackers] Simple decides PriorityDecisionRequest: 1.321 ms; observed options: 1; space size: 1; success
+  [declare attackers] Search decides PriorityDecisionRequest: 20.088 ms; observed options: 1; space size: 1; success
+  [end combat] Simple decides PriorityDecisionRequest: 1.425 ms; observed options: 1; space size: 1; success
+  [end combat] Search decides PriorityDecisionRequest: 22.023 ms; observed options: 1; space size: 1; success
+  [postcombat main] Simple decides PriorityDecisionRequest: 1.624 ms; observed options: 1; space size: 1; success
+  [postcombat main] Search decides PriorityDecisionRequest: 20.440 ms; observed options: 1; space size: 1; success
+  [end step] Simple decides PriorityDecisionRequest: 1.329 ms; observed options: 1; space size: 1; success
+  [end step] Search decides PriorityDecisionRequest: 21.024 ms; observed options: 1; space size: 1; success
+
+Turn 6
+  [upkeep] Search decides PriorityDecisionRequest: 21.894 ms; observed options: 1; space size: 1; success
+  [upkeep] Simple decides PriorityDecisionRequest: 1.402 ms; observed options: 1; space size: 1; success
+  [draw] Card moved: Search; Island [c110] — card: Island [c110]; from: DECK; last known: kind: CardLastKnownInformation; previous controller: Search; to: HAND
+  [draw] Card drawn: Search; Island [c110] — card: Island [c110]; last known: kind: CardLastKnownInformation
+  [draw] Resolution: -; -; -; success: True
+  [draw] Search decides PriorityDecisionRequest: 22.133 ms; observed options: 1; space size: 1; success
+  [draw] Simple decides PriorityDecisionRequest: 1.425 ms; observed options: 1; space size: 1; success
+  [precombat main] Search decides PriorityDecisionRequest: 588.737 ms; observed options: 34; space size: unknown; success
+  [precombat main] Card moved: Search; Island [c110] — card: Island [c110]; from: HAND; last known: kind: CardLastKnownInformation; previous controller: Search; to: BATTLEFIELD
+  [precombat main] Search plays land Island [c110] — lands played: 1; last known: kind: CardLastKnownInformation
+  [precombat main] Resolution: Search; Island [c110]; play_land; success: True
+  [precombat main] Search decides PriorityDecisionRequest: 536.814 ms; observed options: 27; space size: unknown; success
+  [precombat main] Card tapped: Search; Island [c102] — last known: kind: CardLastKnownInformation
+  [precombat main] Mana added: Search; Island [c102] — amount: 1; last known: kind: CardLastKnownInformation; mana: BLUE
+  [precombat main] Search activates Island [c102] — ability: mana_blue; last known: kind: CardLastKnownInformation
+  [precombat main] Card tapped: Search; Island [c110] — last known: kind: CardLastKnownInformation
+  [precombat main] Mana added: Search; Island [c110] — amount: 1; last known: kind: CardLastKnownInformation; mana: BLUE
+  [precombat main] Search activates Island [c110] — ability: mana_blue; last known: kind: CardLastKnownInformation
+  [precombat main] Card tapped: Search; Island [c118] — last known: kind: CardLastKnownInformation
+  [precombat main] Mana added: Search; Island [c118] — amount: 1; last known: kind: CardLastKnownInformation; mana: BLUE
+  [precombat main] Search activates Island [c118] — ability: mana_blue; last known: kind: CardLastKnownInformation
+  [precombat main] Mana paid: Search; Warden of Evos Isle [c73] — last known: kind: CardLastKnownInformation; payment: BLUE: 3
+  [precombat main] Card moved: Search; Warden of Evos Isle [c73] — card: Warden of Evos Isle [c73]; from: HAND; last known: kind: CardLastKnownInformation; previous controller: Search; to: STACK
+  [precombat main] Search casts Warden of Evos Isle [c73] — ability: cast:Warden of Evos Isle
+  [precombat main] Search decides PriorityDecisionRequest: 4.404 ms; observed options: 1; space size: 1; success
+  [precombat main] Simple decides PriorityDecisionRequest: 1.450 ms; observed options: 1; space size: 1; success
+  [precombat main] Card moved: Search; Warden of Evos Isle [c73] — card: Warden of Evos Isle [c73]; from: STACK; last known: kind: CardLastKnownInformation; previous controller: Search; to: BATTLEFIELD
+  [precombat main] Resolution: Search; Warden of Evos Isle [c73]; cast:Warden of Evos Isle; success: True
+  [precombat main] Search decides PriorityDecisionRequest: 6.929 ms; observed options: 1; space size: 1; success
+  [precombat main] Simple decides PriorityDecisionRequest: 1.462 ms; observed options: 1; space size: 1; success
+  [begin combat] Search decides PriorityDecisionRequest: 23.914 ms; observed options: 1; space size: 1; success
+  [begin combat] Simple decides PriorityDecisionRequest: 1.450 ms; observed options: 1; space size: 1; success
+  [declare attackers] Search decides DeclareAttackersRequest: 24.783 ms; observed options: 1; space size: 1; success
+  [declare attackers] Search decides PriorityDecisionRequest: 5.058 ms; observed options: 1; space size: 1; success
+  [declare attackers] Simple decides PriorityDecisionRequest: 1.287 ms; observed options: 1; space size: 1; success
+  [end combat] Search decides PriorityDecisionRequest: 24.860 ms; observed options: 1; space size: 1; success
+  [end combat] Simple decides PriorityDecisionRequest: 1.379 ms; observed options: 1; space size: 1; success
+  [postcombat main] Search decides PriorityDecisionRequest: 27.174 ms; observed options: 1; space size: 1; success
+  [postcombat main] Simple decides PriorityDecisionRequest: 1.387 ms; observed options: 1; space size: 1; success
+  [end step] Search decides PriorityDecisionRequest: 25.636 ms; observed options: 1; space size: 1; success
+  [end step] Simple decides PriorityDecisionRequest: 1.319 ms; observed options: 1; space size: 1; success
+
+Turn 7
+  [upkeep] Simple chooses action: ability: cast:Compound Fracture; source: Compound Fracture [c25]; targets: Warden of Evos Isle [c73]
+  [upkeep] Simple decides PriorityDecisionRequest: 4.399 ms; observed options: 9; space size: 9; success
+  [upkeep] Card tapped: Simple; Swamp [c42] — last known: kind: CardLastKnownInformation
+  [upkeep] Mana added: Simple; Swamp [c42] — amount: 1; last known: kind: CardLastKnownInformation; mana: BLACK
+  [upkeep] Simple activates Swamp [c42] — ability: mana_black; last known: kind: CardLastKnownInformation
+  [upkeep] Mana paid: Simple; Compound Fracture [c25] — last known: kind: CardLastKnownInformation; payment: BLACK: 1
+  [upkeep] Card moved: Simple; Compound Fracture [c25] — card: Compound Fracture [c25]; from: HAND; last known: kind: CardLastKnownInformation; previous controller: Simple; to: STACK
+  [upkeep] Simple casts Compound Fracture [c25] — ability: cast:Compound Fracture
+  [upkeep] Simple chooses action: ability: cast:Compound Fracture; source: Compound Fracture [c26]; targets: Warden of Evos Isle [c73]
+  [upkeep] Simple decides PriorityDecisionRequest: 2.717 ms; observed options: 5; space size: 5; success
+  [upkeep] Card tapped: Simple; Swamp [c44] — last known: kind: CardLastKnownInformation
+  [upkeep] Mana added: Simple; Swamp [c44] — amount: 1; last known: kind: CardLastKnownInformation; mana: BLACK
+  [upkeep] Simple activates Swamp [c44] — ability: mana_black; last known: kind: CardLastKnownInformation
+  [upkeep] Mana paid: Simple; Compound Fracture [c26] — last known: kind: CardLastKnownInformation; payment: BLACK: 1
+  [upkeep] Card moved: Simple; Compound Fracture [c26] — card: Compound Fracture [c26]; from: HAND; last known: kind: CardLastKnownInformation; previous controller: Simple; to: STACK
+  [upkeep] Simple casts Compound Fracture [c26] — ability: cast:Compound Fracture
+  [upkeep] Simple decides PriorityDecisionRequest: 0.979 ms; observed options: 1; space size: 1; success
+  [upkeep] Search decides PriorityDecisionRequest: 29.204 ms; observed options: 1; space size: 1; success
+  [upkeep] Temporary effect applied: Simple; Compound Fracture [c26] — last known: kind: CardLastKnownInformation; targets: Warden of Evos Isle [c73]
+  [upkeep] Card moved: Simple; Compound Fracture [c26] — card: Compound Fracture [c26]; from: STACK; last known: kind: CardLastKnownInformation; previous controller: Simple; to: GRAVEYARD
+  [upkeep] Resolution: Simple; Compound Fracture [c26]; cast:Compound Fracture; success: True
+  [upkeep] Simple decides PriorityDecisionRequest: 1.040 ms; observed options: 1; space size: 1; success
+  [upkeep] Search decides PriorityDecisionRequest: 6.558 ms; observed options: 1; space size: 1; success
+  [upkeep] Temporary effect applied: Simple; Compound Fracture [c25] — last known: kind: CardLastKnownInformation; targets: Warden of Evos Isle [c73]
+  [upkeep] Card moved: Simple; Compound Fracture [c25] — card: Compound Fracture [c25]; from: STACK; last known: kind: CardLastKnownInformation; previous controller: Simple; to: GRAVEYARD
+  [upkeep] Card moved: Search; Warden of Evos Isle [c73] — card: Warden of Evos Isle [c73]; from: BATTLEFIELD; last known: kind: CardLastKnownInformation; previous controller: Search; to: GRAVEYARD
+  [upkeep] Resolution: Simple; Compound Fracture [c25]; cast:Compound Fracture; success: True
+  [upkeep] Simple decides PriorityDecisionRequest: 0.993 ms; observed options: 1; space size: 1; success
+  [upkeep] Search decides PriorityDecisionRequest: 5.250 ms; observed options: 1; space size: 1; success
+  [draw] Card moved: Simple; Typhoid Rats [c4] — card: Typhoid Rats [c4]; from: DECK; last known: kind: CardLastKnownInformation; previous controller: Simple; to: HAND
+  [draw] Card drawn: Simple; Typhoid Rats [c4] — card: Typhoid Rats [c4]; last known: kind: CardLastKnownInformation
+  [draw] Resolution: -; -; -; success: True
+  [draw] Simple decides PriorityDecisionRequest: 0.948 ms; observed options: 1; space size: 1; success
+  [draw] Search decides PriorityDecisionRequest: 28.911 ms; observed options: 1; space size: 1; success
+  [precombat main] Simple chooses land: source: Swamp [c55]
+  [precombat main] Simple decides PriorityDecisionRequest: 0.543 ms; observed options: 2; space size: unknown; success
+  [precombat main] Card moved: Simple; Swamp [c55] — card: Swamp [c55]; from: HAND; last known: kind: CardLastKnownInformation; previous controller: Simple; to: BATTLEFIELD
+  [precombat main] Simple plays land Swamp [c55] — lands played: 1; last known: kind: CardLastKnownInformation
+  [precombat main] Resolution: Simple; Swamp [c55]; play_land; success: True
+  [precombat main] Simple chooses action: ability: cast:Typhoid Rats; source: Typhoid Rats [c4]; targets: none
+  [precombat main] Simple decides PriorityDecisionRequest: 2.346 ms; observed options: 3; space size: 3; success
+  [precombat main] Card tapped: Simple; Swamp [c49] — last known: kind: CardLastKnownInformation
+  [precombat main] Mana added: Simple; Swamp [c49] — amount: 1; last known: kind: CardLastKnownInformation; mana: BLACK
+  [precombat main] Simple activates Swamp [c49] — ability: mana_black; last known: kind: CardLastKnownInformation
+  [precombat main] Mana paid: Simple; Typhoid Rats [c4] — last known: kind: CardLastKnownInformation; payment: BLACK: 1
+  [precombat main] Card moved: Simple; Typhoid Rats [c4] — card: Typhoid Rats [c4]; from: HAND; last known: kind: CardLastKnownInformation; previous controller: Simple; to: STACK
+  [precombat main] Simple casts Typhoid Rats [c4] — ability: cast:Typhoid Rats
+  [precombat main] Simple decides PriorityDecisionRequest: 1.005 ms; observed options: 1; space size: 1; success
+  [precombat main] Search decides PriorityDecisionRequest: 30.171 ms; observed options: 1; space size: 1; success
+  [precombat main] Card moved: Simple; Typhoid Rats [c4] — card: Typhoid Rats [c4]; from: STACK; last known: kind: CardLastKnownInformation; previous controller: Simple; to: BATTLEFIELD
+  [precombat main] Resolution: Simple; Typhoid Rats [c4]; cast:Typhoid Rats; success: True
+  [precombat main] Simple decides PriorityDecisionRequest: 0.971 ms; observed options: 1; space size: 1; success
+  [precombat main] Search decides PriorityDecisionRequest: 5.354 ms; observed options: 1; space size: 1; success
+  [begin combat] Simple decides PriorityDecisionRequest: 0.834 ms; observed options: 1; space size: 1; success
+  [begin combat] Search decides PriorityDecisionRequest: 29.654 ms; observed options: 1; space size: 1; success
+  [declare attackers] Simple chooses attack: attackers: Savage Gorger [c13]
+  [declare attackers] Simple decides DeclareAttackersRequest: 0.169 ms; observed options: 1; space size: unknown; success
+  [declare attackers] Card tapped: Simple; Savage Gorger [c13]
+  [declare attackers] Simple attacks with Savage Gorger [c13] — attacker: Savage Gorger [c13]; defender: Search
+  [declare attackers] Attackers declared: Simple; - — attackers: Savage Gorger [c13]
+  [declare attackers] Simple decides PriorityDecisionRequest: 0.864 ms; observed options: 1; space size: 1; success
+  [declare attackers] Search decides PriorityDecisionRequest: 35.794 ms; observed options: 1; space size: 1; success
+  [declare blockers] Search decides DeclareBlockersRequest: 66.584 ms; observed options: 1; space size: 1; success
+  [declare blockers] Simple decides PriorityDecisionRequest: 0.908 ms; observed options: 1; space size: 1; success
+  [declare blockers] Search decides PriorityDecisionRequest: 5.396 ms; observed options: 1; space size: 1; success
+  [second combat damage] Damage dealt: Simple; Savage Gorger [c13] — amount: 1; combat: True; last known: kind: CardLastKnownInformation; life loss: 1; source revision: 3; target: Search; target object: Search; target revision: -
+  [second combat damage] Simple decides PriorityDecisionRequest: 0.855 ms; observed options: 1; space size: 1; success
+  [second combat damage] Search decides PriorityDecisionRequest: 31.571 ms; observed options: 1; space size: 1; success
+  [end combat] Simple decides PriorityDecisionRequest: 0.873 ms; observed options: 1; space size: 1; success
+  [end combat] Search decides PriorityDecisionRequest: 31.310 ms; observed options: 1; space size: 1; success
+  [postcombat main] Simple decides PriorityDecisionRequest: 0.917 ms; observed options: 1; space size: 1; success
+  [postcombat main] Search decides PriorityDecisionRequest: 32.047 ms; observed options: 1; space size: 1; success
+  [end step] Trigger detected: Simple; Savage Gorger [c13]; gorger_end
+  [end step] Simple decides TriggerOrderRequest: 0.048 ms; observed options: 1; space size: unknown; success
+  [end step] Simple chooses trigger: ability: gorger_end; source: Savage Gorger [c13]; targets: none
+  [end step] Simple decides AbilityDecisionRequest: 0.079 ms; observed options: 1; space size: 1; success
+  [end step] Simple decides PriorityDecisionRequest: 0.816 ms; observed options: 1; space size: 1; success
+  [end step] Search decides PriorityDecisionRequest: 32.729 ms; observed options: 1; space size: 1; success
+  [end step] Counter placed: Simple; Savage Gorger [c13] — amount: 1; counter: PLUS_ONE; last known: kind: CardLastKnownInformation
+  [end step] Resolution: Simple; Savage Gorger [c13]; gorger_end; success: True
+  [end step] Simple decides PriorityDecisionRequest: 0.906 ms; observed options: 1; space size: 1; success
+  [end step] Search decides PriorityDecisionRequest: 5.693 ms; observed options: 1; space size: 1; success
+
+Turn 8
+  [upkeep] Search decides PriorityDecisionRequest: 34.001 ms; observed options: 1; space size: 1; success
+  [upkeep] Simple decides PriorityDecisionRequest: 1.031 ms; observed options: 1; space size: 1; success
+  [draw] Card moved: Search; Soulblade Djinn [c76] — card: Soulblade Djinn [c76]; from: DECK; last known: kind: CardLastKnownInformation; previous controller: Search; to: HAND
+  [draw] Card drawn: Search; Soulblade Djinn [c76] — card: Soulblade Djinn [c76]; last known: kind: CardLastKnownInformation
+  [draw] Resolution: -; -; -; success: True
+  [draw] Search decides PriorityDecisionRequest: 41.604 ms; observed options: 1; space size: 1; success
+  [draw] Simple decides PriorityDecisionRequest: 1.087 ms; observed options: 1; space size: 1; success
+  [precombat main] Search decides PriorityDecisionRequest: 549.690 ms; observed options: 31; space size: unknown; success
+  [precombat main] Card moved: Search; Island [c120] — card: Island [c120]; from: HAND; last known: kind: CardLastKnownInformation; previous controller: Search; to: BATTLEFIELD
+  [precombat main] Search plays land Island [c120] — lands played: 1; last known: kind: CardLastKnownInformation
+  [precombat main] Resolution: Search; Island [c120]; play_land; success: True
+  [precombat main] Search decides PriorityDecisionRequest: 583.889 ms; observed options: 26; space size: unknown; success
+  [precombat main] Card tapped: Search; Island [c102] — last known: kind: CardLastKnownInformation
+  [precombat main] Mana added: Search; Island [c102] — amount: 1; last known: kind: CardLastKnownInformation; mana: BLUE
+  [precombat main] Search activates Island [c102] — ability: mana_blue; last known: kind: CardLastKnownInformation
+  [precombat main] Card tapped: Search; Island [c110] — last known: kind: CardLastKnownInformation
+  [precombat main] Mana added: Search; Island [c110] — amount: 1; last known: kind: CardLastKnownInformation; mana: BLUE
+  [precombat main] Search activates Island [c110] — ability: mana_blue; last known: kind: CardLastKnownInformation
+  [precombat main] Card tapped: Search; Island [c118] — last known: kind: CardLastKnownInformation
+  [precombat main] Mana added: Search; Island [c118] — amount: 1; last known: kind: CardLastKnownInformation; mana: BLUE
+  [precombat main] Search activates Island [c118] — ability: mana_blue; last known: kind: CardLastKnownInformation
+  [precombat main] Mana paid: Search; Winged Words [c90] — last known: kind: CardLastKnownInformation; payment: BLUE: 3
+  [precombat main] Card moved: Search; Winged Words [c90] — card: Winged Words [c90]; from: HAND; last known: kind: CardLastKnownInformation; previous controller: Search; to: STACK
+  [precombat main] Search casts Winged Words [c90] — ability: cast:Winged Words
+  [precombat main] Search decides PriorityDecisionRequest: 5.787 ms; observed options: 1; space size: 1; success
+  [precombat main] Simple decides PriorityDecisionRequest: 0.944 ms; observed options: 1; space size: 1; success
+  [precombat main] Card moved: Search; Island [c117] — card: Island [c117]; from: DECK; last known: kind: CardLastKnownInformation; previous controller: Search; to: HAND
+  [precombat main] Card drawn: Search; Island [c117] — card: Island [c117]; last known: kind: CardLastKnownInformation
+  [precombat main] Card moved: Search; Sworn Guardian [c64] — card: Sworn Guardian [c64]; from: DECK; last known: kind: CardLastKnownInformation; previous controller: Search; to: HAND
+  [precombat main] Card drawn: Search; Sworn Guardian [c64] — card: Sworn Guardian [c64]; last known: kind: CardLastKnownInformation
+  [precombat main] Card moved: Search; Winged Words [c90] — card: Winged Words [c90]; from: STACK; last known: kind: CardLastKnownInformation; previous controller: Search; to: GRAVEYARD
+  [precombat main] Resolution: Search; Winged Words [c90]; cast:Winged Words; success: True
+  [precombat main] Search decides PriorityDecisionRequest: 7.714 ms; observed options: 1; space size: 1; success
+  [precombat main] Simple decides PriorityDecisionRequest: 0.909 ms; observed options: 1; space size: 1; success
+  [begin combat] Search decides PriorityDecisionRequest: 38.026 ms; observed options: 1; space size: 1; success
+  [begin combat] Simple decides PriorityDecisionRequest: 0.939 ms; observed options: 1; space size: 1; success
+  [declare attackers] Search decides DeclareAttackersRequest: 36.476 ms; observed options: 1; space size: 1; success
+  [declare attackers] Search decides PriorityDecisionRequest: 6.303 ms; observed options: 1; space size: 1; success
+  [declare attackers] Simple decides PriorityDecisionRequest: 0.881 ms; observed options: 1; space size: 1; success
+  [end combat] Search decides PriorityDecisionRequest: 40.505 ms; observed options: 1; space size: 1; success
+  [end combat] Simple decides PriorityDecisionRequest: 0.965 ms; observed options: 1; space size: 1; success
+  [postcombat main] Search decides PriorityDecisionRequest: 41.345 ms; observed options: 1; space size: 1; success
+  [postcombat main] Simple decides PriorityDecisionRequest: 1.002 ms; observed options: 1; space size: 1; success
+  [end step] Search decides PriorityDecisionRequest: 47.787 ms; observed options: 1; space size: 1; success
+  [end step] Simple decides PriorityDecisionRequest: 1.021 ms; observed options: 1; space size: 1; success
+
+Turn 9
+  [upkeep] Simple decides PriorityDecisionRequest: 2.533 ms; observed options: 5; space size: 5; success
+  [upkeep] Search decides PriorityDecisionRequest: 70.820 ms; observed options: 1; space size: 1; success
+  [draw] Card moved: Simple; Unlikely Aid [c28] — card: Unlikely Aid [c28]; from: DECK; last known: kind: CardLastKnownInformation; previous controller: Simple; to: HAND
+  [draw] Card drawn: Simple; Unlikely Aid [c28] — card: Unlikely Aid [c28]; last known: kind: CardLastKnownInformation
+  [draw] Resolution: -; -; -; success: True
+  [draw] Simple chooses action: ability: cast:Unlikely Aid; source: Unlikely Aid [c28]; targets: Typhoid Rats [c4]
+  [draw] Simple decides PriorityDecisionRequest: 3.958 ms; observed options: 7; space size: 7; success
+  [draw] Card tapped: Simple; Swamp [c42] — last known: kind: CardLastKnownInformation
+  [draw] Mana added: Simple; Swamp [c42] — amount: 1; last known: kind: CardLastKnownInformation; mana: BLACK
+  [draw] Simple activates Swamp [c42] — ability: mana_black; last known: kind: CardLastKnownInformation
+  [draw] Card tapped: Simple; Swamp [c44] — last known: kind: CardLastKnownInformation
+  [draw] Mana added: Simple; Swamp [c44] — amount: 1; last known: kind: CardLastKnownInformation; mana: BLACK
+  [draw] Simple activates Swamp [c44] — ability: mana_black; last known: kind: CardLastKnownInformation
+  [draw] Mana paid: Simple; Unlikely Aid [c28] — last known: kind: CardLastKnownInformation; payment: BLACK: 2
+  [draw] Card moved: Simple; Unlikely Aid [c28] — card: Unlikely Aid [c28]; from: HAND; last known: kind: CardLastKnownInformation; previous controller: Simple; to: STACK
+  [draw] Simple casts Unlikely Aid [c28] — ability: cast:Unlikely Aid
+  [draw] Simple decides PriorityDecisionRequest: 1.853 ms; observed options: 3; space size: 3; success
+  [draw] Search decides PriorityDecisionRequest: 48.395 ms; observed options: 1; space size: 1; success
+  [draw] Temporary effect applied: Simple; Unlikely Aid [c28] — last known: kind: CardLastKnownInformation; targets: Typhoid Rats [c4]
+  [draw] Card moved: Simple; Unlikely Aid [c28] — card: Unlikely Aid [c28]; from: STACK; last known: kind: CardLastKnownInformation; previous controller: Simple; to: GRAVEYARD
+  [draw] Resolution: Simple; Unlikely Aid [c28]; cast:Unlikely Aid; success: True
+  [draw] Simple decides PriorityDecisionRequest: 1.693 ms; observed options: 2; space size: 2; success
+  [draw] Search decides PriorityDecisionRequest: 6.898 ms; observed options: 1; space size: 1; success
+  [precombat main] Simple decides PriorityDecisionRequest: 2.168 ms; observed options: 2; space size: 2; success
+  [precombat main] Search decides PriorityDecisionRequest: 52.079 ms; observed options: 1; space size: 1; success
+  [begin combat] Simple decides PriorityDecisionRequest: 1.614 ms; observed options: 2; space size: 2; success
+  [begin combat] Search decides PriorityDecisionRequest: 42.340 ms; observed options: 1; space size: 1; success
+  [declare attackers] Simple chooses attack: attackers: Typhoid Rats [c4], Savage Gorger [c13]
+  [declare attackers] Simple decides DeclareAttackersRequest: 0.407 ms; observed options: 1; space size: unknown; success
+  [declare attackers] Card tapped: Simple; Typhoid Rats [c4]
+  [declare attackers] Simple attacks with Typhoid Rats [c4] — attacker: Typhoid Rats [c4]; defender: Search
+  [declare attackers] Card tapped: Simple; Savage Gorger [c13]
+  [declare attackers] Simple attacks with Savage Gorger [c13] — attacker: Savage Gorger [c13]; defender: Search
+  [declare attackers] Attackers declared: Simple; - — attackers: Typhoid Rats [c4], Savage Gorger [c13]
+  [declare attackers] Simple decides PriorityDecisionRequest: 1.699 ms; observed options: 2; space size: 2; success
+  [declare attackers] Search decides PriorityDecisionRequest: 70.923 ms; observed options: 1; space size: 1; success
+  [declare blockers] Search decides DeclareBlockersRequest: 42.868 ms; observed options: 1; space size: 1; success
+  [declare blockers] Simple decides PriorityDecisionRequest: 1.713 ms; observed options: 2; space size: 2; success
+  [declare blockers] Search decides PriorityDecisionRequest: 6.752 ms; observed options: 1; space size: 1; success
+  [second combat damage] Search decides ReplacementOrderRequest: 541.989 ms; observed options: 27; space size: unknown; success
+  [second combat damage] Damage dealt: Simple; Savage Gorger [c13] — amount: 2; combat: True; last known: kind: CardLastKnownInformation; life loss: 2; source revision: 3; target: Search; target object: Search; target revision: -
+  [second combat damage] Damage dealt: Simple; Typhoid Rats [c4] — amount: 3; combat: True; last known: kind: CardLastKnownInformation; life loss: 3; source revision: 3; target: Search; target object: Search; target revision: -
+  [second combat damage] Simple decides PriorityDecisionRequest: 1.779 ms; observed options: 2; space size: 2; success
+  [second combat damage] Search decides PriorityDecisionRequest: 46.352 ms; observed options: 1; space size: 1; success
+  [end combat] Simple decides PriorityDecisionRequest: 1.758 ms; observed options: 2; space size: 2; success
+  [end combat] Search decides PriorityDecisionRequest: 45.800 ms; observed options: 1; space size: 1; success
+  [postcombat main] Simple decides PriorityDecisionRequest: 2.180 ms; observed options: 2; space size: 2; success
+  [postcombat main] Search decides PriorityDecisionRequest: 82.485 ms; observed options: 1; space size: 1; success
+  [end step] Trigger detected: Simple; Savage Gorger [c13]; gorger_end
+  [end step] Simple decides TriggerOrderRequest: 0.044 ms; observed options: 1; space size: unknown; success
+  [end step] Simple chooses trigger: ability: gorger_end; source: Savage Gorger [c13]; targets: none
+  [end step] Simple decides AbilityDecisionRequest: 0.093 ms; observed options: 1; space size: 1; success
+  [end step] Simple decides PriorityDecisionRequest: 1.599 ms; observed options: 2; space size: 2; success
+  [end step] Search decides PriorityDecisionRequest: 45.707 ms; observed options: 1; space size: 1; success
+  [end step] Counter placed: Simple; Savage Gorger [c13] — amount: 1; counter: PLUS_ONE; last known: kind: CardLastKnownInformation
+  [end step] Resolution: Simple; Savage Gorger [c13]; gorger_end; success: True
+  [end step] Simple decides PriorityDecisionRequest: 1.431 ms; observed options: 1; space size: 1; success
+  [end step] Search decides PriorityDecisionRequest: 6.744 ms; observed options: 1; space size: 1; success
+
+Turn 10
+  [upkeep] Search decides PriorityDecisionRequest: 56.474 ms; observed options: 1; space size: 1; success
+  [upkeep] Simple decides PriorityDecisionRequest: 1.646 ms; observed options: 2; space size: 2; success
+  [draw] Card moved: Search; Island [c100] — card: Island [c100]; from: DECK; last known: kind: CardLastKnownInformation; previous controller: Search; to: HAND
+  [draw] Card drawn: Search; Island [c100] — card: Island [c100]; last known: kind: CardLastKnownInformation
+  [draw] Resolution: -; -; -; success: True
+  [draw] Search decides PriorityDecisionRequest: 74.698 ms; observed options: 1; space size: 1; success
+  [draw] Simple decides PriorityDecisionRequest: 1.883 ms; observed options: 2; space size: 2; success
+  [precombat main] Search decides PriorityDecisionRequest: 586.523 ms; observed options: 42; space size: unknown; success
+  [precombat main] Card moved: Search; Island [c100] — card: Island [c100]; from: HAND; last known: kind: CardLastKnownInformation; previous controller: Search; to: BATTLEFIELD
+  [precombat main] Search plays land Island [c100] — lands played: 1; last known: kind: CardLastKnownInformation
+  [precombat main] Resolution: Search; Island [c100]; play_land; success: True
+  [precombat main] Search decides PriorityDecisionRequest: 638.362 ms; observed options: 33; space size: unknown; success
+  [precombat main] Card tapped: Search; Island [c100] — last known: kind: CardLastKnownInformation
+  [precombat main] Mana added: Search; Island [c100] — amount: 1; last known: kind: CardLastKnownInformation; mana: BLUE
+  [precombat main] Search activates Island [c100] — ability: mana_blue; last known: kind: CardLastKnownInformation
+  [precombat main] Card tapped: Search; Island [c102] — last known: kind: CardLastKnownInformation
+  [precombat main] Mana added: Search; Island [c102] — amount: 1; last known: kind: CardLastKnownInformation; mana: BLUE
+  [precombat main] Search activates Island [c102] — ability: mana_blue; last known: kind: CardLastKnownInformation
+  [precombat main] Card tapped: Search; Island [c110] — last known: kind: CardLastKnownInformation
+  [precombat main] Mana added: Search; Island [c110] — amount: 1; last known: kind: CardLastKnownInformation; mana: BLUE
+  [precombat main] Search activates Island [c110] — ability: mana_blue; last known: kind: CardLastKnownInformation
+  [precombat main] Card tapped: Search; Island [c118] — last known: kind: CardLastKnownInformation
+  [precombat main] Mana added: Search; Island [c118] — amount: 1; last known: kind: CardLastKnownInformation; mana: BLUE
+  [precombat main] Search activates Island [c118] — ability: mana_blue; last known: kind: CardLastKnownInformation
+  [precombat main] Card tapped: Search; Island [c120] — last known: kind: CardLastKnownInformation
+  [precombat main] Mana added: Search; Island [c120] — amount: 1; last known: kind: CardLastKnownInformation; mana: BLUE
+  [precombat main] Search activates Island [c120] — ability: mana_blue; last known: kind: CardLastKnownInformation
+  [precombat main] Mana paid: Search; Soulblade Djinn [c76] — last known: kind: CardLastKnownInformation; payment: BLUE: 5
+  [precombat main] Card moved: Search; Soulblade Djinn [c76] — card: Soulblade Djinn [c76]; from: HAND; last known: kind: CardLastKnownInformation; previous controller: Search; to: STACK
+  [precombat main] Search casts Soulblade Djinn [c76] — ability: cast:Soulblade Djinn
+  [precombat main] Search decides PriorityDecisionRequest: 6.751 ms; observed options: 1; space size: 1; success
+  [precombat main] Simple decides PriorityDecisionRequest: 1.857 ms; observed options: 2; space size: 2; success
+  [precombat main] Card moved: Search; Soulblade Djinn [c76] — card: Soulblade Djinn [c76]; from: STACK; last known: kind: CardLastKnownInformation; previous controller: Search; to: BATTLEFIELD
+  [precombat main] Resolution: Search; Soulblade Djinn [c76]; cast:Soulblade Djinn; success: True
+  [precombat main] Search decides PriorityDecisionRequest: 8.472 ms; observed options: 1; space size: 1; success
+  [precombat main] Simple decides PriorityDecisionRequest: 1.744 ms; observed options: 2; space size: 2; success
+  [begin combat] Search decides PriorityDecisionRequest: 50.194 ms; observed options: 1; space size: 1; success
+  [begin combat] Simple decides PriorityDecisionRequest: 1.641 ms; observed options: 2; space size: 2; success
+  [declare attackers] Search decides DeclareAttackersRequest: 89.303 ms; observed options: 1; space size: 1; success
+  [declare attackers] Search decides PriorityDecisionRequest: 6.987 ms; observed options: 1; space size: 1; success
+  [declare attackers] Simple decides PriorityDecisionRequest: 1.798 ms; observed options: 2; space size: 2; success
+  [end combat] Search decides PriorityDecisionRequest: 50.915 ms; observed options: 1; space size: 1; success
+  [end combat] Simple decides PriorityDecisionRequest: 1.654 ms; observed options: 2; space size: 2; success
+  [postcombat main] Search decides PriorityDecisionRequest: 55.178 ms; observed options: 1; space size: 1; success
+  [postcombat main] Simple decides PriorityDecisionRequest: 1.644 ms; observed options: 2; space size: 2; success
+  [end step] Search decides PriorityDecisionRequest: 74.821 ms; observed options: 1; space size: 1; success
+  [end step] Simple decides PriorityDecisionRequest: 1.710 ms; observed options: 2; space size: 2; success
+
+Turn 11
+  [upkeep] Simple chooses action: ability: cast:Murder; source: Murder [c31]; targets: Soulblade Djinn [c76]
+  [upkeep] Simple decides PriorityDecisionRequest: 2.493 ms; observed options: 5; space size: 5; success
+  [upkeep] Card tapped: Simple; Swamp [c42] — last known: kind: CardLastKnownInformation
+  [upkeep] Mana added: Simple; Swamp [c42] — amount: 1; last known: kind: CardLastKnownInformation; mana: BLACK
+  [upkeep] Simple activates Swamp [c42] — ability: mana_black; last known: kind: CardLastKnownInformation
+  [upkeep] Card tapped: Simple; Swamp [c44] — last known: kind: CardLastKnownInformation
+  [upkeep] Mana added: Simple; Swamp [c44] — amount: 1; last known: kind: CardLastKnownInformation; mana: BLACK
+  [upkeep] Simple activates Swamp [c44] — ability: mana_black; last known: kind: CardLastKnownInformation
+  [upkeep] Card tapped: Simple; Swamp [c49] — last known: kind: CardLastKnownInformation
+  [upkeep] Mana added: Simple; Swamp [c49] — amount: 1; last known: kind: CardLastKnownInformation; mana: BLACK
+  [upkeep] Simple activates Swamp [c49] — ability: mana_black; last known: kind: CardLastKnownInformation
+  [upkeep] Mana paid: Simple; Murder [c31] — last known: kind: CardLastKnownInformation; payment: BLACK: 3
+  [upkeep] Card moved: Simple; Murder [c31] — card: Murder [c31]; from: HAND; last known: kind: CardLastKnownInformation; previous controller: Simple; to: STACK
+  [upkeep] Simple casts Murder [c31] — ability: cast:Murder
+  [upkeep] Simple decides PriorityDecisionRequest: 0.677 ms; observed options: 1; space size: 1; success
+  [upkeep] Search decides PriorityDecisionRequest: 52.312 ms; observed options: 1; space size: 1; success
+  [upkeep] Card moved: Search; Soulblade Djinn [c76] — card: Soulblade Djinn [c76]; from: BATTLEFIELD; last known: kind: CardLastKnownInformation; previous controller: Search; to: GRAVEYARD
+  [upkeep] Card moved: Simple; Murder [c31] — card: Murder [c31]; from: STACK; last known: kind: CardLastKnownInformation; previous controller: Simple; to: GRAVEYARD
+  [upkeep] Resolution: Simple; Murder [c31]; cast:Murder; success: True
+  [upkeep] Simple decides PriorityDecisionRequest: 0.690 ms; observed options: 1; space size: 1; success
+  [upkeep] Search decides PriorityDecisionRequest: 7.987 ms; observed options: 1; space size: 1; success
+  [draw] Card moved: Simple; Unlikely Aid [c29] — card: Unlikely Aid [c29]; from: DECK; last known: kind: CardLastKnownInformation; previous controller: Simple; to: HAND
+  [draw] Card drawn: Simple; Unlikely Aid [c29] — card: Unlikely Aid [c29]; last known: kind: CardLastKnownInformation
+  [draw] Resolution: -; -; -; success: True
+  [draw] Simple decides PriorityDecisionRequest: 1.006 ms; observed options: 1; space size: 1; success
+  [draw] Search decides PriorityDecisionRequest: 78.825 ms; observed options: 1; space size: 1; success
+  [precombat main] Simple decides PriorityDecisionRequest: 1.302 ms; observed options: 1; space size: 1; success
+  [precombat main] Search decides PriorityDecisionRequest: 53.893 ms; observed options: 1; space size: 1; success
+  [begin combat] Simple decides PriorityDecisionRequest: 0.862 ms; observed options: 1; space size: 1; success
+  [begin combat] Search decides PriorityDecisionRequest: 54.507 ms; observed options: 1; space size: 1; success
+  [declare attackers] Simple chooses attack: attackers: Typhoid Rats [c4], Savage Gorger [c13]
+  [declare attackers] Simple decides DeclareAttackersRequest: 0.306 ms; observed options: 1; space size: unknown; success
+  [declare attackers] Card tapped: Simple; Typhoid Rats [c4]
+  [declare attackers] Simple attacks with Typhoid Rats [c4] — attacker: Typhoid Rats [c4]; defender: Search
+  [declare attackers] Card tapped: Simple; Savage Gorger [c13]
+  [declare attackers] Simple attacks with Savage Gorger [c13] — attacker: Savage Gorger [c13]; defender: Search
+  [declare attackers] Attackers declared: Simple; - — attackers: Typhoid Rats [c4], Savage Gorger [c13]
+  [declare attackers] Simple decides PriorityDecisionRequest: 0.869 ms; observed options: 1; space size: 1; success
+  [declare attackers] Search decides PriorityDecisionRequest: 80.408 ms; observed options: 1; space size: 1; success
+  [declare blockers] Search decides DeclareBlockersRequest: 55.605 ms; observed options: 1; space size: 1; success
+  [declare blockers] Simple decides PriorityDecisionRequest: 0.889 ms; observed options: 1; space size: 1; success
+  [declare blockers] Search decides PriorityDecisionRequest: 6.744 ms; observed options: 1; space size: 1; success
+  [second combat damage] Search decides ReplacementOrderRequest: 511.604 ms; observed options: 28; space size: unknown; success
+  [second combat damage] Damage dealt: Simple; Typhoid Rats [c4] — amount: 1; combat: True; last known: kind: CardLastKnownInformation; life loss: 1; source revision: 3; target: Search; target object: Search; target revision: -
+  [second combat damage] Damage dealt: Simple; Savage Gorger [c13] — amount: 3; combat: True; last known: kind: CardLastKnownInformation; life loss: 3; source revision: 3; target: Search; target object: Search; target revision: -
+  [second combat damage] Simple decides PriorityDecisionRequest: 1.329 ms; observed options: 1; space size: 1; success
+  [second combat damage] Search decides PriorityDecisionRequest: 138.164 ms; observed options: 1; space size: 1; success
+  [end combat] Simple decides PriorityDecisionRequest: 1.068 ms; observed options: 1; space size: 1; success
+  [end combat] Search decides PriorityDecisionRequest: 60.979 ms; observed options: 1; space size: 1; success
+  [postcombat main] Simple decides PriorityDecisionRequest: 1.418 ms; observed options: 1; space size: 1; success
+  [postcombat main] Search decides PriorityDecisionRequest: 83.236 ms; observed options: 1; space size: 1; success
+  [end step] Trigger detected: Simple; Savage Gorger [c13]; gorger_end
+  [end step] Simple decides TriggerOrderRequest: 0.042 ms; observed options: 1; space size: unknown; success
+  [end step] Simple chooses trigger: ability: gorger_end; source: Savage Gorger [c13]; targets: none
+  [end step] Simple decides AbilityDecisionRequest: 0.098 ms; observed options: 1; space size: 1; success
+  [end step] Simple decides PriorityDecisionRequest: 0.828 ms; observed options: 1; space size: 1; success
+  [end step] Search decides PriorityDecisionRequest: 72.514 ms; observed options: 1; space size: 1; success
+  [end step] Counter placed: Simple; Savage Gorger [c13] — amount: 1; counter: PLUS_ONE; last known: kind: CardLastKnownInformation
+  [end step] Resolution: Simple; Savage Gorger [c13]; gorger_end; success: True
+  [end step] Simple decides PriorityDecisionRequest: 0.887 ms; observed options: 1; space size: 1; success
+  [end step] Search decides PriorityDecisionRequest: 6.947 ms; observed options: 1; space size: 1; success
+
+Turn 12
+  [upkeep] Search decides PriorityDecisionRequest: 83.588 ms; observed options: 1; space size: 1; success
+  [upkeep] Simple decides PriorityDecisionRequest: 1.070 ms; observed options: 1; space size: 1; success
+  [draw] Card moved: Search; Island [c116] — card: Island [c116]; from: DECK; last known: kind: CardLastKnownInformation; previous controller: Search; to: HAND
+  [draw] Card drawn: Search; Island [c116] — card: Island [c116]; last known: kind: CardLastKnownInformation
+  [draw] Resolution: -; -; -; success: True
+  [draw] Search decides PriorityDecisionRequest: 63.837 ms; observed options: 1; space size: 1; success
+  [draw] Simple decides PriorityDecisionRequest: 1.023 ms; observed options: 1; space size: 1; success
+  [precombat main] Search decides PriorityDecisionRequest: 608.715 ms; observed options: 47; space size: unknown; success
+  [precombat main] Card moved: Search; Island [c116] — card: Island [c116]; from: HAND; last known: kind: CardLastKnownInformation; previous controller: Search; to: BATTLEFIELD
+  [precombat main] Search plays land Island [c116] — lands played: 1; last known: kind: CardLastKnownInformation
+  [precombat main] Resolution: Search; Island [c116]; play_land; success: True
+  [precombat main] Search decides PriorityDecisionRequest: 621.933 ms; observed options: 38; space size: unknown; success
+  [precombat main] Card tapped: Search; Island [c100] — last known: kind: CardLastKnownInformation
+  [precombat main] Mana added: Search; Island [c100] — amount: 1; last known: kind: CardLastKnownInformation; mana: BLUE
+  [precombat main] Search activates Island [c100] — ability: mana_blue; last known: kind: CardLastKnownInformation
+  [precombat main] Card tapped: Search; Island [c102] — last known: kind: CardLastKnownInformation
+  [precombat main] Mana added: Search; Island [c102] — amount: 1; last known: kind: CardLastKnownInformation; mana: BLUE
+  [precombat main] Search activates Island [c102] — ability: mana_blue; last known: kind: CardLastKnownInformation
+  [precombat main] Card tapped: Search; Island [c110] — last known: kind: CardLastKnownInformation
+  [precombat main] Mana added: Search; Island [c110] — amount: 1; last known: kind: CardLastKnownInformation; mana: BLUE
+  [precombat main] Search activates Island [c110] — ability: mana_blue; last known: kind: CardLastKnownInformation
+  [precombat main] Card tapped: Search; Island [c116] — last known: kind: CardLastKnownInformation
+  [precombat main] Mana added: Search; Island [c116] — amount: 1; last known: kind: CardLastKnownInformation; mana: BLUE
+  [precombat main] Search activates Island [c116] — ability: mana_blue; last known: kind: CardLastKnownInformation
+  [precombat main] Card tapped: Search; Island [c118] — last known: kind: CardLastKnownInformation
+  [precombat main] Mana added: Search; Island [c118] — amount: 1; last known: kind: CardLastKnownInformation; mana: BLUE
+  [precombat main] Search activates Island [c118] — ability: mana_blue; last known: kind: CardLastKnownInformation
+  [precombat main] Card tapped: Search; Island [c120] — last known: kind: CardLastKnownInformation
+  [precombat main] Mana added: Search; Island [c120] — amount: 1; last known: kind: CardLastKnownInformation; mana: BLUE
+  [precombat main] Search activates Island [c120] — ability: mana_blue; last known: kind: CardLastKnownInformation
+  [precombat main] Mana paid: Search; Riddlemaster Sphinx [c82] — last known: kind: CardLastKnownInformation; payment: BLUE: 6
+  [precombat main] Card moved: Search; Riddlemaster Sphinx [c82] — card: Riddlemaster Sphinx [c82]; from: HAND; last known: kind: CardLastKnownInformation; previous controller: Search; to: STACK
+  [precombat main] Search casts Riddlemaster Sphinx [c82] — ability: cast:Riddlemaster Sphinx
+  [precombat main] Search decides PriorityDecisionRequest: 7.796 ms; observed options: 1; space size: 1; success
+  [precombat main] Simple decides PriorityDecisionRequest: 1.100 ms; observed options: 1; space size: 1; success
+  [precombat main] Card moved: Search; Riddlemaster Sphinx [c82] — card: Riddlemaster Sphinx [c82]; from: STACK; last known: kind: CardLastKnownInformation; previous controller: Search; to: BATTLEFIELD
+  [precombat main] Trigger detected: Search; Riddlemaster Sphinx [c82]; riddlemaster_enter
+  [precombat main] Search decides TriggerOrderRequest: 7.792 ms; observed options: 1; space size: 1; success
+  [precombat main] Search decides AbilityDecisionRequest: 534.686 ms; observed options: 43; space size: unknown; success
+  [precombat main] Resolution: Search; Riddlemaster Sphinx [c82]; cast:Riddlemaster Sphinx; success: True
+  [precombat main] Search decides PriorityDecisionRequest: 7.626 ms; observed options: 1; space size: 1; success
+  [precombat main] Simple decides PriorityDecisionRequest: 1.028 ms; observed options: 1; space size: 1; success
+  [precombat main] Search decides OptionalEffectRequest: 698.643 ms; observed options: 54; space size: unknown; success
+  [precombat main] Resolution: Search; Riddlemaster Sphinx [c82]; riddlemaster_enter; success: True
+  [precombat main] Search decides PriorityDecisionRequest: 8.820 ms; observed options: 1; space size: 1; success
+  [precombat main] Simple decides PriorityDecisionRequest: 0.901 ms; observed options: 1; space size: 1; success
+  [begin combat] Search decides PriorityDecisionRequest: 64.859 ms; observed options: 1; space size: 1; success
+  [begin combat] Simple decides PriorityDecisionRequest: 0.939 ms; observed options: 1; space size: 1; success
+  [declare attackers] Search decides DeclareAttackersRequest: 70.954 ms; observed options: 1; space size: 1; success
+  [declare attackers] Search decides PriorityDecisionRequest: 8.710 ms; observed options: 1; space size: 1; success
+  [declare attackers] Simple decides PriorityDecisionRequest: 1.076 ms; observed options: 1; space size: 1; success
+  [end combat] Search decides PriorityDecisionRequest: 123.004 ms; observed options: 1; space size: 1; success
+  [end combat] Simple decides PriorityDecisionRequest: 1.010 ms; observed options: 1; space size: 1; success
+  [postcombat main] Search decides PriorityDecisionRequest: 100.236 ms; observed options: 1; space size: 1; success
+  [postcombat main] Simple decides PriorityDecisionRequest: 0.944 ms; observed options: 1; space size: 1; success
+  [end step] Search decides PriorityDecisionRequest: 69.525 ms; observed options: 1; space size: 1; success
+  [end step] Simple decides PriorityDecisionRequest: 1.004 ms; observed options: 1; space size: 1; success
+
+Turn 13
+  [upkeep] Simple chooses action: ability: cast:Unlikely Aid; source: Unlikely Aid [c29]; targets: Typhoid Rats [c4]
+  [upkeep] Simple decides PriorityDecisionRequest: 2.472 ms; observed options: 5; space size: 5; success
+  [upkeep] Card tapped: Simple; Swamp [c42] — last known: kind: CardLastKnownInformation
+  [upkeep] Mana added: Simple; Swamp [c42] — amount: 1; last known: kind: CardLastKnownInformation; mana: BLACK
+  [upkeep] Simple activates Swamp [c42] — ability: mana_black; last known: kind: CardLastKnownInformation
+  [upkeep] Card tapped: Simple; Swamp [c44] — last known: kind: CardLastKnownInformation
+  [upkeep] Mana added: Simple; Swamp [c44] — amount: 1; last known: kind: CardLastKnownInformation; mana: BLACK
+  [upkeep] Simple activates Swamp [c44] — ability: mana_black; last known: kind: CardLastKnownInformation
+  [upkeep] Mana paid: Simple; Unlikely Aid [c29] — last known: kind: CardLastKnownInformation; payment: BLACK: 2
+  [upkeep] Card moved: Simple; Unlikely Aid [c29] — card: Unlikely Aid [c29]; from: HAND; last known: kind: CardLastKnownInformation; previous controller: Simple; to: STACK
+  [upkeep] Simple casts Unlikely Aid [c29] — ability: cast:Unlikely Aid
+  [upkeep] Simple decides PriorityDecisionRequest: 1.359 ms; observed options: 2; space size: 2; success
+  [upkeep] Search decides PriorityDecisionRequest: 98.953 ms; observed options: 1; space size: 1; success
+  [upkeep] Temporary effect applied: Simple; Unlikely Aid [c29] — last known: kind: CardLastKnownInformation; targets: Typhoid Rats [c4]
+  [upkeep] Card moved: Simple; Unlikely Aid [c29] — card: Unlikely Aid [c29]; from: STACK; last known: kind: CardLastKnownInformation; previous controller: Simple; to: GRAVEYARD
+  [upkeep] Resolution: Simple; Unlikely Aid [c29]; cast:Unlikely Aid; success: True
+  [upkeep] Simple decides PriorityDecisionRequest: 1.215 ms; observed options: 1; space size: 1; success
+  [upkeep] Search decides PriorityDecisionRequest: 8.399 ms; observed options: 1; space size: 1; success
+  [draw] Card moved: Simple; Swamp [c60] — card: Swamp [c60]; from: DECK; last known: kind: CardLastKnownInformation; previous controller: Simple; to: HAND
+  [draw] Card drawn: Simple; Swamp [c60] — card: Swamp [c60]; last known: kind: CardLastKnownInformation
+  [draw] Resolution: -; -; -; success: True
+  [draw] Simple decides PriorityDecisionRequest: 1.197 ms; observed options: 1; space size: 1; success
+  [draw] Search decides PriorityDecisionRequest: 70.943 ms; observed options: 1; space size: 1; success
+  [precombat main] Simple chooses land: source: Swamp [c60]
+  [precombat main] Simple decides PriorityDecisionRequest: 0.571 ms; observed options: 2; space size: unknown; success
+  [precombat main] Card moved: Simple; Swamp [c60] — card: Swamp [c60]; from: HAND; last known: kind: CardLastKnownInformation; previous controller: Simple; to: BATTLEFIELD
+  [precombat main] Simple plays land Swamp [c60] — lands played: 1; last known: kind: CardLastKnownInformation
+  [precombat main] Resolution: Simple; Swamp [c60]; play_land; success: True
+  [precombat main] Simple decides PriorityDecisionRequest: 1.179 ms; observed options: 1; space size: 1; success
+  [precombat main] Search decides PriorityDecisionRequest: 93.735 ms; observed options: 1; space size: 1; success
+  [begin combat] Simple decides PriorityDecisionRequest: 1.379 ms; observed options: 1; space size: 1; success
+  [begin combat] Search decides PriorityDecisionRequest: 119.590 ms; observed options: 1; space size: 1; success
+  [declare attackers] Simple chooses attack: attackers: Typhoid Rats [c4], Savage Gorger [c13]
+  [declare attackers] Simple decides DeclareAttackersRequest: 0.405 ms; observed options: 1; space size: unknown; success
+  [declare attackers] Card tapped: Simple; Typhoid Rats [c4]
+  [declare attackers] Simple attacks with Typhoid Rats [c4] — attacker: Typhoid Rats [c4]; defender: Search
+  [declare attackers] Card tapped: Simple; Savage Gorger [c13]
+  [declare attackers] Simple attacks with Savage Gorger [c13] — attacker: Savage Gorger [c13]; defender: Search
+  [declare attackers] Attackers declared: Simple; - — attackers: Typhoid Rats [c4], Savage Gorger [c13]
+  [declare attackers] Simple decides PriorityDecisionRequest: 1.136 ms; observed options: 1; space size: 1; success
+  [declare attackers] Search decides PriorityDecisionRequest: 71.268 ms; observed options: 1; space size: 1; success
+  [declare blockers] Search decides DeclareBlockersRequest: 618.978 ms; observed options: 32; space size: unknown; success
+  [declare blockers] Search blocks with Riddlemaster Sphinx [c82] — attacker: Savage Gorger [c13]; blocker: Riddlemaster Sphinx [c82]
+  [declare blockers] Attacker blocked: Simple; Savage Gorger [c13] — blockers: Riddlemaster Sphinx [c82]
+  [declare blockers] Blockers declared: Search; - — blockers: Riddlemaster Sphinx [c82], Savage Gorger [c13]
+  [declare blockers] Simple decides PriorityDecisionRequest: 1.166 ms; observed options: 1; space size: 1; success
+  [declare blockers] Search decides PriorityDecisionRequest: 8.174 ms; observed options: 1; space size: 1; success
+  [second combat damage] Search decides ReplacementOrderRequest: 559.322 ms; observed options: 35; space size: unknown; success
+  [second combat damage] Damage dealt: Search; Riddlemaster Sphinx [c82] — amount: 5; combat: True; last known: kind: CardLastKnownInformation; life loss: 0; source revision: 3; target: Savage Gorger; target object: Savage Gorger [c13]; target revision: 3
+  [second combat damage] Damage dealt: Simple; Typhoid Rats [c4] — amount: 3; combat: True; last known: kind: CardLastKnownInformation; life loss: 3; source revision: 3; target: Search; target object: Search; target revision: -
+  [second combat damage] Damage dealt: Simple; Savage Gorger [c13] — amount: 4; combat: True; last known: kind: CardLastKnownInformation; life loss: 0; source revision: 3; target: Riddlemaster Sphinx; target object: Riddlemaster Sphinx [c82]; target revision: 3
+  [second combat damage] Card moved: Simple; Savage Gorger [c13] — card: Savage Gorger [c13]; from: BATTLEFIELD; last known: kind: CardLastKnownInformation; previous controller: Simple; to: GRAVEYARD
+  [second combat damage] Simple decides PriorityDecisionRequest: 1.310 ms; observed options: 1; space size: 1; success
+  [second combat damage] Search decides PriorityDecisionRequest: 7.973 ms; observed options: 1; space size: 1; success
+  [end combat] Simple decides PriorityDecisionRequest: 1.182 ms; observed options: 1; space size: 1; success
+  [end combat] Search decides PriorityDecisionRequest: 8.263 ms; observed options: 1; space size: 1; success
+  [postcombat main] Simple decides PriorityDecisionRequest: 1.183 ms; observed options: 1; space size: 1; success
+  [postcombat main] Search decides PriorityDecisionRequest: 8.507 ms; observed options: 1; space size: 1; success
+  [end step] Simple decides PriorityDecisionRequest: 1.187 ms; observed options: 1; space size: 1; success
+  [end step] Search decides PriorityDecisionRequest: 140.239 ms; observed options: 1; space size: 1; success
+
+Turn 14
+  [upkeep] Search decides PriorityDecisionRequest: 116.611 ms; observed options: 1; space size: 1; success
+  [upkeep] Simple decides PriorityDecisionRequest: 1.456 ms; observed options: 2; space size: 2; success
+  [draw] Card moved: Search; Unsummon [c85] — card: Unsummon [c85]; from: DECK; last known: kind: CardLastKnownInformation; previous controller: Search; to: HAND
+  [draw] Card drawn: Search; Unsummon [c85] — card: Unsummon [c85]; last known: kind: CardLastKnownInformation
+  [draw] Resolution: -; -; -; success: True
+  [draw] Search decides PriorityDecisionRequest: 653.396 ms; observed options: 35; space size: unknown; success
+  [draw] Simple decides PriorityDecisionRequest: 1.822 ms; observed options: 2; space size: 2; success
+  [precombat main] Search decides PriorityDecisionRequest: 646.782 ms; observed options: 47; space size: unknown; success
+  [precombat main] Card tapped: Search; Island [c100] — last known: kind: CardLastKnownInformation
+  [precombat main] Mana added: Search; Island [c100] — amount: 1; last known: kind: CardLastKnownInformation; mana: BLUE
+  [precombat main] Search activates Island [c100] — ability: mana_blue; last known: kind: CardLastKnownInformation
+  [precombat main] Card tapped: Search; Island [c102] — last known: kind: CardLastKnownInformation
+  [precombat main] Mana added: Search; Island [c102] — amount: 1; last known: kind: CardLastKnownInformation; mana: BLUE
+  [precombat main] Search activates Island [c102] — ability: mana_blue; last known: kind: CardLastKnownInformation
+  [precombat main] Card tapped: Search; Island [c110] — last known: kind: CardLastKnownInformation
+  [precombat main] Mana added: Search; Island [c110] — amount: 1; last known: kind: CardLastKnownInformation; mana: BLUE
+  [precombat main] Search activates Island [c110] — ability: mana_blue; last known: kind: CardLastKnownInformation
+  [precombat main] Card tapped: Search; Island [c116] — last known: kind: CardLastKnownInformation
+  [precombat main] Mana added: Search; Island [c116] — amount: 1; last known: kind: CardLastKnownInformation; mana: BLUE
+  [precombat main] Search activates Island [c116] — ability: mana_blue; last known: kind: CardLastKnownInformation
+  [precombat main] Card tapped: Search; Island [c118] — last known: kind: CardLastKnownInformation
+  [precombat main] Mana added: Search; Island [c118] — amount: 1; last known: kind: CardLastKnownInformation; mana: BLUE
+  [precombat main] Search activates Island [c118] — ability: mana_blue; last known: kind: CardLastKnownInformation
+  [precombat main] Card tapped: Search; Island [c120] — last known: kind: CardLastKnownInformation
+  [precombat main] Mana added: Search; Island [c120] — amount: 1; last known: kind: CardLastKnownInformation; mana: BLUE
+  [precombat main] Search activates Island [c120] — ability: mana_blue; last known: kind: CardLastKnownInformation
+  [precombat main] Mana paid: Search; Frilled Sea Serpent [c80] — last known: kind: CardLastKnownInformation; payment: BLUE: 6
+  [precombat main] Card moved: Search; Frilled Sea Serpent [c80] — card: Frilled Sea Serpent [c80]; from: HAND; last known: kind: CardLastKnownInformation; previous controller: Search; to: STACK
+  [precombat main] Search casts Frilled Sea Serpent [c80] — ability: cast:Frilled Sea Serpent
+  [precombat main] Search decides PriorityDecisionRequest: 12.399 ms; observed options: 1; space size: 1; success
+  [precombat main] Simple decides PriorityDecisionRequest: 1.894 ms; observed options: 2; space size: 2; success
+  [precombat main] Card moved: Search; Frilled Sea Serpent [c80] — card: Frilled Sea Serpent [c80]; from: STACK; last known: kind: CardLastKnownInformation; previous controller: Search; to: BATTLEFIELD
+  [precombat main] Resolution: Search; Frilled Sea Serpent [c80]; cast:Frilled Sea Serpent; success: True
+  [precombat main] Search decides PriorityDecisionRequest: 768.466 ms; observed options: 51; space size: unknown; success
+  [precombat main] Card moved: Search; Island [c117] — card: Island [c117]; from: HAND; last known: kind: CardLastKnownInformation; previous controller: Search; to: BATTLEFIELD
+  [precombat main] Search plays land Island [c117] — lands played: 1; last known: kind: CardLastKnownInformation
+  [precombat main] Resolution: Search; Island [c117]; play_land; success: True
+  [precombat main] Search decides PriorityDecisionRequest: 677.301 ms; observed options: 41; space size: unknown; success
+  [precombat main] Card tapped: Search; Island [c117] — last known: kind: CardLastKnownInformation
+  [precombat main] Mana added: Search; Island [c117] — amount: 1; last known: kind: CardLastKnownInformation; mana: BLUE
+  [precombat main] Search activates Island [c117] — ability: mana_blue; last known: kind: CardLastKnownInformation
+  [precombat main] Mana paid: Search; Unsummon [c85] — last known: kind: CardLastKnownInformation; payment: BLUE: 1
+  [precombat main] Card moved: Search; Unsummon [c85] — card: Unsummon [c85]; from: HAND; last known: kind: CardLastKnownInformation; previous controller: Search; to: STACK
+  [precombat main] Search casts Unsummon [c85] — ability: cast:Unsummon
+  [precombat main] Search decides PriorityDecisionRequest: 9.344 ms; observed options: 1; space size: 1; success
+  [precombat main] Simple decides PriorityDecisionRequest: 1.741 ms; observed options: 2; space size: 2; success
+  [precombat main] Card moved: Search; Frilled Sea Serpent [c80] — card: Frilled Sea Serpent [c80]; from: BATTLEFIELD; last known: kind: CardLastKnownInformation; previous controller: Search; to: HAND
+  [precombat main] Card moved: Search; Unsummon [c85] — card: Unsummon [c85]; from: STACK; last known: kind: CardLastKnownInformation; previous controller: Search; to: GRAVEYARD
+  [precombat main] Resolution: Search; Unsummon [c85]; cast:Unsummon; success: True
+  [precombat main] Search decides PriorityDecisionRequest: 9.787 ms; observed options: 1; space size: 1; success
+  [precombat main] Simple decides PriorityDecisionRequest: 1.705 ms; observed options: 2; space size: 2; success
+  [begin combat] Search decides PriorityDecisionRequest: 8.457 ms; observed options: 1; space size: 1; success
+  [begin combat] Simple decides PriorityDecisionRequest: 1.428 ms; observed options: 2; space size: 2; success
+  [declare attackers] Search decides DeclareAttackersRequest: 708.589 ms; observed options: 25; space size: unknown; success
+  [declare attackers] Card tapped: Search; Riddlemaster Sphinx [c82]
+  [declare attackers] Search attacks with Riddlemaster Sphinx [c82] — attacker: Riddlemaster Sphinx [c82]; defender: Simple
+  [declare attackers] Attackers declared: Search; - — attackers: Riddlemaster Sphinx [c82]
+  [declare attackers] Search decides PriorityDecisionRequest: 7.969 ms; observed options: 1; space size: 1; success
+  [declare attackers] Simple decides PriorityDecisionRequest: 1.382 ms; observed options: 2; space size: 2; success
+  [declare blockers] Simple chooses block: blockers: none
+  [declare blockers] Simple decides DeclareBlockersRequest: 0.174 ms; observed options: 1; space size: unknown; success
+  [declare blockers] Search decides PriorityDecisionRequest: 85.361 ms; observed options: 1; space size: 1; success
+  [declare blockers] Simple decides PriorityDecisionRequest: 1.710 ms; observed options: 2; space size: 2; success
+  [second combat damage] Damage dealt: Search; Riddlemaster Sphinx [c82] — amount: 5; combat: True; last known: kind: CardLastKnownInformation; life loss: 5; source revision: 3; target: Simple; target object: Simple; target revision: -
+  [second combat damage] Search decides PriorityDecisionRequest: 12.747 ms; observed options: 1; space size: 1; success
+  [second combat damage] Simple decides PriorityDecisionRequest: 2.110 ms; observed options: 2; space size: 2; success
+  [end combat] Search decides PriorityDecisionRequest: 10.982 ms; observed options: 1; space size: 1; success
+  [end combat] Simple decides PriorityDecisionRequest: 1.380 ms; observed options: 2; space size: 2; success
+  [postcombat main] Search decides PriorityDecisionRequest: 9.230 ms; observed options: 1; space size: 1; success
+  [postcombat main] Simple decides PriorityDecisionRequest: 1.436 ms; observed options: 2; space size: 2; success
+  [end step] Search decides PriorityDecisionRequest: 125.707 ms; observed options: 1; space size: 1; success
+  [end step] Simple decides PriorityDecisionRequest: 1.567 ms; observed options: 2; space size: 2; success
+
+Turn 15
+  [upkeep] Simple decides PriorityDecisionRequest: 1.485 ms; observed options: 2; space size: 2; success
+  [upkeep] Search decides PriorityDecisionRequest: 116.784 ms; observed options: 1; space size: 1; success
+  [draw] Card moved: Simple; Typhoid Rats [c3] — card: Typhoid Rats [c3]; from: DECK; last known: kind: CardLastKnownInformation; previous controller: Simple; to: HAND
+  [draw] Card drawn: Simple; Typhoid Rats [c3] — card: Typhoid Rats [c3]; last known: kind: CardLastKnownInformation
+  [draw] Resolution: -; -; -; success: True
+  [draw] Simple decides PriorityDecisionRequest: 1.476 ms; observed options: 2; space size: 2; success
+  [draw] Search decides PriorityDecisionRequest: 7.897 ms; observed options: 1; space size: 1; success
+  [precombat main] Simple chooses action: ability: cast:Typhoid Rats; source: Typhoid Rats [c3]; targets: none
+  [precombat main] Simple decides PriorityDecisionRequest: 2.485 ms; observed options: 3; space size: 3; success
+  [precombat main] Card tapped: Simple; Swamp [c42] — last known: kind: CardLastKnownInformation
+  [precombat main] Mana added: Simple; Swamp [c42] — amount: 1; last known: kind: CardLastKnownInformation; mana: BLACK
+  [precombat main] Simple activates Swamp [c42] — ability: mana_black; last known: kind: CardLastKnownInformation
+  [precombat main] Mana paid: Simple; Typhoid Rats [c3] — last known: kind: CardLastKnownInformation; payment: BLACK: 1
+  [precombat main] Card moved: Simple; Typhoid Rats [c3] — card: Typhoid Rats [c3]; from: HAND; last known: kind: CardLastKnownInformation; previous controller: Simple; to: STACK
+  [precombat main] Simple casts Typhoid Rats [c3] — ability: cast:Typhoid Rats
+  [precombat main] Simple decides PriorityDecisionRequest: 1.439 ms; observed options: 2; space size: 2; success
+  [precombat main] Search decides PriorityDecisionRequest: 117.335 ms; observed options: 1; space size: 1; success
+  [precombat main] Card moved: Simple; Typhoid Rats [c3] — card: Typhoid Rats [c3]; from: STACK; last known: kind: CardLastKnownInformation; previous controller: Simple; to: BATTLEFIELD
+  [precombat main] Resolution: Simple; Typhoid Rats [c3]; cast:Typhoid Rats; success: True
+  [precombat main] Simple decides PriorityDecisionRequest: 2.284 ms; observed options: 3; space size: 3; success
+  [precombat main] Search decides PriorityDecisionRequest: 8.391 ms; observed options: 1; space size: 1; success
+  [begin combat] Simple decides PriorityDecisionRequest: 1.559 ms; observed options: 3; space size: 3; success
+  [begin combat] Search decides PriorityDecisionRequest: 8.374 ms; observed options: 1; space size: 1; success
+  [declare attackers] Simple chooses attack: attackers: Typhoid Rats [c4]
+  [declare attackers] Simple decides DeclareAttackersRequest: 0.171 ms; observed options: 1; space size: unknown; success
+  [declare attackers] Card tapped: Simple; Typhoid Rats [c4]
+  [declare attackers] Simple attacks with Typhoid Rats [c4] — attacker: Typhoid Rats [c4]; defender: Search
+  [declare attackers] Attackers declared: Simple; - — attackers: Typhoid Rats [c4]
+  [declare attackers] Simple decides PriorityDecisionRequest: 1.466 ms; observed options: 3; space size: 3; success
+  [declare attackers] Search decides PriorityDecisionRequest: 8.517 ms; observed options: 1; space size: 1; success
+  [declare blockers] Search decides DeclareBlockersRequest: 119.747 ms; observed options: 1; space size: 1; success
+  [declare blockers] Simple decides PriorityDecisionRequest: 1.819 ms; observed options: 3; space size: 3; success
+  [declare blockers] Search decides PriorityDecisionRequest: 8.385 ms; observed options: 1; space size: 1; success
+  [second combat damage] Damage dealt: Simple; Typhoid Rats [c4] — amount: 1; combat: True; last known: kind: CardLastKnownInformation; life loss: 1; source revision: 3; target: Search; target object: Search; target revision: -
+  [second combat damage] Simple decides PriorityDecisionRequest: 1.688 ms; observed options: 3; space size: 3; success
+  [second combat damage] Search decides PriorityDecisionRequest: 9.176 ms; observed options: 1; space size: 1; success
+  [end combat] Simple decides PriorityDecisionRequest: 1.538 ms; observed options: 3; space size: 3; success
+  [end combat] Search decides PriorityDecisionRequest: 8.085 ms; observed options: 1; space size: 1; success
+  [postcombat main] Simple decides PriorityDecisionRequest: 1.989 ms; observed options: 3; space size: 3; success
+  [postcombat main] Search decides PriorityDecisionRequest: 8.475 ms; observed options: 1; space size: 1; success
+  [end step] Simple decides PriorityDecisionRequest: 1.617 ms; observed options: 3; space size: 3; success
+  [end step] Search decides PriorityDecisionRequest: 124.048 ms; observed options: 1; space size: 1; success
+
+Turn 16
+  [upkeep] Search decides PriorityDecisionRequest: 120.958 ms; observed options: 1; space size: 1; success
+  [upkeep] Simple decides PriorityDecisionRequest: 1.781 ms; observed options: 3; space size: 3; success
+  [draw] Card moved: Search; Unsummon [c86] — card: Unsummon [c86]; from: DECK; last known: kind: CardLastKnownInformation; previous controller: Search; to: HAND
+  [draw] Card drawn: Search; Unsummon [c86] — card: Unsummon [c86]; last known: kind: CardLastKnownInformation
+  [draw] Resolution: -; -; -; success: True
+  [draw] Search decides PriorityDecisionRequest: 650.931 ms; observed options: 43; space size: unknown; success
+  [draw] Card tapped: Search; Island [c100] — last known: kind: CardLastKnownInformation
+  [draw] Mana added: Search; Island [c100] — amount: 1; last known: kind: CardLastKnownInformation; mana: BLUE
+  [draw] Search activates Island [c100] — ability: mana_blue; last known: kind: CardLastKnownInformation
+  [draw] Mana paid: Search; Unsummon [c86] — last known: kind: CardLastKnownInformation; payment: BLUE: 1
+  [draw] Card moved: Search; Unsummon [c86] — card: Unsummon [c86]; from: HAND; last known: kind: CardLastKnownInformation; previous controller: Search; to: STACK
+  [draw] Search casts Unsummon [c86] — ability: cast:Unsummon
+  [draw] Search decides PriorityDecisionRequest: 8.174 ms; observed options: 1; space size: 1; success
+  [draw] Simple decides PriorityDecisionRequest: 1.544 ms; observed options: 3; space size: 3; success
+  [draw] Card moved: Search; Riddlemaster Sphinx [c82] — card: Riddlemaster Sphinx [c82]; from: BATTLEFIELD; last known: kind: CardLastKnownInformation; previous controller: Search; to: HAND
+  [draw] Card moved: Search; Unsummon [c86] — card: Unsummon [c86]; from: STACK; last known: kind: CardLastKnownInformation; previous controller: Search; to: GRAVEYARD
+  [draw] Resolution: Search; Unsummon [c86]; cast:Unsummon; success: True
+  [draw] Search decides PriorityDecisionRequest: 8.167 ms; observed options: 1; space size: 1; success
+  [draw] Simple decides PriorityDecisionRequest: 1.542 ms; observed options: 3; space size: 3; success
+  [precombat main] Search decides PriorityDecisionRequest: 703.460 ms; observed options: 45; space size: unknown; success
+  [precombat main] Card tapped: Search; Island [c102] — last known: kind: CardLastKnownInformation
+  [precombat main] Mana added: Search; Island [c102] — amount: 1; last known: kind: CardLastKnownInformation; mana: BLUE
+  [precombat main] Search activates Island [c102] — ability: mana_blue; last known: kind: CardLastKnownInformation
+  [precombat main] Card tapped: Search; Island [c110] — last known: kind: CardLastKnownInformation
+  [precombat main] Mana added: Search; Island [c110] — amount: 1; last known: kind: CardLastKnownInformation; mana: BLUE
+  [precombat main] Search activates Island [c110] — ability: mana_blue; last known: kind: CardLastKnownInformation
+  [precombat main] Card tapped: Search; Island [c116] — last known: kind: CardLastKnownInformation
+  [precombat main] Mana added: Search; Island [c116] — amount: 1; last known: kind: CardLastKnownInformation; mana: BLUE
+  [precombat main] Search activates Island [c116] — ability: mana_blue; last known: kind: CardLastKnownInformation
+  [precombat main] Card tapped: Search; Island [c117] — last known: kind: CardLastKnownInformation
+  [precombat main] Mana added: Search; Island [c117] — amount: 1; last known: kind: CardLastKnownInformation; mana: BLUE
+  [precombat main] Search activates Island [c117] — ability: mana_blue; last known: kind: CardLastKnownInformation
+  [precombat main] Card tapped: Search; Island [c118] — last known: kind: CardLastKnownInformation
+  [precombat main] Mana added: Search; Island [c118] — amount: 1; last known: kind: CardLastKnownInformation; mana: BLUE
+  [precombat main] Search activates Island [c118] — ability: mana_blue; last known: kind: CardLastKnownInformation
+  [precombat main] Card tapped: Search; Island [c120] — last known: kind: CardLastKnownInformation
+  [precombat main] Mana added: Search; Island [c120] — amount: 1; last known: kind: CardLastKnownInformation; mana: BLUE
+  [precombat main] Search activates Island [c120] — ability: mana_blue; last known: kind: CardLastKnownInformation
+  [precombat main] Mana paid: Search; Riddlemaster Sphinx [c82] — last known: kind: CardLastKnownInformation; payment: BLUE: 6
+  [precombat main] Card moved: Search; Riddlemaster Sphinx [c82] — card: Riddlemaster Sphinx [c82]; from: HAND; last known: kind: CardLastKnownInformation; previous controller: Search; to: STACK
+  [precombat main] Search casts Riddlemaster Sphinx [c82] — ability: cast:Riddlemaster Sphinx
+  [precombat main] Search decides PriorityDecisionRequest: 59.780 ms; observed options: 1; space size: 1; success
+  [precombat main] Simple decides PriorityDecisionRequest: 1.639 ms; observed options: 3; space size: 3; success
+  [precombat main] Card moved: Search; Riddlemaster Sphinx [c82] — card: Riddlemaster Sphinx [c82]; from: STACK; last known: kind: CardLastKnownInformation; previous controller: Search; to: BATTLEFIELD
+  [precombat main] Trigger detected: Search; Riddlemaster Sphinx [c82]; riddlemaster_enter
+  [precombat main] Search decides TriggerOrderRequest: 8.722 ms; observed options: 1; space size: 1; success
+  [precombat main] Search decides AbilityDecisionRequest: 557.769 ms; observed options: 45; space size: unknown; success
+  [precombat main] Resolution: Search; Riddlemaster Sphinx [c82]; cast:Riddlemaster Sphinx; success: True
+  [precombat main] Search decides PriorityDecisionRequest: 8.994 ms; observed options: 1; space size: 1; success
+  [precombat main] Simple decides PriorityDecisionRequest: 1.694 ms; observed options: 3; space size: 3; success
+  [precombat main] Search decides OptionalEffectRequest: 699.253 ms; observed options: 54; space size: unknown; success
+  [precombat main] Resolution: Search; Riddlemaster Sphinx [c82]; riddlemaster_enter; success: True
+  [precombat main] Search decides PriorityDecisionRequest: 10.871 ms; observed options: 1; space size: 1; success
+  [precombat main] Simple decides PriorityDecisionRequest: 1.585 ms; observed options: 3; space size: 3; success
+  [begin combat] Search decides PriorityDecisionRequest: 8.258 ms; observed options: 1; space size: 1; success
+  [begin combat] Simple decides PriorityDecisionRequest: 1.592 ms; observed options: 3; space size: 3; success
+  [declare attackers] Search decides DeclareAttackersRequest: 161.853 ms; observed options: 1; space size: 1; success
+  [declare attackers] Search decides PriorityDecisionRequest: 13.263 ms; observed options: 1; space size: 1; success
+  [declare attackers] Simple decides PriorityDecisionRequest: 1.866 ms; observed options: 3; space size: 3; success
+  [end combat] Search decides PriorityDecisionRequest: 9.505 ms; observed options: 1; space size: 1; success
+  [end combat] Simple decides PriorityDecisionRequest: 2.151 ms; observed options: 3; space size: 3; success
+  [postcombat main] Search decides PriorityDecisionRequest: 11.575 ms; observed options: 1; space size: 1; success
+  [postcombat main] Simple decides PriorityDecisionRequest: 2.373 ms; observed options: 3; space size: 3; success
+  [end step] Search decides PriorityDecisionRequest: 163.273 ms; observed options: 1; space size: 1; success
+  [end step] Simple decides PriorityDecisionRequest: 1.738 ms; observed options: 3; space size: 3; success
+
+Turn 17
+  [upkeep] Simple decides PriorityDecisionRequest: 1.581 ms; observed options: 3; space size: 3; success
+  [upkeep] Search decides PriorityDecisionRequest: 140.735 ms; observed options: 1; space size: 1; success
+  [draw] Card moved: Simple; Bad Deal [c34] — card: Bad Deal [c34]; from: DECK; last known: kind: CardLastKnownInformation; previous controller: Simple; to: HAND
+  [draw] Card drawn: Simple; Bad Deal [c34] — card: Bad Deal [c34]; last known: kind: CardLastKnownInformation
+  [draw] Resolution: -; -; -; success: True
+  [draw] Simple decides PriorityDecisionRequest: 1.713 ms; observed options: 3; space size: 3; success
+  [draw] Search decides PriorityDecisionRequest: 9.393 ms; observed options: 1; space size: 1; success
+  [precombat main] Simple decides PriorityDecisionRequest: 2.514 ms; observed options: 3; space size: 3; success
+  [precombat main] Search decides PriorityDecisionRequest: 44.443 ms; observed options: 1; space size: 1; success
+  [begin combat] Simple decides PriorityDecisionRequest: 1.687 ms; observed options: 3; space size: 3; success
+  [begin combat] Search decides PriorityDecisionRequest: 8.989 ms; observed options: 1; space size: 1; success
+  [declare attackers] Simple chooses attack: attackers: Typhoid Rats [c3], Typhoid Rats [c4]
+  [declare attackers] Simple decides DeclareAttackersRequest: 0.216 ms; observed options: 1; space size: unknown; success
+  [declare attackers] Card tapped: Simple; Typhoid Rats [c3]
+  [declare attackers] Simple attacks with Typhoid Rats [c3] — attacker: Typhoid Rats [c3]; defender: Search
+  [declare attackers] Card tapped: Simple; Typhoid Rats [c4]
+  [declare attackers] Simple attacks with Typhoid Rats [c4] — attacker: Typhoid Rats [c4]; defender: Search
+  [declare attackers] Attackers declared: Simple; - — attackers: Typhoid Rats [c3], Typhoid Rats [c4]
+  [declare attackers] Simple decides PriorityDecisionRequest: 1.694 ms; observed options: 3; space size: 3; success
+  [declare attackers] Search decides PriorityDecisionRequest: 9.063 ms; observed options: 1; space size: 1; success
+  [declare blockers] Search decides DeclareBlockersRequest: 674.028 ms; observed options: 29; space size: unknown; success
+  [declare blockers] Search blocks with Riddlemaster Sphinx [c82] — attacker: Typhoid Rats [c3]; blocker: Riddlemaster Sphinx [c82]
+  [declare blockers] Attacker blocked: Simple; Typhoid Rats [c3] — blockers: Riddlemaster Sphinx [c82]
+  [declare blockers] Blockers declared: Search; - — blockers: Riddlemaster Sphinx [c82], Typhoid Rats [c3]
+  [declare blockers] Simple decides PriorityDecisionRequest: 1.686 ms; observed options: 3; space size: 3; success
+  [declare blockers] Search decides PriorityDecisionRequest: 8.531 ms; observed options: 1; space size: 1; success
+  [second combat damage] Search decides ReplacementOrderRequest: 519.496 ms; observed options: 35; space size: unknown; success
+  [second combat damage] Damage dealt: Search; Riddlemaster Sphinx [c82] — amount: 5; combat: True; last known: kind: CardLastKnownInformation; life loss: 0; source revision: 6; target: Typhoid Rats; target object: Typhoid Rats [c3]; target revision: 3
+  [second combat damage] Damage dealt: Simple; Typhoid Rats [c3] — amount: 1; combat: True; last known: kind: CardLastKnownInformation; life loss: 0; source revision: 3; target: Riddlemaster Sphinx; target object: Riddlemaster Sphinx [c82]; target revision: 6
+  [second combat damage] Damage dealt: Simple; Typhoid Rats [c4] — amount: 1; combat: True; last known: kind: CardLastKnownInformation; life loss: 1; source revision: 3; target: Search; target object: Search; target revision: -
+  [second combat damage] Card moved: Simple; Typhoid Rats [c3] — card: Typhoid Rats [c3]; from: BATTLEFIELD; last known: kind: CardLastKnownInformation; previous controller: Simple; to: GRAVEYARD
+  [second combat damage] Card moved: Search; Riddlemaster Sphinx [c82] — card: Riddlemaster Sphinx [c82]; from: BATTLEFIELD; last known: kind: CardLastKnownInformation; previous controller: Search; to: GRAVEYARD
+  [second combat damage] Simple decides PriorityDecisionRequest: 1.648 ms; observed options: 2; space size: 2; success
+  [second combat damage] Search decides PriorityDecisionRequest: 10.014 ms; observed options: 1; space size: 1; success
+  [end combat] Simple decides PriorityDecisionRequest: 1.470 ms; observed options: 2; space size: 2; success
+  [end combat] Search decides PriorityDecisionRequest: 9.630 ms; observed options: 1; space size: 1; success
+  [postcombat main] Simple decides PriorityDecisionRequest: 2.408 ms; observed options: 2; space size: 2; success
+  [postcombat main] Search decides PriorityDecisionRequest: 9.121 ms; observed options: 1; space size: 1; success
+  [end step] Simple decides PriorityDecisionRequest: 1.494 ms; observed options: 2; space size: 2; success
+  [end step] Search decides PriorityDecisionRequest: 157.668 ms; observed options: 1; space size: 1; success
+
+Turn 18
+  [upkeep] Search decides PriorityDecisionRequest: 8.968 ms; observed options: 1; space size: 1; success
+  [upkeep] Simple decides PriorityDecisionRequest: 1.676 ms; observed options: 2; space size: 2; success
+  [draw] Card moved: Search; Waterknot [c94] — card: Waterknot [c94]; from: DECK; last known: kind: CardLastKnownInformation; previous controller: Search; to: HAND
+  [draw] Card drawn: Search; Waterknot [c94] — card: Waterknot [c94]; last known: kind: CardLastKnownInformation
+  [draw] Resolution: -; -; -; success: True
+  [draw] Search decides PriorityDecisionRequest: 9.845 ms; observed options: 1; space size: 1; success
+  [draw] Simple decides PriorityDecisionRequest: 2.128 ms; observed options: 2; space size: 2; success
+  [precombat main] Search decides PriorityDecisionRequest: 785.820 ms; observed options: 38; space size: unknown; success
+  [precombat main] Card tapped: Search; Island [c100] — last known: kind: CardLastKnownInformation
+  [precombat main] Mana added: Search; Island [c100] — amount: 1; last known: kind: CardLastKnownInformation; mana: BLUE
+  [precombat main] Search activates Island [c100] — ability: mana_blue; last known: kind: CardLastKnownInformation
+  [precombat main] Card tapped: Search; Island [c102] — last known: kind: CardLastKnownInformation
+  [precombat main] Mana added: Search; Island [c102] — amount: 1; last known: kind: CardLastKnownInformation; mana: BLUE
+  [precombat main] Search activates Island [c102] — ability: mana_blue; last known: kind: CardLastKnownInformation
+  [precombat main] Card tapped: Search; Island [c110] — last known: kind: CardLastKnownInformation
+  [precombat main] Mana added: Search; Island [c110] — amount: 1; last known: kind: CardLastKnownInformation; mana: BLUE
+  [precombat main] Search activates Island [c110] — ability: mana_blue; last known: kind: CardLastKnownInformation
+  [precombat main] Card tapped: Search; Island [c116] — last known: kind: CardLastKnownInformation
+  [precombat main] Mana added: Search; Island [c116] — amount: 1; last known: kind: CardLastKnownInformation; mana: BLUE
+  [precombat main] Search activates Island [c116] — ability: mana_blue; last known: kind: CardLastKnownInformation
+  [precombat main] Card tapped: Search; Island [c117] — last known: kind: CardLastKnownInformation
+  [precombat main] Mana added: Search; Island [c117] — amount: 1; last known: kind: CardLastKnownInformation; mana: BLUE
+  [precombat main] Search activates Island [c117] — ability: mana_blue; last known: kind: CardLastKnownInformation
+  [precombat main] Card tapped: Search; Island [c118] — last known: kind: CardLastKnownInformation
+  [precombat main] Mana added: Search; Island [c118] — amount: 1; last known: kind: CardLastKnownInformation; mana: BLUE
+  [precombat main] Search activates Island [c118] — ability: mana_blue; last known: kind: CardLastKnownInformation
+  [precombat main] Mana paid: Search; Frilled Sea Serpent [c80] — last known: kind: CardLastKnownInformation; payment: BLUE: 6
+  [precombat main] Card moved: Search; Frilled Sea Serpent [c80] — card: Frilled Sea Serpent [c80]; from: HAND; last known: kind: CardLastKnownInformation; previous controller: Search; to: STACK
+  [precombat main] Search casts Frilled Sea Serpent [c80] — ability: cast:Frilled Sea Serpent
+  [precombat main] Search decides PriorityDecisionRequest: 17.450 ms; observed options: 1; space size: 1; success
+  [precombat main] Simple decides PriorityDecisionRequest: 3.343 ms; observed options: 2; space size: 2; success
+  [precombat main] Card moved: Search; Frilled Sea Serpent [c80] — card: Frilled Sea Serpent [c80]; from: STACK; last known: kind: CardLastKnownInformation; previous controller: Search; to: BATTLEFIELD
+  [precombat main] Resolution: Search; Frilled Sea Serpent [c80]; cast:Frilled Sea Serpent; success: True
+  [precombat main] Search decides PriorityDecisionRequest: 17.483 ms; observed options: 1; space size: 1; success
+  [precombat main] Simple decides PriorityDecisionRequest: 3.166 ms; observed options: 2; space size: 2; success
+  [begin combat] Search decides PriorityDecisionRequest: 13.756 ms; observed options: 1; space size: 1; success
+  [begin combat] Simple decides PriorityDecisionRequest: 1.902 ms; observed options: 2; space size: 2; success
+  [declare attackers] Search decides DeclareAttackersRequest: 249.848 ms; observed options: 1; space size: 1; success
+  [declare attackers] Search decides PriorityDecisionRequest: 11.964 ms; observed options: 1; space size: 1; success
+  [declare attackers] Simple decides PriorityDecisionRequest: 1.633 ms; observed options: 2; space size: 2; success
+  [end combat] Search decides PriorityDecisionRequest: 13.921 ms; observed options: 1; space size: 1; success
+  [end combat] Simple decides PriorityDecisionRequest: 2.588 ms; observed options: 2; space size: 2; success
+  [postcombat main] Search decides PriorityDecisionRequest: 15.868 ms; observed options: 1; space size: 1; success
+  [postcombat main] Simple decides PriorityDecisionRequest: 1.789 ms; observed options: 2; space size: 2; success
+  [end step] Search decides PriorityDecisionRequest: 245.694 ms; observed options: 1; space size: 1; success
+  [end step] Simple decides PriorityDecisionRequest: 2.848 ms; observed options: 2; space size: 2; success
+
+Turn 19
+  [upkeep] Simple decides PriorityDecisionRequest: 1.379 ms; observed options: 2; space size: 2; success
+  [upkeep] Search decides PriorityDecisionRequest: 9.255 ms; observed options: 1; space size: 1; success
+  [draw] Card moved: Simple; Demon of Loathing [c21] — card: Demon of Loathing [c21]; from: DECK; last known: kind: CardLastKnownInformation; previous controller: Simple; to: HAND
+  [draw] Card drawn: Simple; Demon of Loathing [c21] — card: Demon of Loathing [c21]; last known: kind: CardLastKnownInformation
+  [draw] Resolution: -; -; -; success: True
+  [draw] Simple decides PriorityDecisionRequest: 1.521 ms; observed options: 2; space size: 2; success
+  [draw] Search decides PriorityDecisionRequest: 9.687 ms; observed options: 1; space size: 1; success
+  [precombat main] Simple decides PriorityDecisionRequest: 2.369 ms; observed options: 2; space size: 2; success
+  [precombat main] Search decides PriorityDecisionRequest: 9.942 ms; observed options: 1; space size: 1; success
+  [begin combat] Simple decides PriorityDecisionRequest: 1.588 ms; observed options: 2; space size: 2; success
+  [begin combat] Search decides PriorityDecisionRequest: 9.762 ms; observed options: 1; space size: 1; success
+  [declare attackers] Simple chooses attack: attackers: Typhoid Rats [c4]
+  [declare attackers] Simple decides DeclareAttackersRequest: 0.181 ms; observed options: 1; space size: unknown; success
+  [declare attackers] Card tapped: Simple; Typhoid Rats [c4]
+  [declare attackers] Simple attacks with Typhoid Rats [c4] — attacker: Typhoid Rats [c4]; defender: Search
+  [declare attackers] Attackers declared: Simple; - — attackers: Typhoid Rats [c4]
+  [declare attackers] Simple decides PriorityDecisionRequest: 1.412 ms; observed options: 2; space size: 2; success
+  [declare attackers] Search decides PriorityDecisionRequest: 9.686 ms; observed options: 1; space size: 1; success
+  [declare blockers] Search decides DeclareBlockersRequest: 657.510 ms; observed options: 20; space size: unknown; success
+  [declare blockers] Search blocks with Frilled Sea Serpent [c80] — attacker: Typhoid Rats [c4]; blocker: Frilled Sea Serpent [c80]
+  [declare blockers] Attacker blocked: Simple; Typhoid Rats [c4] — blockers: Frilled Sea Serpent [c80]
+  [declare blockers] Blockers declared: Search; - — blockers: Frilled Sea Serpent [c80], Typhoid Rats [c4]
+  [declare blockers] Simple decides PriorityDecisionRequest: 2.552 ms; observed options: 2; space size: 2; success
+  [declare blockers] Search decides PriorityDecisionRequest: 12.357 ms; observed options: 1; space size: 1; success
+  [second combat damage] Damage dealt: Search; Frilled Sea Serpent [c80] — amount: 4; combat: True; last known: kind: CardLastKnownInformation; life loss: 0; source revision: 6; target: Typhoid Rats; target object: Typhoid Rats [c4]; target revision: 3
+  [second combat damage] Damage dealt: Simple; Typhoid Rats [c4] — amount: 1; combat: True; last known: kind: CardLastKnownInformation; life loss: 0; source revision: 3; target: Frilled Sea Serpent; target object: Frilled Sea Serpent [c80]; target revision: 6
+  [second combat damage] Card moved: Simple; Typhoid Rats [c4] — card: Typhoid Rats [c4]; from: BATTLEFIELD; last known: kind: CardLastKnownInformation; previous controller: Simple; to: GRAVEYARD
+  [second combat damage] Card moved: Search; Frilled Sea Serpent [c80] — card: Frilled Sea Serpent [c80]; from: BATTLEFIELD; last known: kind: CardLastKnownInformation; previous controller: Search; to: GRAVEYARD
+  [second combat damage] Simple decides PriorityDecisionRequest: 1.676 ms; observed options: 1; space size: 1; success
+  [second combat damage] Search decides PriorityDecisionRequest: 13.439 ms; observed options: 1; space size: 1; success
+  [end combat] Simple decides PriorityDecisionRequest: 1.658 ms; observed options: 1; space size: 1; success
+  [end combat] Search decides PriorityDecisionRequest: 10.134 ms; observed options: 1; space size: 1; success
+  [postcombat main] Simple decides PriorityDecisionRequest: 2.645 ms; observed options: 1; space size: 1; success
+  [postcombat main] Search decides PriorityDecisionRequest: 10.253 ms; observed options: 1; space size: 1; success
+  [end step] Simple decides PriorityDecisionRequest: 1.470 ms; observed options: 1; space size: 1; success
+  [end step] Search decides PriorityDecisionRequest: 200.129 ms; observed options: 1; space size: 1; success
+
+Turn 20
+  [upkeep] Search decides PriorityDecisionRequest: 9.227 ms; observed options: 1; space size: 1; success
+  [upkeep] Simple decides PriorityDecisionRequest: 1.299 ms; observed options: 1; space size: 1; success
+  [draw] Card moved: Search; Island [c97] — card: Island [c97]; from: DECK; last known: kind: CardLastKnownInformation; previous controller: Search; to: HAND
+  [draw] Card drawn: Search; Island [c97] — card: Island [c97]; last known: kind: CardLastKnownInformation
+  [draw] Resolution: -; -; -; success: True
+  [draw] Search decides PriorityDecisionRequest: 9.490 ms; observed options: 1; space size: 1; success
+  [draw] Simple decides PriorityDecisionRequest: 1.523 ms; observed options: 1; space size: 1; success
+  [precombat main] Search decides PriorityDecisionRequest: 756.838 ms; observed options: 35; space size: unknown; success
+  [precombat main] Card tapped: Search; Island [c100] — last known: kind: CardLastKnownInformation
+  [precombat main] Mana added: Search; Island [c100] — amount: 1; last known: kind: CardLastKnownInformation; mana: BLUE
+  [precombat main] Search activates Island [c100] — ability: mana_blue; last known: kind: CardLastKnownInformation
+  [precombat main] Card tapped: Search; Island [c102] — last known: kind: CardLastKnownInformation
+  [precombat main] Mana added: Search; Island [c102] — amount: 1; last known: kind: CardLastKnownInformation; mana: BLUE
+  [precombat main] Search activates Island [c102] — ability: mana_blue; last known: kind: CardLastKnownInformation
+  [precombat main] Card tapped: Search; Island [c110] — last known: kind: CardLastKnownInformation
+  [precombat main] Mana added: Search; Island [c110] — amount: 1; last known: kind: CardLastKnownInformation; mana: BLUE
+  [precombat main] Search activates Island [c110] — ability: mana_blue; last known: kind: CardLastKnownInformation
+  [precombat main] Card tapped: Search; Island [c116] — last known: kind: CardLastKnownInformation
+  [precombat main] Mana added: Search; Island [c116] — amount: 1; last known: kind: CardLastKnownInformation; mana: BLUE
+  [precombat main] Search activates Island [c116] — ability: mana_blue; last known: kind: CardLastKnownInformation
+  [precombat main] Card tapped: Search; Island [c117] — last known: kind: CardLastKnownInformation
+  [precombat main] Mana added: Search; Island [c117] — amount: 1; last known: kind: CardLastKnownInformation; mana: BLUE
+  [precombat main] Search activates Island [c117] — ability: mana_blue; last known: kind: CardLastKnownInformation
+  [precombat main] Card tapped: Search; Island [c118] — last known: kind: CardLastKnownInformation
+  [precombat main] Mana added: Search; Island [c118] — amount: 1; last known: kind: CardLastKnownInformation; mana: BLUE
+  [precombat main] Search activates Island [c118] — ability: mana_blue; last known: kind: CardLastKnownInformation
+  [precombat main] Card tapped: Search; Island [c120] — last known: kind: CardLastKnownInformation
+  [precombat main] Mana added: Search; Island [c120] — amount: 1; last known: kind: CardLastKnownInformation; mana: BLUE
+  [precombat main] Search activates Island [c120] — ability: mana_blue; last known: kind: CardLastKnownInformation
+  [precombat main] Mana paid: Search; Windreader Sphinx [c83] — last known: kind: CardLastKnownInformation; payment: BLUE: 7
+  [precombat main] Card moved: Search; Windreader Sphinx [c83] — card: Windreader Sphinx [c83]; from: HAND; last known: kind: CardLastKnownInformation; previous controller: Search; to: STACK
+  [precombat main] Search casts Windreader Sphinx [c83] — ability: cast:Windreader Sphinx
+  [precombat main] Search decides PriorityDecisionRequest: 12.395 ms; observed options: 1; space size: 1; success
+  [precombat main] Simple decides PriorityDecisionRequest: 1.677 ms; observed options: 1; space size: 1; success
+  [precombat main] Card moved: Search; Windreader Sphinx [c83] — card: Windreader Sphinx [c83]; from: STACK; last known: kind: CardLastKnownInformation; previous controller: Search; to: BATTLEFIELD
+  [precombat main] Resolution: Search; Windreader Sphinx [c83]; cast:Windreader Sphinx; success: True
+  [precombat main] Search decides PriorityDecisionRequest: 717.443 ms; observed options: 20; space size: unknown; success
+  [precombat main] Card moved: Search; Island [c97] — card: Island [c97]; from: HAND; last known: kind: CardLastKnownInformation; previous controller: Search; to: BATTLEFIELD
+  [precombat main] Search plays land Island [c97] — lands played: 1; last known: kind: CardLastKnownInformation
+  [precombat main] Resolution: Search; Island [c97]; play_land; success: True
+  [precombat main] Search decides PriorityDecisionRequest: 11.464 ms; observed options: 1; space size: 1; success
+  [precombat main] Simple decides PriorityDecisionRequest: 2.105 ms; observed options: 1; space size: 1; success
+  [begin combat] Search decides PriorityDecisionRequest: 212.026 ms; observed options: 1; space size: 1; success
+  [begin combat] Simple decides PriorityDecisionRequest: 1.701 ms; observed options: 1; space size: 1; success
+  [declare attackers] Search decides DeclareAttackersRequest: 156.969 ms; observed options: 1; space size: 1; success
+  [declare attackers] Search decides PriorityDecisionRequest: 8.600 ms; observed options: 1; space size: 1; success
+  [declare attackers] Simple decides PriorityDecisionRequest: 1.224 ms; observed options: 1; space size: 1; success
+  [end combat] Search decides PriorityDecisionRequest: 174.376 ms; observed options: 1; space size: 1; success
+  [end combat] Simple decides PriorityDecisionRequest: 2.003 ms; observed options: 1; space size: 1; success
+  [postcombat main] Search decides PriorityDecisionRequest: 233.014 ms; observed options: 1; space size: 1; success
+  [postcombat main] Simple decides PriorityDecisionRequest: 1.798 ms; observed options: 1; space size: 1; success
+  [end step] Search decides PriorityDecisionRequest: 200.783 ms; observed options: 1; space size: 1; success
+  [end step] Simple decides PriorityDecisionRequest: 1.333 ms; observed options: 1; space size: 1; success
+
+Turn 21
+  [upkeep] Simple decides PriorityDecisionRequest: 1.135 ms; observed options: 1; space size: 1; success
+  [upkeep] Search decides PriorityDecisionRequest: 171.731 ms; observed options: 1; space size: 1; success
+  [draw] Card moved: Simple; Swamp [c54] — card: Swamp [c54]; from: DECK; last known: kind: CardLastKnownInformation; previous controller: Simple; to: HAND
+  [draw] Card drawn: Simple; Swamp [c54] — card: Swamp [c54]; last known: kind: CardLastKnownInformation
+  [draw] Resolution: -; -; -; success: True
+  [draw] Simple decides PriorityDecisionRequest: 1.277 ms; observed options: 1; space size: 1; success
+  [draw] Search decides PriorityDecisionRequest: 185.624 ms; observed options: 1; space size: 1; success
+  [precombat main] Simple chooses land: source: Swamp [c54]
+  [precombat main] Simple decides PriorityDecisionRequest: 0.506 ms; observed options: 2; space size: unknown; success
+  [precombat main] Card moved: Simple; Swamp [c54] — card: Swamp [c54]; from: HAND; last known: kind: CardLastKnownInformation; previous controller: Simple; to: BATTLEFIELD
+  [precombat main] Simple plays land Swamp [c54] — lands played: 1; last known: kind: CardLastKnownInformation
+  [precombat main] Resolution: Simple; Swamp [c54]; play_land; success: True
+  [precombat main] Simple chooses action: ability: cast:Bad Deal; source: Bad Deal [c34]; targets: none
+  [precombat main] Simple decides PriorityDecisionRequest: 2.830 ms; observed options: 2; space size: 2; success
+  [precombat main] Card tapped: Simple; Swamp [c42] — last known: kind: CardLastKnownInformation
+  [precombat main] Mana added: Simple; Swamp [c42] — amount: 1; last known: kind: CardLastKnownInformation; mana: BLACK
+  [precombat main] Simple activates Swamp [c42] — ability: mana_black; last known: kind: CardLastKnownInformation
+  [precombat main] Card tapped: Simple; Swamp [c44] — last known: kind: CardLastKnownInformation
+  [precombat main] Mana added: Simple; Swamp [c44] — amount: 1; last known: kind: CardLastKnownInformation; mana: BLACK
+  [precombat main] Simple activates Swamp [c44] — ability: mana_black; last known: kind: CardLastKnownInformation
+  [precombat main] Card tapped: Simple; Swamp [c49] — last known: kind: CardLastKnownInformation
+  [precombat main] Mana added: Simple; Swamp [c49] — amount: 1; last known: kind: CardLastKnownInformation; mana: BLACK
+  [precombat main] Simple activates Swamp [c49] — ability: mana_black; last known: kind: CardLastKnownInformation
+  [precombat main] Card tapped: Simple; Swamp [c54] — last known: kind: CardLastKnownInformation
+  [precombat main] Mana added: Simple; Swamp [c54] — amount: 1; last known: kind: CardLastKnownInformation; mana: BLACK
+  [precombat main] Simple activates Swamp [c54] — ability: mana_black; last known: kind: CardLastKnownInformation
+  [precombat main] Card tapped: Simple; Swamp [c55] — last known: kind: CardLastKnownInformation
+  [precombat main] Mana added: Simple; Swamp [c55] — amount: 1; last known: kind: CardLastKnownInformation; mana: BLACK
+  [precombat main] Simple activates Swamp [c55] — ability: mana_black; last known: kind: CardLastKnownInformation
+  [precombat main] Card tapped: Simple; Swamp [c60] — last known: kind: CardLastKnownInformation
+  [precombat main] Mana added: Simple; Swamp [c60] — amount: 1; last known: kind: CardLastKnownInformation; mana: BLACK
+  [precombat main] Simple activates Swamp [c60] — ability: mana_black; last known: kind: CardLastKnownInformation
+  [precombat main] Mana paid: Simple; Bad Deal [c34] — last known: kind: CardLastKnownInformation; payment: BLACK: 6
+  [precombat main] Card moved: Simple; Bad Deal [c34] — card: Bad Deal [c34]; from: HAND; last known: kind: CardLastKnownInformation; previous controller: Simple; to: STACK
+  [precombat main] Simple casts Bad Deal [c34] — ability: cast:Bad Deal
+  [precombat main] Simple decides PriorityDecisionRequest: 0.774 ms; observed options: 1; space size: 1; success
+  [precombat main] Search decides PriorityDecisionRequest: 170.819 ms; observed options: 1; space size: 1; success
+  [precombat main] Search decides AbilityResolutionRequest: 542.812 ms; observed options: 26; space size: unknown; success
+  [precombat main] Search decides ReplacementOrderRequest: 738.449 ms; observed options: 31; space size: unknown; success
+  [precombat main] Card moved: Simple; Skeleton Archer [c16] — card: Skeleton Archer [c16]; from: DECK; last known: kind: CardLastKnownInformation; previous controller: Simple; to: HAND
+  [precombat main] Card drawn: Simple; Skeleton Archer [c16] — card: Skeleton Archer [c16]; last known: kind: CardLastKnownInformation
+  [precombat main] Card moved: Simple; Murder [c32] — card: Murder [c32]; from: DECK; last known: kind: CardLastKnownInformation; previous controller: Simple; to: HAND
+  [precombat main] Card drawn: Simple; Murder [c32] — card: Murder [c32]; last known: kind: CardLastKnownInformation
+  [precombat main] Card moved: Search; Waterknot [c94] — card: Waterknot [c94]; from: HAND; last known: kind: CardLastKnownInformation; previous controller: Search; to: GRAVEYARD
+  [precombat main] Card moved: Search; Windstorm Drake [c79] — card: Windstorm Drake [c79]; from: HAND; last known: kind: CardLastKnownInformation; previous controller: Search; to: GRAVEYARD
+  [precombat main] Life lost: Simple; Bad Deal [c34] — amount: 2; last known: kind: CardLastKnownInformation; target object: Simple
+  [precombat main] Life lost: Simple; Bad Deal [c34] — amount: 2; last known: kind: CardLastKnownInformation; target object: Search
+  [precombat main] Card moved: Simple; Bad Deal [c34] — card: Bad Deal [c34]; from: STACK; last known: kind: CardLastKnownInformation; previous controller: Simple; to: GRAVEYARD
+  [precombat main] Resolution: Simple; Bad Deal [c34]; cast:Bad Deal; success: True
+  [precombat main] Simple decides PriorityDecisionRequest: 1.836 ms; observed options: 1; space size: 1; success
+  [precombat main] Search decides PriorityDecisionRequest: 10.518 ms; observed options: 1; space size: 1; success
+  [begin combat] Simple decides PriorityDecisionRequest: 1.002 ms; observed options: 1; space size: 1; success
+  [begin combat] Search decides PriorityDecisionRequest: 184.637 ms; observed options: 1; space size: 1; success
+  [declare attackers] Simple chooses attack: attackers: none
+  [declare attackers] Simple decides DeclareAttackersRequest: 0.135 ms; observed options: 1; space size: unknown; success
+  [declare attackers] Simple decides PriorityDecisionRequest: 0.997 ms; observed options: 1; space size: 1; success
+  [declare attackers] Search decides PriorityDecisionRequest: 196.019 ms; observed options: 1; space size: 1; success
+  [end combat] Simple decides PriorityDecisionRequest: 0.967 ms; observed options: 1; space size: 1; success
+  [end combat] Search decides PriorityDecisionRequest: 174.144 ms; observed options: 1; space size: 1; success
+  [postcombat main] Simple decides PriorityDecisionRequest: 1.640 ms; observed options: 1; space size: 1; success
+  [postcombat main] Search decides PriorityDecisionRequest: 173.616 ms; observed options: 1; space size: 1; success
+  [end step] Simple decides PriorityDecisionRequest: 1.092 ms; observed options: 1; space size: 1; success
+  [end step] Search decides PriorityDecisionRequest: 199.502 ms; observed options: 1; space size: 1; success
+
+Turn 22
+  [upkeep] Search decides PriorityDecisionRequest: 170.845 ms; observed options: 1; space size: 1; success
+  [upkeep] Simple decides PriorityDecisionRequest: 1.139 ms; observed options: 1; space size: 1; success
+  [draw] Card moved: Search; Island [c109] — card: Island [c109]; from: DECK; last known: kind: CardLastKnownInformation; previous controller: Search; to: HAND
+  [draw] Card drawn: Search; Island [c109] — card: Island [c109]; last known: kind: CardLastKnownInformation
+  [draw] Resolution: -; -; -; success: True
+  [draw] Search decides PriorityDecisionRequest: 196.037 ms; observed options: 1; space size: 1; success
+  [draw] Simple decides PriorityDecisionRequest: 1.170 ms; observed options: 1; space size: 1; success
+  [precombat main] Search decides PriorityDecisionRequest: 714.866 ms; observed options: 24; space size: unknown; success
+  [precombat main] Card moved: Search; Island [c109] — card: Island [c109]; from: HAND; last known: kind: CardLastKnownInformation; previous controller: Search; to: BATTLEFIELD
+  [precombat main] Search plays land Island [c109] — lands played: 1; last known: kind: CardLastKnownInformation
+  [precombat main] Resolution: Search; Island [c109]; play_land; success: True
+  [precombat main] Search decides PriorityDecisionRequest: 686.229 ms; observed options: 18; space size: unknown; success
+  [precombat main] Card tapped: Search; Island [c97] — last known: kind: CardLastKnownInformation
+  [precombat main] Mana added: Search; Island [c97] — amount: 1; last known: kind: CardLastKnownInformation; mana: BLUE
+  [precombat main] Search activates Island [c97] — ability: mana_blue; last known: kind: CardLastKnownInformation
+  [precombat main] Card tapped: Search; Island [c100] — last known: kind: CardLastKnownInformation
+  [precombat main] Mana added: Search; Island [c100] — amount: 1; last known: kind: CardLastKnownInformation; mana: BLUE
+  [precombat main] Search activates Island [c100] — ability: mana_blue; last known: kind: CardLastKnownInformation
+  [precombat main] Mana paid: Search; Sworn Guardian [c64] — last known: kind: CardLastKnownInformation; payment: BLUE: 2
+  [precombat main] Card moved: Search; Sworn Guardian [c64] — card: Sworn Guardian [c64]; from: HAND; last known: kind: CardLastKnownInformation; previous controller: Search; to: STACK
+  [precombat main] Search casts Sworn Guardian [c64] — ability: cast:Sworn Guardian
+  [precombat main] Search decides PriorityDecisionRequest: 9.599 ms; observed options: 1; space size: 1; success
+  [precombat main] Simple decides PriorityDecisionRequest: 1.401 ms; observed options: 1; space size: 1; success
+  [precombat main] Card moved: Search; Sworn Guardian [c64] — card: Sworn Guardian [c64]; from: STACK; last known: kind: CardLastKnownInformation; previous controller: Search; to: BATTLEFIELD
+  [precombat main] Resolution: Search; Sworn Guardian [c64]; cast:Sworn Guardian; success: True
+  [precombat main] Search decides PriorityDecisionRequest: 9.764 ms; observed options: 1; space size: 1; success
+  [precombat main] Simple decides PriorityDecisionRequest: 1.183 ms; observed options: 1; space size: 1; success
+  [begin combat] Search decides PriorityDecisionRequest: 231.681 ms; observed options: 1; space size: 1; success
+  [begin combat] Simple decides PriorityDecisionRequest: 1.082 ms; observed options: 1; space size: 1; success
+  [declare attackers] Search decides DeclareAttackersRequest: 897.394 ms; observed options: 31; space size: unknown; success
+  [declare attackers] Card tapped: Search; Windreader Sphinx [c83]
+  [declare attackers] Search attacks with Windreader Sphinx [c83] — attacker: Windreader Sphinx [c83]; defender: Simple
+  [declare attackers] Attackers declared: Search; - — attackers: Windreader Sphinx [c83]
+  [declare attackers] Trigger detected: Search; Windreader Sphinx [c83]; windreader_attack
+  [declare attackers] Search decides TriggerOrderRequest: 10.131 ms; observed options: 1; space size: 1; success
+  [declare attackers] Search decides AbilityDecisionRequest: 9.932 ms; observed options: 1; space size: 1; success
+  [declare attackers] Search decides PriorityDecisionRequest: 9.292 ms; observed options: 1; space size: 1; success
+  [declare attackers] Simple decides PriorityDecisionRequest: 1.150 ms; observed options: 1; space size: 1; success
+  [declare attackers] Search decides OptionalEffectRequest: 620.430 ms; observed options: 35; space size: unknown; success
+  [declare attackers] Card moved: Search; Island [c101] — card: Island [c101]; from: DECK; last known: kind: CardLastKnownInformation; previous controller: Search; to: HAND
+  [declare attackers] Card drawn: Search; Island [c101] — card: Island [c101]; last known: kind: CardLastKnownInformation
+  [declare attackers] Resolution: Search; Windreader Sphinx [c83]; windreader_attack; success: True
+  [declare attackers] Search decides PriorityDecisionRequest: 9.980 ms; observed options: 1; space size: 1; success
+  [declare attackers] Simple decides PriorityDecisionRequest: 1.177 ms; observed options: 1; space size: 1; success
+  [declare blockers] Simple chooses block: blockers: none
+  [declare blockers] Simple decides DeclareBlockersRequest: 0.187 ms; observed options: 1; space size: unknown; success
+  [declare blockers] Search decides PriorityDecisionRequest: 181.110 ms; observed options: 1; space size: 1; success
+  [declare blockers] Simple decides PriorityDecisionRequest: 1.078 ms; observed options: 1; space size: 1; success
+  [second combat damage] Damage dealt: Search; Windreader Sphinx [c83] — amount: 3; combat: True; last known: kind: CardLastKnownInformation; life loss: 3; source revision: 3; target: Simple; target object: Simple; target revision: -
+  [second combat damage] Search decides PriorityDecisionRequest: 209.838 ms; observed options: 1; space size: 1; success
+  [second combat damage] Simple decides PriorityDecisionRequest: 1.107 ms; observed options: 1; space size: 1; success
+  [end combat] Search decides PriorityDecisionRequest: 214.454 ms; observed options: 1; space size: 1; success
+  [end combat] Simple decides PriorityDecisionRequest: 1.077 ms; observed options: 1; space size: 1; success
+  [postcombat main] Search decides PriorityDecisionRequest: 192.993 ms; observed options: 1; space size: 1; success
+  [postcombat main] Simple decides PriorityDecisionRequest: 1.106 ms; observed options: 1; space size: 1; success
+  [end step] Search decides PriorityDecisionRequest: 211.302 ms; observed options: 1; space size: 1; success
+  [end step] Simple decides PriorityDecisionRequest: 1.095 ms; observed options: 1; space size: 1; success
+
+Turn 23
+  [upkeep] Simple chooses action: ability: cast:Cruel Cut; source: Cruel Cut [c27]; targets: Sworn Guardian [c64]
+  [upkeep] Simple decides PriorityDecisionRequest: 2.686 ms; observed options: 4; space size: 4; success
+  [upkeep] Card tapped: Simple; Swamp [c42] — last known: kind: CardLastKnownInformation
+  [upkeep] Mana added: Simple; Swamp [c42] — amount: 1; last known: kind: CardLastKnownInformation; mana: BLACK
+  [upkeep] Simple activates Swamp [c42] — ability: mana_black; last known: kind: CardLastKnownInformation
+  [upkeep] Card tapped: Simple; Swamp [c44] — last known: kind: CardLastKnownInformation
+  [upkeep] Mana added: Simple; Swamp [c44] — amount: 1; last known: kind: CardLastKnownInformation; mana: BLACK
+  [upkeep] Simple activates Swamp [c44] — ability: mana_black; last known: kind: CardLastKnownInformation
+  [upkeep] Mana paid: Simple; Cruel Cut [c27] — last known: kind: CardLastKnownInformation; payment: BLACK: 2
+  [upkeep] Card moved: Simple; Cruel Cut [c27] — card: Cruel Cut [c27]; from: HAND; last known: kind: CardLastKnownInformation; previous controller: Simple; to: STACK
+  [upkeep] Simple casts Cruel Cut [c27] — ability: cast:Cruel Cut
+  [upkeep] Simple chooses action: ability: cast:Murder; source: Murder [c32]; targets: Sworn Guardian [c64]
+  [upkeep] Simple decides PriorityDecisionRequest: 1.677 ms; observed options: 3; space size: 3; success
+  [upkeep] Card tapped: Simple; Swamp [c49] — last known: kind: CardLastKnownInformation
+  [upkeep] Mana added: Simple; Swamp [c49] — amount: 1; last known: kind: CardLastKnownInformation; mana: BLACK
+  [upkeep] Simple activates Swamp [c49] — ability: mana_black; last known: kind: CardLastKnownInformation
+  [upkeep] Card tapped: Simple; Swamp [c54] — last known: kind: CardLastKnownInformation
+  [upkeep] Mana added: Simple; Swamp [c54] — amount: 1; last known: kind: CardLastKnownInformation; mana: BLACK
+  [upkeep] Simple activates Swamp [c54] — ability: mana_black; last known: kind: CardLastKnownInformation
+  [upkeep] Card tapped: Simple; Swamp [c55] — last known: kind: CardLastKnownInformation
+  [upkeep] Mana added: Simple; Swamp [c55] — amount: 1; last known: kind: CardLastKnownInformation; mana: BLACK
+  [upkeep] Simple activates Swamp [c55] — ability: mana_black; last known: kind: CardLastKnownInformation
+  [upkeep] Mana paid: Simple; Murder [c32] — last known: kind: CardLastKnownInformation; payment: BLACK: 3
+  [upkeep] Card moved: Simple; Murder [c32] — card: Murder [c32]; from: HAND; last known: kind: CardLastKnownInformation; previous controller: Simple; to: STACK
+  [upkeep] Simple casts Murder [c32] — ability: cast:Murder
+  [upkeep] Simple decides PriorityDecisionRequest: 0.123 ms; observed options: 0; space size: unknown; success
+  [upkeep] Search decides PriorityDecisionRequest: 197.114 ms; observed options: 1; space size: 1; success
+  [upkeep] Card moved: Search; Sworn Guardian [c64] — card: Sworn Guardian [c64]; from: BATTLEFIELD; last known: kind: CardLastKnownInformation; previous controller: Search; to: GRAVEYARD
+  [upkeep] Card moved: Simple; Murder [c32] — card: Murder [c32]; from: STACK; last known: kind: CardLastKnownInformation; previous controller: Simple; to: GRAVEYARD
+  [upkeep] Resolution: Simple; Murder [c32]; cast:Murder; success: True
+  [upkeep] Simple decides PriorityDecisionRequest: 0.117 ms; observed options: 0; space size: unknown; success
+  [upkeep] Search decides PriorityDecisionRequest: 37.490 ms; observed options: 1; space size: 1; success
+  [upkeep] Card moved: Simple; Cruel Cut [c27] — card: Cruel Cut [c27]; from: STACK; last known: kind: CardLastKnownInformation; previous controller: Simple; to: GRAVEYARD
+  [upkeep] Resolution: Simple; Cruel Cut [c27]; cast:Cruel Cut; success: False
+  [upkeep] Simple decides PriorityDecisionRequest: 0.148 ms; observed options: 0; space size: unknown; success
+  [upkeep] Search decides PriorityDecisionRequest: 9.939 ms; observed options: 1; space size: 1; success
+  [draw] Card moved: Simple; Swamp [c41] — card: Swamp [c41]; from: DECK; last known: kind: CardLastKnownInformation; previous controller: Simple; to: HAND
+  [draw] Card drawn: Simple; Swamp [c41] — card: Swamp [c41]; last known: kind: CardLastKnownInformation
+  [draw] Resolution: -; -; -; success: True
+  [draw] Simple decides PriorityDecisionRequest: 0.117 ms; observed options: 0; space size: unknown; success
+  [draw] Search decides PriorityDecisionRequest: 190.871 ms; observed options: 1; space size: 1; success
+  [precombat main] Simple chooses land: source: Swamp [c41]
+  [precombat main] Simple decides PriorityDecisionRequest: 0.415 ms; observed options: 2; space size: unknown; success
+  [precombat main] Card moved: Simple; Swamp [c41] — card: Swamp [c41]; from: HAND; last known: kind: CardLastKnownInformation; previous controller: Simple; to: BATTLEFIELD
+  [precombat main] Simple plays land Swamp [c41] — lands played: 1; last known: kind: CardLastKnownInformation
+  [precombat main] Resolution: Simple; Swamp [c41]; play_land; success: True
+  [precombat main] Simple decides PriorityDecisionRequest: 1.226 ms; observed options: 1; space size: 1; success
+  [precombat main] Search decides PriorityDecisionRequest: 218.116 ms; observed options: 1; space size: 1; success
+  [begin combat] Simple decides PriorityDecisionRequest: 0.126 ms; observed options: 0; space size: unknown; success
+  [begin combat] Search decides PriorityDecisionRequest: 194.545 ms; observed options: 1; space size: 1; success
+  [declare attackers] Simple chooses attack: attackers: none
+  [declare attackers] Simple decides DeclareAttackersRequest: 0.124 ms; observed options: 1; space size: unknown; success
+  [declare attackers] Simple decides PriorityDecisionRequest: 0.111 ms; observed options: 0; space size: unknown; success
+  [declare attackers] Search decides PriorityDecisionRequest: 227.485 ms; observed options: 1; space size: 1; success
+  [end combat] Simple decides PriorityDecisionRequest: 0.130 ms; observed options: 0; space size: unknown; success
+  [end combat] Search decides PriorityDecisionRequest: 235.592 ms; observed options: 1; space size: 1; success
+  [postcombat main] Simple decides PriorityDecisionRequest: 1.016 ms; observed options: 1; space size: 1; success
+  [postcombat main] Search decides PriorityDecisionRequest: 200.501 ms; observed options: 1; space size: 1; success
+  [end step] Simple decides PriorityDecisionRequest: 0.120 ms; observed options: 0; space size: unknown; success
+  [end step] Search decides PriorityDecisionRequest: 227.572 ms; observed options: 1; space size: 1; success
+
+Turn 24
+  [upkeep] Search decides PriorityDecisionRequest: 220.935 ms; observed options: 1; space size: 1; success
+  [upkeep] Simple decides PriorityDecisionRequest: 0.159 ms; observed options: 0; space size: unknown; success
+  [draw] Card moved: Search; Glint [c87] — card: Glint [c87]; from: DECK; last known: kind: CardLastKnownInformation; previous controller: Search; to: HAND
+  [draw] Card drawn: Search; Glint [c87] — card: Glint [c87]; last known: kind: CardLastKnownInformation
+  [draw] Resolution: -; -; -; success: True
+  [draw] Search decides PriorityDecisionRequest: 720.271 ms; observed options: 21; space size: unknown; success
+  [draw] Simple decides PriorityDecisionRequest: 0.151 ms; observed options: 0; space size: unknown; success
+  [precombat main] Search decides PriorityDecisionRequest: 744.925 ms; observed options: 27; space size: unknown; success
+  [precombat main] Card moved: Search; Island [c101] — card: Island [c101]; from: HAND; last known: kind: CardLastKnownInformation; previous controller: Search; to: BATTLEFIELD
+  [precombat main] Search plays land Island [c101] — lands played: 1; last known: kind: CardLastKnownInformation
+  [precombat main] Resolution: Search; Island [c101]; play_land; success: True
+  [precombat main] Search decides PriorityDecisionRequest: 802.080 ms; observed options: 31; space size: unknown; success
+  [precombat main] Simple decides PriorityDecisionRequest: 0.155 ms; observed options: 0; space size: unknown; success
+  [begin combat] Search decides PriorityDecisionRequest: 787.912 ms; observed options: 28; space size: unknown; success
+  [begin combat] Simple decides PriorityDecisionRequest: 0.187 ms; observed options: 0; space size: unknown; success
+  [declare attackers] Search decides DeclareAttackersRequest: 772.362 ms; observed options: 28; space size: unknown; success
+  [declare attackers] Card tapped: Search; Windreader Sphinx [c83]
+  [declare attackers] Search attacks with Windreader Sphinx [c83] — attacker: Windreader Sphinx [c83]; defender: Simple
+  [declare attackers] Attackers declared: Search; - — attackers: Windreader Sphinx [c83]
+  [declare attackers] Trigger detected: Search; Windreader Sphinx [c83]; windreader_attack
+  [declare attackers] Search decides TriggerOrderRequest: 10.828 ms; observed options: 1; space size: 1; success
+  [declare attackers] Search decides AbilityDecisionRequest: 10.173 ms; observed options: 1; space size: 1; success
+  [declare attackers] Search decides PriorityDecisionRequest: 797.076 ms; observed options: 23; space size: unknown; success
+  [declare attackers] Simple decides PriorityDecisionRequest: 0.153 ms; observed options: 0; space size: unknown; success
+  [declare attackers] Search decides OptionalEffectRequest: 512.093 ms; observed options: 27; space size: unknown; success
+  [declare attackers] Card moved: Search; Warden of Evos Isle [c71] — card: Warden of Evos Isle [c71]; from: DECK; last known: kind: CardLastKnownInformation; previous controller: Search; to: HAND
+  [declare attackers] Card drawn: Search; Warden of Evos Isle [c71] — card: Warden of Evos Isle [c71]; last known: kind: CardLastKnownInformation
+  [declare attackers] Resolution: Search; Windreader Sphinx [c83]; windreader_attack; success: True
+  [declare attackers] Search decides PriorityDecisionRequest: 769.457 ms; observed options: 21; space size: unknown; success
+  [declare attackers] Simple decides PriorityDecisionRequest: 0.274 ms; observed options: 0; space size: unknown; success
+  [declare blockers] Simple chooses block: blockers: none
+  [declare blockers] Simple decides DeclareBlockersRequest: 0.194 ms; observed options: 1; space size: unknown; success
+  [declare blockers] Search decides PriorityDecisionRequest: 769.042 ms; observed options: 22; space size: unknown; success
+  [declare blockers] Simple decides PriorityDecisionRequest: 0.152 ms; observed options: 0; space size: unknown; success
+  [second combat damage] Damage dealt: Search; Windreader Sphinx [c83] — amount: 3; combat: True; last known: kind: CardLastKnownInformation; life loss: 3; source revision: 3; target: Simple; target object: Simple; target revision: -
+  [second combat damage] Search decides PriorityDecisionRequest: 772.125 ms; observed options: 24; space size: unknown; success
+  [second combat damage] Simple decides PriorityDecisionRequest: 0.147 ms; observed options: 0; space size: unknown; success
+  [end combat] Search decides PriorityDecisionRequest: 753.622 ms; observed options: 18; space size: unknown; success
+  [end combat] Simple decides PriorityDecisionRequest: 0.195 ms; observed options: 0; space size: unknown; success
+  [postcombat main] Search decides PriorityDecisionRequest: 849.442 ms; observed options: 24; space size: unknown; success
+  [postcombat main] Card tapped: Search; Island [c97] — last known: kind: CardLastKnownInformation
+  [postcombat main] Mana added: Search; Island [c97] — amount: 1; last known: kind: CardLastKnownInformation; mana: BLUE
+  [postcombat main] Search activates Island [c97] — ability: mana_blue; last known: kind: CardLastKnownInformation
+  [postcombat main] Card tapped: Search; Island [c100] — last known: kind: CardLastKnownInformation
+  [postcombat main] Mana added: Search; Island [c100] — amount: 1; last known: kind: CardLastKnownInformation; mana: BLUE
+  [postcombat main] Search activates Island [c100] — ability: mana_blue; last known: kind: CardLastKnownInformation
+  [postcombat main] Card tapped: Search; Island [c101] — last known: kind: CardLastKnownInformation
+  [postcombat main] Mana added: Search; Island [c101] — amount: 1; last known: kind: CardLastKnownInformation; mana: BLUE
+  [postcombat main] Search activates Island [c101] — ability: mana_blue; last known: kind: CardLastKnownInformation
+  [postcombat main] Mana paid: Search; Warden of Evos Isle [c71] — last known: kind: CardLastKnownInformation; payment: BLUE: 3
+  [postcombat main] Card moved: Search; Warden of Evos Isle [c71] — card: Warden of Evos Isle [c71]; from: HAND; last known: kind: CardLastKnownInformation; previous controller: Search; to: STACK
+  [postcombat main] Search casts Warden of Evos Isle [c71] — ability: cast:Warden of Evos Isle
+  [postcombat main] Search decides PriorityDecisionRequest: 907.209 ms; observed options: 33; space size: unknown; success
+  [postcombat main] Simple decides PriorityDecisionRequest: 0.162 ms; observed options: 0; space size: unknown; success
+  [postcombat main] Card moved: Search; Warden of Evos Isle [c71] — card: Warden of Evos Isle [c71]; from: STACK; last known: kind: CardLastKnownInformation; previous controller: Search; to: BATTLEFIELD
+  [postcombat main] Resolution: Search; Warden of Evos Isle [c71]; cast:Warden of Evos Isle; success: True
+  [postcombat main] Search decides PriorityDecisionRequest: 784.754 ms; observed options: 26; space size: unknown; success
+  [postcombat main] Simple decides PriorityDecisionRequest: 0.176 ms; observed options: 0; space size: unknown; success
+  [end step] Search decides PriorityDecisionRequest: 786.488 ms; observed options: 24; space size: unknown; success
+  [end step] Simple decides PriorityDecisionRequest: 0.139 ms; observed options: 0; space size: unknown; success
+
+Turn 25
+  [upkeep] Simple decides PriorityDecisionRequest: 0.120 ms; observed options: 0; space size: unknown; success
+  [upkeep] Search decides PriorityDecisionRequest: 766.941 ms; observed options: 37; space size: unknown; success
+  [draw] Card moved: Simple; Swamp [c40] — card: Swamp [c40]; from: DECK; last known: kind: CardLastKnownInformation; previous controller: Simple; to: HAND
+  [draw] Card drawn: Simple; Swamp [c40] — card: Swamp [c40]; last known: kind: CardLastKnownInformation
+  [draw] Resolution: -; -; -; success: True
+  [draw] Simple decides PriorityDecisionRequest: 0.124 ms; observed options: 0; space size: unknown; success
+  [draw] Search decides PriorityDecisionRequest: 804.707 ms; observed options: 30; space size: unknown; success
+  [precombat main] Simple chooses land: source: Swamp [c40]
+  [precombat main] Simple decides PriorityDecisionRequest: 0.416 ms; observed options: 2; space size: unknown; success
+  [precombat main] Card moved: Simple; Swamp [c40] — card: Swamp [c40]; from: HAND; last known: kind: CardLastKnownInformation; previous controller: Simple; to: BATTLEFIELD
+  [precombat main] Simple plays land Swamp [c40] — lands played: 1; last known: kind: CardLastKnownInformation
+  [precombat main] Resolution: Simple; Swamp [c40]; play_land; success: True
+  [precombat main] Simple chooses action: ability: cast:Demon of Loathing; source: Demon of Loathing [c21]; targets: none
+  [precombat main] Simple decides PriorityDecisionRequest: 3.065 ms; observed options: 3; space size: 3; success
+  [precombat main] Card tapped: Simple; Swamp [c40] — last known: kind: CardLastKnownInformation
+  [precombat main] Mana added: Simple; Swamp [c40] — amount: 1; last known: kind: CardLastKnownInformation; mana: BLACK
+  [precombat main] Simple activates Swamp [c40] — ability: mana_black; last known: kind: CardLastKnownInformation
+  [precombat main] Card tapped: Simple; Swamp [c41] — last known: kind: CardLastKnownInformation
+  [precombat main] Mana added: Simple; Swamp [c41] — amount: 1; last known: kind: CardLastKnownInformation; mana: BLACK
+  [precombat main] Simple activates Swamp [c41] — ability: mana_black; last known: kind: CardLastKnownInformation
+  [precombat main] Card tapped: Simple; Swamp [c42] — last known: kind: CardLastKnownInformation
+  [precombat main] Mana added: Simple; Swamp [c42] — amount: 1; last known: kind: CardLastKnownInformation; mana: BLACK
+  [precombat main] Simple activates Swamp [c42] — ability: mana_black; last known: kind: CardLastKnownInformation
+  [precombat main] Card tapped: Simple; Swamp [c44] — last known: kind: CardLastKnownInformation
+  [precombat main] Mana added: Simple; Swamp [c44] — amount: 1; last known: kind: CardLastKnownInformation; mana: BLACK
+  [precombat main] Simple activates Swamp [c44] — ability: mana_black; last known: kind: CardLastKnownInformation
+  [precombat main] Card tapped: Simple; Swamp [c49] — last known: kind: CardLastKnownInformation
+  [precombat main] Mana added: Simple; Swamp [c49] — amount: 1; last known: kind: CardLastKnownInformation; mana: BLACK
+  [precombat main] Simple activates Swamp [c49] — ability: mana_black; last known: kind: CardLastKnownInformation
+  [precombat main] Card tapped: Simple; Swamp [c54] — last known: kind: CardLastKnownInformation
+  [precombat main] Mana added: Simple; Swamp [c54] — amount: 1; last known: kind: CardLastKnownInformation; mana: BLACK
+  [precombat main] Simple activates Swamp [c54] — ability: mana_black; last known: kind: CardLastKnownInformation
+  [precombat main] Card tapped: Simple; Swamp [c55] — last known: kind: CardLastKnownInformation
+  [precombat main] Mana added: Simple; Swamp [c55] — amount: 1; last known: kind: CardLastKnownInformation; mana: BLACK
+  [precombat main] Simple activates Swamp [c55] — ability: mana_black; last known: kind: CardLastKnownInformation
+  [precombat main] Mana paid: Simple; Demon of Loathing [c21] — last known: kind: CardLastKnownInformation; payment: BLACK: 7
+  [precombat main] Card moved: Simple; Demon of Loathing [c21] — card: Demon of Loathing [c21]; from: HAND; last known: kind: CardLastKnownInformation; previous controller: Simple; to: STACK
+  [precombat main] Simple casts Demon of Loathing [c21] — ability: cast:Demon of Loathing
+  [precombat main] Simple decides PriorityDecisionRequest: 0.108 ms; observed options: 0; space size: unknown; success
+  [precombat main] Search decides PriorityDecisionRequest: 763.140 ms; observed options: 30; space size: unknown; success
+  [precombat main] Card moved: Simple; Demon of Loathing [c21] — card: Demon of Loathing [c21]; from: STACK; last known: kind: CardLastKnownInformation; previous controller: Simple; to: BATTLEFIELD
+  [precombat main] Resolution: Simple; Demon of Loathing [c21]; cast:Demon of Loathing; success: True
+  [precombat main] Simple decides PriorityDecisionRequest: 0.895 ms; observed options: 1; space size: 1; success
+  [precombat main] Search decides PriorityDecisionRequest: 799.293 ms; observed options: 22; space size: unknown; success
+  [begin combat] Simple decides PriorityDecisionRequest: 0.102 ms; observed options: 0; space size: unknown; success
+  [begin combat] Search decides PriorityDecisionRequest: 807.405 ms; observed options: 26; space size: unknown; success
+  [declare attackers] Simple chooses attack: attackers: none
+  [declare attackers] Simple decides DeclareAttackersRequest: 0.141 ms; observed options: 1; space size: unknown; success
+  [declare attackers] Simple decides PriorityDecisionRequest: 0.100 ms; observed options: 0; space size: unknown; success
+  [declare attackers] Search decides PriorityDecisionRequest: 829.736 ms; observed options: 23; space size: unknown; success
+  [end combat] Simple decides PriorityDecisionRequest: 0.109 ms; observed options: 0; space size: unknown; success
+  [end combat] Search decides PriorityDecisionRequest: 806.782 ms; observed options: 27; space size: unknown; success
+  [postcombat main] Simple decides PriorityDecisionRequest: 0.741 ms; observed options: 1; space size: 1; success
+  [postcombat main] Search decides PriorityDecisionRequest: 800.147 ms; observed options: 24; space size: unknown; success
+  [end step] Simple decides PriorityDecisionRequest: 0.110 ms; observed options: 0; space size: unknown; success
+  [end step] Search decides PriorityDecisionRequest: 807.341 ms; observed options: 24; space size: unknown; success
+
+Turn 26
+  [upkeep] Search decides PriorityDecisionRequest: 813.183 ms; observed options: 25; space size: unknown; success
+  [upkeep] Simple decides PriorityDecisionRequest: 0.144 ms; observed options: 0; space size: unknown; success
+  [draw] Card moved: Search; Island [c111] — card: Island [c111]; from: DECK; last known: kind: CardLastKnownInformation; previous controller: Search; to: HAND
+  [draw] Card drawn: Search; Island [c111] — card: Island [c111]; last known: kind: CardLastKnownInformation
+  [draw] Resolution: -; -; -; success: True
+  [draw] Search decides PriorityDecisionRequest: 853.070 ms; observed options: 25; space size: unknown; success
+  [draw] Simple decides PriorityDecisionRequest: 0.140 ms; observed options: 0; space size: unknown; success
+  [precombat main] Search decides PriorityDecisionRequest: 827.619 ms; observed options: 26; space size: unknown; success
+  [precombat main] Card moved: Search; Island [c111] — card: Island [c111]; from: HAND; last known: kind: CardLastKnownInformation; previous controller: Search; to: BATTLEFIELD
+  [precombat main] Search plays land Island [c111] — lands played: 1; last known: kind: CardLastKnownInformation
+  [precombat main] Resolution: Search; Island [c111]; play_land; success: True
+  [precombat main] Search decides PriorityDecisionRequest: 778.105 ms; observed options: 28; space size: unknown; success
+  [precombat main] Simple decides PriorityDecisionRequest: 0.129 ms; observed options: 0; space size: unknown; success
+  [begin combat] Search decides PriorityDecisionRequest: 779.803 ms; observed options: 26; space size: unknown; success
+  [begin combat] Simple decides PriorityDecisionRequest: 0.156 ms; observed options: 0; space size: unknown; success
+  [declare attackers] Search decides DeclareAttackersRequest: 787.695 ms; observed options: 35; space size: unknown; success
+  [declare attackers] Search decides PriorityDecisionRequest: 847.523 ms; observed options: 27; space size: unknown; success
+  [declare attackers] Simple decides PriorityDecisionRequest: 0.133 ms; observed options: 0; space size: unknown; success
+  [end combat] Search decides PriorityDecisionRequest: 838.546 ms; observed options: 27; space size: unknown; success
+  [end combat] Simple decides PriorityDecisionRequest: 0.169 ms; observed options: 0; space size: unknown; success
+  [postcombat main] Search decides PriorityDecisionRequest: 794.699 ms; observed options: 23; space size: unknown; success
+  [postcombat main] Simple decides PriorityDecisionRequest: 0.134 ms; observed options: 0; space size: unknown; success
+  [end step] Search decides PriorityDecisionRequest: 877.801 ms; observed options: 29; space size: unknown; success
+  [end step] Simple decides PriorityDecisionRequest: 0.186 ms; observed options: 0; space size: unknown; success
+
+Turn 27
+  [upkeep] Simple decides PriorityDecisionRequest: 0.103 ms; observed options: 0; space size: unknown; success
+  [upkeep] Search decides PriorityDecisionRequest: 932.824 ms; observed options: 29; space size: unknown; success
+  [draw] Card moved: Simple; Swamp [c46] — card: Swamp [c46]; from: DECK; last known: kind: CardLastKnownInformation; previous controller: Simple; to: HAND
+  [draw] Card drawn: Simple; Swamp [c46] — card: Swamp [c46]; last known: kind: CardLastKnownInformation
+  [draw] Resolution: -; -; -; success: True
+  [draw] Simple decides PriorityDecisionRequest: 0.103 ms; observed options: 0; space size: unknown; success
+  [draw] Search decides PriorityDecisionRequest: 879.240 ms; observed options: 25; space size: unknown; success
+  [precombat main] Simple chooses land: source: Swamp [c46]
+  [precombat main] Simple decides PriorityDecisionRequest: 0.482 ms; observed options: 2; space size: unknown; success
+  [precombat main] Card moved: Simple; Swamp [c46] — card: Swamp [c46]; from: HAND; last known: kind: CardLastKnownInformation; previous controller: Simple; to: BATTLEFIELD
+  [precombat main] Simple plays land Swamp [c46] — lands played: 1; last known: kind: CardLastKnownInformation
+  [precombat main] Resolution: Simple; Swamp [c46]; play_land; success: True
+  [precombat main] Simple chooses action: ability: cast:Skeleton Archer; source: Skeleton Archer [c16]; targets: none
+  [precombat main] Simple decides PriorityDecisionRequest: 2.886 ms; observed options: 2; space size: 2; success
+  [precombat main] Card tapped: Simple; Swamp [c40] — last known: kind: CardLastKnownInformation
+  [precombat main] Mana added: Simple; Swamp [c40] — amount: 1; last known: kind: CardLastKnownInformation; mana: BLACK
+  [precombat main] Simple activates Swamp [c40] — ability: mana_black; last known: kind: CardLastKnownInformation
+  [precombat main] Card tapped: Simple; Swamp [c41] — last known: kind: CardLastKnownInformation
+  [precombat main] Mana added: Simple; Swamp [c41] — amount: 1; last known: kind: CardLastKnownInformation; mana: BLACK
+  [precombat main] Simple activates Swamp [c41] — ability: mana_black; last known: kind: CardLastKnownInformation
+  [precombat main] Card tapped: Simple; Swamp [c42] — last known: kind: CardLastKnownInformation
+  [precombat main] Mana added: Simple; Swamp [c42] — amount: 1; last known: kind: CardLastKnownInformation; mana: BLACK
+  [precombat main] Simple activates Swamp [c42] — ability: mana_black; last known: kind: CardLastKnownInformation
+  [precombat main] Card tapped: Simple; Swamp [c44] — last known: kind: CardLastKnownInformation
+  [precombat main] Mana added: Simple; Swamp [c44] — amount: 1; last known: kind: CardLastKnownInformation; mana: BLACK
+  [precombat main] Simple activates Swamp [c44] — ability: mana_black; last known: kind: CardLastKnownInformation
+  [precombat main] Mana paid: Simple; Skeleton Archer [c16] — last known: kind: CardLastKnownInformation; payment: BLACK: 4
+  [precombat main] Card moved: Simple; Skeleton Archer [c16] — card: Skeleton Archer [c16]; from: HAND; last known: kind: CardLastKnownInformation; previous controller: Simple; to: STACK
+  [precombat main] Simple casts Skeleton Archer [c16] — ability: cast:Skeleton Archer
+  [precombat main] Simple decides PriorityDecisionRequest: 0.079 ms; observed options: 0; space size: unknown; success
+  [precombat main] Search decides PriorityDecisionRequest: 816.054 ms; observed options: 34; space size: unknown; success
+  [precombat main] Card moved: Simple; Skeleton Archer [c16] — card: Skeleton Archer [c16]; from: STACK; last known: kind: CardLastKnownInformation; previous controller: Simple; to: BATTLEFIELD
+  [precombat main] Trigger detected: Simple; Skeleton Archer [c16]; archer_enter
+  [precombat main] Simple decides TriggerOrderRequest: 0.042 ms; observed options: 1; space size: unknown; success
+  [precombat main] Simple chooses trigger: ability: archer_enter; source: Skeleton Archer [c16]; targets: Search
+  [precombat main] Simple decides AbilityDecisionRequest: 0.134 ms; observed options: 6; space size: 6; success
+  [precombat main] Resolution: Simple; Skeleton Archer [c16]; cast:Skeleton Archer; success: True
+  [precombat main] Simple decides PriorityDecisionRequest: 0.074 ms; observed options: 0; space size: unknown; success
+  [precombat main] Search decides PriorityDecisionRequest: 827.981 ms; observed options: 24; space size: unknown; success
+  [precombat main] Damage dealt: Simple; Skeleton Archer [c16] — amount: 1; combat: False; last known: kind: CardLastKnownInformation; life loss: 1; source revision: 3; target: Search; target object: Search; target revision: -
+  [precombat main] Resolution: Simple; Skeleton Archer [c16]; archer_enter; success: True
+  [precombat main] Simple decides PriorityDecisionRequest: 0.084 ms; observed options: 0; space size: unknown; success
+  [precombat main] Search decides PriorityDecisionRequest: 1042.319 ms; observed options: 50; space size: unknown; success
+  [begin combat] Simple decides PriorityDecisionRequest: 0.081 ms; observed options: 0; space size: unknown; success
+  [begin combat] Search decides PriorityDecisionRequest: 995.516 ms; observed options: 35; space size: unknown; success
+  [declare attackers] Simple chooses attack: attackers: Demon of Loathing [c21]
+  [declare attackers] Simple decides DeclareAttackersRequest: 0.180 ms; observed options: 1; space size: unknown; success
+  [declare attackers] Card tapped: Simple; Demon of Loathing [c21]
+  [declare attackers] Simple attacks with Demon of Loathing [c21] — attacker: Demon of Loathing [c21]; defender: Search
+  [declare attackers] Attackers declared: Simple; - — attackers: Demon of Loathing [c21]
+  [declare attackers] Trigger detected: Search; Windreader Sphinx [c83]; windreader_attack
+  [declare attackers] Search decides TriggerOrderRequest: 11.964 ms; observed options: 1; space size: 1; success
+  [declare attackers] Search decides AbilityDecisionRequest: 12.570 ms; observed options: 1; space size: 1; success
+  [declare attackers] Simple decides PriorityDecisionRequest: 0.089 ms; observed options: 0; space size: unknown; success
+  [declare attackers] Search decides PriorityDecisionRequest: 791.392 ms; observed options: 37; space size: unknown; success
+  [declare attackers] Search decides OptionalEffectRequest: 607.576 ms; observed options: 41; space size: unknown; success
+  [declare attackers] Resolution: Search; Windreader Sphinx [c83]; windreader_attack; success: True
+  [declare attackers] Simple decides PriorityDecisionRequest: 0.108 ms; observed options: 0; space size: unknown; success
+  [declare attackers] Search decides PriorityDecisionRequest: 854.442 ms; observed options: 36; space size: unknown; success
+  [declare blockers] Search decides DeclareBlockersRequest: 814.911 ms; observed options: 36; space size: unknown; success
+  [declare blockers] Search blocks with Warden of Evos Isle [c71] — attacker: Demon of Loathing [c21]; blocker: Warden of Evos Isle [c71]
+  [declare blockers] Attacker blocked: Simple; Demon of Loathing [c21] — blockers: Warden of Evos Isle [c71]
+  [declare blockers] Blockers declared: Search; - — blockers: Warden of Evos Isle [c71], Demon of Loathing [c21]
+  [declare blockers] Simple decides PriorityDecisionRequest: 0.087 ms; observed options: 0; space size: unknown; success
+  [declare blockers] Search decides PriorityDecisionRequest: 793.125 ms; observed options: 27; space size: unknown; success
+  [second combat damage] Simple decides CombatDamageRequest: 0.096 ms; observed options: 1; space size: unknown; success
+  [second combat damage] Search decides ReplacementOrderRequest: 620.020 ms; observed options: 54; space size: unknown; success
+  [second combat damage] Damage dealt: Search; Warden of Evos Isle [c71] — amount: 2; combat: True; last known: kind: CardLastKnownInformation; life loss: 0; source revision: 3; target: Demon of Loathing; target object: Demon of Loathing [c21]; target revision: 3
+  [second combat damage] Damage dealt: Simple; Demon of Loathing [c21] — amount: 2; combat: True; last known: kind: CardLastKnownInformation; life loss: 0; source revision: 3; target: Warden of Evos Isle; target object: Warden of Evos Isle [c71]; target revision: 3
+  [second combat damage] Damage dealt: Simple; Demon of Loathing [c21] — amount: 5; combat: True; last known: kind: CardLastKnownInformation; life loss: 5; source revision: 3; target: Search; target object: Search; target revision: -
+  [second combat damage] Trigger detected: Simple; Demon of Loathing [c21]; loathing_damage
+  [second combat damage] Search decides ReplacementOrderRequest: 695.258 ms; observed options: 56; space size: unknown; success
+  [second combat damage] Card moved: Search; Warden of Evos Isle [c71] — card: Warden of Evos Isle [c71]; from: BATTLEFIELD; last known: kind: CardLastKnownInformation; previous controller: Search; to: GRAVEYARD
+  [second combat damage] Player lost: Search; - — reason: life

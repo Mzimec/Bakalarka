@@ -14,7 +14,7 @@ from game.game_state.layers import LayeredModifier
 from game.operations.card_operations import MoveCardOperation, DamageCreatureOperation
 
 
-def targets(context, key="target"):
+def targets(context: object, key: str = "target") -> tuple[object, ...]:
     """!
     @brief Return the distinct objects in one bound target slot.
     """
@@ -26,22 +26,48 @@ class RuleEffect(Effect):
     @brief Adapt a pure operation generator to the declarative ability pipeline.
     """
 
-    def __init__(self, key, generate, *, slot_key="target", info=None):
+    def __init__(
+        self,
+        key: str,
+        generate: object,
+        *,
+        slot_key: str = "target",
+        info: object = None,
+    ) -> None:
+        """!
+        @brief Initialize this object.
+        """
         super().__init__(key)
         self.generate, self.slot_key = generate, slot_key
         self.info = info or key.replace("_", " ")
 
-    def to_operations(self, state, context):
+    def to_operations(self, state: object, context: object) -> object:
         """!
         @brief Generate the operations for this effect and its bound context.
         """
         yield from self.generate(state, context)
 
-    def get_info(self):
+    def get_info(self) -> str:
         """!
         @brief Return a human-readable description of this effect.
         """
         return self.info
+
+
+class ScryEffect(Effect):
+    """Declarative library selection; execution remains in ScryOperation."""
+
+    def __init__(self, key: str, amount: int = 1) -> None:
+        super().__init__(key)
+        if type(amount) is not int or amount < 1:
+            raise ValueError('Scry amount must be a positive integer')
+        self.amount = amount
+
+    def to_operations(self, state: object, context: object) -> object:
+        yield ScryOperation(context, self.amount)
+
+    def get_info(self) -> str:
+        return f'Scry {self.amount}.'
 
 
 class EventCondition(TriggerCondition):
@@ -49,17 +75,20 @@ class EventCondition(TriggerCondition):
     @brief Evaluate a bound trigger against event-time source and controller data.
     """
 
-    def __init__(self, predicate, *, looks_back=False):
+    def __init__(self, predicate: object, *, looks_back: bool = False) -> None:
+        """!
+        @brief Initialize this object.
+        """
         self.predicate = predicate
         self.looks_back_in_time = looks_back
 
-    def matches(self, state, event):
+    def matches(self, state: object, event: object) -> bool:
         """!
         @brief Check whether the supplied event satisfies this condition.
         """
         return True  # Source-aware checks are performed by matches_trigger.
 
-    def matches_trigger(self, trigger, state):
+    def matches_trigger(self, trigger: object, state: object) -> bool:
         """!
         @brief Evaluate the condition using the bound trigger source and event.
         """
@@ -75,17 +104,26 @@ class FormulaModifier(Modifier):
     formula: object
 
     @property
-    def behavior(self):
+    def behavior(self) -> object:
+        """!
+        @brief Return the modifier behavior.
+        """
         return ModifierType.SET
 
     @property
-    def layer(self):
+    def layer(self) -> object:
+        """!
+        @brief Return the continuous-effect layer.
+        """
         return Layer.PT_CDA
 
-    def for_context(self, source, state):
+    def for_context(self, source: object, state: object) -> object:
+        """!
+        @brief Bind this modifier to a concrete source and state.
+        """
         return LayeredModifier(SetModifier(self.formula(state, source)), self.layer)
 
-    def modify(self, original):
+    def modify(self, original: object) -> object:
         """!
         @brief Apply this modifier to the current characteristic value.
         """
@@ -97,18 +135,22 @@ class ScryOperation(Operation):
     @brief Reorder a chosen prefix of a library without drawing the cards.
     """
 
-    def __init__(self, context, amount=1):
+    def __init__(self, context: object, amount: int = 1) -> None:
+        """!
+        @brief Initialize this object.
+        """
         super().__init__(context)
         self.amount = amount
 
-    def execute(self, state):
+    def execute(self, state: object) -> list[object]:
         """!
         @brief Apply this executable object to the supplied game state.
         """
         player = self.context.controller
         viewed = tuple(reversed(tuple(player.deck.values())))[: self.amount]
-        choose = getattr(player.decision_maker, "choose_scry", None)
-        top, bottom = choose(state, player, viewed) if choose else (viewed, ())
+        from game.ai.agents.decision_maker import ScryRequest
+        choice = player.decision_maker.decide(ScryRequest(state, player, viewed)).value
+        top, bottom = choice.top, choice.bottom
         top, bottom = tuple(top), tuple(bottom)
         if len(top + bottom) != len(viewed) or set(top + bottom) != set(viewed):
             raise ValueError("Scry must partition exactly the viewed cards.")
@@ -128,11 +170,17 @@ class ScryOperation(Operation):
 
 
 class UntapOperation(Operation):
-    def __init__(self, context, card):
+    """!
+    @brief UntapOperation executable operation.
+    """
+    def __init__(self, context: object, card: object) -> None:
+        """!
+        @brief Initialize this object.
+        """
         super().__init__(context)
         self.card = card
 
-    def execute(self, state):
+    def execute(self, state: object) -> list[object]:
         """!
         @brief Apply this executable object to the supplied game state.
         """
@@ -145,15 +193,18 @@ class SkipUntapOperation(Operation):
     @brief Remember the affected incarnation and the specified player's next untap.
     """
 
-    def __init__(self, context, card, player):
+    def __init__(self, context: object, card: object, player: object) -> None:
+        """!
+        @brief Initialize this object.
+        """
         super().__init__(context)
         self.card, self.player = card, player
 
-    def execute(self, state):
+    def execute(self, state: object) -> list[object]:
         """!
         @brief Apply this executable object to the supplied game state.
         """
-        self.card._skip_untap = (self.card.zone_revision, self.player)
+        self.card.state.skip_untap = (self.card.zone_revision, self.player)
         return [
             GameEvent(
                 "skip_next_untap", self.card, self.context.controller, {"player": self.player}
@@ -162,11 +213,17 @@ class SkipUntapOperation(Operation):
 
 
 class LoseLifeOperation(Operation):
-    def __init__(self, context, player, amount):
+    """!
+    @brief LoseLifeOperation executable operation.
+    """
+    def __init__(self, context: object, player: object, amount: int) -> None:
+        """!
+        @brief Initialize this object.
+        """
         super().__init__(context)
         self.player, self.amount = player, amount
 
-    def execute(self, state):
+    def execute(self, state: object) -> list[object]:
         """!
         @brief Apply this executable object to the supplied game state.
         """
@@ -186,31 +243,38 @@ class ChooseMoveOperation(Operation):
     @brief Resolve a nontargeted discard or sacrifice chosen by the affected player.
     """
 
-    def __init__(self, context, player, amount, *, sacrifice=False):
+    def __init__(
+        self,
+        context: object,
+        player: object,
+        amount: int,
+        *,
+        sacrifice: bool = False,
+    ) -> None:
+        """!
+        @brief Initialize this object.
+        """
         super().__init__(context)
         self.player, self.amount, self.sacrifice = player, amount, sacrifice
 
-    def execute(self, state):
+    def execute(self, state: object) -> list[object]:
         """!
         @brief Apply this executable object to the supplied game state.
         """
         if self.sacrifice:
-            options = tuple(
-                card
-                for card in state.get_cards(from_zones=[ZoneType.BATTLEFIELD])
-                if card.get_controller(state) is self.player
-                and card.is_type(state, CardType.CREATURE)
-            )
-            chooser = getattr(self.player.decision_maker, "choose_sacrifices", None)
+            from helper.query_system.query import EqQuery
+            from game.game_state.registers.card_register import IK_ZONE, IK_CONTROLLER, IK_TYPE
+            options = state.query_cards(EqQuery(IK_ZONE, ZoneType.BATTLEFIELD)
+                & EqQuery(IK_CONTROLLER, self.player) & EqQuery(IK_TYPE, CardType.CREATURE))
         else:
             options = tuple(self.player.hand.values())
-            chooser = getattr(self.player.decision_maker, "choose_discards", None)
         count = min(self.amount, len(options))
-        chosen = tuple(
-            chooser(state, self.player, options, count)
-            if chooser and self.sacrifice
-            else chooser(state, self.player, count) if chooser else options[:count]
+        from game.ai.agents.decision_maker import AbilityResolutionRequest
+        request = AbilityResolutionRequest(
+            state, self.player, self.context, options, count,
+            "sacrifice" if self.sacrifice else "discard",
         )
+        chosen = self.player.decision_maker.decide(request).value.cards
         if (
             len(chosen) != count
             or len(set(chosen)) != count
@@ -230,11 +294,21 @@ class FightOperation(Operation):
     @brief Assign both creatures' fight damage before either creature can die.
     """
 
-    def __init__(self, context, first, second, *, one_way=False):
+    def __init__(
+        self,
+        context: object,
+        first: object,
+        second: object,
+        *,
+        one_way: bool = False,
+    ) -> None:
+        """!
+        @brief Initialize this object.
+        """
         super().__init__(context)
         self.first, self.second, self.one_way = first, second, one_way
 
-    def execute(self, state):
+    def execute(self, state: object) -> list[object]:
         """!
         @brief Apply this executable object to the supplied game state.
         """
@@ -262,7 +336,10 @@ class FightOperation(Operation):
         )
 
 
-def is_death(event):
+def is_death(event: object) -> bool:
+    """!
+    @brief is_death helper.
+    """
     return (
         event.key == "card_moved"
         and event.payload.get("from") == "BATTLEFIELD"
@@ -271,9 +348,15 @@ def is_death(event):
     )
 
 
-def lost_life_this_turn(state, player):
+def lost_life_this_turn(state: object, player: object) -> bool:
+    """!
+    @brief lost_life_this_turn helper.
+    """
     if getattr(state, "_history_turn", None) != state.turn.number:
         return False
+    history = getattr(state, "turn_history", None)
+    if history is not None:
+        return history.lost_life(player)
     return any(
         event.key in {"damage_dealt", "life_lost", "life_paid"}
         and event.payload.get("amount", 0) > 0

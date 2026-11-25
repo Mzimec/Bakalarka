@@ -4,6 +4,7 @@ from __future__ import annotations
 
 from abc import abstractmethod, ABC
 from typing import TYPE_CHECKING
+from helper.static_definition import RuntimeBinding
 
 if TYPE_CHECKING:
     from ...game_state import State
@@ -11,7 +12,7 @@ if TYPE_CHECKING:
     from ..resolution.event_bus import GameEvent
 
 
-class Operation(ABC):
+class Operation(RuntimeBinding, ABC):
     """!
     @brief Base executable state change produced by an action intent.
     """
@@ -22,6 +23,26 @@ class Operation(ABC):
         @param context Context shared with the operation during execution.
         """
         self.context = context
+
+    def lki_cards(self, state: State) -> tuple[object, ...] | None:
+        """!
+        @brief Cards whose pre-batch information may be needed during event capture.
+        None means unknown: OperationExecutor must fall back to capturing
+        all cards.
+        An empty iterable means this operation is known not to require
+        card LKI.
+        """
+        return None
+
+    def source_lki_cards(self) -> tuple[object, ...]:
+        """!
+        @brief Return this operation source when source LKI is required.
+        @return Source-card tuple, or an empty tuple.
+        """
+        source = self.context.source
+        if getattr(source, "zone_revision", None) is not None:
+            return (source,)
+        return ()
 
     @abstractmethod
     def execute(self, state: State) -> list[GameEvent]:
@@ -39,6 +60,19 @@ class GameEventOperation(Operation):
     """
 
     event_key: str
+
+    def lki_cards(self, state: State) -> tuple[object, ...]:
+        """!
+        @brief Return cards whose LKI may be needed for this event operation.
+        @param state Current game state.
+        @return Source-card tuple, or an empty tuple.
+        """
+        source = self.context.source
+
+        if getattr(source, "zone_revision", None) is not None:
+            return (source,)
+
+        return ()
 
     def execute(self, state: State) -> list[GameEvent]:
         """!

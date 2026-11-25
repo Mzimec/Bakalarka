@@ -1,0 +1,1736 @@
+{
+  "fingerprint": "c32f79e9e3ba988a397d25e3a00f1b6f47a8a34e37020b95c86294737c5b9039",
+  "source_unchanged": true,
+  "information_key": "4a05e75140c4c15e4592f739cabe99c2765ad88964153c3b11e93d2f1d7dfe83",
+  "arguments": {
+    "output": "Cards\\runs\\mcts-parallel-20261025\\root-red",
+    "workers": 2,
+    "iterations": 64,
+    "repeats": 3,
+    "own_deck": "red",
+    "other_deck": "white",
+    "seed": 42,
+    "turn": 9
+  },
+  "shard_work_and_results_equal": true,
+  "summary": {
+    "shared_serial": {
+      "wall_ms": 605.0356000196189,
+      "cpu_ms": 593.75,
+      "completed": 64,
+      "advances": 266,
+      "engine_calls": 28
+    },
+    "sequential_shards": {
+      "wall_ms": 922.1786999842152,
+      "cpu_ms": 1828.125,
+      "completed": 64,
+      "advances": 256,
+      "engine_calls": 28
+    },
+    "threads": {
+      "wall_ms": 842.4949999898672,
+      "cpu_ms": 843.75,
+      "completed": 64,
+      "advances": 256,
+      "engine_calls": 28
+    },
+    "processes": {
+      "wall_ms": 522.935300017707,
+      "cpu_ms": 968.75,
+      "completed": 64,
+      "advances": 256,
+      "engine_calls": 28
+    }
+  },
+  "samples": [
+    {
+      "variant": "shared_serial",
+      "cold": true,
+      "result": {
+        "choice": {
+          "kind": "LandPlayAction",
+          "_json": "{\"card\":{\"card\":\"c44\",\"name\":\"Mountain\",\"zone_revision\":1},\"kind\":\"LandPlayAction\",\"permission\":\"play_land\",\"player\":{\"player\":0},\"source_revision\":1}"
+        },
+        "value": 0.36848303834972407,
+        "used_fallback": false,
+        "root_coverage_complete": true,
+        "stop_reason": "iteration_budget",
+        "estimates": [
+          {
+            "action": {
+              "kind": "LandPlayAction",
+              "_json": "{\"card\":{\"card\":\"c44\",\"name\":\"Mountain\",\"zone_revision\":1},\"kind\":\"LandPlayAction\",\"permission\":\"play_land\",\"player\":{\"player\":0},\"source_revision\":1}"
+            },
+            "visits": 63,
+            "mean_value": 0.36848303834972407,
+            "prior_probability": 0.9299454204813117
+          },
+          {
+            "action": {
+              "kind": "PassPriorityAction",
+              "_json": "{\"kind\":\"PassPriorityAction\",\"player\":{\"player\":0}}"
+            },
+            "visits": 1,
+            "mean_value": 0.13254878839087844,
+            "prior_probability": 0.07005457951868843
+          }
+        ],
+        "metrics": {
+          "worlds_built": 2,
+          "iterations_started": 64,
+          "iterations_completed": 64,
+          "advance_attempts": 266,
+          "terminal_leaves": 0,
+          "heuristic_leaves": 64,
+          "interrupted_trajectories": 0,
+          "interruption_reasons": [],
+          "information_nodes": 2,
+          "elapsed_ms": 513.4424000279978,
+          "rollout_policy_choices": 2,
+          "rollout_random_choices": 0,
+          "history_sampling_attempts": 0,
+          "history_rejected_samples": 0,
+          "history_prefix_advances": 0,
+          "population_updates": 0,
+          "population_survivors": 0,
+          "population_size": 0,
+          "population_distinct_origins": 0,
+          "population_refreshes": 0,
+          "history_mismatch_reasons": [],
+          "selection": "puct",
+          "prior_evaluations": 2,
+          "world_initialization_ms": 72.54109997302294,
+          "advance_ms": 372.31140001676977,
+          "simulator_advance_calls": 28,
+          "transition_cache_hits": 238,
+          "transition_cache_entries": 28,
+          "root_actions": 2,
+          "root_actions_visited": 2,
+          "checkpoint_hits": 0,
+          "checkpoint_entries": 0,
+          "checkpoint_skipped_decisions": 0,
+          "world_materializations": 7,
+          "world_restores": 0,
+          "trajectory_runs": 5,
+          "hierarchy_nodes": 0,
+          "hierarchy_selection_steps": 0,
+          "forced_transitions": 137,
+          "root_coverage_required": false,
+          "forced_initial_coverage": false,
+          "cpu_ms": 515.625,
+          "time_limit_ms": 0.0,
+          "minimum_trajectories": 0,
+          "projection_cache_hits": 2,
+          "projection_cache_entries": 6,
+          "candidate_orderings": 0,
+          "eligible_actions": 0,
+          "reused_information_nodes": 0,
+          "reused_root_visits": 0,
+          "forced_chain_hits": 59,
+          "forced_chain_steps": 177,
+          "native_forced_steps": 24,
+          "candidate_expansions": 0,
+          "structured_value_hits": 12208,
+          "root_menu_complete": true,
+          "parallel_workers": 1,
+          "parallel_requested_workers": 1,
+          "parallel_backend": "serial",
+          "parallel_setup_ms": 0.0,
+          "parallel_worker_cpu_ms": 0.0,
+          "parallel_worker_pids": [],
+          "parallel_worker_threads": [],
+          "parallel_payload_bytes": 0
+        },
+        "fallback_reason": null
+      }
+    },
+    {
+      "variant": "sequential_shards",
+      "cold": true,
+      "result": {
+        "choice": {
+          "kind": "LandPlayAction",
+          "_json": "{\"card\":{\"card\":\"c44\",\"name\":\"Mountain\",\"zone_revision\":1},\"kind\":\"LandPlayAction\",\"permission\":\"play_land\",\"player\":{\"player\":0},\"source_revision\":1}"
+        },
+        "value": 0.3684830383497246,
+        "used_fallback": false,
+        "root_coverage_complete": false,
+        "stop_reason": "iteration_budget",
+        "estimates": [
+          {
+            "action": {
+              "kind": "LandPlayAction",
+              "_json": "{\"card\":{\"card\":\"c44\",\"name\":\"Mountain\",\"zone_revision\":1},\"kind\":\"LandPlayAction\",\"permission\":\"play_land\",\"player\":{\"player\":0},\"source_revision\":1}"
+            },
+            "visits": 64,
+            "mean_value": 0.3684830383497246,
+            "prior_probability": 0.9299454204813117
+          },
+          {
+            "action": {
+              "kind": "PassPriorityAction",
+              "_json": "{\"kind\":\"PassPriorityAction\",\"player\":{\"player\":0}}"
+            },
+            "visits": 0,
+            "mean_value": null,
+            "prior_probability": 0.07005457951868843
+          }
+        ],
+        "metrics": {
+          "worlds_built": 4,
+          "iterations_started": 64,
+          "iterations_completed": 64,
+          "advance_attempts": 256,
+          "terminal_leaves": 0,
+          "heuristic_leaves": 64,
+          "interrupted_trajectories": 0,
+          "interruption_reasons": [],
+          "information_nodes": 4,
+          "elapsed_ms": 902.9607999837026,
+          "rollout_policy_choices": 2,
+          "rollout_random_choices": 0,
+          "history_sampling_attempts": 0,
+          "history_rejected_samples": 0,
+          "history_prefix_advances": 0,
+          "population_updates": 0,
+          "population_survivors": 0,
+          "population_size": 0,
+          "population_distinct_origins": 0,
+          "population_refreshes": 0,
+          "history_mismatch_reasons": [],
+          "selection": "puct",
+          "prior_evaluations": 4,
+          "world_initialization_ms": 200.47250005882233,
+          "advance_ms": 593.6087997397408,
+          "simulator_advance_calls": 28,
+          "transition_cache_hits": 228,
+          "transition_cache_entries": 28,
+          "root_actions": 2,
+          "root_actions_visited": 1,
+          "checkpoint_hits": 0,
+          "checkpoint_entries": 0,
+          "checkpoint_skipped_decisions": 0,
+          "world_materializations": 12,
+          "world_restores": 0,
+          "trajectory_runs": 8,
+          "hierarchy_nodes": 0,
+          "hierarchy_selection_steps": 0,
+          "forced_transitions": 128,
+          "root_coverage_required": false,
+          "forced_initial_coverage": false,
+          "cpu_ms": 1781.25,
+          "time_limit_ms": 0.0,
+          "minimum_trajectories": 2,
+          "projection_cache_hits": 4,
+          "projection_cache_entries": 8,
+          "candidate_orderings": 0,
+          "eligible_actions": 0,
+          "reused_information_nodes": 0,
+          "reused_root_visits": 0,
+          "forced_chain_hits": 56,
+          "forced_chain_steps": 168,
+          "native_forced_steps": 24,
+          "candidate_expansions": 0,
+          "structured_value_hits": 15854,
+          "root_menu_complete": true,
+          "parallel_workers": 2,
+          "parallel_requested_workers": 2,
+          "parallel_backend": "sequential_reference",
+          "parallel_setup_ms": 902.825600001961,
+          "parallel_worker_cpu_ms": 875.0,
+          "parallel_worker_pids": [
+            33840,
+            33840
+          ],
+          "parallel_worker_threads": [
+            33204,
+            33204
+          ],
+          "parallel_payload_bytes": 524266
+        },
+        "fallback_reason": null
+      }
+    },
+    {
+      "variant": "threads",
+      "cold": true,
+      "result": {
+        "choice": {
+          "kind": "LandPlayAction",
+          "_json": "{\"card\":{\"card\":\"c44\",\"name\":\"Mountain\",\"zone_revision\":1},\"kind\":\"LandPlayAction\",\"permission\":\"play_land\",\"player\":{\"player\":0},\"source_revision\":1}"
+        },
+        "value": 0.3684830383497246,
+        "used_fallback": false,
+        "root_coverage_complete": false,
+        "stop_reason": "iteration_budget",
+        "estimates": [
+          {
+            "action": {
+              "kind": "LandPlayAction",
+              "_json": "{\"card\":{\"card\":\"c44\",\"name\":\"Mountain\",\"zone_revision\":1},\"kind\":\"LandPlayAction\",\"permission\":\"play_land\",\"player\":{\"player\":0},\"source_revision\":1}"
+            },
+            "visits": 64,
+            "mean_value": 0.3684830383497246,
+            "prior_probability": 0.9299454204813117
+          },
+          {
+            "action": {
+              "kind": "PassPriorityAction",
+              "_json": "{\"kind\":\"PassPriorityAction\",\"player\":{\"player\":0}}"
+            },
+            "visits": 0,
+            "mean_value": null,
+            "prior_probability": 0.07005457951868843
+          }
+        ],
+        "metrics": {
+          "worlds_built": 4,
+          "iterations_started": 64,
+          "iterations_completed": 64,
+          "advance_attempts": 256,
+          "terminal_leaves": 0,
+          "heuristic_leaves": 64,
+          "interrupted_trajectories": 0,
+          "interruption_reasons": [],
+          "information_nodes": 4,
+          "elapsed_ms": 909.5356999896467,
+          "rollout_policy_choices": 2,
+          "rollout_random_choices": 0,
+          "history_sampling_attempts": 0,
+          "history_rejected_samples": 0,
+          "history_prefix_advances": 0,
+          "population_updates": 0,
+          "population_survivors": 0,
+          "population_size": 0,
+          "population_distinct_origins": 0,
+          "population_refreshes": 0,
+          "history_mismatch_reasons": [],
+          "selection": "puct",
+          "prior_evaluations": 4,
+          "world_initialization_ms": 362.8774997778237,
+          "advance_ms": 1160.9190998133272,
+          "simulator_advance_calls": 28,
+          "transition_cache_hits": 228,
+          "transition_cache_entries": 28,
+          "root_actions": 2,
+          "root_actions_visited": 1,
+          "checkpoint_hits": 0,
+          "checkpoint_entries": 0,
+          "checkpoint_skipped_decisions": 0,
+          "world_materializations": 12,
+          "world_restores": 0,
+          "trajectory_runs": 8,
+          "hierarchy_nodes": 0,
+          "hierarchy_selection_steps": 0,
+          "forced_transitions": 128,
+          "root_coverage_required": false,
+          "forced_initial_coverage": false,
+          "cpu_ms": 906.25,
+          "time_limit_ms": 0.0,
+          "minimum_trajectories": 2,
+          "projection_cache_hits": 4,
+          "projection_cache_entries": 8,
+          "candidate_orderings": 0,
+          "eligible_actions": 0,
+          "reused_information_nodes": 0,
+          "reused_root_visits": 0,
+          "forced_chain_hits": 56,
+          "forced_chain_steps": 168,
+          "native_forced_steps": 24,
+          "candidate_expansions": 0,
+          "structured_value_hits": 15854,
+          "root_menu_complete": true,
+          "parallel_workers": 2,
+          "parallel_requested_workers": 2,
+          "parallel_backend": "thread",
+          "parallel_setup_ms": 149.89999996032566,
+          "parallel_worker_cpu_ms": 890.625,
+          "parallel_worker_pids": [
+            33840,
+            33840
+          ],
+          "parallel_worker_threads": [
+            6792,
+            2216
+          ],
+          "parallel_payload_bytes": 524266
+        },
+        "fallback_reason": null
+      }
+    },
+    {
+      "variant": "processes",
+      "cold": true,
+      "result": {
+        "choice": {
+          "kind": "LandPlayAction",
+          "_json": "{\"card\":{\"card\":\"c44\",\"name\":\"Mountain\",\"zone_revision\":1},\"kind\":\"LandPlayAction\",\"permission\":\"play_land\",\"player\":{\"player\":0},\"source_revision\":1}"
+        },
+        "value": 0.3684830383497246,
+        "used_fallback": false,
+        "root_coverage_complete": false,
+        "stop_reason": "iteration_budget",
+        "estimates": [
+          {
+            "action": {
+              "kind": "LandPlayAction",
+              "_json": "{\"card\":{\"card\":\"c44\",\"name\":\"Mountain\",\"zone_revision\":1},\"kind\":\"LandPlayAction\",\"permission\":\"play_land\",\"player\":{\"player\":0},\"source_revision\":1}"
+            },
+            "visits": 64,
+            "mean_value": 0.3684830383497246,
+            "prior_probability": 0.9299454204813117
+          },
+          {
+            "action": {
+              "kind": "PassPriorityAction",
+              "_json": "{\"kind\":\"PassPriorityAction\",\"player\":{\"player\":0}}"
+            },
+            "visits": 0,
+            "mean_value": null,
+            "prior_probability": 0.07005457951868843
+          }
+        ],
+        "metrics": {
+          "worlds_built": 4,
+          "iterations_started": 64,
+          "iterations_completed": 64,
+          "advance_attempts": 256,
+          "terminal_leaves": 0,
+          "heuristic_leaves": 64,
+          "interrupted_trajectories": 0,
+          "interruption_reasons": [],
+          "information_nodes": 4,
+          "elapsed_ms": 1122.2753999754786,
+          "rollout_policy_choices": 2,
+          "rollout_random_choices": 0,
+          "history_sampling_attempts": 0,
+          "history_rejected_samples": 0,
+          "history_prefix_advances": 0,
+          "population_updates": 0,
+          "population_survivors": 0,
+          "population_size": 0,
+          "population_distinct_origins": 0,
+          "population_refreshes": 0,
+          "history_mismatch_reasons": [],
+          "selection": "puct",
+          "prior_evaluations": 4,
+          "world_initialization_ms": 305.3834999445826,
+          "advance_ms": 667.4027002882212,
+          "simulator_advance_calls": 28,
+          "transition_cache_hits": 228,
+          "transition_cache_entries": 28,
+          "root_actions": 2,
+          "root_actions_visited": 1,
+          "checkpoint_hits": 0,
+          "checkpoint_entries": 0,
+          "checkpoint_skipped_decisions": 0,
+          "world_materializations": 12,
+          "world_restores": 0,
+          "trajectory_runs": 8,
+          "hierarchy_nodes": 0,
+          "hierarchy_selection_steps": 0,
+          "forced_transitions": 128,
+          "root_coverage_required": false,
+          "forced_initial_coverage": false,
+          "cpu_ms": 1093.75,
+          "time_limit_ms": 0.0,
+          "minimum_trajectories": 2,
+          "projection_cache_hits": 4,
+          "projection_cache_entries": 8,
+          "candidate_orderings": 0,
+          "eligible_actions": 0,
+          "reused_information_nodes": 0,
+          "reused_root_visits": 0,
+          "forced_chain_hits": 56,
+          "forced_chain_steps": 168,
+          "native_forced_steps": 24,
+          "candidate_expansions": 0,
+          "structured_value_hits": 15854,
+          "root_menu_complete": true,
+          "parallel_workers": 2,
+          "parallel_requested_workers": 2,
+          "parallel_backend": "process",
+          "parallel_setup_ms": 56.377299944870174,
+          "parallel_worker_cpu_ms": 1062.5,
+          "parallel_worker_pids": [
+            22032,
+            150468
+          ],
+          "parallel_worker_threads": [
+            154620,
+            92960
+          ],
+          "parallel_payload_bytes": 524266
+        },
+        "fallback_reason": null
+      }
+    },
+    {
+      "variant": "processes",
+      "cold": false,
+      "result": {
+        "choice": {
+          "kind": "LandPlayAction",
+          "_json": "{\"card\":{\"card\":\"c44\",\"name\":\"Mountain\",\"zone_revision\":1},\"kind\":\"LandPlayAction\",\"permission\":\"play_land\",\"player\":{\"player\":0},\"source_revision\":1}"
+        },
+        "value": 0.3684830383497246,
+        "used_fallback": false,
+        "root_coverage_complete": false,
+        "stop_reason": "iteration_budget",
+        "estimates": [
+          {
+            "action": {
+              "kind": "LandPlayAction",
+              "_json": "{\"card\":{\"card\":\"c44\",\"name\":\"Mountain\",\"zone_revision\":1},\"kind\":\"LandPlayAction\",\"permission\":\"play_land\",\"player\":{\"player\":0},\"source_revision\":1}"
+            },
+            "visits": 64,
+            "mean_value": 0.3684830383497246,
+            "prior_probability": 0.9299454204813117
+          },
+          {
+            "action": {
+              "kind": "PassPriorityAction",
+              "_json": "{\"kind\":\"PassPriorityAction\",\"player\":{\"player\":0}}"
+            },
+            "visits": 0,
+            "mean_value": null,
+            "prior_probability": 0.07005457951868843
+          }
+        ],
+        "metrics": {
+          "worlds_built": 4,
+          "iterations_started": 64,
+          "iterations_completed": 64,
+          "advance_attempts": 256,
+          "terminal_leaves": 0,
+          "heuristic_leaves": 64,
+          "interrupted_trajectories": 0,
+          "interruption_reasons": [],
+          "information_nodes": 4,
+          "elapsed_ms": 523.5707999672741,
+          "rollout_policy_choices": 2,
+          "rollout_random_choices": 0,
+          "history_sampling_attempts": 0,
+          "history_rejected_samples": 0,
+          "history_prefix_advances": 0,
+          "population_updates": 0,
+          "population_survivors": 0,
+          "population_size": 0,
+          "population_distinct_origins": 0,
+          "population_refreshes": 0,
+          "history_mismatch_reasons": [],
+          "selection": "puct",
+          "prior_evaluations": 4,
+          "world_initialization_ms": 264.0154998516664,
+          "advance_ms": 632.0711997104809,
+          "simulator_advance_calls": 28,
+          "transition_cache_hits": 228,
+          "transition_cache_entries": 28,
+          "root_actions": 2,
+          "root_actions_visited": 1,
+          "checkpoint_hits": 0,
+          "checkpoint_entries": 0,
+          "checkpoint_skipped_decisions": 0,
+          "world_materializations": 12,
+          "world_restores": 0,
+          "trajectory_runs": 8,
+          "hierarchy_nodes": 0,
+          "hierarchy_selection_steps": 0,
+          "forced_transitions": 128,
+          "root_coverage_required": false,
+          "forced_initial_coverage": false,
+          "cpu_ms": 968.75,
+          "time_limit_ms": 0.0,
+          "minimum_trajectories": 2,
+          "projection_cache_hits": 4,
+          "projection_cache_entries": 8,
+          "candidate_orderings": 0,
+          "eligible_actions": 0,
+          "reused_information_nodes": 0,
+          "reused_root_visits": 0,
+          "forced_chain_hits": 56,
+          "forced_chain_steps": 168,
+          "native_forced_steps": 24,
+          "candidate_expansions": 0,
+          "structured_value_hits": 15854,
+          "root_menu_complete": true,
+          "parallel_workers": 2,
+          "parallel_requested_workers": 2,
+          "parallel_backend": "process",
+          "parallel_setup_ms": 24.185299989767373,
+          "parallel_worker_cpu_ms": 953.125,
+          "parallel_worker_pids": [
+            150468,
+            22032
+          ],
+          "parallel_worker_threads": [
+            92960,
+            154620
+          ],
+          "parallel_payload_bytes": 524266
+        },
+        "fallback_reason": null
+      }
+    },
+    {
+      "variant": "threads",
+      "cold": false,
+      "result": {
+        "choice": {
+          "kind": "LandPlayAction",
+          "_json": "{\"card\":{\"card\":\"c44\",\"name\":\"Mountain\",\"zone_revision\":1},\"kind\":\"LandPlayAction\",\"permission\":\"play_land\",\"player\":{\"player\":0},\"source_revision\":1}"
+        },
+        "value": 0.3684830383497246,
+        "used_fallback": false,
+        "root_coverage_complete": false,
+        "stop_reason": "iteration_budget",
+        "estimates": [
+          {
+            "action": {
+              "kind": "LandPlayAction",
+              "_json": "{\"card\":{\"card\":\"c44\",\"name\":\"Mountain\",\"zone_revision\":1},\"kind\":\"LandPlayAction\",\"permission\":\"play_land\",\"player\":{\"player\":0},\"source_revision\":1}"
+            },
+            "visits": 64,
+            "mean_value": 0.3684830383497246,
+            "prior_probability": 0.9299454204813117
+          },
+          {
+            "action": {
+              "kind": "PassPriorityAction",
+              "_json": "{\"kind\":\"PassPriorityAction\",\"player\":{\"player\":0}}"
+            },
+            "visits": 0,
+            "mean_value": null,
+            "prior_probability": 0.07005457951868843
+          }
+        ],
+        "metrics": {
+          "worlds_built": 4,
+          "iterations_started": 64,
+          "iterations_completed": 64,
+          "advance_attempts": 256,
+          "terminal_leaves": 0,
+          "heuristic_leaves": 64,
+          "interrupted_trajectories": 0,
+          "interruption_reasons": [],
+          "information_nodes": 4,
+          "elapsed_ms": 832.6004999689758,
+          "rollout_policy_choices": 2,
+          "rollout_random_choices": 0,
+          "history_sampling_attempts": 0,
+          "history_rejected_samples": 0,
+          "history_prefix_advances": 0,
+          "population_updates": 0,
+          "population_survivors": 0,
+          "population_size": 0,
+          "population_distinct_origins": 0,
+          "population_refreshes": 0,
+          "history_mismatch_reasons": [],
+          "selection": "puct",
+          "prior_evaluations": 4,
+          "world_initialization_ms": 401.7635000636801,
+          "advance_ms": 1047.480599838309,
+          "simulator_advance_calls": 28,
+          "transition_cache_hits": 228,
+          "transition_cache_entries": 28,
+          "root_actions": 2,
+          "root_actions_visited": 1,
+          "checkpoint_hits": 0,
+          "checkpoint_entries": 0,
+          "checkpoint_skipped_decisions": 0,
+          "world_materializations": 12,
+          "world_restores": 0,
+          "trajectory_runs": 8,
+          "hierarchy_nodes": 0,
+          "hierarchy_selection_steps": 0,
+          "forced_transitions": 128,
+          "root_coverage_required": false,
+          "forced_initial_coverage": false,
+          "cpu_ms": 828.125,
+          "time_limit_ms": 0.0,
+          "minimum_trajectories": 2,
+          "projection_cache_hits": 4,
+          "projection_cache_entries": 8,
+          "candidate_orderings": 0,
+          "eligible_actions": 0,
+          "reused_information_nodes": 0,
+          "reused_root_visits": 0,
+          "forced_chain_hits": 56,
+          "forced_chain_steps": 168,
+          "native_forced_steps": 24,
+          "candidate_expansions": 0,
+          "structured_value_hits": 15854,
+          "root_menu_complete": true,
+          "parallel_workers": 2,
+          "parallel_requested_workers": 2,
+          "parallel_backend": "thread",
+          "parallel_setup_ms": 17.986000049859285,
+          "parallel_worker_cpu_ms": 812.5,
+          "parallel_worker_pids": [
+            33840,
+            33840
+          ],
+          "parallel_worker_threads": [
+            2216,
+            6792
+          ],
+          "parallel_payload_bytes": 524266
+        },
+        "fallback_reason": null
+      }
+    },
+    {
+      "variant": "sequential_shards",
+      "cold": false,
+      "result": {
+        "choice": {
+          "kind": "LandPlayAction",
+          "_json": "{\"card\":{\"card\":\"c44\",\"name\":\"Mountain\",\"zone_revision\":1},\"kind\":\"LandPlayAction\",\"permission\":\"play_land\",\"player\":{\"player\":0},\"source_revision\":1}"
+        },
+        "value": 0.3684830383497246,
+        "used_fallback": false,
+        "root_coverage_complete": false,
+        "stop_reason": "iteration_budget",
+        "estimates": [
+          {
+            "action": {
+              "kind": "LandPlayAction",
+              "_json": "{\"card\":{\"card\":\"c44\",\"name\":\"Mountain\",\"zone_revision\":1},\"kind\":\"LandPlayAction\",\"permission\":\"play_land\",\"player\":{\"player\":0},\"source_revision\":1}"
+            },
+            "visits": 64,
+            "mean_value": 0.3684830383497246,
+            "prior_probability": 0.9299454204813117
+          },
+          {
+            "action": {
+              "kind": "PassPriorityAction",
+              "_json": "{\"kind\":\"PassPriorityAction\",\"player\":{\"player\":0}}"
+            },
+            "visits": 0,
+            "mean_value": null,
+            "prior_probability": 0.07005457951868843
+          }
+        ],
+        "metrics": {
+          "worlds_built": 4,
+          "iterations_started": 64,
+          "iterations_completed": 64,
+          "advance_attempts": 256,
+          "terminal_leaves": 0,
+          "heuristic_leaves": 64,
+          "interrupted_trajectories": 0,
+          "interruption_reasons": [],
+          "information_nodes": 4,
+          "elapsed_ms": 828.2653000205755,
+          "rollout_policy_choices": 2,
+          "rollout_random_choices": 0,
+          "history_sampling_attempts": 0,
+          "history_rejected_samples": 0,
+          "history_prefix_advances": 0,
+          "population_updates": 0,
+          "population_survivors": 0,
+          "population_size": 0,
+          "population_distinct_origins": 0,
+          "population_refreshes": 0,
+          "history_mismatch_reasons": [],
+          "selection": "puct",
+          "prior_evaluations": 4,
+          "world_initialization_ms": 272.5569001631811,
+          "advance_ms": 455.4949003504589,
+          "simulator_advance_calls": 28,
+          "transition_cache_hits": 228,
+          "transition_cache_entries": 28,
+          "root_actions": 2,
+          "root_actions_visited": 1,
+          "checkpoint_hits": 0,
+          "checkpoint_entries": 0,
+          "checkpoint_skipped_decisions": 0,
+          "world_materializations": 12,
+          "world_restores": 0,
+          "trajectory_runs": 8,
+          "hierarchy_nodes": 0,
+          "hierarchy_selection_steps": 0,
+          "forced_transitions": 128,
+          "root_coverage_required": false,
+          "forced_initial_coverage": false,
+          "cpu_ms": 1625.0,
+          "time_limit_ms": 0.0,
+          "minimum_trajectories": 2,
+          "projection_cache_hits": 4,
+          "projection_cache_entries": 8,
+          "candidate_orderings": 0,
+          "eligible_actions": 0,
+          "reused_information_nodes": 0,
+          "reused_root_visits": 0,
+          "forced_chain_hits": 56,
+          "forced_chain_steps": 168,
+          "native_forced_steps": 24,
+          "candidate_expansions": 0,
+          "structured_value_hits": 15854,
+          "root_menu_complete": true,
+          "parallel_workers": 2,
+          "parallel_requested_workers": 2,
+          "parallel_backend": "sequential_reference",
+          "parallel_setup_ms": 828.1258000060916,
+          "parallel_worker_cpu_ms": 796.875,
+          "parallel_worker_pids": [
+            33840,
+            33840
+          ],
+          "parallel_worker_threads": [
+            33204,
+            33204
+          ],
+          "parallel_payload_bytes": 524266
+        },
+        "fallback_reason": null
+      }
+    },
+    {
+      "variant": "shared_serial",
+      "cold": false,
+      "result": {
+        "choice": {
+          "kind": "LandPlayAction",
+          "_json": "{\"card\":{\"card\":\"c44\",\"name\":\"Mountain\",\"zone_revision\":1},\"kind\":\"LandPlayAction\",\"permission\":\"play_land\",\"player\":{\"player\":0},\"source_revision\":1}"
+        },
+        "value": 0.36848303834972407,
+        "used_fallback": false,
+        "root_coverage_complete": true,
+        "stop_reason": "iteration_budget",
+        "estimates": [
+          {
+            "action": {
+              "kind": "LandPlayAction",
+              "_json": "{\"card\":{\"card\":\"c44\",\"name\":\"Mountain\",\"zone_revision\":1},\"kind\":\"LandPlayAction\",\"permission\":\"play_land\",\"player\":{\"player\":0},\"source_revision\":1}"
+            },
+            "visits": 63,
+            "mean_value": 0.36848303834972407,
+            "prior_probability": 0.9299454204813117
+          },
+          {
+            "action": {
+              "kind": "PassPriorityAction",
+              "_json": "{\"kind\":\"PassPriorityAction\",\"player\":{\"player\":0}}"
+            },
+            "visits": 1,
+            "mean_value": 0.13254878839087844,
+            "prior_probability": 0.07005457951868843
+          }
+        ],
+        "metrics": {
+          "worlds_built": 2,
+          "iterations_started": 64,
+          "iterations_completed": 64,
+          "advance_attempts": 266,
+          "terminal_leaves": 0,
+          "heuristic_leaves": 64,
+          "interrupted_trajectories": 0,
+          "interruption_reasons": [],
+          "information_nodes": 2,
+          "elapsed_ms": 605.0356000196189,
+          "rollout_policy_choices": 2,
+          "rollout_random_choices": 0,
+          "history_sampling_attempts": 0,
+          "history_rejected_samples": 0,
+          "history_prefix_advances": 0,
+          "population_updates": 0,
+          "population_survivors": 0,
+          "population_size": 0,
+          "population_distinct_origins": 0,
+          "population_refreshes": 0,
+          "history_mismatch_reasons": [],
+          "selection": "puct",
+          "prior_evaluations": 2,
+          "world_initialization_ms": 145.2161999186501,
+          "advance_ms": 382.248499779962,
+          "simulator_advance_calls": 28,
+          "transition_cache_hits": 238,
+          "transition_cache_entries": 28,
+          "root_actions": 2,
+          "root_actions_visited": 2,
+          "checkpoint_hits": 0,
+          "checkpoint_entries": 0,
+          "checkpoint_skipped_decisions": 0,
+          "world_materializations": 7,
+          "world_restores": 0,
+          "trajectory_runs": 5,
+          "hierarchy_nodes": 0,
+          "hierarchy_selection_steps": 0,
+          "forced_transitions": 137,
+          "root_coverage_required": false,
+          "forced_initial_coverage": false,
+          "cpu_ms": 593.75,
+          "time_limit_ms": 0.0,
+          "minimum_trajectories": 0,
+          "projection_cache_hits": 2,
+          "projection_cache_entries": 6,
+          "candidate_orderings": 0,
+          "eligible_actions": 0,
+          "reused_information_nodes": 0,
+          "reused_root_visits": 0,
+          "forced_chain_hits": 59,
+          "forced_chain_steps": 177,
+          "native_forced_steps": 24,
+          "candidate_expansions": 0,
+          "structured_value_hits": 12208,
+          "root_menu_complete": true,
+          "parallel_workers": 1,
+          "parallel_requested_workers": 1,
+          "parallel_backend": "serial",
+          "parallel_setup_ms": 0.0,
+          "parallel_worker_cpu_ms": 0.0,
+          "parallel_worker_pids": [],
+          "parallel_worker_threads": [],
+          "parallel_payload_bytes": 0
+        },
+        "fallback_reason": null
+      }
+    },
+    {
+      "variant": "shared_serial",
+      "cold": false,
+      "result": {
+        "choice": {
+          "kind": "LandPlayAction",
+          "_json": "{\"card\":{\"card\":\"c44\",\"name\":\"Mountain\",\"zone_revision\":1},\"kind\":\"LandPlayAction\",\"permission\":\"play_land\",\"player\":{\"player\":0},\"source_revision\":1}"
+        },
+        "value": 0.36848303834972407,
+        "used_fallback": false,
+        "root_coverage_complete": true,
+        "stop_reason": "iteration_budget",
+        "estimates": [
+          {
+            "action": {
+              "kind": "LandPlayAction",
+              "_json": "{\"card\":{\"card\":\"c44\",\"name\":\"Mountain\",\"zone_revision\":1},\"kind\":\"LandPlayAction\",\"permission\":\"play_land\",\"player\":{\"player\":0},\"source_revision\":1}"
+            },
+            "visits": 63,
+            "mean_value": 0.36848303834972407,
+            "prior_probability": 0.9299454204813117
+          },
+          {
+            "action": {
+              "kind": "PassPriorityAction",
+              "_json": "{\"kind\":\"PassPriorityAction\",\"player\":{\"player\":0}}"
+            },
+            "visits": 1,
+            "mean_value": 0.13254878839087844,
+            "prior_probability": 0.07005457951868843
+          }
+        ],
+        "metrics": {
+          "worlds_built": 2,
+          "iterations_started": 64,
+          "iterations_completed": 64,
+          "advance_attempts": 266,
+          "terminal_leaves": 0,
+          "heuristic_leaves": 64,
+          "interrupted_trajectories": 0,
+          "interruption_reasons": [],
+          "information_nodes": 2,
+          "elapsed_ms": 608.3928999723867,
+          "rollout_policy_choices": 2,
+          "rollout_random_choices": 0,
+          "history_sampling_attempts": 0,
+          "history_rejected_samples": 0,
+          "history_prefix_advances": 0,
+          "population_updates": 0,
+          "population_survivors": 0,
+          "population_size": 0,
+          "population_distinct_origins": 0,
+          "population_refreshes": 0,
+          "history_mismatch_reasons": [],
+          "selection": "puct",
+          "prior_evaluations": 2,
+          "world_initialization_ms": 75.66580001730472,
+          "advance_ms": 440.84150006528944,
+          "simulator_advance_calls": 28,
+          "transition_cache_hits": 238,
+          "transition_cache_entries": 28,
+          "root_actions": 2,
+          "root_actions_visited": 2,
+          "checkpoint_hits": 0,
+          "checkpoint_entries": 0,
+          "checkpoint_skipped_decisions": 0,
+          "world_materializations": 7,
+          "world_restores": 0,
+          "trajectory_runs": 5,
+          "hierarchy_nodes": 0,
+          "hierarchy_selection_steps": 0,
+          "forced_transitions": 137,
+          "root_coverage_required": false,
+          "forced_initial_coverage": false,
+          "cpu_ms": 609.375,
+          "time_limit_ms": 0.0,
+          "minimum_trajectories": 0,
+          "projection_cache_hits": 2,
+          "projection_cache_entries": 6,
+          "candidate_orderings": 0,
+          "eligible_actions": 0,
+          "reused_information_nodes": 0,
+          "reused_root_visits": 0,
+          "forced_chain_hits": 59,
+          "forced_chain_steps": 177,
+          "native_forced_steps": 24,
+          "candidate_expansions": 0,
+          "structured_value_hits": 12208,
+          "root_menu_complete": true,
+          "parallel_workers": 1,
+          "parallel_requested_workers": 1,
+          "parallel_backend": "serial",
+          "parallel_setup_ms": 0.0,
+          "parallel_worker_cpu_ms": 0.0,
+          "parallel_worker_pids": [],
+          "parallel_worker_threads": [],
+          "parallel_payload_bytes": 0
+        },
+        "fallback_reason": null
+      }
+    },
+    {
+      "variant": "sequential_shards",
+      "cold": false,
+      "result": {
+        "choice": {
+          "kind": "LandPlayAction",
+          "_json": "{\"card\":{\"card\":\"c44\",\"name\":\"Mountain\",\"zone_revision\":1},\"kind\":\"LandPlayAction\",\"permission\":\"play_land\",\"player\":{\"player\":0},\"source_revision\":1}"
+        },
+        "value": 0.3684830383497246,
+        "used_fallback": false,
+        "root_coverage_complete": false,
+        "stop_reason": "iteration_budget",
+        "estimates": [
+          {
+            "action": {
+              "kind": "LandPlayAction",
+              "_json": "{\"card\":{\"card\":\"c44\",\"name\":\"Mountain\",\"zone_revision\":1},\"kind\":\"LandPlayAction\",\"permission\":\"play_land\",\"player\":{\"player\":0},\"source_revision\":1}"
+            },
+            "visits": 64,
+            "mean_value": 0.3684830383497246,
+            "prior_probability": 0.9299454204813117
+          },
+          {
+            "action": {
+              "kind": "PassPriorityAction",
+              "_json": "{\"kind\":\"PassPriorityAction\",\"player\":{\"player\":0}}"
+            },
+            "visits": 0,
+            "mean_value": null,
+            "prior_probability": 0.07005457951868843
+          }
+        ],
+        "metrics": {
+          "worlds_built": 4,
+          "iterations_started": 64,
+          "iterations_completed": 64,
+          "advance_attempts": 256,
+          "terminal_leaves": 0,
+          "heuristic_leaves": 64,
+          "interrupted_trajectories": 0,
+          "interruption_reasons": [],
+          "information_nodes": 4,
+          "elapsed_ms": 935.3510999353603,
+          "rollout_policy_choices": 2,
+          "rollout_random_choices": 0,
+          "history_sampling_attempts": 0,
+          "history_rejected_samples": 0,
+          "history_prefix_advances": 0,
+          "population_updates": 0,
+          "population_survivors": 0,
+          "population_size": 0,
+          "population_distinct_origins": 0,
+          "population_refreshes": 0,
+          "history_mismatch_reasons": [],
+          "selection": "puct",
+          "prior_evaluations": 4,
+          "world_initialization_ms": 206.10069995746017,
+          "advance_ms": 552.6402002433315,
+          "simulator_advance_calls": 28,
+          "transition_cache_hits": 228,
+          "transition_cache_entries": 28,
+          "root_actions": 2,
+          "root_actions_visited": 1,
+          "checkpoint_hits": 0,
+          "checkpoint_entries": 0,
+          "checkpoint_skipped_decisions": 0,
+          "world_materializations": 12,
+          "world_restores": 0,
+          "trajectory_runs": 8,
+          "hierarchy_nodes": 0,
+          "hierarchy_selection_steps": 0,
+          "forced_transitions": 128,
+          "root_coverage_required": false,
+          "forced_initial_coverage": false,
+          "cpu_ms": 1843.75,
+          "time_limit_ms": 0.0,
+          "minimum_trajectories": 2,
+          "projection_cache_hits": 4,
+          "projection_cache_entries": 8,
+          "candidate_orderings": 0,
+          "eligible_actions": 0,
+          "reused_information_nodes": 0,
+          "reused_root_visits": 0,
+          "forced_chain_hits": 56,
+          "forced_chain_steps": 168,
+          "native_forced_steps": 24,
+          "candidate_expansions": 0,
+          "structured_value_hits": 15854,
+          "root_menu_complete": true,
+          "parallel_workers": 2,
+          "parallel_requested_workers": 2,
+          "parallel_backend": "sequential_reference",
+          "parallel_setup_ms": 935.2163999574259,
+          "parallel_worker_cpu_ms": 906.25,
+          "parallel_worker_pids": [
+            33840,
+            33840
+          ],
+          "parallel_worker_threads": [
+            33204,
+            33204
+          ],
+          "parallel_payload_bytes": 524266
+        },
+        "fallback_reason": null
+      }
+    },
+    {
+      "variant": "threads",
+      "cold": false,
+      "result": {
+        "choice": {
+          "kind": "LandPlayAction",
+          "_json": "{\"card\":{\"card\":\"c44\",\"name\":\"Mountain\",\"zone_revision\":1},\"kind\":\"LandPlayAction\",\"permission\":\"play_land\",\"player\":{\"player\":0},\"source_revision\":1}"
+        },
+        "value": 0.3684830383497246,
+        "used_fallback": false,
+        "root_coverage_complete": false,
+        "stop_reason": "iteration_budget",
+        "estimates": [
+          {
+            "action": {
+              "kind": "LandPlayAction",
+              "_json": "{\"card\":{\"card\":\"c44\",\"name\":\"Mountain\",\"zone_revision\":1},\"kind\":\"LandPlayAction\",\"permission\":\"play_land\",\"player\":{\"player\":0},\"source_revision\":1}"
+            },
+            "visits": 64,
+            "mean_value": 0.3684830383497246,
+            "prior_probability": 0.9299454204813117
+          },
+          {
+            "action": {
+              "kind": "PassPriorityAction",
+              "_json": "{\"kind\":\"PassPriorityAction\",\"player\":{\"player\":0}}"
+            },
+            "visits": 0,
+            "mean_value": null,
+            "prior_probability": 0.07005457951868843
+          }
+        ],
+        "metrics": {
+          "worlds_built": 4,
+          "iterations_started": 64,
+          "iterations_completed": 64,
+          "advance_attempts": 256,
+          "terminal_leaves": 0,
+          "heuristic_leaves": 64,
+          "interrupted_trajectories": 0,
+          "interruption_reasons": [],
+          "information_nodes": 4,
+          "elapsed_ms": 842.4949999898672,
+          "rollout_policy_choices": 2,
+          "rollout_random_choices": 0,
+          "history_sampling_attempts": 0,
+          "history_rejected_samples": 0,
+          "history_prefix_advances": 0,
+          "population_updates": 0,
+          "population_survivors": 0,
+          "population_size": 0,
+          "population_distinct_origins": 0,
+          "population_refreshes": 0,
+          "history_mismatch_reasons": [],
+          "selection": "puct",
+          "prior_evaluations": 4,
+          "world_initialization_ms": 292.79720003250986,
+          "advance_ms": 1186.8992001982406,
+          "simulator_advance_calls": 28,
+          "transition_cache_hits": 228,
+          "transition_cache_entries": 28,
+          "root_actions": 2,
+          "root_actions_visited": 1,
+          "checkpoint_hits": 0,
+          "checkpoint_entries": 0,
+          "checkpoint_skipped_decisions": 0,
+          "world_materializations": 12,
+          "world_restores": 0,
+          "trajectory_runs": 8,
+          "hierarchy_nodes": 0,
+          "hierarchy_selection_steps": 0,
+          "forced_transitions": 128,
+          "root_coverage_required": false,
+          "forced_initial_coverage": false,
+          "cpu_ms": 843.75,
+          "time_limit_ms": 0.0,
+          "minimum_trajectories": 2,
+          "projection_cache_hits": 4,
+          "projection_cache_entries": 8,
+          "candidate_orderings": 0,
+          "eligible_actions": 0,
+          "reused_information_nodes": 0,
+          "reused_root_visits": 0,
+          "forced_chain_hits": 56,
+          "forced_chain_steps": 168,
+          "native_forced_steps": 24,
+          "candidate_expansions": 0,
+          "structured_value_hits": 15854,
+          "root_menu_complete": true,
+          "parallel_workers": 2,
+          "parallel_requested_workers": 2,
+          "parallel_backend": "thread",
+          "parallel_setup_ms": 19.50529997702688,
+          "parallel_worker_cpu_ms": 812.5,
+          "parallel_worker_pids": [
+            33840,
+            33840
+          ],
+          "parallel_worker_threads": [
+            6792,
+            2216
+          ],
+          "parallel_payload_bytes": 524266
+        },
+        "fallback_reason": null
+      }
+    },
+    {
+      "variant": "processes",
+      "cold": false,
+      "result": {
+        "choice": {
+          "kind": "LandPlayAction",
+          "_json": "{\"card\":{\"card\":\"c44\",\"name\":\"Mountain\",\"zone_revision\":1},\"kind\":\"LandPlayAction\",\"permission\":\"play_land\",\"player\":{\"player\":0},\"source_revision\":1}"
+        },
+        "value": 0.3684830383497246,
+        "used_fallback": false,
+        "root_coverage_complete": false,
+        "stop_reason": "iteration_budget",
+        "estimates": [
+          {
+            "action": {
+              "kind": "LandPlayAction",
+              "_json": "{\"card\":{\"card\":\"c44\",\"name\":\"Mountain\",\"zone_revision\":1},\"kind\":\"LandPlayAction\",\"permission\":\"play_land\",\"player\":{\"player\":0},\"source_revision\":1}"
+            },
+            "visits": 64,
+            "mean_value": 0.3684830383497246,
+            "prior_probability": 0.9299454204813117
+          },
+          {
+            "action": {
+              "kind": "PassPriorityAction",
+              "_json": "{\"kind\":\"PassPriorityAction\",\"player\":{\"player\":0}}"
+            },
+            "visits": 0,
+            "mean_value": null,
+            "prior_probability": 0.07005457951868843
+          }
+        ],
+        "metrics": {
+          "worlds_built": 4,
+          "iterations_started": 64,
+          "iterations_completed": 64,
+          "advance_attempts": 256,
+          "terminal_leaves": 0,
+          "heuristic_leaves": 64,
+          "interrupted_trajectories": 0,
+          "interruption_reasons": [],
+          "information_nodes": 4,
+          "elapsed_ms": 469.573299982585,
+          "rollout_policy_choices": 2,
+          "rollout_random_choices": 0,
+          "history_sampling_attempts": 0,
+          "history_rejected_samples": 0,
+          "history_prefix_advances": 0,
+          "population_updates": 0,
+          "population_survivors": 0,
+          "population_size": 0,
+          "population_distinct_origins": 0,
+          "population_refreshes": 0,
+          "history_mismatch_reasons": [],
+          "selection": "puct",
+          "prior_evaluations": 4,
+          "world_initialization_ms": 133.6304999422282,
+          "advance_ms": 659.9193000001833,
+          "simulator_advance_calls": 28,
+          "transition_cache_hits": 228,
+          "transition_cache_entries": 28,
+          "root_actions": 2,
+          "root_actions_visited": 1,
+          "checkpoint_hits": 0,
+          "checkpoint_entries": 0,
+          "checkpoint_skipped_decisions": 0,
+          "world_materializations": 12,
+          "world_restores": 0,
+          "trajectory_runs": 8,
+          "hierarchy_nodes": 0,
+          "hierarchy_selection_steps": 0,
+          "forced_transitions": 128,
+          "root_coverage_required": false,
+          "forced_initial_coverage": false,
+          "cpu_ms": 890.625,
+          "time_limit_ms": 0.0,
+          "minimum_trajectories": 2,
+          "projection_cache_hits": 4,
+          "projection_cache_entries": 8,
+          "candidate_orderings": 0,
+          "eligible_actions": 0,
+          "reused_information_nodes": 0,
+          "reused_root_visits": 0,
+          "forced_chain_hits": 56,
+          "forced_chain_steps": 168,
+          "native_forced_steps": 24,
+          "candidate_expansions": 0,
+          "structured_value_hits": 15854,
+          "root_menu_complete": true,
+          "parallel_workers": 2,
+          "parallel_requested_workers": 2,
+          "parallel_backend": "process",
+          "parallel_setup_ms": 17.379000084474683,
+          "parallel_worker_cpu_ms": 875.0,
+          "parallel_worker_pids": [
+            22032,
+            150468
+          ],
+          "parallel_worker_threads": [
+            154620,
+            92960
+          ],
+          "parallel_payload_bytes": 524266
+        },
+        "fallback_reason": null
+      }
+    },
+    {
+      "variant": "processes",
+      "cold": false,
+      "result": {
+        "choice": {
+          "kind": "LandPlayAction",
+          "_json": "{\"card\":{\"card\":\"c44\",\"name\":\"Mountain\",\"zone_revision\":1},\"kind\":\"LandPlayAction\",\"permission\":\"play_land\",\"player\":{\"player\":0},\"source_revision\":1}"
+        },
+        "value": 0.3684830383497246,
+        "used_fallback": false,
+        "root_coverage_complete": false,
+        "stop_reason": "iteration_budget",
+        "estimates": [
+          {
+            "action": {
+              "kind": "LandPlayAction",
+              "_json": "{\"card\":{\"card\":\"c44\",\"name\":\"Mountain\",\"zone_revision\":1},\"kind\":\"LandPlayAction\",\"permission\":\"play_land\",\"player\":{\"player\":0},\"source_revision\":1}"
+            },
+            "visits": 64,
+            "mean_value": 0.3684830383497246,
+            "prior_probability": 0.9299454204813117
+          },
+          {
+            "action": {
+              "kind": "PassPriorityAction",
+              "_json": "{\"kind\":\"PassPriorityAction\",\"player\":{\"player\":0}}"
+            },
+            "visits": 0,
+            "mean_value": null,
+            "prior_probability": 0.07005457951868843
+          }
+        ],
+        "metrics": {
+          "worlds_built": 4,
+          "iterations_started": 64,
+          "iterations_completed": 64,
+          "advance_attempts": 256,
+          "terminal_leaves": 0,
+          "heuristic_leaves": 64,
+          "interrupted_trajectories": 0,
+          "interruption_reasons": [],
+          "information_nodes": 4,
+          "elapsed_ms": 522.935300017707,
+          "rollout_policy_choices": 2,
+          "rollout_random_choices": 0,
+          "history_sampling_attempts": 0,
+          "history_rejected_samples": 0,
+          "history_prefix_advances": 0,
+          "population_updates": 0,
+          "population_survivors": 0,
+          "population_size": 0,
+          "population_distinct_origins": 0,
+          "population_refreshes": 0,
+          "history_mismatch_reasons": [],
+          "selection": "puct",
+          "prior_evaluations": 4,
+          "world_initialization_ms": 176.15500011015683,
+          "advance_ms": 519.1816001897678,
+          "simulator_advance_calls": 28,
+          "transition_cache_hits": 228,
+          "transition_cache_entries": 28,
+          "root_actions": 2,
+          "root_actions_visited": 1,
+          "checkpoint_hits": 0,
+          "checkpoint_entries": 0,
+          "checkpoint_skipped_decisions": 0,
+          "world_materializations": 12,
+          "world_restores": 0,
+          "trajectory_runs": 8,
+          "hierarchy_nodes": 0,
+          "hierarchy_selection_steps": 0,
+          "forced_transitions": 128,
+          "root_coverage_required": false,
+          "forced_initial_coverage": false,
+          "cpu_ms": 1000.0,
+          "time_limit_ms": 0.0,
+          "minimum_trajectories": 2,
+          "projection_cache_hits": 4,
+          "projection_cache_entries": 8,
+          "candidate_orderings": 0,
+          "eligible_actions": 0,
+          "reused_information_nodes": 0,
+          "reused_root_visits": 0,
+          "forced_chain_hits": 56,
+          "forced_chain_steps": 168,
+          "native_forced_steps": 24,
+          "candidate_expansions": 0,
+          "structured_value_hits": 15854,
+          "root_menu_complete": true,
+          "parallel_workers": 2,
+          "parallel_requested_workers": 2,
+          "parallel_backend": "process",
+          "parallel_setup_ms": 20.362499984912574,
+          "parallel_worker_cpu_ms": 968.75,
+          "parallel_worker_pids": [
+            150468,
+            22032
+          ],
+          "parallel_worker_threads": [
+            92960,
+            154620
+          ],
+          "parallel_payload_bytes": 524266
+        },
+        "fallback_reason": null
+      }
+    },
+    {
+      "variant": "threads",
+      "cold": false,
+      "result": {
+        "choice": {
+          "kind": "LandPlayAction",
+          "_json": "{\"card\":{\"card\":\"c44\",\"name\":\"Mountain\",\"zone_revision\":1},\"kind\":\"LandPlayAction\",\"permission\":\"play_land\",\"player\":{\"player\":0},\"source_revision\":1}"
+        },
+        "value": 0.3684830383497246,
+        "used_fallback": false,
+        "root_coverage_complete": false,
+        "stop_reason": "iteration_budget",
+        "estimates": [
+          {
+            "action": {
+              "kind": "LandPlayAction",
+              "_json": "{\"card\":{\"card\":\"c44\",\"name\":\"Mountain\",\"zone_revision\":1},\"kind\":\"LandPlayAction\",\"permission\":\"play_land\",\"player\":{\"player\":0},\"source_revision\":1}"
+            },
+            "visits": 64,
+            "mean_value": 0.3684830383497246,
+            "prior_probability": 0.9299454204813117
+          },
+          {
+            "action": {
+              "kind": "PassPriorityAction",
+              "_json": "{\"kind\":\"PassPriorityAction\",\"player\":{\"player\":0}}"
+            },
+            "visits": 0,
+            "mean_value": null,
+            "prior_probability": 0.07005457951868843
+          }
+        ],
+        "metrics": {
+          "worlds_built": 4,
+          "iterations_started": 64,
+          "iterations_completed": 64,
+          "advance_attempts": 256,
+          "terminal_leaves": 0,
+          "heuristic_leaves": 64,
+          "interrupted_trajectories": 0,
+          "interruption_reasons": [],
+          "information_nodes": 4,
+          "elapsed_ms": 874.6163999894634,
+          "rollout_policy_choices": 2,
+          "rollout_random_choices": 0,
+          "history_sampling_attempts": 0,
+          "history_rejected_samples": 0,
+          "history_prefix_advances": 0,
+          "population_updates": 0,
+          "population_survivors": 0,
+          "population_size": 0,
+          "population_distinct_origins": 0,
+          "population_refreshes": 0,
+          "history_mismatch_reasons": [],
+          "selection": "puct",
+          "prior_evaluations": 4,
+          "world_initialization_ms": 492.53150005824864,
+          "advance_ms": 1077.5349999312311,
+          "simulator_advance_calls": 28,
+          "transition_cache_hits": 228,
+          "transition_cache_entries": 28,
+          "root_actions": 2,
+          "root_actions_visited": 1,
+          "checkpoint_hits": 0,
+          "checkpoint_entries": 0,
+          "checkpoint_skipped_decisions": 0,
+          "world_materializations": 12,
+          "world_restores": 0,
+          "trajectory_runs": 8,
+          "hierarchy_nodes": 0,
+          "hierarchy_selection_steps": 0,
+          "forced_transitions": 128,
+          "root_coverage_required": false,
+          "forced_initial_coverage": false,
+          "cpu_ms": 859.375,
+          "time_limit_ms": 0.0,
+          "minimum_trajectories": 2,
+          "projection_cache_hits": 4,
+          "projection_cache_entries": 8,
+          "candidate_orderings": 0,
+          "eligible_actions": 0,
+          "reused_information_nodes": 0,
+          "reused_root_visits": 0,
+          "forced_chain_hits": 56,
+          "forced_chain_steps": 168,
+          "native_forced_steps": 24,
+          "candidate_expansions": 0,
+          "structured_value_hits": 15854,
+          "root_menu_complete": true,
+          "parallel_workers": 2,
+          "parallel_requested_workers": 2,
+          "parallel_backend": "thread",
+          "parallel_setup_ms": 18.950800062157214,
+          "parallel_worker_cpu_ms": 843.75,
+          "parallel_worker_pids": [
+            33840,
+            33840
+          ],
+          "parallel_worker_threads": [
+            2216,
+            6792
+          ],
+          "parallel_payload_bytes": 524266
+        },
+        "fallback_reason": null
+      }
+    },
+    {
+      "variant": "sequential_shards",
+      "cold": false,
+      "result": {
+        "choice": {
+          "kind": "LandPlayAction",
+          "_json": "{\"card\":{\"card\":\"c44\",\"name\":\"Mountain\",\"zone_revision\":1},\"kind\":\"LandPlayAction\",\"permission\":\"play_land\",\"player\":{\"player\":0},\"source_revision\":1}"
+        },
+        "value": 0.3684830383497246,
+        "used_fallback": false,
+        "root_coverage_complete": false,
+        "stop_reason": "iteration_budget",
+        "estimates": [
+          {
+            "action": {
+              "kind": "LandPlayAction",
+              "_json": "{\"card\":{\"card\":\"c44\",\"name\":\"Mountain\",\"zone_revision\":1},\"kind\":\"LandPlayAction\",\"permission\":\"play_land\",\"player\":{\"player\":0},\"source_revision\":1}"
+            },
+            "visits": 64,
+            "mean_value": 0.3684830383497246,
+            "prior_probability": 0.9299454204813117
+          },
+          {
+            "action": {
+              "kind": "PassPriorityAction",
+              "_json": "{\"kind\":\"PassPriorityAction\",\"player\":{\"player\":0}}"
+            },
+            "visits": 0,
+            "mean_value": null,
+            "prior_probability": 0.07005457951868843
+          }
+        ],
+        "metrics": {
+          "worlds_built": 4,
+          "iterations_started": 64,
+          "iterations_completed": 64,
+          "advance_attempts": 256,
+          "terminal_leaves": 0,
+          "heuristic_leaves": 64,
+          "interrupted_trajectories": 0,
+          "interruption_reasons": [],
+          "information_nodes": 4,
+          "elapsed_ms": 922.1786999842152,
+          "rollout_policy_choices": 2,
+          "rollout_random_choices": 0,
+          "history_sampling_attempts": 0,
+          "history_rejected_samples": 0,
+          "history_prefix_advances": 0,
+          "population_updates": 0,
+          "population_survivors": 0,
+          "population_size": 0,
+          "population_distinct_origins": 0,
+          "population_refreshes": 0,
+          "history_mismatch_reasons": [],
+          "selection": "puct",
+          "prior_evaluations": 4,
+          "world_initialization_ms": 222.68289979547262,
+          "advance_ms": 520.125399925746,
+          "simulator_advance_calls": 28,
+          "transition_cache_hits": 228,
+          "transition_cache_entries": 28,
+          "root_actions": 2,
+          "root_actions_visited": 1,
+          "checkpoint_hits": 0,
+          "checkpoint_entries": 0,
+          "checkpoint_skipped_decisions": 0,
+          "world_materializations": 12,
+          "world_restores": 0,
+          "trajectory_runs": 8,
+          "hierarchy_nodes": 0,
+          "hierarchy_selection_steps": 0,
+          "forced_transitions": 128,
+          "root_coverage_required": false,
+          "forced_initial_coverage": false,
+          "cpu_ms": 1828.125,
+          "time_limit_ms": 0.0,
+          "minimum_trajectories": 2,
+          "projection_cache_hits": 4,
+          "projection_cache_entries": 8,
+          "candidate_orderings": 0,
+          "eligible_actions": 0,
+          "reused_information_nodes": 0,
+          "reused_root_visits": 0,
+          "forced_chain_hits": 56,
+          "forced_chain_steps": 168,
+          "native_forced_steps": 24,
+          "candidate_expansions": 0,
+          "structured_value_hits": 15854,
+          "root_menu_complete": true,
+          "parallel_workers": 2,
+          "parallel_requested_workers": 2,
+          "parallel_backend": "sequential_reference",
+          "parallel_setup_ms": 922.026599990204,
+          "parallel_worker_cpu_ms": 906.25,
+          "parallel_worker_pids": [
+            33840,
+            33840
+          ],
+          "parallel_worker_threads": [
+            33204,
+            33204
+          ],
+          "parallel_payload_bytes": 524266
+        },
+        "fallback_reason": null
+      }
+    },
+    {
+      "variant": "shared_serial",
+      "cold": false,
+      "result": {
+        "choice": {
+          "kind": "LandPlayAction",
+          "_json": "{\"card\":{\"card\":\"c44\",\"name\":\"Mountain\",\"zone_revision\":1},\"kind\":\"LandPlayAction\",\"permission\":\"play_land\",\"player\":{\"player\":0},\"source_revision\":1}"
+        },
+        "value": 0.36848303834972407,
+        "used_fallback": false,
+        "root_coverage_complete": true,
+        "stop_reason": "iteration_budget",
+        "estimates": [
+          {
+            "action": {
+              "kind": "LandPlayAction",
+              "_json": "{\"card\":{\"card\":\"c44\",\"name\":\"Mountain\",\"zone_revision\":1},\"kind\":\"LandPlayAction\",\"permission\":\"play_land\",\"player\":{\"player\":0},\"source_revision\":1}"
+            },
+            "visits": 63,
+            "mean_value": 0.36848303834972407,
+            "prior_probability": 0.9299454204813117
+          },
+          {
+            "action": {
+              "kind": "PassPriorityAction",
+              "_json": "{\"kind\":\"PassPriorityAction\",\"player\":{\"player\":0}}"
+            },
+            "visits": 1,
+            "mean_value": 0.13254878839087844,
+            "prior_probability": 0.07005457951868843
+          }
+        ],
+        "metrics": {
+          "worlds_built": 2,
+          "iterations_started": 64,
+          "iterations_completed": 64,
+          "advance_attempts": 266,
+          "terminal_leaves": 0,
+          "heuristic_leaves": 64,
+          "interrupted_trajectories": 0,
+          "interruption_reasons": [],
+          "information_nodes": 2,
+          "elapsed_ms": 536.7467999458313,
+          "rollout_policy_choices": 2,
+          "rollout_random_choices": 0,
+          "history_sampling_attempts": 0,
+          "history_rejected_samples": 0,
+          "history_prefix_advances": 0,
+          "population_updates": 0,
+          "population_survivors": 0,
+          "population_size": 0,
+          "population_distinct_origins": 0,
+          "population_refreshes": 0,
+          "history_mismatch_reasons": [],
+          "selection": "puct",
+          "prior_evaluations": 2,
+          "world_initialization_ms": 67.63220007997006,
+          "advance_ms": 323.5127998050302,
+          "simulator_advance_calls": 28,
+          "transition_cache_hits": 238,
+          "transition_cache_entries": 28,
+          "root_actions": 2,
+          "root_actions_visited": 2,
+          "checkpoint_hits": 0,
+          "checkpoint_entries": 0,
+          "checkpoint_skipped_decisions": 0,
+          "world_materializations": 7,
+          "world_restores": 0,
+          "trajectory_runs": 5,
+          "hierarchy_nodes": 0,
+          "hierarchy_selection_steps": 0,
+          "forced_transitions": 137,
+          "root_coverage_required": false,
+          "forced_initial_coverage": false,
+          "cpu_ms": 531.25,
+          "time_limit_ms": 0.0,
+          "minimum_trajectories": 0,
+          "projection_cache_hits": 2,
+          "projection_cache_entries": 6,
+          "candidate_orderings": 0,
+          "eligible_actions": 0,
+          "reused_information_nodes": 0,
+          "reused_root_visits": 0,
+          "forced_chain_hits": 59,
+          "forced_chain_steps": 177,
+          "native_forced_steps": 24,
+          "candidate_expansions": 0,
+          "structured_value_hits": 12208,
+          "root_menu_complete": true,
+          "parallel_workers": 1,
+          "parallel_requested_workers": 1,
+          "parallel_backend": "serial",
+          "parallel_setup_ms": 0.0,
+          "parallel_worker_cpu_ms": 0.0,
+          "parallel_worker_pids": [],
+          "parallel_worker_threads": [],
+          "parallel_payload_bytes": 0
+        },
+        "fallback_reason": null
+      }
+    }
+  ]
+}

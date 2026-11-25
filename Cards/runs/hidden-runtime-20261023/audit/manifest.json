@@ -1,0 +1,149 @@
+{
+  "scope": "Sequential real-game MCTS coverage audit, with every fallback linked to JSONL.\n\nThis is defect discovery, not a tournament or equal-work performance comparison.\nAll ten unordered starter color pairs are exercised, with both agent seats and\nstarting positions. Extra UCT/hierarchical runs use the same latency budget.\n",
+  "settings": {
+    "selection": "puct",
+    "prior": "heuristic",
+    "compress_forced": true,
+    "force_initial_coverage": false,
+    "require_root_coverage": false,
+    "max_search_ms": 500,
+    "min_trajectories": 1,
+    "search_seed": 7001,
+    "worlds": 2,
+    "iterations": 256,
+    "max_depth": 4,
+    "max_extensions": 8,
+    "max_advances": 4096,
+    "max_options": 4096,
+    "max_simulator_decisions": 2048,
+    "max_phases": 512,
+    "trajectory_mode": "continuous"
+  },
+  "cases": [
+    {
+      "name": "01-white-blue",
+      "own": "white",
+      "other": "blue",
+      "seed": 101,
+      "search_seed": 7001,
+      "seat": 0,
+      "starting": 0,
+      "selection": "puct"
+    },
+    {
+      "name": "02-white-black",
+      "own": "white",
+      "other": "black",
+      "seed": 102,
+      "search_seed": 7002,
+      "seat": 1,
+      "starting": 0,
+      "selection": "puct"
+    },
+    {
+      "name": "03-blue-black",
+      "own": "blue",
+      "other": "black",
+      "seed": 103,
+      "search_seed": 7003,
+      "seat": 0,
+      "starting": 1,
+      "selection": "puct"
+    },
+    {
+      "name": "04-blue-red",
+      "own": "blue",
+      "other": "red",
+      "seed": 104,
+      "search_seed": 7004,
+      "seat": 1,
+      "starting": 1,
+      "selection": "puct"
+    },
+    {
+      "name": "05-black-red",
+      "own": "black",
+      "other": "red",
+      "seed": 105,
+      "search_seed": 7005,
+      "seat": 0,
+      "starting": 0,
+      "selection": "puct"
+    },
+    {
+      "name": "06-black-green",
+      "own": "black",
+      "other": "green",
+      "seed": 106,
+      "search_seed": 7006,
+      "seat": 1,
+      "starting": 0,
+      "selection": "puct"
+    },
+    {
+      "name": "07-red-green",
+      "own": "red",
+      "other": "green",
+      "seed": 107,
+      "search_seed": 7007,
+      "seat": 0,
+      "starting": 1,
+      "selection": "puct"
+    },
+    {
+      "name": "08-red-white",
+      "own": "red",
+      "other": "white",
+      "seed": 108,
+      "search_seed": 7008,
+      "seat": 1,
+      "starting": 1,
+      "selection": "puct"
+    },
+    {
+      "name": "09-green-white",
+      "own": "green",
+      "other": "white",
+      "seed": 109,
+      "search_seed": 7009,
+      "seat": 0,
+      "starting": 0,
+      "selection": "puct"
+    },
+    {
+      "name": "10-green-blue",
+      "own": "green",
+      "other": "blue",
+      "seed": 110,
+      "search_seed": 7010,
+      "seat": 1,
+      "starting": 0,
+      "selection": "puct"
+    },
+    {
+      "name": "11-uct-white-green",
+      "own": "white",
+      "other": "green",
+      "seed": 201,
+      "search_seed": 7101,
+      "seat": 1,
+      "starting": 1,
+      "selection": "uct"
+    },
+    {
+      "name": "12-hierarchical-blue-black",
+      "own": "blue",
+      "other": "black",
+      "seed": 202,
+      "search_seed": 7102,
+      "seat": 1,
+      "starting": 0,
+      "selection": "hierarchical_puct"
+    }
+  ],
+  "python": "3.12.13 (main, Mar  3 2026, 15:01:35) [MSC v.1944 64 bit (AMD64)]",
+  "executable": "C:\\Users\\stepa\\Documents\\Bakalarka\\Bakalarka\\.venv\\Scripts\\python.exe",
+  "timeout_seconds": 300,
+  "hash_seed": "0",
+  "execution": "sequential subprocess per game"
+}

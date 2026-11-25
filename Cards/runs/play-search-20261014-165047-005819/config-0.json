@@ -1,0 +1,40 @@
+{
+  "seed": 42,
+  "starting_player": 0,
+  "max_turns": 80,
+  "max_decisions": 3000,
+  "players": [
+    {
+      "name": "MCTS",
+      "deck": "red",
+      "agent": {
+        "type": "mcts",
+        "mcts": {
+          "deck_knowledge": "both_lists",
+          "search_seed": 7001,
+          "worlds": 1,
+          "population_size": 1,
+          "iterations": 4,
+          "max_depth": 1,
+          "max_advances": 16,
+          "max_attempts": 8,
+          "max_prefix_advances": 48,
+          "max_simulator_decisions": 256,
+          "max_phases": 256,
+          "condition_opening_reveal": true,
+          "selection": "uct",
+          "prior": "uniform",
+          "transition_cache_size": 2048,
+          "checkpoint_limit": 0
+        }
+      }
+    },
+    {
+      "name": "Simple",
+      "deck": "white",
+      "agent": {
+        "type": "simple"
+      }
+    }
+  ]
+}

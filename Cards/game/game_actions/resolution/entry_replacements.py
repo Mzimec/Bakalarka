@@ -1,5 +1,6 @@
 """Entry instructions are accumulated before the permanent exists on the battlefield."""
 
+from __future__ import annotations
 from copy import copy
 
 from .replacement_effects import ReplacementEffectDefinition
@@ -7,15 +8,13 @@ from ...enums import ZoneType
 from ...operations.card_operations import MoveCardOperation
 
 
-def _entry_matches(state, effect, operation, self_only, predicate, target_spec=None):
+def _entry_matches(state: object, effect: object, operation: object, self_only: bool, predicate: object, target_spec: object | None = None) -> bool:
     """!
     @brief Check whether a replacement effect applies to a battlefield entry.
-
     Accepts only moves from another zone onto the battlefield. Optional
     restrictions may limit the effect to its own source, a target
     specification evaluated against projected entry characteristics, or
     an additional custom predicate.
-
     @param state Current game state.
     @param effect Runtime replacement effect being evaluated.
     @param operation Candidate move operation.
@@ -69,16 +68,15 @@ def _entry_matches(state, effect, operation, self_only, predicate, target_spec=N
 
 
 def enters_tapped(
-    key,
+    key: str,
     *,
-    self_only=True,
-    predicate=None,
-    target_spec=None,
-    **kwargs,
-):
+    self_only: bool = True,
+    predicate: object | None = None,
+    target_spec: object | None = None,
+    **kwargs: object,
+) -> ReplacementEffectDefinition:
     """!
     @brief Create a replacement effect causing matching permanents to enter tapped.
-
     @param key Unique replacement-effect key.
     @param self_only Whether the effect applies only to its own source.
     @param predicate Optional additional applicability predicate.
@@ -86,7 +84,7 @@ def enters_tapped(
     @return Replacement-effect definition for entering tapped.
     """
 
-    def matches(state, effect, operation):
+    def matches(state: object, effect: object, operation: object) -> bool:
         """!
         @brief Check whether this effect should replace the entry operation.
         """
@@ -102,7 +100,7 @@ def enters_tapped(
             and not operation.entry_tapped
         )
 
-    def transform(state, effect, operation):
+    def transform(state: object, effect: object, operation: object) -> tuple[object, ...]:
         """!
         @brief Return a copy of the move operation marked to enter tapped.
         """
@@ -120,18 +118,17 @@ def enters_tapped(
 
 
 def enters_with_counters(
-    key,
-    counter,
-    amount,
+    key: str,
+    counter: object,
+    amount: int,
     *,
-    self_only=True,
-    predicate=None,
-    target_spec=None,
-    **kwargs,
-):
+    self_only: bool = True,
+    predicate: object | None = None,
+    target_spec: object | None = None,
+    **kwargs: object,
+) -> ReplacementEffectDefinition:
     """!
     @brief Create a replacement effect adding counters as a permanent enters.
-
     @param key Unique replacement-effect key.
     @param counter Counter type to place on the entering permanent.
     @param amount Number of counters to add.
@@ -144,7 +141,7 @@ def enters_with_counters(
     if type(amount) is not int or amount < 0:
         raise ValueError("Entry counters must be a nonnegative integer.")
 
-    def matches(state, effect, operation):
+    def matches(state: object, effect: object, operation: object) -> bool:
         """!
         @brief Check whether this effect should replace the entry operation.
         """
@@ -157,7 +154,7 @@ def enters_with_counters(
             target_spec,
         )
 
-    def transform(state, effect, operation):
+    def transform(state: object, effect: object, operation: object) -> tuple[object, ...]:
         """!
         @brief Return a copy of the move operation with added entry counters.
         """
@@ -182,19 +179,17 @@ def enters_with_counters(
 
 
 def enters_under_control(
-    key,
-    controller,
+    key: str,
+    controller: object,
     *,
-    self_only=False,
-    predicate=None,
-    target_spec=None,
-    **kwargs,
-):
+    self_only: bool = False,
+    predicate: object | None = None,
+    target_spec: object | None = None,
+    **kwargs: object,
+) -> ReplacementEffectDefinition:
     """!
     @brief Create a replacement effect changing who controls a permanent as it enters.
-
     `controller(state, effect, operation)` must return the proposed controller.
-
     @param key Unique replacement-effect key.
     @param controller Callback selecting the entering permanent's controller.
     @param self_only Whether the effect applies only to its own source.
@@ -203,7 +198,7 @@ def enters_under_control(
     @return Replacement-effect definition for entry under another controller.
     """
 
-    def matches(state, effect, operation):
+    def matches(state: object, effect: object, operation: object) -> bool:
         """!
         @brief Check whether this effect should replace the entry operation.
         """
@@ -216,7 +211,7 @@ def enters_under_control(
             target_spec,
         )
 
-    def transform(state, effect, operation):
+    def transform(state: object, effect: object, operation: object) -> tuple[object, ...]:
         """!
         @brief Return a copy of the move operation with a new entry controller.
         """
@@ -242,20 +237,18 @@ def enters_under_control(
 
 
 def enters_as_copy(
-    key,
-    choose,
+    key: str,
+    choose: object,
     *,
-    predicate=None,
-    target_spec=None,
-    optional=False,
-    **kwargs,
-):
+    predicate: object | None = None,
+    target_spec: object | None = None,
+    optional: bool = False,
+    **kwargs: object,
+) -> ReplacementEffectDefinition:
     """!
     @brief Create a replacement effect causing a permanent to enter as a copy.
-
     `choose(state, effect, operation)` must return a battlefield card to
     copy, or `None` if no copy should be applied.
-
     @param key Unique replacement-effect key.
     @param choose Callback selecting the permanent to copy.
     @param predicate Optional additional applicability predicate.
@@ -264,7 +257,7 @@ def enters_as_copy(
     @return Replacement-effect definition for entering as a copy.
     """
 
-    def matches(state, effect, operation):
+    def matches(state: object, effect: object, operation: object) -> bool:
         """!
         @brief Check whether this effect should replace the entry operation.
         """
@@ -277,7 +270,7 @@ def enters_as_copy(
             target_spec,
         )
 
-    def transform(state, effect, operation):
+    def transform(state: object, effect: object, operation: object) -> tuple[object, ...]:
         """!
         @brief Return a copy of the move operation with copy characteristics set.
         """

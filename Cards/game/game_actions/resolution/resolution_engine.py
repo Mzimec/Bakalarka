@@ -25,7 +25,6 @@ if TYPE_CHECKING:
 class ExecutionResult:
     """!
     @brief Result returned after trying to resolve one scheduled action.
-
     @var success
         Whether the resolution completed successfully.
     @var error
@@ -43,7 +42,6 @@ class ExecutionResult:
 class ResolutionEngine:
     """!
     @brief Resolve scheduled actions through validation, replacement and execution.
-
     Coordinates operation generation, replacement effects, event publication,
     state-based actions and triggered abilities. Cost resolutions additionally
     use a rollback boundary so partially paid costs cannot escape on failure.
@@ -53,11 +51,10 @@ class ResolutionEngine:
         self,
         operation_executor: OperationExecutor,
         event_bus: EventBus,
-        sba_rules=None,
+        sba_rules: object | None = None,
     ) -> None:
         """!
         @brief Create a resolution engine and its state/trigger resolvers.
-
         @param operation_executor Executor used for atomic runtime operations.
         @param event_bus Event publisher and trigger collector.
         @param sba_rules Optional state-based action rules. Defaults to the
@@ -93,7 +90,7 @@ class ResolutionEngine:
         # Enables stricter per-operation validation while paying a cost.
         self._executing_cost = False
 
-    def resolve(self, state, resolution):
+    def resolve(self, state: State, resolution: ScheduledResolution) -> ExecutionResult:
         """! @brief Keep a state trigger pending throughout its own resolution. """
         scheduled = getattr(resolution, "action_resolution", resolution)
         registration = scheduled.context.trigger_registration
@@ -115,11 +112,9 @@ class ResolutionEngine:
     ) -> ExecutionResult:
         """!
         @brief Resolve one scheduled intent.
-
         Cost intents resolved outside an existing action transaction receive
         their own rollback boundary. Non-cost resolutions, and costs already
         inside a transaction, proceed directly through `_resolve`.
-
         @param state Current game state.
         @param resolution Scheduled resolution or stack wrapper to execute.
         @return Execution result describing success, validation failure and events.
@@ -141,7 +136,7 @@ class ResolutionEngine:
         from .cost_transaction import CostTransaction, CostPaymentError
         from .validator import ValidationResult
 
-        transaction = CostTransaction(state)
+        transaction = CostTransaction(state, resolutions=(scheduled,))
         previous = self._pending_triggers
 
         self._cost_transaction = transaction
@@ -167,6 +162,7 @@ class ResolutionEngine:
             raise
 
         finally:
+            transaction.close()
             pending = self._pending_triggers
             self._cost_transaction = None
             self._pending_triggers = previous
@@ -200,12 +196,10 @@ class ResolutionEngine:
     ) -> ExecutionResult:
         """!
         @brief Run the core resolution pipeline for one prepared intent.
-
         Performs preparation and validation, checks intervening-if conditions,
         materializes operations, validates costs, applies replacements,
         executes operations and finally processes SBAs/triggers when not
         deferred by an enclosing transaction.
-
         @param state Current game state.
         @param resolution Scheduled resolution or stack wrapper.
         @return Execution result for this intent.
@@ -341,28 +335,26 @@ class ResolutionEngine:
     ) -> ExecutionResult:
         """!
         @brief Resolve an intent using the name expected by existing callers.
-
         @param state Current game state.
         @param resolution Scheduled resolution to execute.
         @return Result returned by `resolve`.
         """
         return self.resolve(state, resolution)
 
-    def resolve_simultaneous(self, state, operations):
+    def resolve_simultaneous(self, state: State, operations: Iterable[Operation], *, ordering_frame=None) -> ExecutionResult:
         """!
         @brief Resolve a simultaneous operation group and settle resulting state.
-
         Replacement effects are chosen for the whole batch before execution,
         then events are emitted and state-based actions/triggers are processed.
-
         @param state Current game state.
         @param operations Operations belonging to one simultaneous event group.
         @return Successful execution result containing all resulting events.
         """
-        replaced = self._apply_replacement_effects(
-            state,
-            tuple(operations),
-        )
+        if ordering_frame is None:
+            replaced = self._apply_replacement_effects(state, tuple(operations))
+        else:
+            from .replacement_effects import ReplacementResolver
+            replaced = ReplacementResolver().replace(state, tuple(operations), ordering_frame=ordering_frame)
 
         events = self._operation_executor.execute_batch(
             state,
@@ -389,11 +381,9 @@ class ResolutionEngine:
     ) -> ValidationResult:
         """!
         @brief Validate a prepared resolution immediately before execution.
-
         Cost resolutions additionally verify currently available mana,
         ability-level legality and each cost effect before ordinary target
         validation.
-
         @param state Current game state.
         @param resolution Prepared scheduled resolution.
         @return Successful or failed validation result.
@@ -471,7 +461,6 @@ class ResolutionEngine:
     ) -> tuple[Operation]:
         """!
         @brief Pass operations through replacement-effect arbitration.
-
         @param state Current game state.
         @param to_replace Operations to transform.
         @return Final operations after replacement processing.
@@ -490,11 +479,9 @@ class ResolutionEngine:
     ) -> list[GameEvent]:
         """!
         @brief Replace and execute operations sequentially.
-
         During cost payment, each operation is revalidated immediately before
         execution so earlier payments or replacements cannot invalidate later
         cost components unnoticed.
-
         @param state Current game state.
         @param operations Operations to execute in order.
         @return Events generated by all executed operations.
@@ -586,10 +573,8 @@ class ResolutionEngine:
     ) -> list[GameEvent]:
         """!
         @brief Repeatedly apply state-based actions until the state is stable.
-
         Events generated by every SBA pass are appended to the original event
         batch and emitted immediately.
-
         @param state Current game state.
         @param es Events produced before SBA processing.
         @return Combined original and SBA-generated events.
@@ -618,7 +603,6 @@ class ResolutionEngine:
     ) -> None:
         """!
         @brief Publish events immediately or buffer them inside a cost transaction.
-
         @param state Current game state.
         @param events Events to publish or buffer.
         """
@@ -646,7 +630,6 @@ class ResolutionEngine:
     ) -> None:
         """!
         @brief Collect event triggers and either defer or process them.
-
         @param state Current game state.
         @param events Events whose captured triggers should be handled.
         """
@@ -668,14 +651,12 @@ class ResolutionEngine:
                 triggers,
             )
 
-    def settle(self, state):
+    def settle(self, state: State) -> None:
         """!
         @brief Bring the game to a stable post-resolution state.
-
         Synchronizes indexes, emits deferred events, repeatedly resolves
         state-based actions, and collects/processes triggers according to the
         current trigger-defer boundary.
-
         @param state Current game state.
         """
         if hasattr(state, "synchronise_registers"):

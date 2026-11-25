@@ -1,3 +1,4 @@
+from __future__ import annotations
 import argparse
 from pathlib import Path
 
@@ -7,6 +8,7 @@ from game.simulation.match_runner import run_match
 
 
 AGENT_CONFIGS = {
+    "trivial": {"type": "trivial"},
     "simple": {
         "type": "simple",
     },
@@ -80,10 +82,12 @@ def main() -> int:
     parser.add_argument(
         "--output",
         type=Path,
-        default=Path("runs/match.jsonl"),
+        default=None,
         help="Optional JSONL match log.",
     )
 
+    parser.add_argument("--no-decision-stats", action="store_true",
+                        help="Disable decision timing and option statistics; keep decision limits.")
     args = parser.parse_args()
 
     deck1 = load_arena_starter(args.deck1)
@@ -110,6 +114,7 @@ def main() -> int:
         max_turns=args.max_turns,
         max_decisions=args.max_decisions,
         controllers=controllers,
+        collect_decision_stats=not args.no_decision_stats,
         names=(args.agent1, args.agent2),
         decklists=(deck1, deck2),
         metadata={

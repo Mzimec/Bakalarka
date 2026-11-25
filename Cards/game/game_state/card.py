@@ -4,6 +4,8 @@ from __future__ import annotations
 from typing import TYPE_CHECKING, override
 from dataclasses import dataclass, field, replace
 from helper.change_tracking import TrackedDict, TrackedSet
+from helper.static_definition import StaticDefinition, RuntimeBinding
+from .card_changes import CardChange
 from collections.abc import Mapping
 from uuid import uuid4
 from immutabledict import immutabledict
@@ -29,8 +31,12 @@ from .modifier import (
     TimeStamp,
     Attachable,
     Modifier,
+    only_empty_builtin_sources,
 )
 from .stat import Stat, HasModifiableStats, ModifiablePrimitiveStat, ModifiableReferenceStat
+from .characteristic_values import read_native_value, SUPPORTED, UNSUPPORTED
+from .ability_definition_cache import native_ability_definitions
+from .native_modifier_plan import read_planned_value, sources_empty, MISSING as NO_PLANNED_VALUE
 from ..enums import *
 from ..stat_type import *
 from helper.mutability_objs import *
@@ -80,7 +86,7 @@ class AttachInfo:
 
 
 @dataclass(frozen=True)
-class CardDefinition:
+class CardDefinition(StaticDefinition):
     """!
     @brief Immutable printed card data shared by all runtime copies.
 
@@ -88,11 +94,13 @@ class CardDefinition:
     lives on `Card`; this object describes the card's printed/base definition.
     """
 
+    __static_root__ = True
+
     name: str
 
     # A prototype omitted cost means {0}; explicit None represents no mana cost.
     mana_cost: ManaValue | str | None = field(default_factory=ImmutableManaValue)
-    color_identity: set[ManaType] = field(default_factory=set)
+    color_identity: frozenset[ManaType] = field(default_factory=frozenset)
 
     types: frozenset[CardType] = field(default_factory=frozenset)
     subtypes: frozenset[CardSubtype] = field(default_factory=frozenset)
@@ -153,6 +161,10 @@ class CardDefinition:
                 ManaValue.parse(self.mana_cost),
             )
 
+        object.__setattr__(self, 'color_identity', frozenset(self.color_identity))
+        if self.mana_cost is not None:
+            object.__setattr__(self, 'mana_cost', self.mana_cost.to_immutable())
+
     def is_permanent(self) -> bool:
         """!
         @brief Return whether this definition represents a permanent card.
@@ -163,6 +175,17 @@ class CardDefinition:
             CardType.INSTANT not in self.types
             and CardType.SORCERY not in self.types
         )
+
+
+class BoundCardDefinition(RuntimeBinding, CardDefinition):
+    """World-owned recipe containing runtime bindings or extension callbacks.
+
+    Unlike published catalog metadata this graph is copied with its world.
+    """
+    __static_root__ = False
+
+
+CardDefinition.__runtime_binding_type__ = BoundCardDefinition
 
 
 @dataclass(frozen=True)
@@ -193,6 +216,7 @@ class CardRuntimeState:
         damage_marked: int | None = None,
         face_down: bool = False,
         on_change=lambda: None,
+        on_runtime_change=None,
     ) -> None:
         """!
         @brief Initialize mutable gameplay state for one card.
@@ -200,6 +224,7 @@ class CardRuntimeState:
         @param on_change Callback invoked by tracked mutable fields.
         """
         self._on_change = on_change
+        self._on_runtime_change = on_runtime_change
         self.zone_info: ZoneInfo = ZoneInfo()
         self._tapped = tapped
 
@@ -223,17 +248,51 @@ class CardRuntimeState:
             on_change,
         )
 
-        self.damage_marked: int = (
+        self._damage_marked: int = (
             damage_marked
             if damage_marked is not None
             else 0
         )
 
         self.face_down: bool = face_down
-        self.damage_by_deathtouch = False
+        self._damage_by_deathtouch = False
+        self._skip_untap = None
         self.mana_x = 0
 
         self._anchored_modifiers: list[str] = []
+        self.zone_revision = 0
+        self.controlled_since = -1
+        self.token_left_battlefield = False
+        self.loyalty_activated_turn = None
+        self._definition_override = None
+
+    @property
+    def skip_untap(self):
+        """Optional (zone revision, player) marker, consumed at that player's untap."""
+        return self._skip_untap
+
+    @skip_untap.setter
+    def skip_untap(self, value):
+        self._skip_untap = value
+        self._runtime_changed(CardChange.SKIP_UNTAP)
+
+    @property
+    def damage_marked(self):
+        return self._damage_marked
+
+    @damage_marked.setter
+    def damage_marked(self, value):
+        self._damage_marked = value
+        self._runtime_changed(CardChange.DAMAGE)
+
+    @property
+    def damage_by_deathtouch(self):
+        return self._damage_by_deathtouch
+
+    @damage_by_deathtouch.setter
+    def damage_by_deathtouch(self, value):
+        self._damage_by_deathtouch = value
+        self._runtime_changed(CardChange.DAMAGE)
 
     @property
     def tapped(self):
@@ -248,7 +307,13 @@ class CardRuntimeState:
         @brief Change tapped state and invalidate derived state.
         """
         self._tapped = value
-        self._on_change()
+        self._runtime_changed(CardChange.TAPPED)
+
+    def _runtime_changed(self, change):
+        if self._on_runtime_change is None:
+            self._on_change()
+        else:
+            self._on_runtime_change(change)
 
     @classmethod
     def create_permanent_card_state(
@@ -258,6 +323,7 @@ class CardRuntimeState:
         attach_info: AttachInfo | None = None,
         damage_marked: int = 0,
         on_change=lambda: None,
+        on_runtime_change=None,
     ) -> CardRuntimeState:
         """!
         @brief Create runtime state initialized for a permanent card.
@@ -272,7 +338,20 @@ class CardRuntimeState:
             attach_info=attach_info,
             damage_marked=damage_marked,
             on_change=on_change,
+            on_runtime_change=on_runtime_change,
         )
+
+
+class _StateField:
+    """Compatibility access to a dynamic field owned by CardRuntimeState."""
+    def __init__(self, name):
+        self.name = name
+
+    def __get__(self, card, owner=None):
+        return self if card is None else getattr(card._state, self.name)
+
+    def __set__(self, card, value):
+        setattr(card._state, self.name, value)
 
 
 class Card(HasModifiableStats, Attachable):
@@ -283,6 +362,71 @@ class Card(HasModifiableStats, Attachable):
     counters, attachments and derived characteristics change. Printed values
     originate in `CardDefinition` and are exposed through modifiable stats.
     """
+
+    _stats = _StateField('_stats')
+    _modifier_sources = _StateField('_modifier_sources')
+    zone_revision = _StateField('zone_revision')
+    controlled_since = _StateField('controlled_since')
+    token_left_battlefield = _StateField('token_left_battlefield')
+    loyalty_activated_turn = _StateField('loyalty_activated_turn')
+    _entry_copy_restore = _StateField('_entry_copy_restore')
+    _incarnation_history = _StateField('_incarnation_history')
+
+    @property
+    def _definition(self):
+        return self.definition
+
+    @_definition.setter
+    def _definition(self, value):
+        if '_printed_definition' not in self.__dict__:
+            object.__setattr__(self, '_printed_definition', value)
+        self._state._definition_override = None if value is self._printed_definition else value
+
+    def __setattr__(self, name, value):
+        if name == '_state' and (old := self.__dict__.get('_state')) is not None:
+            # Preserve the old API for extensions replacing only the status
+            # record. Complete records already carry their own metadata.
+            if '_stats' not in vars(value):
+                for field in ('_stats', '_modifier_sources', 'zone_revision', 'controlled_since',
+                              'token_left_battlefield', 'loyalty_activated_turn',
+                              '_entry_copy_restore', '_incarnation_history', '_definition_override'):
+                    if field in vars(old):
+                        object.__setattr__(value, field, vars(old)[field])
+        object.__setattr__(self, name, value)
+        # Replacement/copy projections replace whole immutable input tables.
+        # Notify only the owning live register; shallow clones are not members.
+        if name in {"_stats", "_definition", "_modifier_sources", "_state", "_owner", "zone_revision"}:
+            self._invalidate_modifier_plan()
+            state = self.__dict__.get("_game_state")
+            if state is not None:
+                if name == '_state' and state.cards._cards.get(self.key) is self:
+                    state.card_states[self.key] = value
+                state.card_register.invalidate_layer_inputs(self)
+        elif name in {"get_stat", "_get_modifier_pipeline", "modifiers_to_attach",
+                      "get_trigger_defs", "get_controller", "get_zone"}:
+            # Extension/instrumentation readers invalidate derived reuse, but
+            # installing a reader is not itself a rules mutation or layer pass.
+            self._invalidate_modifier_plan()
+            state = self.__dict__.get("_game_state")
+            if state is not None:
+                state._trigger_registry.invalidate(self)
+
+    def __copy__(self):
+        # Rule projections replace base fields on a shallow handle. Give them
+        # a separate record shell, preserving the old shallow-container contract.
+        result = object.__new__(type(self))
+        result.__dict__.update(self.__dict__)
+        from copyreg import _slotnames
+        for name in _slotnames(type(self)) or ():
+            if hasattr(self, name):
+                object.__setattr__(result, name, getattr(self, name))
+        record = object.__new__(type(self._state))
+        record.__dict__.update(vars(self._state))
+        for name in _slotnames(type(self._state)) or ():
+            if hasattr(self._state, name):
+                object.__setattr__(record, name, getattr(self._state, name))
+        object.__setattr__(result, '_state', record)
+        return result
 
     def __init__(
         self,
@@ -314,10 +458,16 @@ class Card(HasModifiableStats, Attachable):
                 "Card keys must be nonempty lowercase strings without dots."
             )
 
-        self._definition: CardDefinition = prototype
-
-        self._owner = owner
         self._game_state = None
+        self._state = (
+            CardRuntimeState.create_permanent_card_state(
+                on_change=self._notify_changed, on_runtime_change=self._notify_runtime_changed,
+            )
+            if prototype.is_permanent()
+            else CardRuntimeState(on_change=self._notify_changed, on_runtime_change=self._notify_runtime_changed)
+        )
+        self._definition = prototype
+        self._owner = owner
         self.is_token = is_token
         self.token_left_battlefield = False
         self.loyalty_activated_turn = None
@@ -328,14 +478,6 @@ class Card(HasModifiableStats, Attachable):
 
         # Turn in which this incarnation last entered or changed controller.
         self.controlled_since = -1
-
-        self._state = (
-            CardRuntimeState.create_permanent_card_state(
-                on_change=self._notify_changed
-            )
-            if prototype.is_permanent()
-            else CardRuntimeState(on_change=self._notify_changed)
-        )
 
         # Base stats are initialized from the printed definition. Continuous
         # effects, counters and attachments are layered later through modifier
@@ -431,6 +573,17 @@ class Card(HasModifiableStats, Attachable):
                 self._state.attached
             ),
         )
+        for source in self._modifier_sources:
+            source._native_card = self
+
+    def _invalidate_modifier_plan(self):
+        self.__dict__.pop("_native_modifier_plan", None)
+        self.__dict__.pop("_native_empty_sources", None)
+        runtime = self.__dict__.get("_state")
+        if runtime is not None and '_observation_fields_revision' in vars(runtime):
+            runtime._observation_fields_revision = object()
+        if runtime is not None and runtime.attach_info.attached_to is not None:
+            runtime.attach_info.attached_to.__dict__.pop("_native_modifier_plan", None)
 
     @staticmethod
     def _keyed_definitions(definitions, prefix):
@@ -479,7 +632,8 @@ class Card(HasModifiableStats, Attachable):
         Entry-copy effects may temporarily replace this definition for one
         battlefield incarnation.
         """
-        return self._definition
+        override = self._state._definition_override
+        return self._printed_definition if override is None else override
 
     @property
     def owner(self) -> Player:
@@ -617,12 +771,54 @@ class Card(HasModifiableStats, Attachable):
 
         self._notify_changed()
 
+    @property
+    def is_token(self):
+        return self._is_token
+
+    @is_token.setter
+    def is_token(self, value):
+        self._is_token = value
+        self._notify_changed()
+
     def _notify_changed(self) -> None:
         """!
         @brief Notify the owning game state that indexed card data may be stale.
         """
+        self._invalidate_modifier_plan()
         if self._game_state is not None:
             self._game_state.notify_card_changed(self)
+
+    def get_stat(self, stat_t, state):
+        """Share proven native values with index/LKI reads; extensions stay live."""
+        if (type(self) is Card and (not state._refreshing_effects
+                                  or getattr(state, "_reusing_continuous_graph", False))
+                and "_get_modifier_pipeline" not in self.__dict__):
+            empty = sources_empty(self)
+            if not empty:
+                value = read_planned_value(self, stat_t, state)
+                if value is not NO_PLANNED_VALUE:
+                    return value
+            if empty or stat_t in SUPPORTED:
+                try:
+                    stat = self._state._stats[stat_t]
+                except KeyError:
+                    return None
+                # Avoid Mapping.get's extra Python call and the empty pipeline.
+                if empty and type(stat) in (ModifiablePrimitiveStat, ModifiableReferenceStat):
+                    return stat.base_value
+                if not empty and type(stat) in (ModifiablePrimitiveStat, ModifiableReferenceStat):
+                    value = read_native_value(self, stat_t, stat, state, HasModifiableStats.get_stat)
+                    if value is not UNSUPPORTED:
+                        return value
+        return HasModifiableStats.get_stat(self, stat_t, state)
+
+    def _notify_runtime_changed(self, change):
+        if type(self) is not Card:
+            # Preserve extension hooks; custom cards retain full invalidation.
+            self._notify_changed()
+            return
+        if self._game_state is not None:
+            self._game_state.card_register.mark_runtime_changed(self, change)
 
     def set_base_stat(
         self,
@@ -735,7 +931,7 @@ class Card(HasModifiableStats, Attachable):
         """!
         @brief Return the card's modifiable stat table.
         """
-        return self._stats
+        return self._state._stats
 
     # --------------------------------------------------------------
     # HasModifiers properties
@@ -747,7 +943,7 @@ class Card(HasModifiableStats, Attachable):
         """!
         @brief Return modifier sources contributing to derived characteristics.
         """
-        return self._modifier_sources
+        return self._state._modifier_sources
 
     # --------------------------------------------------------------
     # Attachable properties
@@ -765,6 +961,7 @@ class Card(HasModifiableStats, Attachable):
     @override
     def attached_to(self, value: Card | None):
         self._state.attach_info.attached_to = value
+        self._notify_changed()
 
     @property
     @override
@@ -794,6 +991,12 @@ class Card(HasModifiableStats, Attachable):
         """!
         @brief Return modifiers granted to the object hosting this attachment.
         """
+        # The common immutable grant needs no recursive modifier pipeline.
+        # Custom cards/stat readers and modified attachments retain live reads.
+        stat = self.stats.get(STAT_ATTACH_MODS)
+        if (type(self) is Card and type(stat) in (Stat, ModifiableReferenceStat)
+                and only_empty_builtin_sources(self.modifier_sources)):
+            return stat.base_value
         return self.get_stat(
             STAT_ATTACH_MODS,
             state,
@@ -810,6 +1013,11 @@ class Card(HasModifiableStats, Attachable):
         return f"{self.name} [{self.key}]"
 
     # ManaValue methods
+    def get_mana_fields(self, state):
+        """Read cached notation, payable notation and mana value from live stats."""
+        from .card_mana_fields import mana_fields
+        return mana_fields(self, state)
+
     def get_mana_cost(self, state: State) -> ManaValue:
         """!
         @brief Return the current mana-cost characteristic.
@@ -916,6 +1124,10 @@ class Card(HasModifiableStats, Attachable):
 
     # Abilities methods
     def get_ability_defs(self, state: State) -> AbilityCollection:
+        """Return live definitions, reusing proven native immutable mappings."""
+        return native_ability_definitions(self, state)
+
+    def _build_ability_defs(self, state: State) -> AbilityCollection:
         """!
         @brief Return the card's current printed, granted and intrinsic abilities.
 
@@ -929,11 +1141,15 @@ class Card(HasModifiableStats, Attachable):
             state,
         )
 
-        intrinsic = (
-            basic_land_abilities(self, state)
-            if self.get_stat(STAT_INTRINSIC_MANA, state)
-            else {}
-        )
+        intrinsic_enabled = self.get_stat(STAT_INTRINSIC_MANA, state)
+        card_types = self.get_types(state)
+        intrinsic = basic_land_abilities(self, state, card_types=card_types) if intrinsic_enabled else {}
+
+        # Playing a land is represented explicitly, independently of intrinsic mana.
+        if CardType.LAND in card_types:
+            from game.rules.lands import PLAY_LAND_DEFINITION
+            if PLAY_LAND_DEFINITION.key not in definitions:
+                intrinsic = {PLAY_LAND_DEFINITION.key: PLAY_LAND_DEFINITION, **intrinsic}
 
         if not intrinsic:
             return definitions
@@ -955,15 +1171,21 @@ class Card(HasModifiableStats, Attachable):
         @param state Current game state.
         @return Ability definitions legal to activate from the current zone.
         """
-        from ..game_actions.data_structs.ability import AbilityCollection
+        from ..game_actions.data_structs.ability import AbilityCollection, PlayLandAbilityDefinition
 
         return AbilityCollection(
             {
                 k: v
                 for k, v in self.get_ability_defs(state).items()
-                if v.is_usable_in_zone(self.zone)
+                if v.is_usable_in_zone(self.zone) and not isinstance(v, PlayLandAbilityDefinition)
             }
         )
+
+    def get_land_play_ability_defs(self, state):
+        """Return intrinsic and effect-granted land-play permissions."""
+        from ..game_actions.data_structs.ability import PlayLandAbilityDefinition
+        return {key: definition for key, definition in self.get_ability_defs(state).items()
+                if isinstance(definition, PlayLandAbilityDefinition)}
 
     def get_ability_def(
         self,
@@ -989,8 +1211,6 @@ class Card(HasModifiableStats, Attachable):
 
         @return Runtime `Ability`, or `None` if absent/unusable.
         """
-        from ..game_actions.data_structs.ability import Ability
-
         definitions = (
             self.get_ability_defs(state)
             if state is not None
@@ -1011,11 +1231,7 @@ class Card(HasModifiableStats, Attachable):
             else self.owner
         )
 
-        return Ability(
-            definition,
-            self,
-            controller,
-        )
+        return definition.to_ability(self, controller)
 
     # Triggers methods
     def get_trigger_defs(
@@ -1157,3 +1373,9 @@ class Card(HasModifiableStats, Attachable):
                 state,
             )
         )
+
+
+# Capture the native implementations before any extension can replace them;
+# the optional mana-field cache is imported lazily to avoid a module cycle.
+_NATIVE_MANA_READERS = {name: getattr(Card, name) for name in
+    ('get_mana_cost', 'get_casting_cost', 'get_mana_value', 'get_stat', 'get_zone')}

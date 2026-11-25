@@ -20,7 +20,6 @@ from ...enums import *
 class ActionGenerationContextBase(ABC):
     """!
     @brief Read-only interface for the state threaded through action generation.
-
     Defines the minimal set of properties any concrete generation
     context must expose so that generation strategies (sub-ability,
     cost, and action pipelines) can read the ability being resolved,
@@ -60,14 +59,12 @@ class ActionGenerationContextBase(ABC):
 class ActionGenerationContext(ActionGenerationContextBase):
     """!
     @brief Mutable, per-generation-attempt state shared across the pipeline stages.
-
     A single instance is created per `AbilityActionGenerationPipeline.generate`
     call and threaded through the sub-ability, cost, and action
     generation strategies, being updated in place as each stage
     produces its result. This avoids re-deriving shared context (such as
     the X value chosen, or optional life payment) at every pipeline
     stage.
-
     @var _ability
         Backing field for the `ability` property.
     @var _subability_gen_res
@@ -92,35 +89,58 @@ class ActionGenerationContext(ActionGenerationContextBase):
     @property
     @override
     def ability(self) -> Ability:
+        """!
+        @brief Runtime ability currently being generated.
+        @return Current ability.
+        """
         return self._ability
 
     @ability.setter
     def ability(self, value: Ability) -> None:
+        """!
+        @brief Replace the runtime ability in this generation context.
+        @param value New runtime ability.
+        """
         self._ability = value
 
     @property
     @override
     def mana_cost(self) -> ImmutableManaValue | None:
+        """!
+        @brief Mana cost currently associated with the generated action.
+        @return Mana cost, or `None` when no mana cost applies.
+        """
         return self._mana_cost
 
     @mana_cost.setter
     def mana_cost(self, value: ImmutableManaValue | None) -> None:
+        """!
+        @brief Replace the mana cost associated with this generation context.
+        @param value New mana cost, or `None`.
+        """
         self._mana_cost = value
 
     @property
     @override
     def subability_gen_res(self) -> SubAbilityGenerationResult | None:
+        """!
+        @brief Most recent sub-ability generation result.
+        @return Current sub-ability generation result, or `None`.
+        """
         return self._subability_gen_res
 
     @subability_gen_res.setter
     def subability_gen_res(self, value: SubAbilityGenerationResult | None) -> None:
+        """!
+        @brief Replace the most recent sub-ability generation result.
+        @param value New sub-ability generation result, or `None`.
+        """
         self._subability_gen_res = value
 
 
 class AbilityActionGenerationPipeline:
     """!
     @brief Orchestrates turning an `Ability` into every legal, concrete `AbilityAction`.
-
     Ties together three generation stages driven by an
     `ActionGenerationStrategy`:
     1. Sub-ability generation — decides which cost/effect sub-ability
@@ -129,7 +149,6 @@ class AbilityActionGenerationPipeline:
        cost sub-ability, validating each generated cost effect binding.
     3. Action (effect) plan generation — enumerates legal ways to
        resolve the chosen effect sub-ability (target selection, etc.).
-
     The full cartesian product of legal sub-ability results × cost
     plans × action plans is yielded as concrete `AbilityAction`
     instances, ready to be offered to a player or AI agent as legal
@@ -142,12 +161,12 @@ class AbilityActionGenerationPipeline:
         strategy: ActionGenerationStrategy,
         state: State,
         *,
-        x_value=0,
-        life_payment=None,
+        x_value: int = 0,
+        life_payment: int | None = None,
+        skip_unpayable_costs: bool = False,
     ) -> Iterator[AbilityAction]:
         """!
         @brief Yield choices supported by this generation strategy.
-
         First validates that the ability is legal to use at all
         (`AbilityDefinition.validation_error`) and that `x_value` is a
         valid nonnegative integer. Then builds a shared
@@ -156,7 +175,6 @@ class AbilityActionGenerationPipeline:
         pipeline described in the class docstring, validating each
         generated cost effect binding via `Effect.validation_error`
         before it is offered as part of a plan.
-
         @param ability The `Ability` to generate concrete actions for.
         @param strategy Bundle of sub-strategies (`subability_gen`,
                `cost_pipeline`/`cost_strategy`,
@@ -165,6 +183,8 @@ class AbilityActionGenerationPipeline:
         @param state Current game state to generate against.
         @param x_value Chosen value for any X/Y-style variable on this
                ability. Must be a nonnegative integer; defaults to 0.
+        @param skip_unpayable_costs When true, omit invalid cost candidates during
+               option-space enumeration; explicit command validation still raises.
         @param life_payment Optional life payment to associate with the
                generated context (e.g. for Phyrexian mana costs).
         @return Iterator of `AbilityAction` instances, one per legal
@@ -176,48 +196,39 @@ class AbilityActionGenerationPipeline:
                 cost effect binding fails its own
                 `Effect.validation_error` check.
         """
-        error = ability.definition.validation_error(ability.source, ability.controller, state)
+        from .plan_validation import EXECUTION_PLAN_VALIDATOR
+        from .pruning.pruning_strategy import apply_pruning
+
+        for ctx in self.contexts(ability, strategy, state, x_value=x_value, life_payment=life_payment):
+            subability_result = ctx.subability_gen_res
+            costs = EXECUTION_PLAN_VALIDATOR.legal_plans(
+                strategy.cost_pipeline.generate(ctx, subability_result.cost_subability, strategy.cost_strategy, state),
+                ability, state, is_cost=True, strict=not skip_unpayable_costs,
+            )
+            for cost_execution_plan in apply_pruning(costs, strategy.cost_plan_pruning):
+                actions = EXECUTION_PLAN_VALIDATOR.legal_plans(
+                    strategy.action_pipeline.generate(ctx, subability_result.action_subability, strategy.action_strategy, state),
+                    ability, state, is_cost=False,
+                )
+                for action_execution_plan in apply_pruning(actions, strategy.action_plan_pruning):
+                    yield ctx.ability.to_game_action(cost_execution_plan, action_execution_plan)
+
+    def contexts(self, ability, strategy, state, *, x_value=0, life_payment=None):
+        """Shared validation, casting cost and subability compilation boundary."""
+        error: str | None = ability.definition.validation_error(ability.source, ability.controller, state)
         if error:
             raise ValueError(error)
         if not isinstance(x_value, int) or isinstance(x_value, bool) or x_value < 0:
             raise ValueError("X must be a nonnegative integer.")
-        ctx = ActionGenerationContext(_ability=ability, x_value=x_value, life_payment=life_payment)
-        if ability.definition.is_spell:
-            # Spells' mana cost comes from the card itself (accounting for
-            # any continuous cost-modifying effects), rather than from a
-            # sub-ability's cost definition.
-            ctx.mana_cost = ability.source.get_casting_cost(state)
+        ctx: ActionGenerationContext = ActionGenerationContext(_ability=ability, x_value=x_value, life_payment=life_payment)
+        ctx.mana_cost = ability.casting_mana_cost(state)
 
         for subability_result in strategy.subability_gen.generate(ctx, state):
             ctx.subability_gen_res = subability_result
+            # The flat iterator consumes this before advancing the generator;
+            # staged consumers take a detached dataclass copy of one context.
+            yield ctx
 
-            for cost_execution_plan in strategy.cost_pipeline.generate(
-                ctx, subability_result.cost_subability, strategy.cost_strategy, state
-            ):
-                from ..data_structs.game_action import ResolutionContext
-                from dataclasses import replace
 
-                cost_context = ResolutionContext(
-                    controller=ability.controller,
-                    source=ability.source,
-                    ability=ability.definition,
-                    action_key=ability.key,
-                )
-                # Validate every effect used to pay this cost plan (e.g.
-                # "sacrifice a creature" must currently be payable) before
-                # offering it as a legal option.
-                for binding in cost_execution_plan.effects.sequence:
-                    error = binding.effect.validation_error(
-                        state,
-                        replace(
-                            cost_context, targets=cost_execution_plan._scope_binding(binding.slots)
-                        ),
-                    )
-                    if error:
-                        raise ValueError(error)
 
-                for action_execution_plan in strategy.action_pipeline.generate(
-                    ctx, subability_result.action_subability, strategy.action_strategy, state
-                ):
-
-                    yield ctx.ability.to_game_action(cost_execution_plan, action_execution_plan)
+ABILITY_GENERATION_PIPELINE: AbilityActionGenerationPipeline = AbilityActionGenerationPipeline()

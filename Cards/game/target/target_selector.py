@@ -48,6 +48,11 @@ class TargetSelector(ABC):
         """
         raise NotImplementedError
 
+    def generate_completions(self, candidates, prefix=()):
+        if prefix:
+            raise NotImplementedError("This selector has no reviewed prefix adapter")
+        yield from self.generate_target_options(candidates)
+
 
 @dataclass(frozen=True)
 class MinMaxTegetSelector(TargetSelector):
@@ -86,23 +91,38 @@ class MinMaxTegetSelector(TargetSelector):
         @param candidates Legal individual target objects.
         @return Iterator of immutable target groups.
         """
-        candidates_list: tuple[RuntimeObject] = tuple(candidates)
+        yield from self.generate_completions(candidates)
 
-        if self.min_target_count == 0:
-            yield TargetOption()
+    def generate_completions(self, candidates, prefix=()):
+        """Complete a canonical target prefix without enumerating other groups.
 
-        for count in range(max(1, self.min_target_count), self.max_target_count + 1):
+        Empty prefixes retain the ordinary size-then-combination enumeration.
+        Nondecreasing positions give each group exactly one construction path.
+        """
+        candidates_list = tuple(candidates)
+        prefix = tuple(prefix)
+        if len(prefix) > self.max_target_count or any(c not in candidates_list for c in prefix):
+            return
+        positions = tuple(candidates_list.index(c) for c in prefix)
+        if positions != tuple(sorted(positions)) or (not self.is_target_repeatable and len(set(prefix)) != len(prefix)):
+            return
+        from collections import Counter
+        if (prefix or self.min_target_count == 0) and self.is_valid_option(TargetOption(Counter(prefix))):
+            yield TargetOption(Counter(prefix))
+        start = (positions[-1] + (not self.is_target_repeatable)) if positions else 0
+        remaining = candidates_list[start:]
+        for count in range(max(1, self.min_target_count, len(prefix) + 1), self.max_target_count + 1):
             if self.is_target_repeatable:
-                combos = combinations_with_replacement(candidates_list, count)
+                combos = combinations_with_replacement(remaining, count - len(prefix))
             else:
-                combos = combinations(candidates_list, count)
+                combos = combinations(remaining, count - len(prefix))
 
             for combo in combos:
                 # Collapse repeated occurrences into the multiplicity form used
                 # by TargetOption.
                 target_group: dict[RuntimeObject, int] = {}
 
-                for c in combo:
+                for c in (*prefix, *combo):
                     target_group[c] = target_group.get(c, 0) + 1
 
                 yield TargetOption(target_group)

@@ -1,12 +1,13 @@
 """Offline descriptive card text; executable abilities remain the rules engine."""
 
+from __future__ import annotations
 from functools import lru_cache
 import json
 from game.paths import DATA_DIR
 
 
 @lru_cache(maxsize=1)
-def starter_rules_text():
+def starter_rules_text() -> dict:
     """!
     @brief Load the checked-in Scryfall text once for all starter definitions.
     @return Name-to-text data, independent of effect execution and game state.

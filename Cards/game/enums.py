@@ -19,6 +19,8 @@ __all__ = [
     "ResolutionSpeed",
     "CounterType",
     "RuntimeObjectType",
+    "ActivatableAbilityType",
+    "RequestType",
 ]
 
 
@@ -235,6 +237,16 @@ class RuntimeObjectType(Enum):
     CARD = auto()
     PLAYER = auto()
 
+
 class ActivatableAbilityType(Enum):
     MANA = auto()
     NON_MANA = auto()
+
+
+class RequestType(Enum):
+    PRIORITY_ACTION = auto()
+    ATTACKER_DECLARATION = auto()
+    BLOCKER_DECLARATIION = auto()
+    MULLIGAN = auto()
+    MULLIGAN_BOTTOM = auto()
+    DISCARD = auto()

@@ -7,10 +7,15 @@
       "agent": {
         "type": "llm",
         "llm": {
-          "model": "REPLACE_WITH_INSTALLED_MODEL",
+          "provider": "ollama",
+          "model": "qwen3:8b",
           "endpoint": "http://localhost:11434/api/chat",
           "timeout": 30,
-          "max_requests": 100
+          "max_requests": 100,
+          "think": false,
+          "num_gpu": 37,
+          "num_ctx": 4096,
+          "compact_observation": true
         }
       }
     },

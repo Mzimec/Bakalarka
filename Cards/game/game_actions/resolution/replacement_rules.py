@@ -1,5 +1,6 @@
 """Replacement rules return None (unchanged) or a sequence, including prevention ()."""
 
+from __future__ import annotations
 from dataclasses import dataclass
 
 from ...enums import ZoneType
@@ -10,11 +11,9 @@ from ...operations.card_operations import DamagePlayerOperation
 class ControllerDamageShield:
     """!
     @brief Reduce preventable damage dealt to this source's controller.
-
     This is a legacy replacement rule using the `replace()` compatibility
     contract: `None` means unchanged, `()` means fully prevented, and a
     sequence contains the replacement operations.
-
     @var source
         Permanent providing the damage shield.
     @var reduction
@@ -24,10 +23,9 @@ class ControllerDamageShield:
     source: object
     reduction: int = 1
 
-    def replace(self, state, operation):
+    def replace(self, state: object, operation: object) -> tuple[object, ...] | None:
         """!
         @brief Replace matching controller damage with a reduced damage operation.
-
         @param state Current game state.
         @param operation Operation being considered for replacement.
         @return `None` if unaffected, `()` if fully prevented, or a tuple

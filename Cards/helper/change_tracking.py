@@ -10,10 +10,16 @@ class TrackedDict(UserDict):
         self.data = dict(values)
 
     def __setitem__(self, key, value):
+        before = self.__dict__.get("_cost_before_write")
+        if before is not None:
+            before()
         self.data[key] = value
         self._on_change()
 
     def __delitem__(self, key):
+        before = self.__dict__.get("_cost_before_write")
+        if before is not None:
+            before()
         del self.data[key]
         self._on_change()
 
@@ -38,11 +44,17 @@ class TrackedSet(MutableSet):
 
     def add(self, value):
         if value not in self._values:
+            before = self.__dict__.get("_cost_before_write")
+            if before is not None:
+                before()
             self._values.add(value)
             self._on_change()
 
     def discard(self, value):
         if value in self._values:
+            before = self.__dict__.get("_cost_before_write")
+            if before is not None:
+                before()
             self._values.discard(value)
             self._on_change()
 

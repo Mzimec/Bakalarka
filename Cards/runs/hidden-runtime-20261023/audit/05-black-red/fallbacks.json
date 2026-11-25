@@ -1,0 +1,457 @@
+{
+  "case": {
+    "name": "05-black-red",
+    "own": "black",
+    "other": "red",
+    "seed": 105,
+    "search_seed": 7005,
+    "seat": 0,
+    "starting": 0,
+    "selection": "puct"
+  },
+  "status": "win",
+  "error": null,
+  "turns": 15,
+  "elapsed_seconds": 53.940152399940416,
+  "cpu_seconds": 53.640625,
+  "source_unchanged": false,
+  "fingerprint": "b11357439c88fc1018d01f7b39a4b2e4a360dba025a84e059fd7de585264fab8",
+  "search_attempts": 85,
+  "usable_searches": 82,
+  "completed_trajectories": 558,
+  "reasons": {
+    "setup_policy": 1,
+    "forced_choice": 96,
+    "searched": 82,
+    "extension_limit": 3
+  },
+  "stops": {
+    "time_budget": 84,
+    "iteration_budget": 1
+  },
+  "trajectory_interruptions": {
+    "time_budget": 75,
+    "extension_limit": 5
+  },
+  "requests": {
+    "MulliganRequest": 1,
+    "PriorityDecisionRequest": 161,
+    "DeclareAttackersRequest": 8,
+    "TriggerOrderRequest": 3,
+    "AbilityDecisionRequest": 3,
+    "DeclareBlockersRequest": 3,
+    "ReplacementOrderRequest": 3
+  },
+  "fallbacks": [
+    {
+      "category": "setup",
+      "line": 2,
+      "turn": 1,
+      "phase": "UNTAP",
+      "request_kind": "MulliganRequest",
+      "reason": "setup_policy",
+      "options": 2,
+      "elapsed_ms": 10.123700019903481,
+      "information_key": "36970d3c23df498809d58de8d4a0e2c5845312b240e3c30a5f54d4dc5eec0726",
+      "world_preparation": null,
+      "unsupported_detail": null,
+      "search": null
+    },
+    {
+      "category": "horizon_or_coverage",
+      "line": 812,
+      "turn": 9,
+      "phase": "PRECOMBAT_MAIN",
+      "request_kind": "PriorityDecisionRequest",
+      "reason": "extension_limit",
+      "options": 6,
+      "elapsed_ms": 566.2813000380993,
+      "information_key": "6a13ff12f0c9a82c1feb0a17f18af20ab669586b5a75513f70a4174ae259120b",
+      "world_preparation": {
+        "route": "current"
+      },
+      "unsupported_detail": null,
+      "search": {
+        "choice": {
+          "_json": "{\"kind\":\"PassPriorityAction\",\"player\":{\"player\":0}}",
+          "kind": "PassPriorityAction"
+        },
+        "estimates": [
+          {
+            "action": {
+              "_json": "{\"ability_key\":\"cast:Compound Fracture\",\"action_key\":\"cast:Compound Fracture\",\"controller\":{\"player\":0},\"cost\":{\"effects\":[{\"features\":{\"destination\":\"STACK\",\"kind\":\"move_source\"},\"rule\":[\"game.game_actions.card_effects\",\"MoveSourceEffect\",\"Compound Fracture:put_on_stack\"],\"slots\":[]}],\"mana\":{\"life_payment\":0,\"mana_plan\":[{\"ability_key\":\"mana_black\",\"action_key\":\"mana_black\",\"controller\":{\"player\":0},\"cost\":{\"effects\":[{\"features\":{\"kind\":\"tap_source\"},\"rule\":[\"game.game_actions.card_effects\",\"TapSourceEffect\",\"tap_for_mana\"],\"slots\":[]}],\"mana\":{\"life_payment\":0,\"mana_plan\":[],\"payment\":null},\"parameters\":{\"x_variables\":{\"mapping\":[[[\"game.enums\",\"SAVariableType\",\"X\"],0]]}},\"targets\":{\"mapping\":[]}},\"effect\":{\"effects\":[{\"features\":{\"kind\":\"unknown\"},\"rule\":[\"game.game_actions.mana_effects\",\"AddManaEffect\",\"add_black\"],\"slots\":[]}],\"mana\":null,\"parameters\":{\"x_variables\":{\"mapping\":[[[\"game.enums\",\"SAVariableType\",\"X\"],0]]}},\"targets\":{\"mapping\":[]}},\"kind\":\"ManaAbilityAction\",\"source\":{\"card\":\"c38\",\"name\":\"Swamp\",\"zone_revision\":2},\"source_revision\":2,\"uses_stack\":false}],\"payment\":{\"mapping\":[[[\"game.enums\",\"ManaType\",\"BLACK\"],1]]}},\"parameters\":{\"x_variables\":{\"mapping\":[[[\"game.enums\",\"SAVariableType\",\"X\"],0]]}},\"targets\":{\"mapping\":[]}},\"effect\":{\"effects\":[{\"features\":{\"kind\":\"unknown\"},\"rule\":[\"game.cards.starter_support\",\"RuleEffect\",\"fracture\"],\"slots\":[[\"target\",\"target_0\"]]},{\"features\":{\"destination\":\"GRAVEYARD\",\"kind\":\"move_source\"},\"rule\":[\"game.game_actions.card_effects\",\"MoveSourceEffect\",\"Compound Fracture:to_graveyard\"],\"slots\":[]}],\"mana\":null,\"parameters\":{\"x_variables\":{\"mapping\":[[[\"game.enums\",\"SAVariableType\",\"X\"],0]]}},\"targets\":{\"mapping\":[[\"target\",{\"mapping\":[[\"target_0\",{\"mapping\":[[{\"card\":\"c1\",\"name\":\"Sanitarium Skeleton\",\"zone_revision\":3},1]]}]]}]]}},\"kind\":\"AbilityAction\",\"source\":{\"card\":\"c23\",\"name\":\"Compound Fracture\",\"zone_revision\":1},\"source_revision\":1,\"uses_stack\":true}",
+              "kind": "AbilityAction"
+            },
+            "mean_value": null,
+            "prior_probability": 0.1335688146087504,
+            "visits": 0
+          },
+          {
+            "action": {
+              "_json": "{\"ability_key\":\"cast:Compound Fracture\",\"action_key\":\"cast:Compound Fracture\",\"controller\":{\"player\":0},\"cost\":{\"effects\":[{\"features\":{\"destination\":\"STACK\",\"kind\":\"move_source\"},\"rule\":[\"game.game_actions.card_effects\",\"MoveSourceEffect\",\"Compound Fracture:put_on_stack\"],\"slots\":[]}],\"mana\":{\"life_payment\":0,\"mana_plan\":[{\"ability_key\":\"mana_black\",\"action_key\":\"mana_black\",\"controller\":{\"player\":0},\"cost\":{\"effects\":[{\"features\":{\"kind\":\"tap_source\"},\"rule\":[\"game.game_actions.card_effects\",\"TapSourceEffect\",\"tap_for_mana\"],\"slots\":[]}],\"mana\":{\"life_payment\":0,\"mana_plan\":[],\"payment\":null},\"parameters\":{\"x_variables\":{\"mapping\":[[[\"game.enums\",\"SAVariableType\",\"X\"],0]]}},\"targets\":{\"mapping\":[]}},\"effect\":{\"effects\":[{\"features\":{\"kind\":\"unknown\"},\"rule\":[\"game.game_actions.mana_effects\",\"AddManaEffect\",\"add_black\"],\"slots\":[]}],\"mana\":null,\"parameters\":{\"x_variables\":{\"mapping\":[[[\"game.enums\",\"SAVariableType\",\"X\"],0]]}},\"targets\":{\"mapping\":[]}},\"kind\":\"ManaAbilityAction\",\"source\":{\"card\":\"c38\",\"name\":\"Swamp\",\"zone_revision\":2},\"source_revision\":2,\"uses_stack\":false}],\"payment\":{\"mapping\":[[[\"game.enums\",\"ManaType\",\"BLACK\"],1]]}},\"parameters\":{\"x_variables\":{\"mapping\":[[[\"game.enums\",\"SAVariableType\",\"X\"],0]]}},\"targets\":{\"mapping\":[]}},\"effect\":{\"effects\":[{\"features\":{\"kind\":\"unknown\"},\"rule\":[\"game.cards.starter_support\",\"RuleEffect\",\"fracture\"],\"slots\":[[\"target\",\"target_0\"]]},{\"features\":{\"destination\":\"GRAVEYARD\",\"kind\":\"move_source\"},\"rule\":[\"game.game_actions.card_effects\",\"MoveSourceEffect\",\"Compound Fracture:to_graveyard\"],\"slots\":[]}],\"mana\":null,\"parameters\":{\"x_variables\":{\"mapping\":[[[\"game.enums\",\"SAVariableType\",\"X\"],0]]}},\"targets\":{\"mapping\":[[\"target\",{\"mapping\":[[\"target_0\",{\"mapping\":[[{\"card\":\"c121\",\"name\":\"Goblin\",\"zone_revision\":1},1]]}]]}]]}},\"kind\":\"AbilityAction\",\"source\":{\"card\":\"c23\",\"name\":\"Compound Fracture\",\"zone_revision\":1},\"source_revision\":1,\"uses_stack\":true}",
+              "kind": "AbilityAction"
+            },
+            "mean_value": null,
+            "prior_probability": 0.1335688146087504,
+            "visits": 0
+          },
+          {
+            "action": {
+              "_json": "{\"ability_key\":\"cast:Compound Fracture\",\"action_key\":\"cast:Compound Fracture\",\"controller\":{\"player\":0},\"cost\":{\"effects\":[{\"features\":{\"destination\":\"STACK\",\"kind\":\"move_source\"},\"rule\":[\"game.game_actions.card_effects\",\"MoveSourceEffect\",\"Compound Fracture:put_on_stack\"],\"slots\":[]}],\"mana\":{\"life_payment\":0,\"mana_plan\":[{\"ability_key\":\"mana_black\",\"action_key\":\"mana_black\",\"controller\":{\"player\":0},\"cost\":{\"effects\":[{\"features\":{\"kind\":\"tap_source\"},\"rule\":[\"game.game_actions.card_effects\",\"TapSourceEffect\",\"tap_for_mana\"],\"slots\":[]}],\"mana\":{\"life_payment\":0,\"mana_plan\":[],\"payment\":null},\"parameters\":{\"x_variables\":{\"mapping\":[[[\"game.enums\",\"SAVariableType\",\"X\"],0]]}},\"targets\":{\"mapping\":[]}},\"effect\":{\"effects\":[{\"features\":{\"kind\":\"unknown\"},\"rule\":[\"game.game_actions.mana_effects\",\"AddManaEffect\",\"add_black\"],\"slots\":[]}],\"mana\":null,\"parameters\":{\"x_variables\":{\"mapping\":[[[\"game.enums\",\"SAVariableType\",\"X\"],0]]}},\"targets\":{\"mapping\":[]}},\"kind\":\"ManaAbilityAction\",\"source\":{\"card\":\"c38\",\"name\":\"Swamp\",\"zone_revision\":2},\"source_revision\":2,\"uses_stack\":false}],\"payment\":{\"mapping\":[[[\"game.enums\",\"ManaType\",\"BLACK\"],1]]}},\"parameters\":{\"x_variables\":{\"mapping\":[[[\"game.enums\",\"SAVariableType\",\"X\"],0]]}},\"targets\":{\"mapping\":[]}},\"effect\":{\"effects\":[{\"features\":{\"kind\":\"unknown\"},\"rule\":[\"game.cards.starter_support\",\"RuleEffect\",\"fracture\"],\"slots\":[[\"target\",\"target_0\"]]},{\"features\":{\"destination\":\"GRAVEYARD\",\"kind\":\"move_source\"},\"rule\":[\"game.game_actions.card_effects\",\"MoveSourceEffect\",\"Compound Fracture:to_graveyard\"],\"slots\":[]}],\"mana\":null,\"parameters\":{\"x_variables\":{\"mapping\":[[[\"game.enums\",\"SAVariableType\",\"X\"],0]]}},\"targets\":{\"mapping\":[[\"target\",{\"mapping\":[[\"target_0\",{\"mapping\":[[{\"card\":\"c122\",\"name\":\"Goblin\",\"zone_revision\":1},1]]}]]}]]}},\"kind\":\"AbilityAction\",\"source\":{\"card\":\"c23\",\"name\":\"Compound Fracture\",\"zone_revision\":1},\"source_revision\":1,\"uses_stack\":true}",
+              "kind": "AbilityAction"
+            },
+            "mean_value": null,
+            "prior_probability": 0.1335688146087504,
+            "visits": 0
+          },
+          {
+            "action": {
+              "_json": "{\"ability_key\":\"cast:Compound Fracture\",\"action_key\":\"cast:Compound Fracture\",\"controller\":{\"player\":0},\"cost\":{\"effects\":[{\"features\":{\"destination\":\"STACK\",\"kind\":\"move_source\"},\"rule\":[\"game.game_actions.card_effects\",\"MoveSourceEffect\",\"Compound Fracture:put_on_stack\"],\"slots\":[]}],\"mana\":{\"life_payment\":0,\"mana_plan\":[{\"ability_key\":\"mana_black\",\"action_key\":\"mana_black\",\"controller\":{\"player\":0},\"cost\":{\"effects\":[{\"features\":{\"kind\":\"tap_source\"},\"rule\":[\"game.game_actions.card_effects\",\"TapSourceEffect\",\"tap_for_mana\"],\"slots\":[]}],\"mana\":{\"life_payment\":0,\"mana_plan\":[],\"payment\":null},\"parameters\":{\"x_variables\":{\"mapping\":[[[\"game.enums\",\"SAVariableType\",\"X\"],0]]}},\"targets\":{\"mapping\":[]}},\"effect\":{\"effects\":[{\"features\":{\"kind\":\"unknown\"},\"rule\":[\"game.game_actions.mana_effects\",\"AddManaEffect\",\"add_black\"],\"slots\":[]}],\"mana\":null,\"parameters\":{\"x_variables\":{\"mapping\":[[[\"game.enums\",\"SAVariableType\",\"X\"],0]]}},\"targets\":{\"mapping\":[]}},\"kind\":\"ManaAbilityAction\",\"source\":{\"card\":\"c38\",\"name\":\"Swamp\",\"zone_revision\":2},\"source_revision\":2,\"uses_stack\":false}],\"payment\":{\"mapping\":[[[\"game.enums\",\"ManaType\",\"BLACK\"],1]]}},\"parameters\":{\"x_variables\":{\"mapping\":[[[\"game.enums\",\"SAVariableType\",\"X\"],0]]}},\"targets\":{\"mapping\":[]}},\"effect\":{\"effects\":[{\"features\":{\"kind\":\"unknown\"},\"rule\":[\"game.cards.starter_support\",\"RuleEffect\",\"fracture\"],\"slots\":[[\"target\",\"target_0\"]]},{\"features\":{\"destination\":\"GRAVEYARD\",\"kind\":\"move_source\"},\"rule\":[\"game.game_actions.card_effects\",\"MoveSourceEffect\",\"Compound Fracture:to_graveyard\"],\"slots\":[]}],\"mana\":null,\"parameters\":{\"x_variables\":{\"mapping\":[[[\"game.enums\",\"SAVariableType\",\"X\"],0]]}},\"targets\":{\"mapping\":[[\"target\",{\"mapping\":[[\"target_0\",{\"mapping\":[[{\"card\":\"c7\",\"name\":\"Malakir Cullblade\",\"zone_revision\":3},1]]}]]}]]}},\"kind\":\"AbilityAction\",\"source\":{\"card\":\"c23\",\"name\":\"Compound Fracture\",\"zone_revision\":1},\"source_revision\":1,\"uses_stack\":true}",
+              "kind": "AbilityAction"
+            },
+            "mean_value": null,
+            "prior_probability": 0.1335688146087504,
+            "visits": 0
+          },
+          {
+            "action": {
+              "_json": "{\"ability_key\":\"cast:Compound Fracture\",\"action_key\":\"cast:Compound Fracture\",\"controller\":{\"player\":0},\"cost\":{\"effects\":[{\"features\":{\"destination\":\"STACK\",\"kind\":\"move_source\"},\"rule\":[\"game.game_actions.card_effects\",\"MoveSourceEffect\",\"Compound Fracture:put_on_stack\"],\"slots\":[]}],\"mana\":{\"life_payment\":0,\"mana_plan\":[{\"ability_key\":\"mana_black\",\"action_key\":\"mana_black\",\"controller\":{\"player\":0},\"cost\":{\"effects\":[{\"features\":{\"kind\":\"tap_source\"},\"rule\":[\"game.game_actions.card_effects\",\"TapSourceEffect\",\"tap_for_mana\"],\"slots\":[]}],\"mana\":{\"life_payment\":0,\"mana_plan\":[],\"payment\":null},\"parameters\":{\"x_variables\":{\"mapping\":[[[\"game.enums\",\"SAVariableType\",\"X\"],0]]}},\"targets\":{\"mapping\":[]}},\"effect\":{\"effects\":[{\"features\":{\"kind\":\"unknown\"},\"rule\":[\"game.game_actions.mana_effects\",\"AddManaEffect\",\"add_black\"],\"slots\":[]}],\"mana\":null,\"parameters\":{\"x_variables\":{\"mapping\":[[[\"game.enums\",\"SAVariableType\",\"X\"],0]]}},\"targets\":{\"mapping\":[]}},\"kind\":\"ManaAbilityAction\",\"source\":{\"card\":\"c38\",\"name\":\"Swamp\",\"zone_revision\":2},\"source_revision\":2,\"uses_stack\":false}],\"payment\":{\"mapping\":[[[\"game.enums\",\"ManaType\",\"BLACK\"],1]]}},\"parameters\":{\"x_variables\":{\"mapping\":[[[\"game.enums\",\"SAVariableType\",\"X\"],0]]}},\"targets\":{\"mapping\":[]}},\"effect\":{\"effects\":[{\"features\":{\"kind\":\"unknown\"},\"rule\":[\"game.cards.starter_support\",\"RuleEffect\",\"fracture\"],\"slots\":[[\"target\",\"target_0\"]]},{\"features\":{\"destination\":\"GRAVEYARD\",\"kind\":\"move_source\"},\"rule\":[\"game.game_actions.card_effects\",\"MoveSourceEffect\",\"Compound Fracture:to_graveyard\"],\"slots\":[]}],\"mana\":null,\"parameters\":{\"x_variables\":{\"mapping\":[[[\"game.enums\",\"SAVariableType\",\"X\"],0]]}},\"targets\":{\"mapping\":[[\"target\",{\"mapping\":[[\"target_0\",{\"mapping\":[[{\"card\":\"c73\",\"name\":\"Goblin Gang Leader\",\"zone_revision\":3},1]]}]]}]]}},\"kind\":\"AbilityAction\",\"source\":{\"card\":\"c23\",\"name\":\"Compound Fracture\",\"zone_revision\":1},\"source_revision\":1,\"uses_stack\":true}",
+              "kind": "AbilityAction"
+            },
+            "mean_value": null,
+            "prior_probability": 0.1335688146087504,
+            "visits": 0
+          },
+          {
+            "action": {
+              "_json": "{\"kind\":\"PassPriorityAction\",\"player\":{\"player\":0}}",
+              "kind": "PassPriorityAction"
+            },
+            "mean_value": null,
+            "prior_probability": 0.33215592695624807,
+            "visits": 0
+          }
+        ],
+        "fallback_reason": "extension_limit",
+        "metrics": {
+          "advance_attempts": 55,
+          "advance_ms": 300.84779975004494,
+          "checkpoint_entries": 0,
+          "checkpoint_hits": 0,
+          "checkpoint_skipped_decisions": 0,
+          "cpu_ms": 500.0,
+          "elapsed_ms": 518.218900077045,
+          "forced_initial_coverage": false,
+          "forced_transitions": 16,
+          "heuristic_leaves": 0,
+          "hierarchy_nodes": 0,
+          "hierarchy_selection_steps": 0,
+          "history_mismatch_reasons": [],
+          "history_prefix_advances": 0,
+          "history_rejected_samples": 0,
+          "history_sampling_attempts": 0,
+          "information_nodes": 1,
+          "interrupted_trajectories": 4,
+          "interruption_reasons": [
+            [
+              "extension_limit",
+              3
+            ],
+            [
+              "time_budget",
+              1
+            ]
+          ],
+          "iterations_completed": 0,
+          "iterations_started": 4,
+          "minimum_trajectories": 1,
+          "population_distinct_origins": 0,
+          "population_refreshes": 0,
+          "population_size": 0,
+          "population_survivors": 0,
+          "population_updates": 0,
+          "prior_evaluations": 1,
+          "rollout_policy_choices": 24,
+          "rollout_random_choices": 0,
+          "root_actions": 6,
+          "root_actions_visited": 0,
+          "root_coverage_required": false,
+          "selection": "puct",
+          "simulator_advance_calls": 14,
+          "terminal_leaves": 0,
+          "time_limit_ms": 500,
+          "trajectory_runs": 1,
+          "transition_cache_entries": 14,
+          "transition_cache_hits": 41,
+          "world_initialization_ms": 128.81359993480146,
+          "world_materializations": 3,
+          "world_restores": 0,
+          "worlds_built": 2
+        },
+        "root_coverage_complete": false,
+        "stop_reason": "time_budget",
+        "used_fallback": true,
+        "value": null
+      }
+    },
+    {
+      "category": "horizon_or_coverage",
+      "line": 819,
+      "turn": 9,
+      "phase": "BEGIN_COMBAT",
+      "request_kind": "PriorityDecisionRequest",
+      "reason": "extension_limit",
+      "options": 6,
+      "elapsed_ms": 677.7486000210047,
+      "information_key": "329b43303c7cd62bab40a17f6aceb54d4eab3e069fa72a34d20ec935ef816de9",
+      "world_preparation": {
+        "route": "current"
+      },
+      "unsupported_detail": null,
+      "search": {
+        "choice": {
+          "_json": "{\"kind\":\"PassPriorityAction\",\"player\":{\"player\":0}}",
+          "kind": "PassPriorityAction"
+        },
+        "estimates": [
+          {
+            "action": {
+              "_json": "{\"ability_key\":\"cast:Compound Fracture\",\"action_key\":\"cast:Compound Fracture\",\"controller\":{\"player\":0},\"cost\":{\"effects\":[{\"features\":{\"destination\":\"STACK\",\"kind\":\"move_source\"},\"rule\":[\"game.game_actions.card_effects\",\"MoveSourceEffect\",\"Compound Fracture:put_on_stack\"],\"slots\":[]}],\"mana\":{\"life_payment\":0,\"mana_plan\":[{\"ability_key\":\"mana_black\",\"action_key\":\"mana_black\",\"controller\":{\"player\":0},\"cost\":{\"effects\":[{\"features\":{\"kind\":\"tap_source\"},\"rule\":[\"game.game_actions.card_effects\",\"TapSourceEffect\",\"tap_for_mana\"],\"slots\":[]}],\"mana\":{\"life_payment\":0,\"mana_plan\":[],\"payment\":null},\"parameters\":{\"x_variables\":{\"mapping\":[[[\"game.enums\",\"SAVariableType\",\"X\"],0]]}},\"targets\":{\"mapping\":[]}},\"effect\":{\"effects\":[{\"features\":{\"kind\":\"unknown\"},\"rule\":[\"game.game_actions.mana_effects\",\"AddManaEffect\",\"add_black\"],\"slots\":[]}],\"mana\":null,\"parameters\":{\"x_variables\":{\"mapping\":[[[\"game.enums\",\"SAVariableType\",\"X\"],0]]}},\"targets\":{\"mapping\":[]}},\"kind\":\"ManaAbilityAction\",\"source\":{\"card\":\"c38\",\"name\":\"Swamp\",\"zone_revision\":2},\"source_revision\":2,\"uses_stack\":false}],\"payment\":{\"mapping\":[[[\"game.enums\",\"ManaType\",\"BLACK\"],1]]}},\"parameters\":{\"x_variables\":{\"mapping\":[[[\"game.enums\",\"SAVariableType\",\"X\"],0]]}},\"targets\":{\"mapping\":[]}},\"effect\":{\"effects\":[{\"features\":{\"kind\":\"unknown\"},\"rule\":[\"game.cards.starter_support\",\"RuleEffect\",\"fracture\"],\"slots\":[[\"target\",\"target_0\"]]},{\"features\":{\"destination\":\"GRAVEYARD\",\"kind\":\"move_source\"},\"rule\":[\"game.game_actions.card_effects\",\"MoveSourceEffect\",\"Compound Fracture:to_graveyard\"],\"slots\":[]}],\"mana\":null,\"parameters\":{\"x_variables\":{\"mapping\":[[[\"game.enums\",\"SAVariableType\",\"X\"],0]]}},\"targets\":{\"mapping\":[[\"target\",{\"mapping\":[[\"target_0\",{\"mapping\":[[{\"card\":\"c1\",\"name\":\"Sanitarium Skeleton\",\"zone_revision\":3},1]]}]]}]]}},\"kind\":\"AbilityAction\",\"source\":{\"card\":\"c23\",\"name\":\"Compound Fracture\",\"zone_revision\":1},\"source_revision\":1,\"uses_stack\":true}",
+              "kind": "AbilityAction"
+            },
+            "mean_value": null,
+            "prior_probability": 0.1335688146087504,
+            "visits": 0
+          },
+          {
+            "action": {
+              "_json": "{\"ability_key\":\"cast:Compound Fracture\",\"action_key\":\"cast:Compound Fracture\",\"controller\":{\"player\":0},\"cost\":{\"effects\":[{\"features\":{\"destination\":\"STACK\",\"kind\":\"move_source\"},\"rule\":[\"game.game_actions.card_effects\",\"MoveSourceEffect\",\"Compound Fracture:put_on_stack\"],\"slots\":[]}],\"mana\":{\"life_payment\":0,\"mana_plan\":[{\"ability_key\":\"mana_black\",\"action_key\":\"mana_black\",\"controller\":{\"player\":0},\"cost\":{\"effects\":[{\"features\":{\"kind\":\"tap_source\"},\"rule\":[\"game.game_actions.card_effects\",\"TapSourceEffect\",\"tap_for_mana\"],\"slots\":[]}],\"mana\":{\"life_payment\":0,\"mana_plan\":[],\"payment\":null},\"parameters\":{\"x_variables\":{\"mapping\":[[[\"game.enums\",\"SAVariableType\",\"X\"],0]]}},\"targets\":{\"mapping\":[]}},\"effect\":{\"effects\":[{\"features\":{\"kind\":\"unknown\"},\"rule\":[\"game.game_actions.mana_effects\",\"AddManaEffect\",\"add_black\"],\"slots\":[]}],\"mana\":null,\"parameters\":{\"x_variables\":{\"mapping\":[[[\"game.enums\",\"SAVariableType\",\"X\"],0]]}},\"targets\":{\"mapping\":[]}},\"kind\":\"ManaAbilityAction\",\"source\":{\"card\":\"c38\",\"name\":\"Swamp\",\"zone_revision\":2},\"source_revision\":2,\"uses_stack\":false}],\"payment\":{\"mapping\":[[[\"game.enums\",\"ManaType\",\"BLACK\"],1]]}},\"parameters\":{\"x_variables\":{\"mapping\":[[[\"game.enums\",\"SAVariableType\",\"X\"],0]]}},\"targets\":{\"mapping\":[]}},\"effect\":{\"effects\":[{\"features\":{\"kind\":\"unknown\"},\"rule\":[\"game.cards.starter_support\",\"RuleEffect\",\"fracture\"],\"slots\":[[\"target\",\"target_0\"]]},{\"features\":{\"destination\":\"GRAVEYARD\",\"kind\":\"move_source\"},\"rule\":[\"game.game_actions.card_effects\",\"MoveSourceEffect\",\"Compound Fracture:to_graveyard\"],\"slots\":[]}],\"mana\":null,\"parameters\":{\"x_variables\":{\"mapping\":[[[\"game.enums\",\"SAVariableType\",\"X\"],0]]}},\"targets\":{\"mapping\":[[\"target\",{\"mapping\":[[\"target_0\",{\"mapping\":[[{\"card\":\"c121\",\"name\":\"Goblin\",\"zone_revision\":1},1]]}]]}]]}},\"kind\":\"AbilityAction\",\"source\":{\"card\":\"c23\",\"name\":\"Compound Fracture\",\"zone_revision\":1},\"source_revision\":1,\"uses_stack\":true}",
+              "kind": "AbilityAction"
+            },
+            "mean_value": null,
+            "prior_probability": 0.1335688146087504,
+            "visits": 0
+          },
+          {
+            "action": {
+              "_json": "{\"ability_key\":\"cast:Compound Fracture\",\"action_key\":\"cast:Compound Fracture\",\"controller\":{\"player\":0},\"cost\":{\"effects\":[{\"features\":{\"destination\":\"STACK\",\"kind\":\"move_source\"},\"rule\":[\"game.game_actions.card_effects\",\"MoveSourceEffect\",\"Compound Fracture:put_on_stack\"],\"slots\":[]}],\"mana\":{\"life_payment\":0,\"mana_plan\":[{\"ability_key\":\"mana_black\",\"action_key\":\"mana_black\",\"controller\":{\"player\":0},\"cost\":{\"effects\":[{\"features\":{\"kind\":\"tap_source\"},\"rule\":[\"game.game_actions.card_effects\",\"TapSourceEffect\",\"tap_for_mana\"],\"slots\":[]}],\"mana\":{\"life_payment\":0,\"mana_plan\":[],\"payment\":null},\"parameters\":{\"x_variables\":{\"mapping\":[[[\"game.enums\",\"SAVariableType\",\"X\"],0]]}},\"targets\":{\"mapping\":[]}},\"effect\":{\"effects\":[{\"features\":{\"kind\":\"unknown\"},\"rule\":[\"game.game_actions.mana_effects\",\"AddManaEffect\",\"add_black\"],\"slots\":[]}],\"mana\":null,\"parameters\":{\"x_variables\":{\"mapping\":[[[\"game.enums\",\"SAVariableType\",\"X\"],0]]}},\"targets\":{\"mapping\":[]}},\"kind\":\"ManaAbilityAction\",\"source\":{\"card\":\"c38\",\"name\":\"Swamp\",\"zone_revision\":2},\"source_revision\":2,\"uses_stack\":false}],\"payment\":{\"mapping\":[[[\"game.enums\",\"ManaType\",\"BLACK\"],1]]}},\"parameters\":{\"x_variables\":{\"mapping\":[[[\"game.enums\",\"SAVariableType\",\"X\"],0]]}},\"targets\":{\"mapping\":[]}},\"effect\":{\"effects\":[{\"features\":{\"kind\":\"unknown\"},\"rule\":[\"game.cards.starter_support\",\"RuleEffect\",\"fracture\"],\"slots\":[[\"target\",\"target_0\"]]},{\"features\":{\"destination\":\"GRAVEYARD\",\"kind\":\"move_source\"},\"rule\":[\"game.game_actions.card_effects\",\"MoveSourceEffect\",\"Compound Fracture:to_graveyard\"],\"slots\":[]}],\"mana\":null,\"parameters\":{\"x_variables\":{\"mapping\":[[[\"game.enums\",\"SAVariableType\",\"X\"],0]]}},\"targets\":{\"mapping\":[[\"target\",{\"mapping\":[[\"target_0\",{\"mapping\":[[{\"card\":\"c122\",\"name\":\"Goblin\",\"zone_revision\":1},1]]}]]}]]}},\"kind\":\"AbilityAction\",\"source\":{\"card\":\"c23\",\"name\":\"Compound Fracture\",\"zone_revision\":1},\"source_revision\":1,\"uses_stack\":true}",
+              "kind": "AbilityAction"
+            },
+            "mean_value": null,
+            "prior_probability": 0.1335688146087504,
+            "visits": 0
+          },
+          {
+            "action": {
+              "_json": "{\"ability_key\":\"cast:Compound Fracture\",\"action_key\":\"cast:Compound Fracture\",\"controller\":{\"player\":0},\"cost\":{\"effects\":[{\"features\":{\"destination\":\"STACK\",\"kind\":\"move_source\"},\"rule\":[\"game.game_actions.card_effects\",\"MoveSourceEffect\",\"Compound Fracture:put_on_stack\"],\"slots\":[]}],\"mana\":{\"life_payment\":0,\"mana_plan\":[{\"ability_key\":\"mana_black\",\"action_key\":\"mana_black\",\"controller\":{\"player\":0},\"cost\":{\"effects\":[{\"features\":{\"kind\":\"tap_source\"},\"rule\":[\"game.game_actions.card_effects\",\"TapSourceEffect\",\"tap_for_mana\"],\"slots\":[]}],\"mana\":{\"life_payment\":0,\"mana_plan\":[],\"payment\":null},\"parameters\":{\"x_variables\":{\"mapping\":[[[\"game.enums\",\"SAVariableType\",\"X\"],0]]}},\"targets\":{\"mapping\":[]}},\"effect\":{\"effects\":[{\"features\":{\"kind\":\"unknown\"},\"rule\":[\"game.game_actions.mana_effects\",\"AddManaEffect\",\"add_black\"],\"slots\":[]}],\"mana\":null,\"parameters\":{\"x_variables\":{\"mapping\":[[[\"game.enums\",\"SAVariableType\",\"X\"],0]]}},\"targets\":{\"mapping\":[]}},\"kind\":\"ManaAbilityAction\",\"source\":{\"card\":\"c38\",\"name\":\"Swamp\",\"zone_revision\":2},\"source_revision\":2,\"uses_stack\":false}],\"payment\":{\"mapping\":[[[\"game.enums\",\"ManaType\",\"BLACK\"],1]]}},\"parameters\":{\"x_variables\":{\"mapping\":[[[\"game.enums\",\"SAVariableType\",\"X\"],0]]}},\"targets\":{\"mapping\":[]}},\"effect\":{\"effects\":[{\"features\":{\"kind\":\"unknown\"},\"rule\":[\"game.cards.starter_support\",\"RuleEffect\",\"fracture\"],\"slots\":[[\"target\",\"target_0\"]]},{\"features\":{\"destination\":\"GRAVEYARD\",\"kind\":\"move_source\"},\"rule\":[\"game.game_actions.card_effects\",\"MoveSourceEffect\",\"Compound Fracture:to_graveyard\"],\"slots\":[]}],\"mana\":null,\"parameters\":{\"x_variables\":{\"mapping\":[[[\"game.enums\",\"SAVariableType\",\"X\"],0]]}},\"targets\":{\"mapping\":[[\"target\",{\"mapping\":[[\"target_0\",{\"mapping\":[[{\"card\":\"c7\",\"name\":\"Malakir Cullblade\",\"zone_revision\":3},1]]}]]}]]}},\"kind\":\"AbilityAction\",\"source\":{\"card\":\"c23\",\"name\":\"Compound Fracture\",\"zone_revision\":1},\"source_revision\":1,\"uses_stack\":true}",
+              "kind": "AbilityAction"
+            },
+            "mean_value": null,
+            "prior_probability": 0.1335688146087504,
+            "visits": 0
+          },
+          {
+            "action": {
+              "_json": "{\"ability_key\":\"cast:Compound Fracture\",\"action_key\":\"cast:Compound Fracture\",\"controller\":{\"player\":0},\"cost\":{\"effects\":[{\"features\":{\"destination\":\"STACK\",\"kind\":\"move_source\"},\"rule\":[\"game.game_actions.card_effects\",\"MoveSourceEffect\",\"Compound Fracture:put_on_stack\"],\"slots\":[]}],\"mana\":{\"life_payment\":0,\"mana_plan\":[{\"ability_key\":\"mana_black\",\"action_key\":\"mana_black\",\"controller\":{\"player\":0},\"cost\":{\"effects\":[{\"features\":{\"kind\":\"tap_source\"},\"rule\":[\"game.game_actions.card_effects\",\"TapSourceEffect\",\"tap_for_mana\"],\"slots\":[]}],\"mana\":{\"life_payment\":0,\"mana_plan\":[],\"payment\":null},\"parameters\":{\"x_variables\":{\"mapping\":[[[\"game.enums\",\"SAVariableType\",\"X\"],0]]}},\"targets\":{\"mapping\":[]}},\"effect\":{\"effects\":[{\"features\":{\"kind\":\"unknown\"},\"rule\":[\"game.game_actions.mana_effects\",\"AddManaEffect\",\"add_black\"],\"slots\":[]}],\"mana\":null,\"parameters\":{\"x_variables\":{\"mapping\":[[[\"game.enums\",\"SAVariableType\",\"X\"],0]]}},\"targets\":{\"mapping\":[]}},\"kind\":\"ManaAbilityAction\",\"source\":{\"card\":\"c38\",\"name\":\"Swamp\",\"zone_revision\":2},\"source_revision\":2,\"uses_stack\":false}],\"payment\":{\"mapping\":[[[\"game.enums\",\"ManaType\",\"BLACK\"],1]]}},\"parameters\":{\"x_variables\":{\"mapping\":[[[\"game.enums\",\"SAVariableType\",\"X\"],0]]}},\"targets\":{\"mapping\":[]}},\"effect\":{\"effects\":[{\"features\":{\"kind\":\"unknown\"},\"rule\":[\"game.cards.starter_support\",\"RuleEffect\",\"fracture\"],\"slots\":[[\"target\",\"target_0\"]]},{\"features\":{\"destination\":\"GRAVEYARD\",\"kind\":\"move_source\"},\"rule\":[\"game.game_actions.card_effects\",\"MoveSourceEffect\",\"Compound Fracture:to_graveyard\"],\"slots\":[]}],\"mana\":null,\"parameters\":{\"x_variables\":{\"mapping\":[[[\"game.enums\",\"SAVariableType\",\"X\"],0]]}},\"targets\":{\"mapping\":[[\"target\",{\"mapping\":[[\"target_0\",{\"mapping\":[[{\"card\":\"c73\",\"name\":\"Goblin Gang Leader\",\"zone_revision\":3},1]]}]]}]]}},\"kind\":\"AbilityAction\",\"source\":{\"card\":\"c23\",\"name\":\"Compound Fracture\",\"zone_revision\":1},\"source_revision\":1,\"uses_stack\":true}",
+              "kind": "AbilityAction"
+            },
+            "mean_value": null,
+            "prior_probability": 0.1335688146087504,
+            "visits": 0
+          },
+          {
+            "action": {
+              "_json": "{\"kind\":\"PassPriorityAction\",\"player\":{\"player\":0}}",
+              "kind": "PassPriorityAction"
+            },
+            "mean_value": null,
+            "prior_probability": 0.33215592695624807,
+            "visits": 0
+          }
+        ],
+        "fallback_reason": "extension_limit",
+        "metrics": {
+          "advance_attempts": 26,
+          "advance_ms": 450.4918996244669,
+          "checkpoint_entries": 0,
+          "checkpoint_hits": 0,
+          "checkpoint_skipped_decisions": 0,
+          "cpu_ms": 625.0,
+          "elapsed_ms": 627.3626999463886,
+          "forced_initial_coverage": false,
+          "forced_transitions": 8,
+          "heuristic_leaves": 0,
+          "hierarchy_nodes": 0,
+          "hierarchy_selection_steps": 0,
+          "history_mismatch_reasons": [],
+          "history_prefix_advances": 0,
+          "history_rejected_samples": 0,
+          "history_sampling_attempts": 0,
+          "information_nodes": 1,
+          "interrupted_trajectories": 2,
+          "interruption_reasons": [
+            [
+              "extension_limit",
+              1
+            ],
+            [
+              "time_budget",
+              1
+            ]
+          ],
+          "iterations_completed": 0,
+          "iterations_started": 2,
+          "minimum_trajectories": 1,
+          "population_distinct_origins": 0,
+          "population_refreshes": 0,
+          "population_size": 0,
+          "population_survivors": 0,
+          "population_updates": 0,
+          "prior_evaluations": 1,
+          "rollout_policy_choices": 10,
+          "rollout_random_choices": 1,
+          "root_actions": 6,
+          "root_actions_visited": 0,
+          "root_coverage_required": false,
+          "selection": "puct",
+          "simulator_advance_calls": 17,
+          "terminal_leaves": 0,
+          "time_limit_ms": 500,
+          "trajectory_runs": 2,
+          "transition_cache_entries": 17,
+          "transition_cache_hits": 9,
+          "world_initialization_ms": 140.46030002646148,
+          "world_materializations": 4,
+          "world_restores": 0,
+          "worlds_built": 2
+        },
+        "root_coverage_complete": false,
+        "stop_reason": "time_budget",
+        "used_fallback": true,
+        "value": null
+      }
+    },
+    {
+      "category": "horizon_or_coverage",
+      "line": 826,
+      "turn": 9,
+      "phase": "DECLARE_ATTACKERS",
+      "request_kind": "DeclareAttackersRequest",
+      "reason": "extension_limit",
+      "options": 4,
+      "elapsed_ms": 611.8428000481799,
+      "information_key": "ddb969836f4d3888415588f0c65910b7529b88e04bb29665faba92458c9a2bd3",
+      "world_preparation": {
+        "route": "current"
+      },
+      "unsupported_detail": null,
+      "search": {
+        "choice": {
+          "_json": "{\"declarations\":{\"mapping\":[[{\"card\":\"c7\",\"name\":\"Malakir Cullblade\",\"zone_revision\":3},{\"player\":1}]]},\"kind\":\"DeclareAttackersOption\"}",
+          "kind": "DeclareAttackersOption"
+        },
+        "estimates": [
+          {
+            "action": {
+              "_json": "{\"declarations\":{\"mapping\":[[{\"card\":\"c1\",\"name\":\"Sanitarium Skeleton\",\"zone_revision\":3},{\"player\":1}],[{\"card\":\"c7\",\"name\":\"Malakir Cullblade\",\"zone_revision\":3},{\"player\":1}]]},\"kind\":\"DeclareAttackersOption\"}",
+              "kind": "DeclareAttackersOption"
+            },
+            "mean_value": null,
+            "prior_probability": 0.04853263551009069,
+            "visits": 0
+          },
+          {
+            "action": {
+              "_json": "{\"declarations\":{\"mapping\":[[{\"card\":\"c1\",\"name\":\"Sanitarium Skeleton\",\"zone_revision\":3},{\"player\":1}]]},\"kind\":\"DeclareAttackersOption\"}",
+              "kind": "DeclareAttackersOption"
+            },
+            "mean_value": null,
+            "prior_probability": 0.04853263551009069,
+            "visits": 0
+          },
+          {
+            "action": {
+              "_json": "{\"declarations\":{\"mapping\":[[{\"card\":\"c7\",\"name\":\"Malakir Cullblade\",\"zone_revision\":3},{\"player\":1}]]},\"kind\":\"DeclareAttackersOption\"}",
+              "kind": "DeclareAttackersOption"
+            },
+            "mean_value": null,
+            "prior_probability": 0.4514673644899093,
+            "visits": 0
+          },
+          {
+            "action": {
+              "_json": "{\"declarations\":{\"mapping\":[]},\"kind\":\"DeclareAttackersOption\"}",
+              "kind": "DeclareAttackersOption"
+            },
+            "mean_value": null,
+            "prior_probability": 0.4514673644899093,
+            "visits": 0
+          }
+        ],
+        "fallback_reason": "extension_limit",
+        "metrics": {
+          "advance_attempts": 17,
+          "advance_ms": 358.08670008555055,
+          "checkpoint_entries": 0,
+          "checkpoint_hits": 0,
+          "checkpoint_skipped_decisions": 0,
+          "cpu_ms": 578.125,
+          "elapsed_ms": 569.6471999399364,
+          "forced_initial_coverage": false,
+          "forced_transitions": 5,
+          "heuristic_leaves": 0,
+          "hierarchy_nodes": 0,
+          "hierarchy_selection_steps": 0,
+          "history_mismatch_reasons": [],
+          "history_prefix_advances": 0,
+          "history_rejected_samples": 0,
+          "history_sampling_attempts": 0,
+          "information_nodes": 1,
+          "interrupted_trajectories": 2,
+          "interruption_reasons": [
+            [
+              "extension_limit",
+              1
+            ],
+            [
+              "time_budget",
+              1
+            ]
+          ],
+          "iterations_completed": 0,
+          "iterations_started": 2,
+          "minimum_trajectories": 1,
+          "population_distinct_origins": 0,
+          "population_refreshes": 0,
+          "population_size": 0,
+          "population_survivors": 0,
+          "population_updates": 0,
+          "prior_evaluations": 1,
+          "rollout_policy_choices": 7,
+          "rollout_random_choices": 0,
+          "root_actions": 4,
+          "root_actions_visited": 0,
+          "root_coverage_required": false,
+          "selection": "puct",
+          "simulator_advance_calls": 17,
+          "terminal_leaves": 0,
+          "time_limit_ms": 500,
+          "trajectory_runs": 2,
+          "transition_cache_entries": 17,
+          "transition_cache_hits": 0,
+          "world_initialization_ms": 180.04590005148202,
+          "world_materializations": 4,
+          "world_restores": 0,
+          "worlds_built": 2
+        },
+        "root_coverage_complete": false,
+        "stop_reason": "time_budget",
+        "used_fallback": true,
+        "value": null
+      }
+    }
+  ],
+  "exceptions": [],
+  "worker_exception": null,
+  "simulation_limit_exceptions": []
+}

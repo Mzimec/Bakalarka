@@ -1,11 +1,11 @@
 """Action graph, composition, target binding and lazy execution regressions."""
+from game.game_actions.data_structs.ability import ActivatedAbilityDefinition
 import pytest
 from dummy_classes import DummyEffect, DummyCard, DummyState
 from helper_funcs import make_slot
 from game.game_actions.data_structs.action_node import (
     EffectActionNode, AndActionNode, OrActionNode, ImmutableEffectToSlotMap)
-from game.game_actions.data_structs.ability import (
-    SubAbilityDefinition, SubAbilityComposer, AbilityDefinition, EffectBinding, EffectSequence)
+from game.game_actions.data_structs.ability import SubAbilityDefinition, SubAbilityComposer, EffectSequence
 from game.game_actions.data_structs.game_action import AbilityExecutionPlan, ResolutionContext
 from game.game_actions.generation.command_action_builder import ability_actions
 from game.target.target_resolver import TargetBinding, TargetOption, RepetitionTargetSlotWrapper
@@ -62,7 +62,7 @@ def setup_ability(graph, effects, slots):
     player = Player([], ScriptedController())
     state = State([player])
     state.turn.phase = TurnPhase.PRECOMBAT_MAIN
-    definition = AbilityDefinition(action_subdefs=(SubAbilityDefinition(action_node=graph,
+    definition = ActivatedAbilityDefinition(action_subdefs=(SubAbilityDefinition(action_node=graph,
         effects=frozenset(effects), slots=frozenset(slots)),))
     source = Card(CardDefinition("Source", types=frozenset({CardType.ARTIFACT}), abilities=frozenset({definition})), player)
     player.add_card(source, ZoneType.BATTLEFIELD)

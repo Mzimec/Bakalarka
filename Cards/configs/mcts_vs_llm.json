@@ -1,0 +1,23 @@
+{
+  "mcts_settings": "mcts_play_128_native.json",
+  "mcts_deck": "white",
+  "llm_deck": "red",
+  "seed": 2026,
+  "rounds": 1,
+  "paired": false,
+  "starting_player": "mcts",
+  "max_turns": 100,
+  "max_decisions": 10000,
+  "llm": {
+    "provider": "ollama",
+    "model": "qwen3:8b",
+    "endpoint": "http://localhost:11434/api/chat",
+    "timeout": 60,
+    "max_requests": 10000,
+    "include_priors": false,
+    "think": false,
+    "num_gpu": 37,
+    "num_ctx": 4096,
+    "compact_observation": true
+  }
+}

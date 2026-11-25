@@ -1,64 +1,53 @@
 
 """!
 @brief Convenience adapters for generating or validating concrete ability actions.
-
 This module provides a thin, user-facing layer over the lower-level
 ability-action generation pipeline.
-
 It is intended for two common call sites:
-
 1. AI / exhaustive generation:
    The caller supplies only an ability and current state, and the helper
    enumerates every legal combination of modes, targets, costs, and mana
    activations.
-
 2. Player-selected action validation:
    The caller supplies already chosen targets and optionally selected
    modes. The same generation machinery is then reused to verify that
    those supplied choices correspond to one legal concrete
    `AbilityAction`.
-
 Keeping both cases on the same generation pipeline avoids duplicating
 rules for targeting, modal selection, mana payment, and cost execution.
 """
 
-from .ability_action_gen_pipeline import AbilityActionGenerationPipeline
+from __future__ import annotations
+from collections.abc import Iterable, Iterator
+from typing import TYPE_CHECKING, Any
 from .subability_generator import FixedSubAbilityGenerator
-from .exec_plan_gen_pipeline import ExecutionPlanPipeline
-from .generation_strategy import ActionGenerationStrategy, ExecutionPlanStrategy
-from .action_node_option_generator import (
-    FullActionNodeOptionGenerator,
-    SelectedActionNodeOptionGenerator,
-)
-from .target_binding_generator import (
-    ProvidedTargetBindingGenerator,
-    FullTargetBindingGenerator,
-)
-from ...ai.mana_solver import SourceActivatingManaSolver
+from .generation_strategy import action_generation_strategy
+
+if TYPE_CHECKING:
+    from ..data_structs.ability import Ability
+    from ..data_structs.game_action import AbilityAction
+    from ...game_state import State
 
 
 def ability_actions(
-    ability,
-    state,
-    targets=None,
+    ability: Ability,
+    state: State,
+    targets: Iterable[object] | None = None,
     *,
-    mode=None,
-    cost_targets=(),
-    cost_mode=None,
-    x_value=0,
-    life_payment=None,
-):
+    mode: int | None = None,
+    cost_targets: Iterable[object] = (),
+    cost_mode: int | None = None,
+    x_value: int = 0,
+    life_payment: int | None = None,
+) -> Iterator[AbilityAction]:
     """!
     @brief Generate legal concrete actions for an ability using optional
            caller-supplied choices.
-
     Adapts a relatively simple public API (`ability`, selected targets,
     optional modes, X value, etc.) into the collection of generation
     strategies required by `AbilityActionGenerationPipeline`.
-
     The helper deliberately supports both exhaustive generation and
     validation of preselected player choices:
-
     - `targets is None` means that effect targets should be enumerated
       exhaustively using `FullTargetBindingGenerator`.
     - `targets` being a tuple (including an empty tuple) means that the
@@ -73,12 +62,10 @@ def ability_actions(
       represents a cost that requires no caller-selected targets.
     - `cost_mode is None` permits all legal cost-side modes, while a
       concrete `cost_mode` restricts the cost pipeline to that choice.
-
     Mana payment is delegated to `SourceActivatingManaSolver`, allowing
     the generation pipeline to consider mana sources that must first be
     activated rather than relying only on mana already present in the
     player's pool.
-
     @param ability The runtime `Ability` whose legal concrete
            `AbilityAction` instances should be generated.
     @param state Current game state used for legality checks, target
@@ -104,83 +91,15 @@ def ability_actions(
             by the underlying generation pipeline.
     """
 
-    # Build one strategy object describing how every stage of action
-    # generation should behave for this particular call. The underlying
-    # pipeline remains generic; this adapter chooses exhaustive or
-    # caller-restricted generators depending on the supplied arguments.
-    strategy = ActionGenerationStrategy(
-        # The runtime `Ability` already determines which concrete
-        # sub-abilities belong to this activation, so no additional
-        # modal/sub-ability search is required at this level.
+    strategy = action_generation_strategy(
         subability_gen=FixedSubAbilityGenerator(),
-
-        # Cost execution plans are generated independently from the
-        # main effect execution plans. This covers costs such as tapping,
-        # sacrificing, discarding, paying mana, etc.
-        cost_pipeline=ExecutionPlanPipeline(),
-        cost_strategy=ExecutionPlanStrategy(
-            (
-                # No explicit cost mode means the generator should
-                # enumerate every legal ActionNodeOption produced by
-                # the cost's action-node structure.
-                FullActionNodeOptionGenerator()
-                if cost_mode is None
-
-                # When the caller already selected a cost mode, restrict
-                # generation to that one option and use the pipeline as
-                # a legality check for the supplied choice.
-                else SelectedActionNodeOptionGenerator(cost_mode)
-            ),
-
-            # Cost targets are considered caller-provided rather than
-            # exhaustively searched here. The default empty tuple is the
-            # explicit binding for costs that require no target/resource
-            # choice.
-            ProvidedTargetBindingGenerator(cost_targets),
-
-            # Mana payment may require activating mana-producing sources
-            # (e.g. tapping lands). The solver incorporates those source
-            # activations into the concrete cost execution plan.
-            SourceActivatingManaSolver(),
-        ),
-
-        # The actual effect of the ability is compiled through the same
-        # generic execution-plan machinery, but with different target
-        # and option generation policies.
-        action_pipeline=ExecutionPlanPipeline(),
-        action_strategy=ExecutionPlanStrategy(
-            (
-                # AI/exhaustive usage: enumerate all legal effect modes.
-                FullActionNodeOptionGenerator()
-                if mode is None
-
-                # Player-selected usage: validate only the chosen mode.
-                else SelectedActionNodeOptionGenerator(mode)
-            ),
-            (
-                # `None` intentionally means "search all legal targets".
-                # This distinction is important because an empty tuple
-                # instead represents an explicit choice of no targets.
-                FullTargetBindingGenerator()
-                if targets is None
-
-                # A supplied target tuple is treated as the exact player
-                # selection that should be validated by the pipeline.
-                else ProvidedTargetBindingGenerator(targets)
-            ),
-
-            # Effect execution itself does not pay mana; mana belongs to
-            # the cost side of the ability and is therefore solved by the
-            # cost strategy above.
-            None,
-        ),
+        targets=targets, cost_targets=cost_targets, mode=mode, cost_mode=cost_mode,
     )
 
     # Delegate all legality checks and cartesian composition of
     # sub-abilities, cost plans, and effect plans to the canonical
     # generation pipeline.
-    yield from AbilityActionGenerationPipeline().generate(
-        ability,
+    yield from ability.generate_actions(
         strategy,
         state,
         x_value=x_value,
@@ -188,22 +107,18 @@ def ability_actions(
     )
 
 
-def chosen_action(ability, state, targets=(), **choices_kwargs):
+def chosen_action(ability: Ability, state: State, targets: Iterable[object] = (), **choices_kwargs: Any) -> AbilityAction:
     """!
     @brief Resolve one fully selected player choice into exactly one legal action.
-
     Uses `ability_actions` in restricted/validation mode by converting
     the supplied `targets` to a tuple and asking the normal generation
     pipeline for matching actions.
-
     This helper is appropriate when the caller expects the user's input
     to identify one unambiguous concrete `AbilityAction`.
-
     A missing result means the supplied targets/modes/cost choices are
     illegal in the current state. More than one result means the caller
     has not specified enough information to uniquely identify an action;
     currently this is reported as requiring an explicit mode choice.
-
     @param ability Runtime `Ability` being activated or cast.
     @param state Current game state against which the supplied choices
            are validated.
@@ -221,7 +136,7 @@ def chosen_action(ability, state, targets=(), **choices_kwargs):
 
     # Supplying a tuple switches `ability_actions` from exhaustive target
     # generation to validation of exactly the caller-provided target set.
-    choices = ability_actions(
+    choices: Iterator[AbilityAction] = ability_actions(
         ability,
         state,
         tuple(targets),
@@ -229,7 +144,7 @@ def chosen_action(ability, state, targets=(), **choices_kwargs):
     )
 
     # The first generated result is the candidate concrete action.
-    action = next(choices, None)
+    action: AbilityAction | None = next(choices, None)
 
     if action is None:
         # No generation result means at least one supplied choice

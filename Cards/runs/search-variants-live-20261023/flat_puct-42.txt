@@ -1,0 +1,1038 @@
+Goblins Everywhere! (Goblins Everywhere!) vs Keep the Peace (Keep the Peace)
+Result: win | Winner: flat_puct | Player turn: 19
+Elapsed wall time: 48.771 s
+Seed: 42 | Starting player: 0
+Player turns are numbered individually. Interactive time includes waiting for input.
+
+Decision timing (wall time; includes option generation and input/model waits):
+  flat_puct [MCTSAgent, agent]: 243 decisions, average 198.908 ms, total 48.335 s, errors 0, auto-passes 0
+    Active option generation: 1.254 s; other decision work: 47.081 s (split recorded for 243 decisions)
+    AbilityDecisionRequest: n=9, average 10.110 ms; observed options 1.00; space size 1.00 (known for 9 decisions)
+      1 observed options: n=9, average 10.110 ms
+    DeclareAttackersRequest: n=10, average 2093.080 ms; observed options 406.30; space size 1.00 (known for 1 decisions)
+      1 observed options: n=1, average 2.095 ms
+      1001+ observed options: n=1, average 4679.344 ms
+      101-1000 observed options: n=6, average 2411.506 ms
+      11-100 observed options: n=2, average 890.165 ms
+    DeclareBlockersRequest: n=6, average 787.258 ms; observed options 99.83; space size 1.00 (known for 3 decisions)
+      1 observed options: n=3, average 6.490 ms
+      101-1000 observed options: n=3, average 1568.025 ms
+    MulliganRequest: n=1, average 2.868 ms; observed options 2.00; space size 2.00 (known for 1 decisions)
+      2-10 observed options: n=1, average 2.868 ms
+    PriorityDecisionRequest: n=210, average 107.311 ms; observed options 10.57; space size 1.00 (known for 194 decisions)
+      1 observed options: n=194, average 5.499 ms
+      101-1000 observed options: n=6, average 2387.986 ms
+      11-100 observed options: n=10, average 714.062 ms
+    ReplacementOrderRequest: n=2, average 8.321 ms; observed options 4.00; space size 4.00 (known for 2 decisions)
+      2-10 observed options: n=2, average 8.321 ms
+    TriggerOrderRequest: n=5, average 6.875 ms; observed options 2.40; space size 2.40 (known for 5 decisions)
+      1 observed options: n=2, average 5.133 ms
+      2-10 observed options: n=3, average 8.037 ms
+  Simple [SimpleAgent, agent]: 227 decisions, average 0.339 ms, total 0.077 s, errors 0, auto-passes 193
+    Active option generation: 0.055 s; other decision work: 0.022 s (split recorded for 227 decisions)
+    DeclareAttackersRequest: n=9, average 0.158 ms; observed options 1.00; space size unknown
+      1 observed options: n=9, average 0.158 ms
+    DeclareBlockersRequest: n=4, average 0.260 ms; observed options 1.00; space size unknown
+      1 observed options: n=4, average 0.260 ms
+    MulliganBottomRequest: n=1, average 0.052 ms; observed options 0.00; space size unknown
+      0 observed options: n=1, average 0.052 ms
+    MulliganRequest: n=2, average 0.036 ms; observed options 0.00; space size unknown
+      0 observed options: n=2, average 0.036 ms
+    PriorityDecisionRequest: n=208, average 0.357 ms; observed options 0.46; space size 1.13 (known for 71 decisions)
+      0 observed options: n=129, average 0.075 ms
+      1 observed options: n=64, average 0.750 ms
+      2-10 observed options: n=15, average 1.107 ms
+    ReplacementOrderRequest: n=3, average 0.035 ms; observed options 1.00; space size unknown
+      1 observed options: n=3, average 0.035 ms
+  Observed options are consumed yields, not unique actions. Size refers to the policy-filtered space.
+  Generation times only active option-stream next() calls, including nested expansion once. Other decision work includes policy, discovery outside streams, validation and measurement overhead; it is not pure scoring time. Precomputed choices were generated before this measurement.
+
+
+Turn 1
+  [untap] flat_puct decides MulliganRequest: 2.868 ms; observed options: 2; space size: 2; success
+  [untap] Simple decides MulliganRequest: 0.059 ms; observed options: 0; space size: unknown; success
+  [untap] Simple decides MulliganBottomRequest: 0.052 ms; observed options: 0; space size: unknown; success
+  [untap] Simple decides MulliganRequest: 0.012 ms; observed options: 0; space size: unknown; success
+  [upkeep] flat_puct decides PriorityDecisionRequest: 2.197 ms; observed options: 1; space size: 1; success
+  [upkeep] Simple decides PriorityDecisionRequest: 0.760 ms; observed options: 1; space size: 1; success
+  [precombat main] flat_puct decides PriorityDecisionRequest: 425.014 ms; observed options: 48; space size: unknown; success
+  [precombat main] Card moved: flat_puct; Mountain [c41] — card: Mountain [c41]; from: HAND; last known: kind: CardLastKnownInformation; previous controller: flat_puct; to: BATTLEFIELD
+  [precombat main] flat_puct plays land Mountain [c41] — lands played: 1; last known: kind: CardLastKnownInformation
+  [precombat main] Resolution: flat_puct; Mountain [c41]; play_land; success: True
+  [precombat main] flat_puct decides PriorityDecisionRequest: 343.507 ms; observed options: 32; space size: unknown; success
+  [precombat main] Card tapped: flat_puct; Mountain [c41] — last known: kind: CardLastKnownInformation
+  [precombat main] Mana added: flat_puct; Mountain [c41] — amount: 1; last known: kind: CardLastKnownInformation; mana: RED
+  [precombat main] flat_puct activates Mountain [c41] — ability: mana_red; last known: kind: CardLastKnownInformation
+  [precombat main] Mana paid: flat_puct; Tin Street Cadet [c2] — last known: kind: CardLastKnownInformation; payment: RED: 1
+  [precombat main] Card moved: flat_puct; Tin Street Cadet [c2] — card: Tin Street Cadet [c2]; from: HAND; last known: kind: CardLastKnownInformation; previous controller: flat_puct; to: STACK
+  [precombat main] flat_puct casts Tin Street Cadet [c2] — ability: cast:Tin Street Cadet
+  [precombat main] flat_puct decides PriorityDecisionRequest: 2.479 ms; observed options: 1; space size: 1; success
+  [precombat main] Simple decides PriorityDecisionRequest: 0.497 ms; observed options: 1; space size: 1; success
+  [precombat main] Card moved: flat_puct; Tin Street Cadet [c2] — card: Tin Street Cadet [c2]; from: STACK; last known: kind: CardLastKnownInformation; previous controller: flat_puct; to: BATTLEFIELD
+  [precombat main] Resolution: flat_puct; Tin Street Cadet [c2]; cast:Tin Street Cadet; success: True
+  [precombat main] flat_puct decides PriorityDecisionRequest: 3.007 ms; observed options: 1; space size: 1; success
+  [precombat main] Simple decides PriorityDecisionRequest: 0.428 ms; observed options: 1; space size: 1; success
+  [begin combat] flat_puct decides PriorityDecisionRequest: 2.051 ms; observed options: 1; space size: 1; success
+  [begin combat] Simple decides PriorityDecisionRequest: 0.369 ms; observed options: 1; space size: 1; success
+  [declare attackers] flat_puct decides DeclareAttackersRequest: 2.095 ms; observed options: 1; space size: 1; success
+  [declare attackers] flat_puct decides PriorityDecisionRequest: 2.061 ms; observed options: 1; space size: 1; success
+  [declare attackers] Simple decides PriorityDecisionRequest: 0.363 ms; observed options: 1; space size: 1; success
+  [end combat] flat_puct decides PriorityDecisionRequest: 2.076 ms; observed options: 1; space size: 1; success
+  [end combat] Simple decides PriorityDecisionRequest: 0.366 ms; observed options: 1; space size: 1; success
+  [postcombat main] flat_puct decides PriorityDecisionRequest: 2.923 ms; observed options: 1; space size: 1; success
+  [postcombat main] Simple decides PriorityDecisionRequest: 0.394 ms; observed options: 1; space size: 1; success
+  [end step] flat_puct decides PriorityDecisionRequest: 2.013 ms; observed options: 1; space size: 1; success
+  [end step] Simple decides PriorityDecisionRequest: 0.402 ms; observed options: 1; space size: 1; success
+
+Turn 2
+  [upkeep] Simple decides PriorityDecisionRequest: 0.368 ms; observed options: 1; space size: 1; success
+  [upkeep] flat_puct decides PriorityDecisionRequest: 2.008 ms; observed options: 1; space size: 1; success
+  [draw] Card moved: Simple; Plains [c101] — card: Plains [c101]; from: DECK; last known: kind: CardLastKnownInformation; previous controller: Simple; to: HAND
+  [draw] Card drawn: Simple; Plains [c101] — card: Plains [c101]; last known: kind: CardLastKnownInformation
+  [draw] Resolution: -; -; -; success: True
+  [draw] Simple decides PriorityDecisionRequest: 0.466 ms; observed options: 1; space size: 1; success
+  [draw] flat_puct decides PriorityDecisionRequest: 2.176 ms; observed options: 1; space size: 1; success
+  [precombat main] Simple chooses land: source: Plains [c97]
+  [precombat main] Simple decides PriorityDecisionRequest: 0.488 ms; observed options: 2; space size: unknown; success
+  [precombat main] Card moved: Simple; Plains [c97] — card: Plains [c97]; from: HAND; last known: kind: CardLastKnownInformation; previous controller: Simple; to: BATTLEFIELD
+  [precombat main] Simple plays land Plains [c97] — lands played: 1; last known: kind: CardLastKnownInformation
+  [precombat main] Resolution: Simple; Plains [c97]; play_land; success: True
+  [precombat main] Simple decides PriorityDecisionRequest: 1.405 ms; observed options: 1; space size: 1; success
+  [precombat main] flat_puct decides PriorityDecisionRequest: 2.356 ms; observed options: 1; space size: 1; success
+  [begin combat] Simple decides PriorityDecisionRequest: 0.710 ms; observed options: 1; space size: 1; success
+  [begin combat] flat_puct decides PriorityDecisionRequest: 2.382 ms; observed options: 1; space size: 1; success
+  [declare attackers] Simple chooses attack: attackers: none
+  [declare attackers] Simple decides DeclareAttackersRequest: 0.105 ms; observed options: 1; space size: unknown; success
+  [declare attackers] Simple decides PriorityDecisionRequest: 0.658 ms; observed options: 1; space size: 1; success
+  [declare attackers] flat_puct decides PriorityDecisionRequest: 2.340 ms; observed options: 1; space size: 1; success
+  [end combat] Simple decides PriorityDecisionRequest: 0.667 ms; observed options: 1; space size: 1; success
+  [end combat] flat_puct decides PriorityDecisionRequest: 2.318 ms; observed options: 1; space size: 1; success
+  [postcombat main] Simple decides PriorityDecisionRequest: 1.094 ms; observed options: 1; space size: 1; success
+  [postcombat main] flat_puct decides PriorityDecisionRequest: 2.378 ms; observed options: 1; space size: 1; success
+  [end step] Simple decides PriorityDecisionRequest: 0.735 ms; observed options: 1; space size: 1; success
+  [end step] flat_puct decides PriorityDecisionRequest: 2.303 ms; observed options: 1; space size: 1; success
+
+Turn 3
+  [upkeep] flat_puct decides PriorityDecisionRequest: 2.286 ms; observed options: 1; space size: 1; success
+  [upkeep] Simple decides PriorityDecisionRequest: 0.810 ms; observed options: 1; space size: 1; success
+  [draw] Card moved: flat_puct; Nest Robber [c9] — card: Nest Robber [c9]; from: DECK; last known: kind: CardLastKnownInformation; previous controller: flat_puct; to: HAND
+  [draw] Card drawn: flat_puct; Nest Robber [c9] — card: Nest Robber [c9]; last known: kind: CardLastKnownInformation
+  [draw] Resolution: -; -; -; success: True
+  [draw] flat_puct decides PriorityDecisionRequest: 2.732 ms; observed options: 1; space size: 1; success
+  [draw] Simple decides PriorityDecisionRequest: 0.805 ms; observed options: 1; space size: 1; success
+  [precombat main] flat_puct decides PriorityDecisionRequest: 683.266 ms; observed options: 70; space size: unknown; success
+  [precombat main] Card moved: flat_puct; Mountain [c48] — card: Mountain [c48]; from: HAND; last known: kind: CardLastKnownInformation; previous controller: flat_puct; to: BATTLEFIELD
+  [precombat main] flat_puct plays land Mountain [c48] — lands played: 1; last known: kind: CardLastKnownInformation
+  [precombat main] Resolution: flat_puct; Mountain [c48]; play_land; success: True
+  [precombat main] flat_puct decides PriorityDecisionRequest: 598.428 ms; observed options: 74; space size: unknown; success
+  [precombat main] Card tapped: flat_puct; Mountain [c41] — last known: kind: CardLastKnownInformation
+  [precombat main] Mana added: flat_puct; Mountain [c41] — amount: 1; last known: kind: CardLastKnownInformation; mana: RED
+  [precombat main] flat_puct activates Mountain [c41] — ability: mana_red; last known: kind: CardLastKnownInformation
+  [precombat main] Card tapped: flat_puct; Mountain [c48] — last known: kind: CardLastKnownInformation
+  [precombat main] Mana added: flat_puct; Mountain [c48] — amount: 1; last known: kind: CardLastKnownInformation; mana: RED
+  [precombat main] flat_puct activates Mountain [c48] — ability: mana_red; last known: kind: CardLastKnownInformation
+  [precombat main] Mana paid: flat_puct; Nest Robber [c8] — last known: kind: CardLastKnownInformation; payment: RED: 2
+  [precombat main] Card moved: flat_puct; Nest Robber [c8] — card: Nest Robber [c8]; from: HAND; last known: kind: CardLastKnownInformation; previous controller: flat_puct; to: STACK
+  [precombat main] flat_puct casts Nest Robber [c8] — ability: cast:Nest Robber
+  [precombat main] flat_puct decides PriorityDecisionRequest: 3.920 ms; observed options: 1; space size: 1; success
+  [precombat main] Simple decides PriorityDecisionRequest: 1.072 ms; observed options: 1; space size: 1; success
+  [precombat main] Card moved: flat_puct; Nest Robber [c8] — card: Nest Robber [c8]; from: STACK; last known: kind: CardLastKnownInformation; previous controller: flat_puct; to: BATTLEFIELD
+  [precombat main] Resolution: flat_puct; Nest Robber [c8]; cast:Nest Robber; success: True
+  [precombat main] flat_puct decides PriorityDecisionRequest: 4.062 ms; observed options: 1; space size: 1; success
+  [precombat main] Simple decides PriorityDecisionRequest: 1.143 ms; observed options: 1; space size: 1; success
+  [begin combat] flat_puct decides PriorityDecisionRequest: 3.563 ms; observed options: 1; space size: 1; success
+  [begin combat] Simple decides PriorityDecisionRequest: 1.212 ms; observed options: 1; space size: 1; success
+  [declare attackers] flat_puct decides DeclareAttackersRequest: 763.845 ms; observed options: 92; space size: unknown; success
+  [declare attackers] Card tapped: flat_puct; Tin Street Cadet [c2]
+  [declare attackers] flat_puct attacks with Tin Street Cadet [c2] — attacker: Tin Street Cadet [c2]; defender: Simple
+  [declare attackers] Card tapped: flat_puct; Nest Robber [c8]
+  [declare attackers] flat_puct attacks with Nest Robber [c8] — attacker: Nest Robber [c8]; defender: Simple
+  [declare attackers] Attackers declared: flat_puct; - — attackers: Tin Street Cadet [c2], Nest Robber [c8]
+  [declare attackers] flat_puct decides PriorityDecisionRequest: 2.742 ms; observed options: 1; space size: 1; success
+  [declare attackers] Simple decides PriorityDecisionRequest: 0.856 ms; observed options: 1; space size: 1; success
+  [declare blockers] Simple chooses block: blockers: none
+  [declare blockers] Simple decides DeclareBlockersRequest: 0.215 ms; observed options: 1; space size: unknown; success
+  [declare blockers] flat_puct decides PriorityDecisionRequest: 2.581 ms; observed options: 1; space size: 1; success
+  [declare blockers] Simple decides PriorityDecisionRequest: 0.725 ms; observed options: 1; space size: 1; success
+  [second combat damage] Simple decides ReplacementOrderRequest: 0.030 ms; observed options: 1; space size: unknown; success
+  [second combat damage] Damage dealt: flat_puct; Tin Street Cadet [c2] — amount: 1; combat: True; last known: kind: CardLastKnownInformation; life loss: 1; source revision: 3; target: Simple; target object: Simple; target revision: -
+  [second combat damage] Damage dealt: flat_puct; Nest Robber [c8] — amount: 2; combat: True; last known: kind: CardLastKnownInformation; life loss: 2; source revision: 3; target: Simple; target object: Simple; target revision: -
+  [second combat damage] flat_puct decides PriorityDecisionRequest: 2.734 ms; observed options: 1; space size: 1; success
+  [second combat damage] Simple decides PriorityDecisionRequest: 0.768 ms; observed options: 1; space size: 1; success
+  [end combat] flat_puct decides PriorityDecisionRequest: 2.567 ms; observed options: 1; space size: 1; success
+  [end combat] Simple decides PriorityDecisionRequest: 0.720 ms; observed options: 1; space size: 1; success
+  [postcombat main] flat_puct decides PriorityDecisionRequest: 3.461 ms; observed options: 1; space size: 1; success
+  [postcombat main] Simple decides PriorityDecisionRequest: 0.702 ms; observed options: 1; space size: 1; success
+  [end step] flat_puct decides PriorityDecisionRequest: 2.554 ms; observed options: 1; space size: 1; success
+  [end step] Simple decides PriorityDecisionRequest: 0.702 ms; observed options: 1; space size: 1; success
+
+Turn 4
+  [upkeep] Simple decides PriorityDecisionRequest: 0.661 ms; observed options: 1; space size: 1; success
+  [upkeep] flat_puct decides PriorityDecisionRequest: 2.554 ms; observed options: 1; space size: 1; success
+  [draw] Card moved: Simple; Plains [c120] — card: Plains [c120]; from: DECK; last known: kind: CardLastKnownInformation; previous controller: Simple; to: HAND
+  [draw] Card drawn: Simple; Plains [c120] — card: Plains [c120]; last known: kind: CardLastKnownInformation
+  [draw] Resolution: -; -; -; success: True
+  [draw] Simple decides PriorityDecisionRequest: 0.811 ms; observed options: 1; space size: 1; success
+  [draw] flat_puct decides PriorityDecisionRequest: 2.628 ms; observed options: 1; space size: 1; success
+  [precombat main] Simple chooses land: source: Plains [c101]
+  [precombat main] Simple decides PriorityDecisionRequest: 0.537 ms; observed options: 2; space size: unknown; success
+  [precombat main] Card moved: Simple; Plains [c101] — card: Plains [c101]; from: HAND; last known: kind: CardLastKnownInformation; previous controller: Simple; to: BATTLEFIELD
+  [precombat main] Simple plays land Plains [c101] — lands played: 1; last known: kind: CardLastKnownInformation
+  [precombat main] Resolution: Simple; Plains [c101]; play_land; success: True
+  [precombat main] Simple chooses action: ability: cast:Moorland Inquisitor; source: Moorland Inquisitor [c74]; targets: none
+  [precombat main] Simple decides PriorityDecisionRequest: 2.064 ms; observed options: 3; space size: 3; success
+  [precombat main] Card tapped: Simple; Plains [c97] — last known: kind: CardLastKnownInformation
+  [precombat main] Mana added: Simple; Plains [c97] — amount: 1; last known: kind: CardLastKnownInformation; mana: WHITE
+  [precombat main] Simple activates Plains [c97] — ability: mana_white; last known: kind: CardLastKnownInformation
+  [precombat main] Card tapped: Simple; Plains [c101] — last known: kind: CardLastKnownInformation
+  [precombat main] Mana added: Simple; Plains [c101] — amount: 1; last known: kind: CardLastKnownInformation; mana: WHITE
+  [precombat main] Simple activates Plains [c101] — ability: mana_white; last known: kind: CardLastKnownInformation
+  [precombat main] Mana paid: Simple; Moorland Inquisitor [c74] — last known: kind: CardLastKnownInformation; payment: WHITE: 2
+  [precombat main] Card moved: Simple; Moorland Inquisitor [c74] — card: Moorland Inquisitor [c74]; from: HAND; last known: kind: CardLastKnownInformation; previous controller: Simple; to: STACK
+  [precombat main] Simple casts Moorland Inquisitor [c74] — ability: cast:Moorland Inquisitor
+  [precombat main] Simple decides PriorityDecisionRequest: 0.482 ms; observed options: 1; space size: 1; success
+  [precombat main] flat_puct decides PriorityDecisionRequest: 3.186 ms; observed options: 1; space size: 1; success
+  [precombat main] Card moved: Simple; Moorland Inquisitor [c74] — card: Moorland Inquisitor [c74]; from: STACK; last known: kind: CardLastKnownInformation; previous controller: Simple; to: BATTLEFIELD
+  [precombat main] Resolution: Simple; Moorland Inquisitor [c74]; cast:Moorland Inquisitor; success: True
+  [precombat main] Simple decides PriorityDecisionRequest: 1.008 ms; observed options: 1; space size: 1; success
+  [precombat main] flat_puct decides PriorityDecisionRequest: 2.977 ms; observed options: 1; space size: 1; success
+  [begin combat] Simple decides PriorityDecisionRequest: 0.633 ms; observed options: 1; space size: 1; success
+  [begin combat] flat_puct decides PriorityDecisionRequest: 3.027 ms; observed options: 1; space size: 1; success
+  [declare attackers] Simple chooses attack: attackers: none
+  [declare attackers] Simple decides DeclareAttackersRequest: 0.134 ms; observed options: 1; space size: unknown; success
+  [declare attackers] Simple decides PriorityDecisionRequest: 0.731 ms; observed options: 1; space size: 1; success
+  [declare attackers] flat_puct decides PriorityDecisionRequest: 3.084 ms; observed options: 1; space size: 1; success
+  [end combat] Simple decides PriorityDecisionRequest: 0.682 ms; observed options: 1; space size: 1; success
+  [end combat] flat_puct decides PriorityDecisionRequest: 3.526 ms; observed options: 1; space size: 1; success
+  [postcombat main] Simple decides PriorityDecisionRequest: 0.927 ms; observed options: 1; space size: 1; success
+  [postcombat main] flat_puct decides PriorityDecisionRequest: 3.113 ms; observed options: 1; space size: 1; success
+  [end step] Simple decides PriorityDecisionRequest: 0.701 ms; observed options: 1; space size: 1; success
+  [end step] flat_puct decides PriorityDecisionRequest: 3.049 ms; observed options: 1; space size: 1; success
+
+Turn 5
+  [upkeep] flat_puct decides PriorityDecisionRequest: 2.991 ms; observed options: 1; space size: 1; success
+  [upkeep] Simple decides PriorityDecisionRequest: 0.710 ms; observed options: 1; space size: 1; success
+  [draw] Card moved: flat_puct; Mountain [c57] — card: Mountain [c57]; from: DECK; last known: kind: CardLastKnownInformation; previous controller: flat_puct; to: HAND
+  [draw] Card drawn: flat_puct; Mountain [c57] — card: Mountain [c57]; last known: kind: CardLastKnownInformation
+  [draw] Resolution: -; -; -; success: True
+  [draw] flat_puct decides PriorityDecisionRequest: 3.189 ms; observed options: 1; space size: 1; success
+  [draw] Simple decides PriorityDecisionRequest: 0.762 ms; observed options: 1; space size: 1; success
+  [precombat main] flat_puct decides PriorityDecisionRequest: 730.338 ms; observed options: 82; space size: unknown; success
+  [precombat main] Card moved: flat_puct; Mountain [c57] — card: Mountain [c57]; from: HAND; last known: kind: CardLastKnownInformation; previous controller: flat_puct; to: BATTLEFIELD
+  [precombat main] flat_puct plays land Mountain [c57] — lands played: 1; last known: kind: CardLastKnownInformation
+  [precombat main] Resolution: flat_puct; Mountain [c57]; play_land; success: True
+  [precombat main] flat_puct decides PriorityDecisionRequest: 808.254 ms; observed options: 84; space size: unknown; success
+  [precombat main] Card tapped: flat_puct; Mountain [c41] — last known: kind: CardLastKnownInformation
+  [precombat main] Mana added: flat_puct; Mountain [c41] — amount: 1; last known: kind: CardLastKnownInformation; mana: RED
+  [precombat main] flat_puct activates Mountain [c41] — ability: mana_red; last known: kind: CardLastKnownInformation
+  [precombat main] Card tapped: flat_puct; Mountain [c48] — last known: kind: CardLastKnownInformation
+  [precombat main] Mana added: flat_puct; Mountain [c48] — amount: 1; last known: kind: CardLastKnownInformation; mana: RED
+  [precombat main] flat_puct activates Mountain [c48] — ability: mana_red; last known: kind: CardLastKnownInformation
+  [precombat main] Mana paid: flat_puct; Nest Robber [c9] — last known: kind: CardLastKnownInformation; payment: RED: 2
+  [precombat main] Card moved: flat_puct; Nest Robber [c9] — card: Nest Robber [c9]; from: HAND; last known: kind: CardLastKnownInformation; previous controller: flat_puct; to: STACK
+  [precombat main] flat_puct casts Nest Robber [c9] — ability: cast:Nest Robber
+  [precombat main] flat_puct decides PriorityDecisionRequest: 3.531 ms; observed options: 1; space size: 1; success
+  [precombat main] Simple decides PriorityDecisionRequest: 0.915 ms; observed options: 1; space size: 1; success
+  [precombat main] Card moved: flat_puct; Nest Robber [c9] — card: Nest Robber [c9]; from: STACK; last known: kind: CardLastKnownInformation; previous controller: flat_puct; to: BATTLEFIELD
+  [precombat main] Resolution: flat_puct; Nest Robber [c9]; cast:Nest Robber; success: True
+  [precombat main] flat_puct decides PriorityDecisionRequest: 4.227 ms; observed options: 1; space size: 1; success
+  [precombat main] Simple decides PriorityDecisionRequest: 0.742 ms; observed options: 1; space size: 1; success
+  [begin combat] flat_puct decides PriorityDecisionRequest: 3.440 ms; observed options: 1; space size: 1; success
+  [begin combat] Simple decides PriorityDecisionRequest: 0.786 ms; observed options: 1; space size: 1; success
+  [declare attackers] flat_puct decides DeclareAttackersRequest: 1439.915 ms; observed options: 266; space size: unknown; success
+  [declare attackers] Card tapped: flat_puct; Nest Robber [c8]
+  [declare attackers] flat_puct attacks with Nest Robber [c8] — attacker: Nest Robber [c8]; defender: Simple
+  [declare attackers] Card tapped: flat_puct; Nest Robber [c9]
+  [declare attackers] flat_puct attacks with Nest Robber [c9] — attacker: Nest Robber [c9]; defender: Simple
+  [declare attackers] Attackers declared: flat_puct; - — attackers: Nest Robber [c8], Nest Robber [c9]
+  [declare attackers] flat_puct decides PriorityDecisionRequest: 3.537 ms; observed options: 1; space size: 1; success
+  [declare attackers] Simple decides PriorityDecisionRequest: 0.781 ms; observed options: 1; space size: 1; success
+  [declare blockers] Simple chooses block: blockers: Moorland Inquisitor [c74], Nest Robber [c8]
+  [declare blockers] Simple decides DeclareBlockersRequest: 0.245 ms; observed options: 1; space size: unknown; success
+  [declare blockers] Simple blocks with Moorland Inquisitor [c74] — attacker: Nest Robber [c8]; blocker: Moorland Inquisitor [c74]
+  [declare blockers] Attacker blocked: flat_puct; Nest Robber [c8] — blockers: Moorland Inquisitor [c74]
+  [declare blockers] Blockers declared: Simple; - — blockers: Moorland Inquisitor [c74], Nest Robber [c8]
+  [declare blockers] flat_puct decides PriorityDecisionRequest: 3.170 ms; observed options: 1; space size: 1; success
+  [declare blockers] Simple decides PriorityDecisionRequest: 0.647 ms; observed options: 1; space size: 1; success
+  [second combat damage] Simple decides ReplacementOrderRequest: 0.039 ms; observed options: 1; space size: unknown; success
+  [second combat damage] Damage dealt: Simple; Moorland Inquisitor [c74] — amount: 2; combat: True; last known: kind: CardLastKnownInformation; life loss: 0; source revision: 3; target: Nest Robber; target object: Nest Robber [c8]; target revision: 3
+  [second combat damage] Damage dealt: flat_puct; Nest Robber [c8] — amount: 2; combat: True; last known: kind: CardLastKnownInformation; life loss: 0; source revision: 3; target: Moorland Inquisitor; target object: Moorland Inquisitor [c74]; target revision: 3
+  [second combat damage] Damage dealt: flat_puct; Nest Robber [c9] — amount: 2; combat: True; last known: kind: CardLastKnownInformation; life loss: 2; source revision: 3; target: Simple; target object: Simple; target revision: -
+  [second combat damage] Card moved: flat_puct; Nest Robber [c8] — card: Nest Robber [c8]; from: BATTLEFIELD; last known: kind: CardLastKnownInformation; previous controller: flat_puct; to: GRAVEYARD
+  [second combat damage] Card moved: Simple; Moorland Inquisitor [c74] — card: Moorland Inquisitor [c74]; from: BATTLEFIELD; last known: kind: CardLastKnownInformation; previous controller: Simple; to: GRAVEYARD
+  [second combat damage] flat_puct decides PriorityDecisionRequest: 3.311 ms; observed options: 1; space size: 1; success
+  [second combat damage] Simple decides PriorityDecisionRequest: 0.588 ms; observed options: 1; space size: 1; success
+  [end combat] flat_puct decides PriorityDecisionRequest: 3.572 ms; observed options: 1; space size: 1; success
+  [end combat] Simple decides PriorityDecisionRequest: 0.619 ms; observed options: 1; space size: 1; success
+  [postcombat main] flat_puct decides PriorityDecisionRequest: 4.490 ms; observed options: 1; space size: 1; success
+  [postcombat main] Simple decides PriorityDecisionRequest: 0.453 ms; observed options: 1; space size: 1; success
+  [end step] flat_puct decides PriorityDecisionRequest: 3.137 ms; observed options: 1; space size: 1; success
+  [end step] Simple decides PriorityDecisionRequest: 0.443 ms; observed options: 1; space size: 1; success
+
+Turn 6
+  [upkeep] Simple decides PriorityDecisionRequest: 0.835 ms; observed options: 1; space size: 1; success
+  [upkeep] flat_puct decides PriorityDecisionRequest: 3.259 ms; observed options: 1; space size: 1; success
+  [draw] Card moved: Simple; Hallowed Priest [c68] — card: Hallowed Priest [c68]; from: DECK; last known: kind: CardLastKnownInformation; previous controller: Simple; to: HAND
+  [draw] Card drawn: Simple; Hallowed Priest [c68] — card: Hallowed Priest [c68]; last known: kind: CardLastKnownInformation
+  [draw] Resolution: -; -; -; success: True
+  [draw] Simple decides PriorityDecisionRequest: 0.868 ms; observed options: 1; space size: 1; success
+  [draw] flat_puct decides PriorityDecisionRequest: 3.217 ms; observed options: 1; space size: 1; success
+  [precombat main] Simple chooses land: source: Plains [c102]
+  [precombat main] Simple decides PriorityDecisionRequest: 0.541 ms; observed options: 2; space size: unknown; success
+  [precombat main] Card moved: Simple; Plains [c102] — card: Plains [c102]; from: HAND; last known: kind: CardLastKnownInformation; previous controller: Simple; to: BATTLEFIELD
+  [precombat main] Simple plays land Plains [c102] — lands played: 1; last known: kind: CardLastKnownInformation
+  [precombat main] Resolution: Simple; Plains [c102]; play_land; success: True
+  [precombat main] Simple chooses action: ability: cast:Hallowed Priest; source: Hallowed Priest [c68]; targets: none
+  [precombat main] Simple decides PriorityDecisionRequest: 2.671 ms; observed options: 3; space size: 3; success
+  [precombat main] Card tapped: Simple; Plains [c97] — last known: kind: CardLastKnownInformation
+  [precombat main] Mana added: Simple; Plains [c97] — amount: 1; last known: kind: CardLastKnownInformation; mana: WHITE
+  [precombat main] Simple activates Plains [c97] — ability: mana_white; last known: kind: CardLastKnownInformation
+  [precombat main] Card tapped: Simple; Plains [c101] — last known: kind: CardLastKnownInformation
+  [precombat main] Mana added: Simple; Plains [c101] — amount: 1; last known: kind: CardLastKnownInformation; mana: WHITE
+  [precombat main] Simple activates Plains [c101] — ability: mana_white; last known: kind: CardLastKnownInformation
+  [precombat main] Mana paid: Simple; Hallowed Priest [c68] — last known: kind: CardLastKnownInformation; payment: WHITE: 2
+  [precombat main] Card moved: Simple; Hallowed Priest [c68] — card: Hallowed Priest [c68]; from: HAND; last known: kind: CardLastKnownInformation; previous controller: Simple; to: STACK
+  [precombat main] Simple casts Hallowed Priest [c68] — ability: cast:Hallowed Priest
+  [precombat main] Simple decides PriorityDecisionRequest: 0.813 ms; observed options: 1; space size: 1; success
+  [precombat main] flat_puct decides PriorityDecisionRequest: 4.081 ms; observed options: 1; space size: 1; success
+  [precombat main] Card moved: Simple; Hallowed Priest [c68] — card: Hallowed Priest [c68]; from: STACK; last known: kind: CardLastKnownInformation; previous controller: Simple; to: BATTLEFIELD
+  [precombat main] Resolution: Simple; Hallowed Priest [c68]; cast:Hallowed Priest; success: True
+  [precombat main] Simple decides PriorityDecisionRequest: 1.060 ms; observed options: 1; space size: 1; success
+  [precombat main] flat_puct decides PriorityDecisionRequest: 3.661 ms; observed options: 1; space size: 1; success
+  [begin combat] Simple decides PriorityDecisionRequest: 0.704 ms; observed options: 1; space size: 1; success
+  [begin combat] flat_puct decides PriorityDecisionRequest: 3.847 ms; observed options: 1; space size: 1; success
+  [declare attackers] Simple chooses attack: attackers: none
+  [declare attackers] Simple decides DeclareAttackersRequest: 0.142 ms; observed options: 1; space size: unknown; success
+  [declare attackers] Simple decides PriorityDecisionRequest: 0.776 ms; observed options: 1; space size: 1; success
+  [declare attackers] flat_puct decides PriorityDecisionRequest: 37.755 ms; observed options: 1; space size: 1; success
+  [end combat] Simple decides PriorityDecisionRequest: 1.025 ms; observed options: 1; space size: 1; success
+  [end combat] flat_puct decides PriorityDecisionRequest: 3.858 ms; observed options: 1; space size: 1; success
+  [postcombat main] Simple decides PriorityDecisionRequest: 1.051 ms; observed options: 1; space size: 1; success
+  [postcombat main] flat_puct decides PriorityDecisionRequest: 3.975 ms; observed options: 1; space size: 1; success
+  [end step] Simple decides PriorityDecisionRequest: 0.817 ms; observed options: 1; space size: 1; success
+  [end step] flat_puct decides PriorityDecisionRequest: 3.669 ms; observed options: 1; space size: 1; success
+
+Turn 7
+  [upkeep] flat_puct decides PriorityDecisionRequest: 3.703 ms; observed options: 1; space size: 1; success
+  [upkeep] Simple decides PriorityDecisionRequest: 0.935 ms; observed options: 1; space size: 1; success
+  [draw] Card moved: flat_puct; Nest Robber [c7] — card: Nest Robber [c7]; from: DECK; last known: kind: CardLastKnownInformation; previous controller: flat_puct; to: HAND
+  [draw] Card drawn: flat_puct; Nest Robber [c7] — card: Nest Robber [c7]; last known: kind: CardLastKnownInformation
+  [draw] Resolution: -; -; -; success: True
+  [draw] flat_puct decides PriorityDecisionRequest: 4.205 ms; observed options: 1; space size: 1; success
+  [draw] Simple decides PriorityDecisionRequest: 1.137 ms; observed options: 1; space size: 1; success
+  [precombat main] flat_puct decides PriorityDecisionRequest: 1018.966 ms; observed options: 104; space size: unknown; success
+  [precombat main] Card tapped: flat_puct; Mountain [c41] — last known: kind: CardLastKnownInformation
+  [precombat main] Mana added: flat_puct; Mountain [c41] — amount: 1; last known: kind: CardLastKnownInformation; mana: RED
+  [precombat main] flat_puct activates Mountain [c41] — ability: mana_red; last known: kind: CardLastKnownInformation
+  [precombat main] Card tapped: flat_puct; Mountain [c48] — last known: kind: CardLastKnownInformation
+  [precombat main] Mana added: flat_puct; Mountain [c48] — amount: 1; last known: kind: CardLastKnownInformation; mana: RED
+  [precombat main] flat_puct activates Mountain [c48] — ability: mana_red; last known: kind: CardLastKnownInformation
+  [precombat main] Mana paid: flat_puct; Nest Robber [c7] — last known: kind: CardLastKnownInformation; payment: RED: 2
+  [precombat main] Card moved: flat_puct; Nest Robber [c7] — card: Nest Robber [c7]; from: HAND; last known: kind: CardLastKnownInformation; previous controller: flat_puct; to: STACK
+  [precombat main] flat_puct casts Nest Robber [c7] — ability: cast:Nest Robber
+  [precombat main] flat_puct decides PriorityDecisionRequest: 4.194 ms; observed options: 1; space size: 1; success
+  [precombat main] Simple decides PriorityDecisionRequest: 0.912 ms; observed options: 1; space size: 1; success
+  [precombat main] Card moved: flat_puct; Nest Robber [c7] — card: Nest Robber [c7]; from: STACK; last known: kind: CardLastKnownInformation; previous controller: flat_puct; to: BATTLEFIELD
+  [precombat main] Resolution: flat_puct; Nest Robber [c7]; cast:Nest Robber; success: True
+  [precombat main] flat_puct decides PriorityDecisionRequest: 5.245 ms; observed options: 1; space size: 1; success
+  [precombat main] Simple decides PriorityDecisionRequest: 0.886 ms; observed options: 1; space size: 1; success
+  [begin combat] flat_puct decides PriorityDecisionRequest: 4.050 ms; observed options: 1; space size: 1; success
+  [begin combat] Simple decides PriorityDecisionRequest: 0.745 ms; observed options: 1; space size: 1; success
+  [declare attackers] flat_puct decides DeclareAttackersRequest: 1735.756 ms; observed options: 302; space size: unknown; success
+  [declare attackers] Card tapped: flat_puct; Tin Street Cadet [c2]
+  [declare attackers] flat_puct attacks with Tin Street Cadet [c2] — attacker: Tin Street Cadet [c2]; defender: Simple
+  [declare attackers] Attackers declared: flat_puct; - — attackers: Tin Street Cadet [c2]
+  [declare attackers] flat_puct decides PriorityDecisionRequest: 4.375 ms; observed options: 1; space size: 1; success
+  [declare attackers] Simple decides PriorityDecisionRequest: 0.917 ms; observed options: 1; space size: 1; success
+  [declare blockers] Simple chooses block: blockers: Hallowed Priest [c68], Tin Street Cadet [c2]
+  [declare blockers] Simple decides DeclareBlockersRequest: 0.198 ms; observed options: 1; space size: unknown; success
+  [declare blockers] Simple blocks with Hallowed Priest [c68] — attacker: Tin Street Cadet [c2]; blocker: Hallowed Priest [c68]
+  [declare blockers] Attacker blocked: flat_puct; Tin Street Cadet [c2] — blockers: Hallowed Priest [c68]
+  [declare blockers] Blockers declared: Simple; - — blockers: Hallowed Priest [c68], Tin Street Cadet [c2]
+  [declare blockers] Trigger detected: flat_puct; Tin Street Cadet [c2]; cadet_blocked
+  [declare blockers] flat_puct decides TriggerOrderRequest: 4.267 ms; observed options: 1; space size: 1; success
+  [declare blockers] flat_puct decides AbilityDecisionRequest: 4.075 ms; observed options: 1; space size: 1; success
+  [declare blockers] flat_puct decides PriorityDecisionRequest: 4.046 ms; observed options: 1; space size: 1; success
+  [declare blockers] Simple chooses action: ability: cast:Tactical Advantage; source: Tactical Advantage [c89]; targets: Hallowed Priest [c68]
+  [declare blockers] Simple decides PriorityDecisionRequest: 0.974 ms; observed options: 2; space size: 2; success
+  [declare blockers] Card tapped: Simple; Plains [c102] — last known: kind: CardLastKnownInformation
+  [declare blockers] Mana added: Simple; Plains [c102] — amount: 1; last known: kind: CardLastKnownInformation; mana: WHITE
+  [declare blockers] Simple activates Plains [c102] — ability: mana_white; last known: kind: CardLastKnownInformation
+  [declare blockers] Mana paid: Simple; Tactical Advantage [c89] — last known: kind: CardLastKnownInformation; payment: WHITE: 1
+  [declare blockers] Card moved: Simple; Tactical Advantage [c89] — card: Tactical Advantage [c89]; from: HAND; last known: kind: CardLastKnownInformation; previous controller: Simple; to: STACK
+  [declare blockers] Simple casts Tactical Advantage [c89] — ability: cast:Tactical Advantage
+  [declare blockers] Simple decides PriorityDecisionRequest: 0.082 ms; observed options: 0; space size: unknown; success
+  [declare blockers] flat_puct decides PriorityDecisionRequest: 4.668 ms; observed options: 1; space size: 1; success
+  [declare blockers] Temporary effect applied: Simple; Tactical Advantage [c89] — last known: kind: CardLastKnownInformation; targets: Hallowed Priest [c68]
+  [declare blockers] Card moved: Simple; Tactical Advantage [c89] — card: Tactical Advantage [c89]; from: STACK; last known: kind: CardLastKnownInformation; previous controller: Simple; to: GRAVEYARD
+  [declare blockers] Resolution: Simple; Tactical Advantage [c89]; cast:Tactical Advantage; success: True
+  [declare blockers] flat_puct decides PriorityDecisionRequest: 4.897 ms; observed options: 1; space size: 1; success
+  [declare blockers] Simple decides PriorityDecisionRequest: 0.092 ms; observed options: 0; space size: unknown; success
+  [declare blockers] Card moved: flat_puct; Goblin [c121] — card: Goblin [c121]; created token: True; from: -; previous controller: flat_puct; to: BATTLEFIELD
+  [declare blockers] Resolution: flat_puct; Tin Street Cadet [c2]; cadet_blocked; success: True
+  [declare blockers] flat_puct decides PriorityDecisionRequest: 5.332 ms; observed options: 1; space size: 1; success
+  [declare blockers] Simple decides PriorityDecisionRequest: 0.099 ms; observed options: 0; space size: unknown; success
+  [second combat damage] Damage dealt: Simple; Hallowed Priest [c68] — amount: 3; combat: True; last known: kind: CardLastKnownInformation; life loss: 0; source revision: 3; target: Tin Street Cadet; target object: Tin Street Cadet [c2]; target revision: 3
+  [second combat damage] Damage dealt: flat_puct; Tin Street Cadet [c2] — amount: 1; combat: True; last known: kind: CardLastKnownInformation; life loss: 0; source revision: 3; target: Hallowed Priest; target object: Hallowed Priest [c68]; target revision: 3
+  [second combat damage] Card moved: flat_puct; Tin Street Cadet [c2] — card: Tin Street Cadet [c2]; from: BATTLEFIELD; last known: kind: CardLastKnownInformation; previous controller: flat_puct; to: GRAVEYARD
+  [second combat damage] flat_puct decides PriorityDecisionRequest: 4.712 ms; observed options: 1; space size: 1; success
+  [second combat damage] Simple decides PriorityDecisionRequest: 0.099 ms; observed options: 0; space size: unknown; success
+  [end combat] flat_puct decides PriorityDecisionRequest: 5.614 ms; observed options: 1; space size: 1; success
+  [end combat] Simple decides PriorityDecisionRequest: 0.095 ms; observed options: 0; space size: unknown; success
+  [postcombat main] flat_puct decides PriorityDecisionRequest: 5.961 ms; observed options: 1; space size: 1; success
+  [postcombat main] Simple decides PriorityDecisionRequest: 0.086 ms; observed options: 0; space size: unknown; success
+  [end step] flat_puct decides PriorityDecisionRequest: 4.510 ms; observed options: 1; space size: 1; success
+  [end step] Simple decides PriorityDecisionRequest: 0.105 ms; observed options: 0; space size: unknown; success
+
+Turn 8
+  [upkeep] Simple decides PriorityDecisionRequest: 0.077 ms; observed options: 0; space size: unknown; success
+  [upkeep] flat_puct decides PriorityDecisionRequest: 4.309 ms; observed options: 1; space size: 1; success
+  [draw] Card moved: Simple; Plains [c107] — card: Plains [c107]; from: DECK; last known: kind: CardLastKnownInformation; previous controller: Simple; to: HAND
+  [draw] Card drawn: Simple; Plains [c107] — card: Plains [c107]; last known: kind: CardLastKnownInformation
+  [draw] Resolution: -; -; -; success: True
+  [draw] Simple decides PriorityDecisionRequest: 0.084 ms; observed options: 0; space size: unknown; success
+  [draw] flat_puct decides PriorityDecisionRequest: 4.294 ms; observed options: 1; space size: 1; success
+  [precombat main] Simple chooses land: source: Plains [c107]
+  [precombat main] Simple decides PriorityDecisionRequest: 0.668 ms; observed options: 2; space size: unknown; success
+  [precombat main] Card moved: Simple; Plains [c107] — card: Plains [c107]; from: HAND; last known: kind: CardLastKnownInformation; previous controller: Simple; to: BATTLEFIELD
+  [precombat main] Simple plays land Plains [c107] — lands played: 1; last known: kind: CardLastKnownInformation
+  [precombat main] Resolution: Simple; Plains [c107]; play_land; success: True
+  [precombat main] Simple chooses action: ability: cast:Hallowed Priest; source: Hallowed Priest [c69]; targets: none
+  [precombat main] Simple decides PriorityDecisionRequest: 1.094 ms; observed options: 2; space size: 2; success
+  [precombat main] Card tapped: Simple; Plains [c97] — last known: kind: CardLastKnownInformation
+  [precombat main] Mana added: Simple; Plains [c97] — amount: 1; last known: kind: CardLastKnownInformation; mana: WHITE
+  [precombat main] Simple activates Plains [c97] — ability: mana_white; last known: kind: CardLastKnownInformation
+  [precombat main] Card tapped: Simple; Plains [c101] — last known: kind: CardLastKnownInformation
+  [precombat main] Mana added: Simple; Plains [c101] — amount: 1; last known: kind: CardLastKnownInformation; mana: WHITE
+  [precombat main] Simple activates Plains [c101] — ability: mana_white; last known: kind: CardLastKnownInformation
+  [precombat main] Mana paid: Simple; Hallowed Priest [c69] — last known: kind: CardLastKnownInformation; payment: WHITE: 2
+  [precombat main] Card moved: Simple; Hallowed Priest [c69] — card: Hallowed Priest [c69]; from: HAND; last known: kind: CardLastKnownInformation; previous controller: Simple; to: STACK
+  [precombat main] Simple casts Hallowed Priest [c69] — ability: cast:Hallowed Priest
+  [precombat main] Simple decides PriorityDecisionRequest: 0.070 ms; observed options: 0; space size: unknown; success
+  [precombat main] flat_puct decides PriorityDecisionRequest: 5.068 ms; observed options: 1; space size: 1; success
+  [precombat main] Card moved: Simple; Hallowed Priest [c69] — card: Hallowed Priest [c69]; from: STACK; last known: kind: CardLastKnownInformation; previous controller: Simple; to: BATTLEFIELD
+  [precombat main] Resolution: Simple; Hallowed Priest [c69]; cast:Hallowed Priest; success: True
+  [precombat main] Simple decides PriorityDecisionRequest: 0.065 ms; observed options: 0; space size: unknown; success
+  [precombat main] flat_puct decides PriorityDecisionRequest: 4.558 ms; observed options: 1; space size: 1; success
+  [begin combat] Simple decides PriorityDecisionRequest: 0.060 ms; observed options: 0; space size: unknown; success
+  [begin combat] flat_puct decides PriorityDecisionRequest: 4.493 ms; observed options: 1; space size: 1; success
+  [declare attackers] Simple chooses attack: attackers: Hallowed Priest [c68]
+  [declare attackers] Simple decides DeclareAttackersRequest: 0.166 ms; observed options: 1; space size: unknown; success
+  [declare attackers] Card tapped: Simple; Hallowed Priest [c68]
+  [declare attackers] Simple attacks with Hallowed Priest [c68] — attacker: Hallowed Priest [c68]; defender: flat_puct
+  [declare attackers] Attackers declared: Simple; - — attackers: Hallowed Priest [c68]
+  [declare attackers] Simple decides PriorityDecisionRequest: 0.060 ms; observed options: 0; space size: unknown; success
+  [declare attackers] flat_puct decides PriorityDecisionRequest: 4.558 ms; observed options: 1; space size: 1; success
+  [declare blockers] flat_puct decides DeclareBlockersRequest: 1144.870 ms; observed options: 195; space size: unknown; success
+  [declare blockers] flat_puct blocks with Goblin [c121] — attacker: Hallowed Priest [c68]; blocker: Goblin [c121]
+  [declare blockers] Attacker blocked: Simple; Hallowed Priest [c68] — blockers: Goblin [c121]
+  [declare blockers] Blockers declared: flat_puct; - — blockers: Goblin [c121], Hallowed Priest [c68]
+  [declare blockers] Simple decides PriorityDecisionRequest: 0.080 ms; observed options: 0; space size: unknown; success
+  [declare blockers] flat_puct decides PriorityDecisionRequest: 4.931 ms; observed options: 1; space size: 1; success
+  [second combat damage] Damage dealt: flat_puct; Goblin [c121] — amount: 1; combat: True; last known: kind: CardLastKnownInformation; life loss: 0; source revision: 1; target: Hallowed Priest; target object: Hallowed Priest [c68]; target revision: 3
+  [second combat damage] Damage dealt: Simple; Hallowed Priest [c68] — amount: 1; combat: True; last known: kind: CardLastKnownInformation; life loss: 0; source revision: 3; target: Goblin; target object: Goblin [c121]; target revision: 1
+  [second combat damage] Card moved: Simple; Hallowed Priest [c68] — card: Hallowed Priest [c68]; from: BATTLEFIELD; last known: kind: CardLastKnownInformation; previous controller: Simple; to: GRAVEYARD
+  [second combat damage] Card moved: flat_puct; Goblin [c121] — card: Goblin [c121]; from: BATTLEFIELD; last known: kind: CardLastKnownInformation; previous controller: flat_puct; to: GRAVEYARD
+  [second combat damage] Simple decides PriorityDecisionRequest: 0.079 ms; observed options: 0; space size: unknown; success
+  [second combat damage] flat_puct decides PriorityDecisionRequest: 4.637 ms; observed options: 1; space size: 1; success
+  [end combat] Simple decides PriorityDecisionRequest: 0.079 ms; observed options: 0; space size: unknown; success
+  [end combat] flat_puct decides PriorityDecisionRequest: 4.910 ms; observed options: 1; space size: 1; success
+  [postcombat main] Simple decides PriorityDecisionRequest: 0.063 ms; observed options: 0; space size: unknown; success
+  [postcombat main] flat_puct decides PriorityDecisionRequest: 4.607 ms; observed options: 1; space size: 1; success
+  [end step] Simple decides PriorityDecisionRequest: 0.064 ms; observed options: 0; space size: unknown; success
+  [end step] flat_puct decides PriorityDecisionRequest: 4.629 ms; observed options: 1; space size: 1; success
+
+Turn 9
+  [upkeep] flat_puct decides PriorityDecisionRequest: 4.807 ms; observed options: 1; space size: 1; success
+  [upkeep] Simple decides PriorityDecisionRequest: 0.072 ms; observed options: 0; space size: unknown; success
+  [draw] Card moved: flat_puct; Mountain [c44] — card: Mountain [c44]; from: DECK; last known: kind: CardLastKnownInformation; previous controller: flat_puct; to: HAND
+  [draw] Card drawn: flat_puct; Mountain [c44] — card: Mountain [c44]; last known: kind: CardLastKnownInformation
+  [draw] Resolution: -; -; -; success: True
+  [draw] flat_puct decides PriorityDecisionRequest: 4.712 ms; observed options: 1; space size: 1; success
+  [draw] Simple decides PriorityDecisionRequest: 0.064 ms; observed options: 0; space size: unknown; success
+  [precombat main] flat_puct decides PriorityDecisionRequest: 711.337 ms; observed options: 56; space size: unknown; success
+  [precombat main] Card moved: flat_puct; Mountain [c44] — card: Mountain [c44]; from: HAND; last known: kind: CardLastKnownInformation; previous controller: flat_puct; to: BATTLEFIELD
+  [precombat main] flat_puct plays land Mountain [c44] — lands played: 1; last known: kind: CardLastKnownInformation
+  [precombat main] Resolution: flat_puct; Mountain [c44]; play_land; success: True
+  [precombat main] flat_puct decides PriorityDecisionRequest: 649.354 ms; observed options: 48; space size: unknown; success
+  [precombat main] Card tapped: flat_puct; Mountain [c41] — last known: kind: CardLastKnownInformation
+  [precombat main] Mana added: flat_puct; Mountain [c41] — amount: 1; last known: kind: CardLastKnownInformation; mana: RED
+  [precombat main] flat_puct activates Mountain [c41] — ability: mana_red; last known: kind: CardLastKnownInformation
+  [precombat main] Card tapped: flat_puct; Mountain [c44] — last known: kind: CardLastKnownInformation
+  [precombat main] Mana added: flat_puct; Mountain [c44] — amount: 1; last known: kind: CardLastKnownInformation; mana: RED
+  [precombat main] flat_puct activates Mountain [c44] — ability: mana_red; last known: kind: CardLastKnownInformation
+  [precombat main] Card tapped: flat_puct; Mountain [c48] — last known: kind: CardLastKnownInformation
+  [precombat main] Mana added: flat_puct; Mountain [c48] — amount: 1; last known: kind: CardLastKnownInformation; mana: RED
+  [precombat main] flat_puct activates Mountain [c48] — ability: mana_red; last known: kind: CardLastKnownInformation
+  [precombat main] Card tapped: flat_puct; Mountain [c57] — last known: kind: CardLastKnownInformation
+  [precombat main] Mana added: flat_puct; Mountain [c57] — amount: 1; last known: kind: CardLastKnownInformation; mana: RED
+  [precombat main] flat_puct activates Mountain [c57] — ability: mana_red; last known: kind: CardLastKnownInformation
+  [precombat main] Mana paid: flat_puct; Ogre Battledriver [c15] — last known: kind: CardLastKnownInformation; payment: RED: 4
+  [precombat main] Card moved: flat_puct; Ogre Battledriver [c15] — card: Ogre Battledriver [c15]; from: HAND; last known: kind: CardLastKnownInformation; previous controller: flat_puct; to: STACK
+  [precombat main] flat_puct casts Ogre Battledriver [c15] — ability: cast:Ogre Battledriver
+  [precombat main] flat_puct decides PriorityDecisionRequest: 5.033 ms; observed options: 1; space size: 1; success
+  [precombat main] Simple decides PriorityDecisionRequest: 0.072 ms; observed options: 0; space size: unknown; success
+  [precombat main] Card moved: flat_puct; Ogre Battledriver [c15] — card: Ogre Battledriver [c15]; from: STACK; last known: kind: CardLastKnownInformation; previous controller: flat_puct; to: BATTLEFIELD
+  [precombat main] Resolution: flat_puct; Ogre Battledriver [c15]; cast:Ogre Battledriver; success: True
+  [precombat main] flat_puct decides PriorityDecisionRequest: 5.414 ms; observed options: 1; space size: 1; success
+  [precombat main] Simple decides PriorityDecisionRequest: 0.064 ms; observed options: 0; space size: unknown; success
+  [begin combat] flat_puct decides PriorityDecisionRequest: 4.878 ms; observed options: 1; space size: 1; success
+  [begin combat] Simple decides PriorityDecisionRequest: 0.071 ms; observed options: 0; space size: unknown; success
+  [declare attackers] flat_puct decides DeclareAttackersRequest: 1016.485 ms; observed options: 100; space size: unknown; success
+  [declare attackers] flat_puct decides PriorityDecisionRequest: 4.959 ms; observed options: 1; space size: 1; success
+  [declare attackers] Simple decides PriorityDecisionRequest: 0.078 ms; observed options: 0; space size: unknown; success
+  [end combat] flat_puct decides PriorityDecisionRequest: 4.764 ms; observed options: 1; space size: 1; success
+  [end combat] Simple decides PriorityDecisionRequest: 0.064 ms; observed options: 0; space size: unknown; success
+  [postcombat main] flat_puct decides PriorityDecisionRequest: 5.325 ms; observed options: 1; space size: 1; success
+  [postcombat main] Simple decides PriorityDecisionRequest: 0.064 ms; observed options: 0; space size: unknown; success
+  [end step] flat_puct decides PriorityDecisionRequest: 4.739 ms; observed options: 1; space size: 1; success
+  [end step] Simple decides PriorityDecisionRequest: 0.125 ms; observed options: 0; space size: unknown; success
+
+Turn 10
+  [upkeep] Simple decides PriorityDecisionRequest: 0.059 ms; observed options: 0; space size: unknown; success
+  [upkeep] flat_puct decides PriorityDecisionRequest: 5.127 ms; observed options: 1; space size: 1; success
+  [draw] Card moved: Simple; Serra Angel [c80] — card: Serra Angel [c80]; from: DECK; last known: kind: CardLastKnownInformation; previous controller: Simple; to: HAND
+  [draw] Card drawn: Simple; Serra Angel [c80] — card: Serra Angel [c80]; last known: kind: CardLastKnownInformation
+  [draw] Resolution: -; -; -; success: True
+  [draw] Simple decides PriorityDecisionRequest: 0.104 ms; observed options: 0; space size: unknown; success
+  [draw] flat_puct decides PriorityDecisionRequest: 4.690 ms; observed options: 1; space size: 1; success
+  [precombat main] Simple chooses land: source: Plains [c118]
+  [precombat main] Simple decides PriorityDecisionRequest: 0.696 ms; observed options: 2; space size: unknown; success
+  [precombat main] Card moved: Simple; Plains [c118] — card: Plains [c118]; from: HAND; last known: kind: CardLastKnownInformation; previous controller: Simple; to: BATTLEFIELD
+  [precombat main] Simple plays land Plains [c118] — lands played: 1; last known: kind: CardLastKnownInformation
+  [precombat main] Resolution: Simple; Plains [c118]; play_land; success: True
+  [precombat main] Simple chooses action: ability: cast:Serra Angel; source: Serra Angel [c80]; targets: none
+  [precombat main] Simple decides PriorityDecisionRequest: 1.528 ms; observed options: 2; space size: 2; success
+  [precombat main] Card tapped: Simple; Plains [c97] — last known: kind: CardLastKnownInformation
+  [precombat main] Mana added: Simple; Plains [c97] — amount: 1; last known: kind: CardLastKnownInformation; mana: WHITE
+  [precombat main] Simple activates Plains [c97] — ability: mana_white; last known: kind: CardLastKnownInformation
+  [precombat main] Card tapped: Simple; Plains [c101] — last known: kind: CardLastKnownInformation
+  [precombat main] Mana added: Simple; Plains [c101] — amount: 1; last known: kind: CardLastKnownInformation; mana: WHITE
+  [precombat main] Simple activates Plains [c101] — ability: mana_white; last known: kind: CardLastKnownInformation
+  [precombat main] Card tapped: Simple; Plains [c102] — last known: kind: CardLastKnownInformation
+  [precombat main] Mana added: Simple; Plains [c102] — amount: 1; last known: kind: CardLastKnownInformation; mana: WHITE
+  [precombat main] Simple activates Plains [c102] — ability: mana_white; last known: kind: CardLastKnownInformation
+  [precombat main] Card tapped: Simple; Plains [c107] — last known: kind: CardLastKnownInformation
+  [precombat main] Mana added: Simple; Plains [c107] — amount: 1; last known: kind: CardLastKnownInformation; mana: WHITE
+  [precombat main] Simple activates Plains [c107] — ability: mana_white; last known: kind: CardLastKnownInformation
+  [precombat main] Card tapped: Simple; Plains [c118] — last known: kind: CardLastKnownInformation
+  [precombat main] Mana added: Simple; Plains [c118] — amount: 1; last known: kind: CardLastKnownInformation; mana: WHITE
+  [precombat main] Simple activates Plains [c118] — ability: mana_white; last known: kind: CardLastKnownInformation
+  [precombat main] Mana paid: Simple; Serra Angel [c80] — last known: kind: CardLastKnownInformation; payment: WHITE: 5
+  [precombat main] Card moved: Simple; Serra Angel [c80] — card: Serra Angel [c80]; from: HAND; last known: kind: CardLastKnownInformation; previous controller: Simple; to: STACK
+  [precombat main] Simple casts Serra Angel [c80] — ability: cast:Serra Angel
+  [precombat main] Simple decides PriorityDecisionRequest: 0.064 ms; observed options: 0; space size: unknown; success
+  [precombat main] flat_puct decides PriorityDecisionRequest: 5.221 ms; observed options: 1; space size: 1; success
+  [precombat main] Card moved: Simple; Serra Angel [c80] — card: Serra Angel [c80]; from: STACK; last known: kind: CardLastKnownInformation; previous controller: Simple; to: BATTLEFIELD
+  [precombat main] Resolution: Simple; Serra Angel [c80]; cast:Serra Angel; success: True
+  [precombat main] Simple decides PriorityDecisionRequest: 0.063 ms; observed options: 0; space size: unknown; success
+  [precombat main] flat_puct decides PriorityDecisionRequest: 5.370 ms; observed options: 1; space size: 1; success
+  [begin combat] Simple decides PriorityDecisionRequest: 0.072 ms; observed options: 0; space size: unknown; success
+  [begin combat] flat_puct decides PriorityDecisionRequest: 5.440 ms; observed options: 1; space size: 1; success
+  [declare attackers] Simple chooses attack: attackers: Hallowed Priest [c69]
+  [declare attackers] Simple decides DeclareAttackersRequest: 0.161 ms; observed options: 1; space size: unknown; success
+  [declare attackers] Card tapped: Simple; Hallowed Priest [c69]
+  [declare attackers] Simple attacks with Hallowed Priest [c69] — attacker: Hallowed Priest [c69]; defender: flat_puct
+  [declare attackers] Attackers declared: Simple; - — attackers: Hallowed Priest [c69]
+  [declare attackers] Simple decides PriorityDecisionRequest: 0.064 ms; observed options: 0; space size: unknown; success
+  [declare attackers] flat_puct decides PriorityDecisionRequest: 5.043 ms; observed options: 1; space size: 1; success
+  [declare blockers] flat_puct decides DeclareBlockersRequest: 1295.164 ms; observed options: 197; space size: unknown; success
+  [declare blockers] flat_puct blocks with Ogre Battledriver [c15] — attacker: Hallowed Priest [c69]; blocker: Ogre Battledriver [c15]
+  [declare blockers] Attacker blocked: Simple; Hallowed Priest [c69] — blockers: Ogre Battledriver [c15]
+  [declare blockers] Blockers declared: flat_puct; - — blockers: Ogre Battledriver [c15], Hallowed Priest [c69]
+  [declare blockers] Simple decides PriorityDecisionRequest: 0.082 ms; observed options: 0; space size: unknown; success
+  [declare blockers] flat_puct decides PriorityDecisionRequest: 5.936 ms; observed options: 1; space size: 1; success
+  [second combat damage] Damage dealt: flat_puct; Ogre Battledriver [c15] — amount: 3; combat: True; last known: kind: CardLastKnownInformation; life loss: 0; source revision: 3; target: Hallowed Priest; target object: Hallowed Priest [c69]; target revision: 3
+  [second combat damage] Damage dealt: Simple; Hallowed Priest [c69] — amount: 1; combat: True; last known: kind: CardLastKnownInformation; life loss: 0; source revision: 3; target: Ogre Battledriver; target object: Ogre Battledriver [c15]; target revision: 3
+  [second combat damage] Card moved: Simple; Hallowed Priest [c69] — card: Hallowed Priest [c69]; from: BATTLEFIELD; last known: kind: CardLastKnownInformation; previous controller: Simple; to: GRAVEYARD
+  [second combat damage] Simple decides PriorityDecisionRequest: 0.077 ms; observed options: 0; space size: unknown; success
+  [second combat damage] flat_puct decides PriorityDecisionRequest: 5.848 ms; observed options: 1; space size: 1; success
+  [end combat] Simple decides PriorityDecisionRequest: 0.085 ms; observed options: 0; space size: unknown; success
+  [end combat] flat_puct decides PriorityDecisionRequest: 5.424 ms; observed options: 1; space size: 1; success
+  [postcombat main] Simple decides PriorityDecisionRequest: 0.064 ms; observed options: 0; space size: unknown; success
+  [postcombat main] flat_puct decides PriorityDecisionRequest: 5.528 ms; observed options: 1; space size: 1; success
+  [end step] Simple decides PriorityDecisionRequest: 0.072 ms; observed options: 0; space size: unknown; success
+  [end step] flat_puct decides PriorityDecisionRequest: 6.898 ms; observed options: 1; space size: 1; success
+
+Turn 11
+  [upkeep] flat_puct decides PriorityDecisionRequest: 5.693 ms; observed options: 1; space size: 1; success
+  [upkeep] Simple decides PriorityDecisionRequest: 0.076 ms; observed options: 0; space size: unknown; success
+  [draw] Card moved: flat_puct; Mountain [c52] — card: Mountain [c52]; from: DECK; last known: kind: CardLastKnownInformation; previous controller: flat_puct; to: HAND
+  [draw] Card drawn: flat_puct; Mountain [c52] — card: Mountain [c52]; last known: kind: CardLastKnownInformation
+  [draw] Resolution: -; -; -; success: True
+  [draw] flat_puct decides PriorityDecisionRequest: 5.847 ms; observed options: 1; space size: 1; success
+  [draw] Simple decides PriorityDecisionRequest: 0.085 ms; observed options: 0; space size: unknown; success
+  [precombat main] flat_puct decides PriorityDecisionRequest: 1316.870 ms; observed options: 82; space size: unknown; success
+  [precombat main] Card moved: flat_puct; Mountain [c52] — card: Mountain [c52]; from: HAND; last known: kind: CardLastKnownInformation; previous controller: flat_puct; to: BATTLEFIELD
+  [precombat main] flat_puct plays land Mountain [c52] — lands played: 1; last known: kind: CardLastKnownInformation
+  [precombat main] Resolution: flat_puct; Mountain [c52]; play_land; success: True
+  [precombat main] flat_puct decides PriorityDecisionRequest: 874.257 ms; observed options: 40; space size: unknown; success
+  [precombat main] Card tapped: flat_puct; Mountain [c41] — last known: kind: CardLastKnownInformation
+  [precombat main] Mana added: flat_puct; Mountain [c41] — amount: 1; last known: kind: CardLastKnownInformation; mana: RED
+  [precombat main] flat_puct activates Mountain [c41] — ability: mana_red; last known: kind: CardLastKnownInformation
+  [precombat main] Card tapped: flat_puct; Mountain [c44] — last known: kind: CardLastKnownInformation
+  [precombat main] Mana added: flat_puct; Mountain [c44] — amount: 1; last known: kind: CardLastKnownInformation; mana: RED
+  [precombat main] flat_puct activates Mountain [c44] — ability: mana_red; last known: kind: CardLastKnownInformation
+  [precombat main] Card tapped: flat_puct; Mountain [c48] — last known: kind: CardLastKnownInformation
+  [precombat main] Mana added: flat_puct; Mountain [c48] — amount: 1; last known: kind: CardLastKnownInformation; mana: RED
+  [precombat main] flat_puct activates Mountain [c48] — ability: mana_red; last known: kind: CardLastKnownInformation
+  [precombat main] Card tapped: flat_puct; Mountain [c52] — last known: kind: CardLastKnownInformation
+  [precombat main] Mana added: flat_puct; Mountain [c52] — amount: 1; last known: kind: CardLastKnownInformation; mana: RED
+  [precombat main] flat_puct activates Mountain [c52] — ability: mana_red; last known: kind: CardLastKnownInformation
+  [precombat main] Mana paid: flat_puct; Ogre Battledriver [c16] — last known: kind: CardLastKnownInformation; payment: RED: 4
+  [precombat main] Card moved: flat_puct; Ogre Battledriver [c16] — card: Ogre Battledriver [c16]; from: HAND; last known: kind: CardLastKnownInformation; previous controller: flat_puct; to: STACK
+  [precombat main] flat_puct casts Ogre Battledriver [c16] — ability: cast:Ogre Battledriver
+  [precombat main] flat_puct decides PriorityDecisionRequest: 5.714 ms; observed options: 1; space size: 1; success
+  [precombat main] Simple decides PriorityDecisionRequest: 0.072 ms; observed options: 0; space size: unknown; success
+  [precombat main] Card moved: flat_puct; Ogre Battledriver [c16] — card: Ogre Battledriver [c16]; from: STACK; last known: kind: CardLastKnownInformation; previous controller: flat_puct; to: BATTLEFIELD
+  [precombat main] Trigger detected: flat_puct; Ogre Battledriver [c15]; battledriver_etb
+  [precombat main] flat_puct decides TriggerOrderRequest: 5.998 ms; observed options: 1; space size: 1; success
+  [precombat main] flat_puct decides AbilityDecisionRequest: 5.511 ms; observed options: 1; space size: 1; success
+  [precombat main] Resolution: flat_puct; Ogre Battledriver [c16]; cast:Ogre Battledriver; success: True
+  [precombat main] flat_puct decides PriorityDecisionRequest: 5.252 ms; observed options: 1; space size: 1; success
+  [precombat main] Simple decides PriorityDecisionRequest: 0.068 ms; observed options: 0; space size: unknown; success
+  [precombat main] Temporary effect applied: flat_puct; Ogre Battledriver [c15] — last known: kind: CardLastKnownInformation; targets: Ogre Battledriver [c16]
+  [precombat main] Resolution: flat_puct; Ogre Battledriver [c15]; battledriver_etb; success: True
+  [precombat main] flat_puct decides PriorityDecisionRequest: 6.287 ms; observed options: 1; space size: 1; success
+  [precombat main] Simple decides PriorityDecisionRequest: 0.072 ms; observed options: 0; space size: unknown; success
+  [begin combat] flat_puct decides PriorityDecisionRequest: 5.293 ms; observed options: 1; space size: 1; success
+  [begin combat] Simple decides PriorityDecisionRequest: 0.072 ms; observed options: 0; space size: unknown; success
+  [declare attackers] flat_puct decides DeclareAttackersRequest: 2960.519 ms; observed options: 533; space size: unknown; success
+  [declare attackers] flat_puct decides PriorityDecisionRequest: 5.990 ms; observed options: 1; space size: 1; success
+  [declare attackers] Simple decides PriorityDecisionRequest: 0.074 ms; observed options: 0; space size: unknown; success
+  [end combat] flat_puct decides PriorityDecisionRequest: 5.802 ms; observed options: 1; space size: 1; success
+  [end combat] Simple decides PriorityDecisionRequest: 0.069 ms; observed options: 0; space size: unknown; success
+  [postcombat main] flat_puct decides PriorityDecisionRequest: 6.303 ms; observed options: 1; space size: 1; success
+  [postcombat main] Simple decides PriorityDecisionRequest: 0.075 ms; observed options: 0; space size: unknown; success
+  [end step] flat_puct decides PriorityDecisionRequest: 5.629 ms; observed options: 1; space size: 1; success
+  [end step] Simple decides PriorityDecisionRequest: 0.065 ms; observed options: 0; space size: unknown; success
+
+Turn 12
+  [upkeep] Simple decides PriorityDecisionRequest: 0.059 ms; observed options: 0; space size: unknown; success
+  [upkeep] flat_puct decides PriorityDecisionRequest: 5.352 ms; observed options: 1; space size: 1; success
+  [draw] Card moved: Simple; Plains [c99] — card: Plains [c99]; from: DECK; last known: kind: CardLastKnownInformation; previous controller: Simple; to: HAND
+  [draw] Card drawn: Simple; Plains [c99] — card: Plains [c99]; last known: kind: CardLastKnownInformation
+  [draw] Resolution: -; -; -; success: True
+  [draw] Simple decides PriorityDecisionRequest: 0.064 ms; observed options: 0; space size: unknown; success
+  [draw] flat_puct decides PriorityDecisionRequest: 5.349 ms; observed options: 1; space size: 1; success
+  [precombat main] Simple chooses land: source: Plains [c99]
+  [precombat main] Simple decides PriorityDecisionRequest: 0.593 ms; observed options: 2; space size: unknown; success
+  [precombat main] Card moved: Simple; Plains [c99] — card: Plains [c99]; from: HAND; last known: kind: CardLastKnownInformation; previous controller: Simple; to: BATTLEFIELD
+  [precombat main] Simple plays land Plains [c99] — lands played: 1; last known: kind: CardLastKnownInformation
+  [precombat main] Resolution: Simple; Plains [c99]; play_land; success: True
+  [precombat main] Simple decides PriorityDecisionRequest: 0.061 ms; observed options: 0; space size: unknown; success
+  [precombat main] flat_puct decides PriorityDecisionRequest: 5.876 ms; observed options: 1; space size: 1; success
+  [begin combat] Simple decides PriorityDecisionRequest: 0.070 ms; observed options: 0; space size: unknown; success
+  [begin combat] flat_puct decides PriorityDecisionRequest: 5.599 ms; observed options: 1; space size: 1; success
+  [declare attackers] Simple chooses attack: attackers: Serra Angel [c80]
+  [declare attackers] Simple decides DeclareAttackersRequest: 0.164 ms; observed options: 1; space size: unknown; success
+  [declare attackers] Simple attacks with Serra Angel [c80] — attacker: Serra Angel [c80]; defender: flat_puct
+  [declare attackers] Attackers declared: Simple; - — attackers: Serra Angel [c80]
+  [declare attackers] Simple decides PriorityDecisionRequest: 0.061 ms; observed options: 0; space size: unknown; success
+  [declare attackers] flat_puct decides PriorityDecisionRequest: 5.508 ms; observed options: 1; space size: 1; success
+  [declare blockers] flat_puct decides DeclareBlockersRequest: 6.081 ms; observed options: 1; space size: 1; success
+  [declare blockers] Simple decides PriorityDecisionRequest: 0.085 ms; observed options: 0; space size: unknown; success
+  [declare blockers] flat_puct decides PriorityDecisionRequest: 5.922 ms; observed options: 1; space size: 1; success
+  [second combat damage] Damage dealt: Simple; Serra Angel [c80] — amount: 4; combat: True; last known: kind: CardLastKnownInformation; life loss: 4; source revision: 3; target: flat_puct; target object: flat_puct; target revision: -
+  [second combat damage] Simple decides PriorityDecisionRequest: 0.075 ms; observed options: 0; space size: unknown; success
+  [second combat damage] flat_puct decides PriorityDecisionRequest: 5.826 ms; observed options: 1; space size: 1; success
+  [end combat] Simple decides PriorityDecisionRequest: 0.069 ms; observed options: 0; space size: unknown; success
+  [end combat] flat_puct decides PriorityDecisionRequest: 6.188 ms; observed options: 1; space size: 1; success
+  [postcombat main] Simple decides PriorityDecisionRequest: 0.075 ms; observed options: 0; space size: unknown; success
+  [postcombat main] flat_puct decides PriorityDecisionRequest: 6.023 ms; observed options: 1; space size: 1; success
+  [end step] Simple decides PriorityDecisionRequest: 0.071 ms; observed options: 0; space size: unknown; success
+  [end step] flat_puct decides PriorityDecisionRequest: 5.735 ms; observed options: 1; space size: 1; success
+
+Turn 13
+  [upkeep] flat_puct decides PriorityDecisionRequest: 5.609 ms; observed options: 1; space size: 1; success
+  [upkeep] Simple decides PriorityDecisionRequest: 0.067 ms; observed options: 0; space size: unknown; success
+  [draw] Card moved: flat_puct; Raid Bombardment [c35] — card: Raid Bombardment [c35]; from: DECK; last known: kind: CardLastKnownInformation; previous controller: flat_puct; to: HAND
+  [draw] Card drawn: flat_puct; Raid Bombardment [c35] — card: Raid Bombardment [c35]; last known: kind: CardLastKnownInformation
+  [draw] Resolution: -; -; -; success: True
+  [draw] flat_puct decides PriorityDecisionRequest: 6.384 ms; observed options: 1; space size: 1; success
+  [draw] Simple decides PriorityDecisionRequest: 0.073 ms; observed options: 0; space size: unknown; success
+  [precombat main] flat_puct decides PriorityDecisionRequest: 3442.605 ms; observed options: 587; space size: unknown; success
+  [precombat main] Card tapped: flat_puct; Mountain [c41] — last known: kind: CardLastKnownInformation
+  [precombat main] Mana added: flat_puct; Mountain [c41] — amount: 1; last known: kind: CardLastKnownInformation; mana: RED
+  [precombat main] flat_puct activates Mountain [c41] — ability: mana_red; last known: kind: CardLastKnownInformation
+  [precombat main] Card tapped: flat_puct; Mountain [c44] — last known: kind: CardLastKnownInformation
+  [precombat main] Mana added: flat_puct; Mountain [c44] — amount: 1; last known: kind: CardLastKnownInformation; mana: RED
+  [precombat main] flat_puct activates Mountain [c44] — ability: mana_red; last known: kind: CardLastKnownInformation
+  [precombat main] Card tapped: flat_puct; Mountain [c48] — last known: kind: CardLastKnownInformation
+  [precombat main] Mana added: flat_puct; Mountain [c48] — amount: 1; last known: kind: CardLastKnownInformation; mana: RED
+  [precombat main] flat_puct activates Mountain [c48] — ability: mana_red; last known: kind: CardLastKnownInformation
+  [precombat main] Mana paid: flat_puct; Raid Bombardment [c35] — last known: kind: CardLastKnownInformation; payment: RED: 3
+  [precombat main] Card moved: flat_puct; Raid Bombardment [c35] — card: Raid Bombardment [c35]; from: HAND; last known: kind: CardLastKnownInformation; previous controller: flat_puct; to: STACK
+  [precombat main] flat_puct casts Raid Bombardment [c35] — ability: cast:Raid Bombardment
+  [precombat main] flat_puct decides PriorityDecisionRequest: 6.517 ms; observed options: 1; space size: 1; success
+  [precombat main] Simple decides PriorityDecisionRequest: 0.074 ms; observed options: 0; space size: unknown; success
+  [precombat main] Card moved: flat_puct; Raid Bombardment [c35] — card: Raid Bombardment [c35]; from: STACK; last known: kind: CardLastKnownInformation; previous controller: flat_puct; to: BATTLEFIELD
+  [precombat main] Resolution: flat_puct; Raid Bombardment [c35]; cast:Raid Bombardment; success: True
+  [precombat main] flat_puct decides PriorityDecisionRequest: 7.308 ms; observed options: 1; space size: 1; success
+  [precombat main] Simple decides PriorityDecisionRequest: 0.110 ms; observed options: 0; space size: unknown; success
+  [begin combat] flat_puct decides PriorityDecisionRequest: 6.326 ms; observed options: 1; space size: 1; success
+  [begin combat] Simple decides PriorityDecisionRequest: 0.071 ms; observed options: 0; space size: unknown; success
+  [declare attackers] flat_puct decides DeclareAttackersRequest: 2082.684 ms; observed options: 269; space size: unknown; success
+  [declare attackers] flat_puct decides PriorityDecisionRequest: 6.227 ms; observed options: 1; space size: 1; success
+  [declare attackers] Simple decides PriorityDecisionRequest: 0.075 ms; observed options: 0; space size: unknown; success
+  [end combat] flat_puct decides PriorityDecisionRequest: 5.917 ms; observed options: 1; space size: 1; success
+  [end combat] Simple decides PriorityDecisionRequest: 0.065 ms; observed options: 0; space size: unknown; success
+  [postcombat main] flat_puct decides PriorityDecisionRequest: 6.772 ms; observed options: 1; space size: 1; success
+  [postcombat main] Simple decides PriorityDecisionRequest: 0.066 ms; observed options: 0; space size: unknown; success
+  [end step] flat_puct decides PriorityDecisionRequest: 5.674 ms; observed options: 1; space size: 1; success
+  [end step] Simple decides PriorityDecisionRequest: 0.063 ms; observed options: 0; space size: unknown; success
+
+Turn 14
+  [upkeep] Simple decides PriorityDecisionRequest: 0.057 ms; observed options: 0; space size: unknown; success
+  [upkeep] flat_puct decides PriorityDecisionRequest: 5.816 ms; observed options: 1; space size: 1; success
+  [draw] Card moved: Simple; Angel of Vitality [c76] — card: Angel of Vitality [c76]; from: DECK; last known: kind: CardLastKnownInformation; previous controller: Simple; to: HAND
+  [draw] Card drawn: Simple; Angel of Vitality [c76] — card: Angel of Vitality [c76]; last known: kind: CardLastKnownInformation
+  [draw] Resolution: -; -; -; success: True
+  [draw] Simple decides PriorityDecisionRequest: 0.099 ms; observed options: 0; space size: unknown; success
+  [draw] flat_puct decides PriorityDecisionRequest: 5.830 ms; observed options: 1; space size: 1; success
+  [precombat main] Simple chooses land: source: Plains [c120]
+  [precombat main] Simple decides PriorityDecisionRequest: 0.824 ms; observed options: 2; space size: unknown; success
+  [precombat main] Card moved: Simple; Plains [c120] — card: Plains [c120]; from: HAND; last known: kind: CardLastKnownInformation; previous controller: Simple; to: BATTLEFIELD
+  [precombat main] Simple plays land Plains [c120] — lands played: 1; last known: kind: CardLastKnownInformation
+  [precombat main] Resolution: Simple; Plains [c120]; play_land; success: True
+  [precombat main] Simple chooses action: ability: cast:Angel of Vitality; source: Angel of Vitality [c76]; targets: none
+  [precombat main] Simple decides PriorityDecisionRequest: 1.507 ms; observed options: 2; space size: 2; success
+  [precombat main] Card tapped: Simple; Plains [c97] — last known: kind: CardLastKnownInformation
+  [precombat main] Mana added: Simple; Plains [c97] — amount: 1; last known: kind: CardLastKnownInformation; mana: WHITE
+  [precombat main] Simple activates Plains [c97] — ability: mana_white; last known: kind: CardLastKnownInformation
+  [precombat main] Card tapped: Simple; Plains [c99] — last known: kind: CardLastKnownInformation
+  [precombat main] Mana added: Simple; Plains [c99] — amount: 1; last known: kind: CardLastKnownInformation; mana: WHITE
+  [precombat main] Simple activates Plains [c99] — ability: mana_white; last known: kind: CardLastKnownInformation
+  [precombat main] Card tapped: Simple; Plains [c101] — last known: kind: CardLastKnownInformation
+  [precombat main] Mana added: Simple; Plains [c101] — amount: 1; last known: kind: CardLastKnownInformation; mana: WHITE
+  [precombat main] Simple activates Plains [c101] — ability: mana_white; last known: kind: CardLastKnownInformation
+  [precombat main] Mana paid: Simple; Angel of Vitality [c76] — last known: kind: CardLastKnownInformation; payment: WHITE: 3
+  [precombat main] Card moved: Simple; Angel of Vitality [c76] — card: Angel of Vitality [c76]; from: HAND; last known: kind: CardLastKnownInformation; previous controller: Simple; to: STACK
+  [precombat main] Simple casts Angel of Vitality [c76] — ability: cast:Angel of Vitality
+  [precombat main] Simple decides PriorityDecisionRequest: 0.063 ms; observed options: 0; space size: unknown; success
+  [precombat main] flat_puct decides PriorityDecisionRequest: 6.669 ms; observed options: 1; space size: 1; success
+  [precombat main] Card moved: Simple; Angel of Vitality [c76] — card: Angel of Vitality [c76]; from: STACK; last known: kind: CardLastKnownInformation; previous controller: Simple; to: BATTLEFIELD
+  [precombat main] Resolution: Simple; Angel of Vitality [c76]; cast:Angel of Vitality; success: True
+  [precombat main] Simple decides PriorityDecisionRequest: 0.081 ms; observed options: 0; space size: unknown; success
+  [precombat main] flat_puct decides PriorityDecisionRequest: 6.383 ms; observed options: 1; space size: 1; success
+  [begin combat] Simple decides PriorityDecisionRequest: 0.063 ms; observed options: 0; space size: unknown; success
+  [begin combat] flat_puct decides PriorityDecisionRequest: 6.792 ms; observed options: 1; space size: 1; success
+  [declare attackers] Simple chooses attack: attackers: Serra Angel [c80]
+  [declare attackers] Simple decides DeclareAttackersRequest: 0.163 ms; observed options: 1; space size: unknown; success
+  [declare attackers] Simple attacks with Serra Angel [c80] — attacker: Serra Angel [c80]; defender: flat_puct
+  [declare attackers] Attackers declared: Simple; - — attackers: Serra Angel [c80]
+  [declare attackers] Simple decides PriorityDecisionRequest: 0.065 ms; observed options: 0; space size: unknown; success
+  [declare attackers] flat_puct decides PriorityDecisionRequest: 6.497 ms; observed options: 1; space size: 1; success
+  [declare blockers] flat_puct decides DeclareBlockersRequest: 6.433 ms; observed options: 1; space size: 1; success
+  [declare blockers] Simple decides PriorityDecisionRequest: 0.067 ms; observed options: 0; space size: unknown; success
+  [declare blockers] flat_puct decides PriorityDecisionRequest: 6.299 ms; observed options: 1; space size: 1; success
+  [second combat damage] Damage dealt: Simple; Serra Angel [c80] — amount: 4; combat: True; last known: kind: CardLastKnownInformation; life loss: 4; source revision: 3; target: flat_puct; target object: flat_puct; target revision: -
+  [second combat damage] Simple decides PriorityDecisionRequest: 0.063 ms; observed options: 0; space size: unknown; success
+  [second combat damage] flat_puct decides PriorityDecisionRequest: 6.339 ms; observed options: 1; space size: 1; success
+  [end combat] Simple decides PriorityDecisionRequest: 0.062 ms; observed options: 0; space size: unknown; success
+  [end combat] flat_puct decides PriorityDecisionRequest: 6.254 ms; observed options: 1; space size: 1; success
+  [postcombat main] Simple decides PriorityDecisionRequest: 0.068 ms; observed options: 0; space size: unknown; success
+  [postcombat main] flat_puct decides PriorityDecisionRequest: 6.640 ms; observed options: 1; space size: 1; success
+  [end step] Simple decides PriorityDecisionRequest: 0.062 ms; observed options: 0; space size: unknown; success
+  [end step] flat_puct decides PriorityDecisionRequest: 6.306 ms; observed options: 1; space size: 1; success
+
+Turn 15
+  [upkeep] flat_puct decides PriorityDecisionRequest: 6.768 ms; observed options: 1; space size: 1; success
+  [upkeep] Simple decides PriorityDecisionRequest: 0.081 ms; observed options: 0; space size: unknown; success
+  [draw] Card moved: flat_puct; Nest Robber [c6] — card: Nest Robber [c6]; from: DECK; last known: kind: CardLastKnownInformation; previous controller: flat_puct; to: HAND
+  [draw] Card drawn: flat_puct; Nest Robber [c6] — card: Nest Robber [c6]; last known: kind: CardLastKnownInformation
+  [draw] Resolution: -; -; -; success: True
+  [draw] flat_puct decides PriorityDecisionRequest: 6.708 ms; observed options: 1; space size: 1; success
+  [draw] Simple decides PriorityDecisionRequest: 0.071 ms; observed options: 0; space size: unknown; success
+  [precombat main] flat_puct decides PriorityDecisionRequest: 2891.108 ms; observed options: 242; space size: unknown; success
+  [precombat main] Card tapped: flat_puct; Mountain [c41] — last known: kind: CardLastKnownInformation
+  [precombat main] Mana added: flat_puct; Mountain [c41] — amount: 1; last known: kind: CardLastKnownInformation; mana: RED
+  [precombat main] flat_puct activates Mountain [c41] — ability: mana_red; last known: kind: CardLastKnownInformation
+  [precombat main] Card tapped: flat_puct; Mountain [c44] — last known: kind: CardLastKnownInformation
+  [precombat main] Mana added: flat_puct; Mountain [c44] — amount: 1; last known: kind: CardLastKnownInformation; mana: RED
+  [precombat main] flat_puct activates Mountain [c44] — ability: mana_red; last known: kind: CardLastKnownInformation
+  [precombat main] Mana paid: flat_puct; Nest Robber [c6] — last known: kind: CardLastKnownInformation; payment: RED: 2
+  [precombat main] Card moved: flat_puct; Nest Robber [c6] — card: Nest Robber [c6]; from: HAND; last known: kind: CardLastKnownInformation; previous controller: flat_puct; to: STACK
+  [precombat main] flat_puct casts Nest Robber [c6] — ability: cast:Nest Robber
+  [precombat main] flat_puct decides PriorityDecisionRequest: 7.689 ms; observed options: 1; space size: 1; success
+  [precombat main] Simple decides PriorityDecisionRequest: 0.084 ms; observed options: 0; space size: unknown; success
+  [precombat main] Card moved: flat_puct; Nest Robber [c6] — card: Nest Robber [c6]; from: STACK; last known: kind: CardLastKnownInformation; previous controller: flat_puct; to: BATTLEFIELD
+  [precombat main] Trigger detected: flat_puct; Ogre Battledriver [c15]; battledriver_etb
+  [precombat main] Trigger detected: flat_puct; Ogre Battledriver [c16]; battledriver_etb
+  [precombat main] flat_puct decides TriggerOrderRequest: 7.685 ms; observed options: 2; space size: 2; success
+  [precombat main] flat_puct decides AbilityDecisionRequest: 7.407 ms; observed options: 1; space size: 1; success
+  [precombat main] flat_puct decides AbilityDecisionRequest: 7.728 ms; observed options: 1; space size: 1; success
+  [precombat main] Resolution: flat_puct; Nest Robber [c6]; cast:Nest Robber; success: True
+  [precombat main] flat_puct decides PriorityDecisionRequest: 7.342 ms; observed options: 1; space size: 1; success
+  [precombat main] Simple decides PriorityDecisionRequest: 0.077 ms; observed options: 0; space size: unknown; success
+  [precombat main] Temporary effect applied: flat_puct; Ogre Battledriver [c16] — last known: kind: CardLastKnownInformation; targets: Nest Robber [c6]
+  [precombat main] Resolution: flat_puct; Ogre Battledriver [c16]; battledriver_etb; success: True
+  [precombat main] flat_puct decides PriorityDecisionRequest: 7.056 ms; observed options: 1; space size: 1; success
+  [precombat main] Simple decides PriorityDecisionRequest: 0.074 ms; observed options: 0; space size: unknown; success
+  [precombat main] Temporary effect applied: flat_puct; Ogre Battledriver [c15] — last known: kind: CardLastKnownInformation; targets: Nest Robber [c6]
+  [precombat main] Resolution: flat_puct; Ogre Battledriver [c15]; battledriver_etb; success: True
+  [precombat main] flat_puct decides PriorityDecisionRequest: 8.232 ms; observed options: 1; space size: 1; success
+  [precombat main] Simple decides PriorityDecisionRequest: 0.074 ms; observed options: 0; space size: unknown; success
+  [begin combat] flat_puct decides PriorityDecisionRequest: 7.115 ms; observed options: 1; space size: 1; success
+  [begin combat] Simple decides PriorityDecisionRequest: 0.075 ms; observed options: 0; space size: unknown; success
+  [declare attackers] flat_puct decides DeclareAttackersRequest: 3527.703 ms; observed options: 683; space size: unknown; success
+  [declare attackers] flat_puct decides PriorityDecisionRequest: 7.832 ms; observed options: 1; space size: 1; success
+  [declare attackers] Simple decides PriorityDecisionRequest: 0.083 ms; observed options: 0; space size: unknown; success
+  [end combat] flat_puct decides PriorityDecisionRequest: 6.731 ms; observed options: 1; space size: 1; success
+  [end combat] Simple decides PriorityDecisionRequest: 0.069 ms; observed options: 0; space size: unknown; success
+  [postcombat main] flat_puct decides PriorityDecisionRequest: 8.031 ms; observed options: 1; space size: 1; success
+  [postcombat main] Simple decides PriorityDecisionRequest: 0.075 ms; observed options: 0; space size: unknown; success
+  [end step] flat_puct decides PriorityDecisionRequest: 6.639 ms; observed options: 1; space size: 1; success
+  [end step] Simple decides PriorityDecisionRequest: 0.067 ms; observed options: 0; space size: unknown; success
+
+Turn 16
+  [upkeep] Simple decides PriorityDecisionRequest: 0.061 ms; observed options: 0; space size: unknown; success
+  [upkeep] flat_puct decides PriorityDecisionRequest: 6.659 ms; observed options: 1; space size: 1; success
+  [draw] Card moved: Simple; Angel of Vitality [c77] — card: Angel of Vitality [c77]; from: DECK; last known: kind: CardLastKnownInformation; previous controller: Simple; to: HAND
+  [draw] Card drawn: Simple; Angel of Vitality [c77] — card: Angel of Vitality [c77]; last known: kind: CardLastKnownInformation
+  [draw] Resolution: -; -; -; success: True
+  [draw] Simple decides PriorityDecisionRequest: 0.103 ms; observed options: 0; space size: unknown; success
+  [draw] flat_puct decides PriorityDecisionRequest: 6.448 ms; observed options: 1; space size: 1; success
+  [precombat main] Simple chooses action: ability: cast:Angel of Vitality; source: Angel of Vitality [c77]; targets: none
+  [precombat main] Simple decides PriorityDecisionRequest: 1.779 ms; observed options: 2; space size: 2; success
+  [precombat main] Card tapped: Simple; Plains [c97] — last known: kind: CardLastKnownInformation
+  [precombat main] Mana added: Simple; Plains [c97] — amount: 1; last known: kind: CardLastKnownInformation; mana: WHITE
+  [precombat main] Simple activates Plains [c97] — ability: mana_white; last known: kind: CardLastKnownInformation
+  [precombat main] Card tapped: Simple; Plains [c99] — last known: kind: CardLastKnownInformation
+  [precombat main] Mana added: Simple; Plains [c99] — amount: 1; last known: kind: CardLastKnownInformation; mana: WHITE
+  [precombat main] Simple activates Plains [c99] — ability: mana_white; last known: kind: CardLastKnownInformation
+  [precombat main] Card tapped: Simple; Plains [c101] — last known: kind: CardLastKnownInformation
+  [precombat main] Mana added: Simple; Plains [c101] — amount: 1; last known: kind: CardLastKnownInformation; mana: WHITE
+  [precombat main] Simple activates Plains [c101] — ability: mana_white; last known: kind: CardLastKnownInformation
+  [precombat main] Mana paid: Simple; Angel of Vitality [c77] — last known: kind: CardLastKnownInformation; payment: WHITE: 3
+  [precombat main] Card moved: Simple; Angel of Vitality [c77] — card: Angel of Vitality [c77]; from: HAND; last known: kind: CardLastKnownInformation; previous controller: Simple; to: STACK
+  [precombat main] Simple casts Angel of Vitality [c77] — ability: cast:Angel of Vitality
+  [precombat main] Simple decides PriorityDecisionRequest: 0.071 ms; observed options: 0; space size: unknown; success
+  [precombat main] flat_puct decides PriorityDecisionRequest: 7.572 ms; observed options: 1; space size: 1; success
+  [precombat main] Card moved: Simple; Angel of Vitality [c77] — card: Angel of Vitality [c77]; from: STACK; last known: kind: CardLastKnownInformation; previous controller: Simple; to: BATTLEFIELD
+  [precombat main] Resolution: Simple; Angel of Vitality [c77]; cast:Angel of Vitality; success: True
+  [precombat main] Simple decides PriorityDecisionRequest: 0.608 ms; observed options: 1; space size: 1; success
+  [precombat main] flat_puct decides PriorityDecisionRequest: 7.090 ms; observed options: 1; space size: 1; success
+  [begin combat] Simple decides PriorityDecisionRequest: 0.071 ms; observed options: 0; space size: unknown; success
+  [begin combat] flat_puct decides PriorityDecisionRequest: 6.921 ms; observed options: 1; space size: 1; success
+  [declare attackers] Simple chooses attack: attackers: Angel of Vitality [c76], Serra Angel [c80]
+  [declare attackers] Simple decides DeclareAttackersRequest: 0.187 ms; observed options: 1; space size: unknown; success
+  [declare attackers] Card tapped: Simple; Angel of Vitality [c76]
+  [declare attackers] Simple attacks with Angel of Vitality [c76] — attacker: Angel of Vitality [c76]; defender: flat_puct
+  [declare attackers] Simple attacks with Serra Angel [c80] — attacker: Serra Angel [c80]; defender: flat_puct
+  [declare attackers] Attackers declared: Simple; - — attackers: Angel of Vitality [c76], Serra Angel [c80]
+  [declare attackers] Simple decides PriorityDecisionRequest: 0.064 ms; observed options: 0; space size: unknown; success
+  [declare attackers] flat_puct decides PriorityDecisionRequest: 6.678 ms; observed options: 1; space size: 1; success
+  [declare blockers] flat_puct decides DeclareBlockersRequest: 6.957 ms; observed options: 1; space size: 1; success
+  [declare blockers] Simple decides PriorityDecisionRequest: 0.118 ms; observed options: 0; space size: unknown; success
+  [declare blockers] flat_puct decides PriorityDecisionRequest: 6.865 ms; observed options: 1; space size: 1; success
+  [second combat damage] flat_puct decides ReplacementOrderRequest: 7.344 ms; observed options: 2; space size: 2; success
+  [second combat damage] Damage dealt: Simple; Angel of Vitality [c76] — amount: 2; combat: True; last known: kind: CardLastKnownInformation; life loss: 2; source revision: 3; target: flat_puct; target object: flat_puct; target revision: -
+  [second combat damage] Damage dealt: Simple; Serra Angel [c80] — amount: 4; combat: True; last known: kind: CardLastKnownInformation; life loss: 4; source revision: 3; target: flat_puct; target object: flat_puct; target revision: -
+  [second combat damage] Simple decides PriorityDecisionRequest: 0.071 ms; observed options: 0; space size: unknown; success
+  [second combat damage] flat_puct decides PriorityDecisionRequest: 6.526 ms; observed options: 1; space size: 1; success
+  [end combat] Simple decides PriorityDecisionRequest: 0.061 ms; observed options: 0; space size: unknown; success
+  [end combat] flat_puct decides PriorityDecisionRequest: 6.747 ms; observed options: 1; space size: 1; success
+  [postcombat main] Simple decides PriorityDecisionRequest: 0.607 ms; observed options: 1; space size: 1; success
+  [postcombat main] flat_puct decides PriorityDecisionRequest: 6.607 ms; observed options: 1; space size: 1; success
+  [end step] Simple decides PriorityDecisionRequest: 0.072 ms; observed options: 0; space size: unknown; success
+  [end step] flat_puct decides PriorityDecisionRequest: 6.800 ms; observed options: 1; space size: 1; success
+
+Turn 17
+  [upkeep] flat_puct decides PriorityDecisionRequest: 6.764 ms; observed options: 1; space size: 1; success
+  [upkeep] Simple decides PriorityDecisionRequest: 0.071 ms; observed options: 0; space size: unknown; success
+  [draw] Card moved: flat_puct; Mountain [c38] — card: Mountain [c38]; from: DECK; last known: kind: CardLastKnownInformation; previous controller: flat_puct; to: HAND
+  [draw] Card drawn: flat_puct; Mountain [c38] — card: Mountain [c38]; last known: kind: CardLastKnownInformation
+  [draw] Resolution: -; -; -; success: True
+  [draw] flat_puct decides PriorityDecisionRequest: 6.968 ms; observed options: 1; space size: 1; success
+  [draw] Simple decides PriorityDecisionRequest: 0.068 ms; observed options: 0; space size: unknown; success
+  [precombat main] flat_puct decides PriorityDecisionRequest: 2029.595 ms; observed options: 119; space size: unknown; success
+  [precombat main] Card moved: flat_puct; Mountain [c38] — card: Mountain [c38]; from: HAND; last known: kind: CardLastKnownInformation; previous controller: flat_puct; to: BATTLEFIELD
+  [precombat main] flat_puct plays land Mountain [c38] — lands played: 1; last known: kind: CardLastKnownInformation
+  [precombat main] Resolution: flat_puct; Mountain [c38]; play_land; success: True
+  [precombat main] flat_puct decides PriorityDecisionRequest: 1959.413 ms; observed options: 104; space size: unknown; success
+  [precombat main] Card tapped: flat_puct; Mountain [c38] — last known: kind: CardLastKnownInformation
+  [precombat main] Mana added: flat_puct; Mountain [c38] — amount: 1; last known: kind: CardLastKnownInformation; mana: RED
+  [precombat main] flat_puct activates Mountain [c38] — ability: mana_red; last known: kind: CardLastKnownInformation
+  [precombat main] Card tapped: flat_puct; Mountain [c41] — last known: kind: CardLastKnownInformation
+  [precombat main] Mana added: flat_puct; Mountain [c41] — amount: 1; last known: kind: CardLastKnownInformation; mana: RED
+  [precombat main] flat_puct activates Mountain [c41] — ability: mana_red; last known: kind: CardLastKnownInformation
+  [precombat main] Card tapped: flat_puct; Mountain [c44] — last known: kind: CardLastKnownInformation
+  [precombat main] Mana added: flat_puct; Mountain [c44] — amount: 1; last known: kind: CardLastKnownInformation; mana: RED
+  [precombat main] flat_puct activates Mountain [c44] — ability: mana_red; last known: kind: CardLastKnownInformation
+  [precombat main] Card tapped: flat_puct; Mountain [c48] — last known: kind: CardLastKnownInformation
+  [precombat main] Mana added: flat_puct; Mountain [c48] — amount: 1; last known: kind: CardLastKnownInformation; mana: RED
+  [precombat main] flat_puct activates Mountain [c48] — ability: mana_red; last known: kind: CardLastKnownInformation
+  [precombat main] Card tapped: flat_puct; Mountain [c52] — last known: kind: CardLastKnownInformation
+  [precombat main] Mana added: flat_puct; Mountain [c52] — amount: 1; last known: kind: CardLastKnownInformation; mana: RED
+  [precombat main] flat_puct activates Mountain [c52] — ability: mana_red; last known: kind: CardLastKnownInformation
+  [precombat main] Card tapped: flat_puct; Mountain [c57] — last known: kind: CardLastKnownInformation
+  [precombat main] Mana added: flat_puct; Mountain [c57] — amount: 1; last known: kind: CardLastKnownInformation; mana: RED
+  [precombat main] flat_puct activates Mountain [c57] — ability: mana_red; last known: kind: CardLastKnownInformation
+  [precombat main] Mana paid: flat_puct; Volcanic Dragon [c18] — last known: kind: CardLastKnownInformation; payment: RED: 6
+  [precombat main] Card moved: flat_puct; Volcanic Dragon [c18] — card: Volcanic Dragon [c18]; from: HAND; last known: kind: CardLastKnownInformation; previous controller: flat_puct; to: STACK
+  [precombat main] flat_puct casts Volcanic Dragon [c18] — ability: cast:Volcanic Dragon
+  [precombat main] flat_puct decides PriorityDecisionRequest: 8.313 ms; observed options: 1; space size: 1; success
+  [precombat main] Simple decides PriorityDecisionRequest: 0.087 ms; observed options: 0; space size: unknown; success
+  [precombat main] Card moved: flat_puct; Volcanic Dragon [c18] — card: Volcanic Dragon [c18]; from: STACK; last known: kind: CardLastKnownInformation; previous controller: flat_puct; to: BATTLEFIELD
+  [precombat main] Trigger detected: flat_puct; Ogre Battledriver [c15]; battledriver_etb
+  [precombat main] Trigger detected: flat_puct; Ogre Battledriver [c16]; battledriver_etb
+  [precombat main] flat_puct decides TriggerOrderRequest: 7.845 ms; observed options: 2; space size: 2; success
+  [precombat main] flat_puct decides AbilityDecisionRequest: 36.522 ms; observed options: 1; space size: 1; success
+  [precombat main] flat_puct decides AbilityDecisionRequest: 7.585 ms; observed options: 1; space size: 1; success
+  [precombat main] Resolution: flat_puct; Volcanic Dragon [c18]; cast:Volcanic Dragon; success: True
+  [precombat main] flat_puct decides PriorityDecisionRequest: 7.178 ms; observed options: 1; space size: 1; success
+  [precombat main] Simple decides PriorityDecisionRequest: 0.079 ms; observed options: 0; space size: unknown; success
+  [precombat main] Temporary effect applied: flat_puct; Ogre Battledriver [c16] — last known: kind: CardLastKnownInformation; targets: Volcanic Dragon [c18]
+  [precombat main] Resolution: flat_puct; Ogre Battledriver [c16]; battledriver_etb; success: True
+  [precombat main] flat_puct decides PriorityDecisionRequest: 7.352 ms; observed options: 1; space size: 1; success
+  [precombat main] Simple decides PriorityDecisionRequest: 0.086 ms; observed options: 0; space size: unknown; success
+  [precombat main] Temporary effect applied: flat_puct; Ogre Battledriver [c15] — last known: kind: CardLastKnownInformation; targets: Volcanic Dragon [c18]
+  [precombat main] Resolution: flat_puct; Ogre Battledriver [c15]; battledriver_etb; success: True
+  [precombat main] flat_puct decides PriorityDecisionRequest: 7.538 ms; observed options: 1; space size: 1; success
+  [precombat main] Simple decides PriorityDecisionRequest: 0.074 ms; observed options: 0; space size: unknown; success
+  [begin combat] flat_puct decides PriorityDecisionRequest: 7.361 ms; observed options: 1; space size: 1; success
+  [begin combat] Simple decides PriorityDecisionRequest: 0.075 ms; observed options: 0; space size: unknown; success
+  [declare attackers] flat_puct decides DeclareAttackersRequest: 4679.344 ms; observed options: 1409; space size: unknown; success
+  [declare attackers] flat_puct decides PriorityDecisionRequest: 7.936 ms; observed options: 1; space size: 1; success
+  [declare attackers] Simple decides PriorityDecisionRequest: 0.082 ms; observed options: 0; space size: unknown; success
+  [end combat] flat_puct decides PriorityDecisionRequest: 7.354 ms; observed options: 1; space size: 1; success
+  [end combat] Simple decides PriorityDecisionRequest: 0.069 ms; observed options: 0; space size: unknown; success
+  [postcombat main] flat_puct decides PriorityDecisionRequest: 7.225 ms; observed options: 1; space size: 1; success
+  [postcombat main] Simple decides PriorityDecisionRequest: 0.070 ms; observed options: 0; space size: unknown; success
+  [end step] flat_puct decides PriorityDecisionRequest: 7.165 ms; observed options: 1; space size: 1; success
+  [end step] Simple decides PriorityDecisionRequest: 0.067 ms; observed options: 0; space size: unknown; success
+
+Turn 18
+  [upkeep] Simple decides PriorityDecisionRequest: 0.063 ms; observed options: 0; space size: unknown; success
+  [upkeep] flat_puct decides PriorityDecisionRequest: 7.482 ms; observed options: 1; space size: 1; success
+  [draw] Card moved: Simple; Plains [c110] — card: Plains [c110]; from: DECK; last known: kind: CardLastKnownInformation; previous controller: Simple; to: HAND
+  [draw] Card drawn: Simple; Plains [c110] — card: Plains [c110]; last known: kind: CardLastKnownInformation
+  [draw] Resolution: -; -; -; success: True
+  [draw] Simple decides PriorityDecisionRequest: 0.068 ms; observed options: 0; space size: unknown; success
+  [draw] flat_puct decides PriorityDecisionRequest: 7.068 ms; observed options: 1; space size: 1; success
+  [precombat main] Simple chooses land: source: Plains [c110]
+  [precombat main] Simple decides PriorityDecisionRequest: 0.634 ms; observed options: 2; space size: unknown; success
+  [precombat main] Card moved: Simple; Plains [c110] — card: Plains [c110]; from: HAND; last known: kind: CardLastKnownInformation; previous controller: Simple; to: BATTLEFIELD
+  [precombat main] Simple plays land Plains [c110] — lands played: 1; last known: kind: CardLastKnownInformation
+  [precombat main] Resolution: Simple; Plains [c110]; play_land; success: True
+  [precombat main] Simple decides PriorityDecisionRequest: 0.062 ms; observed options: 0; space size: unknown; success
+  [precombat main] flat_puct decides PriorityDecisionRequest: 6.999 ms; observed options: 1; space size: 1; success
+  [begin combat] Simple decides PriorityDecisionRequest: 0.070 ms; observed options: 0; space size: unknown; success
+  [begin combat] flat_puct decides PriorityDecisionRequest: 6.901 ms; observed options: 1; space size: 1; success
+  [declare attackers] Simple chooses attack: attackers: Angel of Vitality [c76], Angel of Vitality [c77], Serra Angel [c80]
+  [declare attackers] Simple decides DeclareAttackersRequest: 0.199 ms; observed options: 1; space size: unknown; success
+  [declare attackers] Card tapped: Simple; Angel of Vitality [c76]
+  [declare attackers] Simple attacks with Angel of Vitality [c76] — attacker: Angel of Vitality [c76]; defender: flat_puct
+  [declare attackers] Card tapped: Simple; Angel of Vitality [c77]
+  [declare attackers] Simple attacks with Angel of Vitality [c77] — attacker: Angel of Vitality [c77]; defender: flat_puct
+  [declare attackers] Simple attacks with Serra Angel [c80] — attacker: Serra Angel [c80]; defender: flat_puct
+  [declare attackers] Attackers declared: Simple; - — attackers: Angel of Vitality [c76], Angel of Vitality [c77], Serra Angel [c80]
+  [declare attackers] Simple decides PriorityDecisionRequest: 0.064 ms; observed options: 0; space size: unknown; success
+  [declare attackers] flat_puct decides PriorityDecisionRequest: 7.014 ms; observed options: 1; space size: 1; success
+  [declare blockers] flat_puct decides DeclareBlockersRequest: 2264.041 ms; observed options: 204; space size: unknown; success
+  [declare blockers] flat_puct blocks with Volcanic Dragon [c18] — attacker: Serra Angel [c80]; blocker: Volcanic Dragon [c18]
+  [declare blockers] Attacker blocked: Simple; Serra Angel [c80] — blockers: Volcanic Dragon [c18]
+  [declare blockers] Blockers declared: flat_puct; - — blockers: Volcanic Dragon [c18], Serra Angel [c80]
+  [declare blockers] Simple decides PriorityDecisionRequest: 0.090 ms; observed options: 0; space size: unknown; success
+  [declare blockers] flat_puct decides PriorityDecisionRequest: 8.078 ms; observed options: 1; space size: 1; success
+  [second combat damage] flat_puct decides ReplacementOrderRequest: 9.298 ms; observed options: 6; space size: 6; success
+  [second combat damage] Damage dealt: flat_puct; Volcanic Dragon [c18] — amount: 4; combat: True; last known: kind: CardLastKnownInformation; life loss: 0; source revision: 3; target: Serra Angel; target object: Serra Angel [c80]; target revision: 3
+  [second combat damage] Damage dealt: Simple; Angel of Vitality [c76] — amount: 2; combat: True; last known: kind: CardLastKnownInformation; life loss: 2; source revision: 3; target: flat_puct; target object: flat_puct; target revision: -
+  [second combat damage] Damage dealt: Simple; Angel of Vitality [c77] — amount: 2; combat: True; last known: kind: CardLastKnownInformation; life loss: 2; source revision: 3; target: flat_puct; target object: flat_puct; target revision: -
+  [second combat damage] Damage dealt: Simple; Serra Angel [c80] — amount: 4; combat: True; last known: kind: CardLastKnownInformation; life loss: 0; source revision: 3; target: Volcanic Dragon; target object: Volcanic Dragon [c18]; target revision: 3
+  [second combat damage] Card moved: Simple; Serra Angel [c80] — card: Serra Angel [c80]; from: BATTLEFIELD; last known: kind: CardLastKnownInformation; previous controller: Simple; to: GRAVEYARD
+  [second combat damage] Card moved: flat_puct; Volcanic Dragon [c18] — card: Volcanic Dragon [c18]; from: BATTLEFIELD; last known: kind: CardLastKnownInformation; previous controller: flat_puct; to: GRAVEYARD
+  [second combat damage] Simple decides PriorityDecisionRequest: 0.081 ms; observed options: 0; space size: unknown; success
+  [second combat damage] flat_puct decides PriorityDecisionRequest: 8.127 ms; observed options: 1; space size: 1; success
+  [end combat] Simple decides PriorityDecisionRequest: 0.090 ms; observed options: 0; space size: unknown; success
+  [end combat] flat_puct decides PriorityDecisionRequest: 7.856 ms; observed options: 1; space size: 1; success
+  [postcombat main] Simple decides PriorityDecisionRequest: 0.100 ms; observed options: 0; space size: unknown; success
+  [postcombat main] flat_puct decides PriorityDecisionRequest: 8.361 ms; observed options: 1; space size: 1; success
+  [end step] Simple decides PriorityDecisionRequest: 0.082 ms; observed options: 0; space size: unknown; success
+  [end step] flat_puct decides PriorityDecisionRequest: 8.439 ms; observed options: 1; space size: 1; success
+
+Turn 19
+  [upkeep] flat_puct decides PriorityDecisionRequest: 7.906 ms; observed options: 1; space size: 1; success
+  [upkeep] Simple decides PriorityDecisionRequest: 0.084 ms; observed options: 0; space size: unknown; success
+  [draw] Card moved: flat_puct; Inescapable Blaze [c28] — card: Inescapable Blaze [c28]; from: DECK; last known: kind: CardLastKnownInformation; previous controller: flat_puct; to: HAND
+  [draw] Card drawn: flat_puct; Inescapable Blaze [c28] — card: Inescapable Blaze [c28]; last known: kind: CardLastKnownInformation
+  [draw] Resolution: -; -; -; success: True
+  [draw] flat_puct decides PriorityDecisionRequest: 2986.228 ms; observed options: 254; space size: unknown; success
+  [draw] Card tapped: flat_puct; Mountain [c38] — last known: kind: CardLastKnownInformation
+  [draw] Mana added: flat_puct; Mountain [c38] — amount: 1; last known: kind: CardLastKnownInformation; mana: RED
+  [draw] flat_puct activates Mountain [c38] — ability: mana_red; last known: kind: CardLastKnownInformation
+  [draw] Card tapped: flat_puct; Mountain [c41] — last known: kind: CardLastKnownInformation
+  [draw] Mana added: flat_puct; Mountain [c41] — amount: 1; last known: kind: CardLastKnownInformation; mana: RED
+  [draw] flat_puct activates Mountain [c41] — ability: mana_red; last known: kind: CardLastKnownInformation
+  [draw] Card tapped: flat_puct; Mountain [c44] — last known: kind: CardLastKnownInformation
+  [draw] Mana added: flat_puct; Mountain [c44] — amount: 1; last known: kind: CardLastKnownInformation; mana: RED
+  [draw] flat_puct activates Mountain [c44] — ability: mana_red; last known: kind: CardLastKnownInformation
+  [draw] Card tapped: flat_puct; Mountain [c48] — last known: kind: CardLastKnownInformation
+  [draw] Mana added: flat_puct; Mountain [c48] — amount: 1; last known: kind: CardLastKnownInformation; mana: RED
+  [draw] flat_puct activates Mountain [c48] — ability: mana_red; last known: kind: CardLastKnownInformation
+  [draw] Card tapped: flat_puct; Mountain [c52] — last known: kind: CardLastKnownInformation
+  [draw] Mana added: flat_puct; Mountain [c52] — amount: 1; last known: kind: CardLastKnownInformation; mana: RED
+  [draw] flat_puct activates Mountain [c52] — ability: mana_red; last known: kind: CardLastKnownInformation
+  [draw] Card tapped: flat_puct; Mountain [c57] — last known: kind: CardLastKnownInformation
+  [draw] Mana added: flat_puct; Mountain [c57] — amount: 1; last known: kind: CardLastKnownInformation; mana: RED
+  [draw] flat_puct activates Mountain [c57] — ability: mana_red; last known: kind: CardLastKnownInformation
+  [draw] Mana paid: flat_puct; Inescapable Blaze [c28] — last known: kind: CardLastKnownInformation; payment: RED: 6
+  [draw] Card moved: flat_puct; Inescapable Blaze [c28] — card: Inescapable Blaze [c28]; from: HAND; last known: kind: CardLastKnownInformation; previous controller: flat_puct; to: STACK
+  [draw] flat_puct casts Inescapable Blaze [c28] — ability: cast:Inescapable Blaze
+  [draw] flat_puct decides PriorityDecisionRequest: 7.798 ms; observed options: 1; space size: 1; success
+  [draw] Simple decides PriorityDecisionRequest: 0.071 ms; observed options: 0; space size: unknown; success
+  [draw] Damage dealt: flat_puct; Inescapable Blaze [c28] — amount: 6; combat: False; last known: kind: CardLastKnownInformation; life loss: 0; source revision: 2; target: Angel of Vitality; target object: Angel of Vitality [c76]; target revision: 3
+  [draw] Card moved: flat_puct; Inescapable Blaze [c28] — card: Inescapable Blaze [c28]; from: STACK; last known: kind: CardLastKnownInformation; previous controller: flat_puct; to: GRAVEYARD
+  [draw] Card moved: Simple; Angel of Vitality [c76] — card: Angel of Vitality [c76]; from: BATTLEFIELD; last known: kind: CardLastKnownInformation; previous controller: Simple; to: GRAVEYARD
+  [draw] Resolution: flat_puct; Inescapable Blaze [c28]; cast:Inescapable Blaze; success: True
+  [draw] flat_puct decides PriorityDecisionRequest: 7.490 ms; observed options: 1; space size: 1; success
+  [draw] Simple decides PriorityDecisionRequest: 0.072 ms; observed options: 0; space size: unknown; success
+  [precombat main] flat_puct decides PriorityDecisionRequest: 7.939 ms; observed options: 1; space size: 1; success
+  [precombat main] Simple decides PriorityDecisionRequest: 0.086 ms; observed options: 0; space size: unknown; success
+  [begin combat] flat_puct decides PriorityDecisionRequest: 7.156 ms; observed options: 1; space size: 1; success
+  [begin combat] Simple decides PriorityDecisionRequest: 0.069 ms; observed options: 0; space size: unknown; success
+  [declare attackers] flat_puct decides DeclareAttackersRequest: 2722.457 ms; observed options: 408; space size: unknown; success
+  [declare attackers] Card tapped: flat_puct; Nest Robber [c6]
+  [declare attackers] flat_puct attacks with Nest Robber [c6] — attacker: Nest Robber [c6]; defender: Simple
+  [declare attackers] Card tapped: flat_puct; Nest Robber [c7]
+  [declare attackers] flat_puct attacks with Nest Robber [c7] — attacker: Nest Robber [c7]; defender: Simple
+  [declare attackers] Card tapped: flat_puct; Nest Robber [c9]
+  [declare attackers] flat_puct attacks with Nest Robber [c9] — attacker: Nest Robber [c9]; defender: Simple
+  [declare attackers] Card tapped: flat_puct; Ogre Battledriver [c15]
+  [declare attackers] flat_puct attacks with Ogre Battledriver [c15] — attacker: Ogre Battledriver [c15]; defender: Simple
+  [declare attackers] Card tapped: flat_puct; Ogre Battledriver [c16]
+  [declare attackers] flat_puct attacks with Ogre Battledriver [c16] — attacker: Ogre Battledriver [c16]; defender: Simple
+  [declare attackers] Attackers declared: flat_puct; - — attackers: Nest Robber [c6], Nest Robber [c7], Nest Robber [c9], Ogre Battledriver [c15], Ogre Battledriver [c16]
+  [declare attackers] Trigger detected: flat_puct; Raid Bombardment [c35]; raid_attack
+  [declare attackers] Trigger detected: flat_puct; Raid Bombardment [c35]; raid_attack
+  [declare attackers] Trigger detected: flat_puct; Raid Bombardment [c35]; raid_attack
+  [declare attackers] flat_puct decides TriggerOrderRequest: 8.582 ms; observed options: 6; space size: 6; success
+  [declare attackers] flat_puct decides AbilityDecisionRequest: 7.208 ms; observed options: 1; space size: 1; success
+  [declare attackers] flat_puct decides AbilityDecisionRequest: 7.351 ms; observed options: 1; space size: 1; success
+  [declare attackers] flat_puct decides AbilityDecisionRequest: 7.598 ms; observed options: 1; space size: 1; success
+  [declare attackers] flat_puct decides PriorityDecisionRequest: 7.264 ms; observed options: 1; space size: 1; success
+  [declare attackers] Simple decides PriorityDecisionRequest: 0.073 ms; observed options: 0; space size: unknown; success
+  [declare attackers] Damage dealt: flat_puct; Raid Bombardment [c35] — amount: 1; combat: False; last known: kind: CardLastKnownInformation; life loss: 1; source revision: 3; target: Simple; target object: Simple; target revision: -
+  [declare attackers] Resolution: flat_puct; Raid Bombardment [c35]; raid_attack; success: True
+  [declare attackers] flat_puct decides PriorityDecisionRequest: 7.048 ms; observed options: 1; space size: 1; success
+  [declare attackers] Simple decides PriorityDecisionRequest: 0.068 ms; observed options: 0; space size: unknown; success
+  [declare attackers] Damage dealt: flat_puct; Raid Bombardment [c35] — amount: 1; combat: False; last known: kind: CardLastKnownInformation; life loss: 1; source revision: 3; target: Simple; target object: Simple; target revision: -
+  [declare attackers] Resolution: flat_puct; Raid Bombardment [c35]; raid_attack; success: True
+  [declare attackers] flat_puct decides PriorityDecisionRequest: 7.990 ms; observed options: 1; space size: 1; success
+  [declare attackers] Simple decides PriorityDecisionRequest: 0.076 ms; observed options: 0; space size: unknown; success
+  [declare attackers] Damage dealt: flat_puct; Raid Bombardment [c35] — amount: 1; combat: False; last known: kind: CardLastKnownInformation; life loss: 1; source revision: 3; target: Simple; target object: Simple; target revision: -
+  [declare attackers] Resolution: flat_puct; Raid Bombardment [c35]; raid_attack; success: True
+  [declare attackers] flat_puct decides PriorityDecisionRequest: 19.274 ms; observed options: 1; space size: 1; success
+  [declare attackers] Simple decides PriorityDecisionRequest: 0.161 ms; observed options: 0; space size: unknown; success
+  [declare blockers] Simple chooses block: blockers: none
+  [declare blockers] Simple decides DeclareBlockersRequest: 0.381 ms; observed options: 1; space size: unknown; success
+  [declare blockers] flat_puct decides PriorityDecisionRequest: 7.638 ms; observed options: 1; space size: 1; success
+  [declare blockers] Simple decides PriorityDecisionRequest: 0.070 ms; observed options: 0; space size: unknown; success
+  [second combat damage] Simple decides ReplacementOrderRequest: 0.035 ms; observed options: 1; space size: unknown; success
+  [second combat damage] Damage dealt: flat_puct; Nest Robber [c6] — amount: 2; combat: True; last known: kind: CardLastKnownInformation; life loss: 2; source revision: 3; target: Simple; target object: Simple; target revision: -
+  [second combat damage] Damage dealt: flat_puct; Nest Robber [c7] — amount: 2; combat: True; last known: kind: CardLastKnownInformation; life loss: 2; source revision: 3; target: Simple; target object: Simple; target revision: -
+  [second combat damage] Damage dealt: flat_puct; Nest Robber [c9] — amount: 2; combat: True; last known: kind: CardLastKnownInformation; life loss: 2; source revision: 3; target: Simple; target object: Simple; target revision: -
+  [second combat damage] Damage dealt: flat_puct; Ogre Battledriver [c15] — amount: 3; combat: True; last known: kind: CardLastKnownInformation; life loss: 3; source revision: 3; target: Simple; target object: Simple; target revision: -
+  [second combat damage] Damage dealt: flat_puct; Ogre Battledriver [c16] — amount: 3; combat: True; last known: kind: CardLastKnownInformation; life loss: 3; source revision: 3; target: Simple; target object: Simple; target revision: -
+  [second combat damage] Player lost: Simple; - — reason: life

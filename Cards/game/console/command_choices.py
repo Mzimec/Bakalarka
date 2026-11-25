@@ -1,26 +1,32 @@
 """Lazy legal choices for one command step; no operations are materialized."""
 
-from dataclasses import replace
+from __future__ import annotations
 from game.game_actions.data_structs.ability import SubAbilityComposer
-from game.game_actions.data_structs.game_action import ResolutionContext
 from game.game_actions.generation.ability_action_gen_pipeline import ActionGenerationContext
 from game.game_actions.generation.exec_plan_gen_pipeline import ExecutionPlanPipeline
-from game.game_actions.generation.generation_strategy import ExecutionPlanStrategy
-from game.game_actions.generation.action_node_option_generator import (
-    SelectedActionNodeOptionGenerator,
-)
-from game.game_actions.generation.target_binding_generator import FullTargetBindingGenerator
-from game.ai.mana_solver import SourceActivatingManaSolver
+from game.game_actions.generation.generation_strategy import execution_plan_strategy
+from game.game_actions.generation.plan_validation import EXECUTION_PLAN_VALIDATOR
+from game.mana.mana_solver import SourceActivatingManaSolver
 
 
 class UnsupportedCommandDefinition(ValueError):
+    """!
+    @brief Raised when the console builder cannot represent an ability definition.
+    """
     pass
 
 
-def legal_plans(ability, state, *, cost=False, mode=None, mana_solver=None, x_value=0):
+def legal_plans(
+    ability: object,
+    state: object,
+    *,
+    cost: bool = False,
+    mode: int = None,
+    mana_solver: object = None,
+    x_value: int = 0,
+) -> object:
     """!
     @brief Search only until the caller has enough witnesses (usually one or two).
-
     @param mana_solver Optional payment policy; defaults to automatic source activation.
     @param x_value Chosen X passed to both payment and effect parameter generation.
     """
@@ -37,42 +43,33 @@ def legal_plans(ability, state, *, cost=False, mode=None, mana_solver=None, x_va
     count = sum(1 for _ in part.action_node.generate_options()) if part and part.action_node else 1
     ctx = ActionGenerationContext(ability)
     ctx.x_value = x_value
-    if cost and definition.is_spell:
-        ctx.mana_cost = ability.source.get_casting_cost(state)
-    context = ResolutionContext(
-        source=ability.source, controller=ability.controller, ability=definition, is_cost=cost
-    )
+    if cost:
+        ctx.mana_cost = ability.casting_mana_cost(state)
     for index in range(1, count + 1):
         if mode is not None and index != mode:
             continue
-        strategy = ExecutionPlanStrategy(
-            SelectedActionNodeOptionGenerator(index),
-            FullTargetBindingGenerator(),
-            (mana_solver or SourceActivatingManaSolver()) if cost else None,
+        strategy = execution_plan_strategy(
+            mode=index, mana_solver=(mana_solver or SourceActivatingManaSolver()) if cost else None,
         )
-        for plan in ExecutionPlanPipeline().generate(ctx, part, strategy, state):
-            if not plan.binding.are_targets_valid(
-                ability.source, ability.controller, state, plan.effects.get_used_slots()
-            ):
-                continue
-            if cost and any(
-                binding.effect.validation_error(
-                    state, replace(context, targets=plan._scope_binding(binding.slots))
-                )
-                for binding in plan.effects.sequence
-            ):
-                continue
+        plans = ExecutionPlanPipeline().generate(ctx, part, strategy, state)
+        for plan in EXECUTION_PLAN_VALIDATOR.legal_plans(plans, ability, state, is_cost=cost):
             yield index, plan
 
 
-def feasible(ability, state):
+def feasible(ability: object, state: object) -> bool:
+    """!
+    @brief Return whether an ability has both payable costs and legal effects.
+    """
     return (
         next(legal_plans(ability, state, cost=True), None) is not None
         and next(legal_plans(ability, state), None) is not None
     )
 
 
-def target_groups(plan):
+def target_groups(plan: object) -> tuple[object, ...]:
+    """!
+    @brief Flatten a plan binding into ordered target groups.
+    """
     slots = sorted(
         plan.effects.get_used_slots(), key=lambda slot: (slot.slot.key, slot.runtime_key)
     )

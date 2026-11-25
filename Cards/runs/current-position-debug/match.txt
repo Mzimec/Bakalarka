@@ -1,0 +1,83 @@
+Goblins Everywhere! (Goblins Everywhere!) vs Keep the Peace (Keep the Peace)
+Result: error | Winner: - | Player turn: 2
+Elapsed wall time: 0.171 s
+Seed: 43 | Starting player: 1
+Player turns are numbered individually. Interactive time includes waiting for input.
+
+Decision timing (wall time; includes option generation and input/model waits):
+  Simple [SimpleAgent, agent]: 17 decisions, average 0.541 ms, total 0.009 s, errors 0, auto-passes 11
+    AbilityDecisionRequest: n=1, average 0.075 ms; observed options 1.00; space size 1.00 (known for 1 decisions)
+      1 observed options: n=1, average 0.075 ms
+    DeclareAttackersRequest: n=1, average 1.036 ms; observed options 1.00; space size unknown
+      1 observed options: n=1, average 1.036 ms
+    MulliganRequest: n=1, average 0.035 ms; observed options 0.00; space size unknown
+      0 observed options: n=1, average 0.035 ms
+    PriorityDecisionRequest: n=13, average 0.616 ms; observed options 0.46; space size 1.33 (known for 3 decisions)
+      0 observed options: n=9, average 0.155 ms
+      1 observed options: n=2, average 1.125 ms
+      2-10 observed options: n=2, average 2.181 ms
+    TriggerOrderRequest: n=1, average 0.040 ms; observed options 1.00; space size unknown
+      1 observed options: n=1, average 0.040 ms
+  MCTS [MCTSAgent, agent]: 13 decisions, average 7.981 ms, total 0.104 s, errors 1, auto-passes 0
+    MulliganRequest: n=1, average 4.822 ms; observed options 2.00; space size 2.00 (known for 1 decisions)
+      2-10 observed options: n=1, average 4.822 ms
+    PriorityDecisionRequest: n=12, average 8.244 ms; observed options 2.08; space size 1.00 (known for 11 decisions)
+      1 observed options: n=11, average 4.328 ms
+      11-100 observed options: n=1, average 51.328 ms
+  Observed options are consumed yields, not unique actions. Size refers to the policy-filtered space.
+
+Reason: RuntimeError: debug mismatch
+
+Turn 1
+  [untap] Simple decides MulliganRequest: 0.035 ms; observed options: 0; space size: unknown; success
+  [untap] MCTS decides MulliganRequest: 4.822 ms; observed options: 2; space size: 2; success
+  [upkeep] Simple decides PriorityDecisionRequest: 0.254 ms; observed options: 0; space size: unknown; success
+  [upkeep] MCTS decides PriorityDecisionRequest: 16.039 ms; observed options: 1; space size: 1; success
+  [precombat main] Simple chooses land: source: Plains [c105]
+  [precombat main] Simple decides PriorityDecisionRequest: 1.659 ms; observed options: 2; space size: unknown; success
+  [precombat main] Card moved: Simple; Plains [c105] — card: Plains [c105]; from: HAND; last known: kind: CardLastKnownInformation; previous controller: Simple; to: BATTLEFIELD
+  [precombat main] Simple plays land Plains [c105] — lands played: 1; last known: kind: CardLastKnownInformation
+  [precombat main] Resolution: Simple; Plains [c105]; play_land; success: True
+  [precombat main] Simple chooses action: ability: cast:Charmed Stray; source: Charmed Stray [c63]; targets: none
+  [precombat main] Simple decides PriorityDecisionRequest: 2.703 ms; observed options: 2; space size: 2; success
+  [precombat main] Card tapped: Simple; Plains [c105] — last known: kind: CardLastKnownInformation
+  [precombat main] Mana added: Simple; Plains [c105] — amount: 1; last known: kind: CardLastKnownInformation; mana: WHITE
+  [precombat main] Simple activates Plains [c105] — ability: mana_white; last known: kind: CardLastKnownInformation
+  [precombat main] Mana paid: Simple; Charmed Stray [c63] — last known: kind: CardLastKnownInformation; payment: WHITE: 1
+  [precombat main] Card moved: Simple; Charmed Stray [c63] — card: Charmed Stray [c63]; from: HAND; last known: kind: CardLastKnownInformation; previous controller: Simple; to: STACK
+  [precombat main] Simple casts Charmed Stray [c63] — ability: cast:Charmed Stray
+  [precombat main] Simple decides PriorityDecisionRequest: 0.161 ms; observed options: 0; space size: unknown; success
+  [precombat main] MCTS decides PriorityDecisionRequest: 3.579 ms; observed options: 1; space size: 1; success
+  [precombat main] Card moved: Simple; Charmed Stray [c63] — card: Charmed Stray [c63]; from: STACK; last known: kind: CardLastKnownInformation; previous controller: Simple; to: BATTLEFIELD
+  [precombat main] Trigger detected: Simple; Charmed Stray [c63]; charmed_stray_etb
+  [precombat main] Simple decides TriggerOrderRequest: 0.040 ms; observed options: 1; space size: unknown; success
+  [precombat main] Simple chooses trigger: ability: charmed_stray_etb; source: Charmed Stray [c63]; targets: none
+  [precombat main] Simple decides AbilityDecisionRequest: 0.075 ms; observed options: 1; space size: 1; success
+  [precombat main] Resolution: Simple; Charmed Stray [c63]; cast:Charmed Stray; success: True
+  [precombat main] Simple decides PriorityDecisionRequest: 0.146 ms; observed options: 0; space size: unknown; success
+  [precombat main] MCTS decides PriorityDecisionRequest: 3.192 ms; observed options: 1; space size: 1; success
+  [precombat main] Resolution: Simple; Charmed Stray [c63]; charmed_stray_etb; success: True
+  [precombat main] Simple decides PriorityDecisionRequest: 1.248 ms; observed options: 1; space size: 1; success
+  [precombat main] MCTS decides PriorityDecisionRequest: 2.979 ms; observed options: 1; space size: 1; success
+  [begin combat] Simple decides PriorityDecisionRequest: 0.144 ms; observed options: 0; space size: unknown; success
+  [begin combat] MCTS decides PriorityDecisionRequest: 2.953 ms; observed options: 1; space size: 1; success
+  [declare attackers] Simple chooses attack: attackers: none
+  [declare attackers] Simple decides DeclareAttackersRequest: 1.036 ms; observed options: 1; space size: unknown; success
+  [declare attackers] Simple decides PriorityDecisionRequest: 0.135 ms; observed options: 0; space size: unknown; success
+  [declare attackers] MCTS decides PriorityDecisionRequest: 2.915 ms; observed options: 1; space size: 1; success
+  [end combat] Simple decides PriorityDecisionRequest: 0.130 ms; observed options: 0; space size: unknown; success
+  [end combat] MCTS decides PriorityDecisionRequest: 3.273 ms; observed options: 1; space size: 1; success
+  [postcombat main] Simple decides PriorityDecisionRequest: 1.000 ms; observed options: 1; space size: 1; success
+  [postcombat main] MCTS decides PriorityDecisionRequest: 3.145 ms; observed options: 1; space size: 1; success
+  [end step] Simple decides PriorityDecisionRequest: 0.138 ms; observed options: 0; space size: unknown; success
+  [end step] MCTS decides PriorityDecisionRequest: 2.949 ms; observed options: 1; space size: 1; success
+
+Turn 2
+  [upkeep] MCTS decides PriorityDecisionRequest: 2.931 ms; observed options: 1; space size: 1; success
+  [upkeep] Simple decides PriorityDecisionRequest: 0.142 ms; observed options: 0; space size: unknown; success
+  [draw] Card moved: MCTS; Mountain [c43] — card: Mountain [c43]; from: DECK; last known: kind: CardLastKnownInformation; previous controller: MCTS; to: HAND
+  [draw] Card drawn: MCTS; Mountain [c43] — card: Mountain [c43]; last known: kind: CardLastKnownInformation
+  [draw] Resolution: -; -; -; success: True
+  [draw] MCTS decides PriorityDecisionRequest: 3.648 ms; observed options: 1; space size: 1; success
+  [draw] Simple decides PriorityDecisionRequest: 0.147 ms; observed options: 0; space size: unknown; success
+  [precombat main] MCTS decides PriorityDecisionRequest: 51.328 ms; observed options: 14; space size: unknown; error
